@@ -29,4 +29,8 @@ async function getAll() {
   return result;
 }
 
-module.exports = { create, getAll };
+async function getByEmail(email) {
+  return await db.get().collection("users").findOne({ email });
+}
+
+module.exports = { create, getAll, getByEmail };

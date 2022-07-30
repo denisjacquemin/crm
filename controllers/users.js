@@ -23,16 +23,30 @@ async function getAll(req, res) {
   });
 }
 
-function signup(req, res) {
+async function signup(req, res) {
   const { email, password, passwordConfirmation } = req.body;
 
   // email, password and passwordConfirmation must be present
   if (!email || !password || !passwordConfirmation)
-    res.status(400).json({
+    return res.status(400).json({
       message: "email, password and passwordConfirmation are required",
     });
 
-  res.status(200).json({
+  // check if user already exists
+  const user = await User.getByEmail(email);
+  if (user) return res.status(400).json({ message: "user already exists" });
+
+  // check if password and passwordConfirmation match
+  if (password !== passwordConfirmation)
+    return res
+      .status(400)
+      .json({ message: "password and passwordConfirmation must match" });
+
+  // create user
+  const newUser = User.create({ email, password });
+
+  return res.status(200).json({
+    email: newUser.email,
     message: "User signed up",
   });
 }
