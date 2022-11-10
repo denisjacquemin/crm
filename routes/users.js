@@ -1,15 +1,19 @@
 const { Router } = require("express");
-const userController = require("../controllers/users");
 const router = Router();
 
 router.get("/users/signup", (req, res) => {
-  res.render("users/signup");
+  res.render("users/signup", {
+    API_URL: process.env.API_URL,
+  });
 });
 
-router.post("/signup", userController.signup);
-
+router.get("/users/signin", (req, res) => {
+  res.render("users/signin", {
+    API_URL: process.env.API_URL,
+  });
+});
 // router.post("/login", userController.login);
 
-router.get("/private/users", userController.getAll);
+// router.get("/private/users", userController.getAll);
 
 module.exports = router;

@@ -2,7 +2,7 @@
     <div class="max-w-md w-full space-y-8">
         <div>
             <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow" />
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign up to your account</h2>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
             <p class="mt-2 text-center text-sm text-gray-600">
                 Or
                 <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
@@ -10,7 +10,7 @@
         </a>
             </p>
         </div>
-        <form class="mt-8 space-y-6" id="signupForm">
+        <form class="mt-8 space-y-6" id="signinForm">
             <input type="hidden" name="remember" value="true" />
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
@@ -22,11 +22,6 @@
                     <label for="password" class="sr-only">Password</label>
                     <input value="123" id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                         placeholder="Password" />
-                </div>
-                <div>
-                    <label for="passwordConfirmation" class="sr-only">Password</label>
-                    <input value="123" id="passwordConfirmation" name="passwordConfirmation" type="password" autocomplete="confirmation-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                        placeholder="Password Confirmation" />
                 </div>
             </div>
 
@@ -71,9 +66,9 @@
 </div>
 
 <script>
-    document.getElementById("signupForm").addEventListener("submit",
-        onSignupFormSubmit);
-    async function onSignupFormSubmit(event) {
+    document.getElementById("signinForm").addEventListener("submit",
+        onSigninFormSubmit);
+    async function onSigninFormSubmit(event) {
         event.preventDefault();
         const form = event.currentTarget;
         try {
@@ -82,10 +77,8 @@
                 Object.fromEntries(formData.entries());
             const formDataJsonString =
                 JSON.stringify(plainFormData);
-            const response = await fetch("{{API_URL}}/api/signup", {
+            const response = await fetch("{{API_URL}}/api/signin", {
                 method: "POST",
-                credentials: 'omit', // Should you want to make a fetch request with credentials such as cookies, you should set the credentials of the request to "include" https://web.dev/introduction-to-fetch/
-                mode: 'cors',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
@@ -101,7 +94,7 @@
                     message
                 } =
                 await response.json();
-                throw new Error(message || 'unknown error');
+                throw new Error(message);
             }
             return response.json();
         } catch (error) {
