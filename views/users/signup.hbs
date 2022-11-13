@@ -101,11 +101,25 @@
                     message
                 } =
                 await response.json();
-                throw new Error(message || 'unknown error');
+                throw new Error(code);
             }
             return response.json();
         } catch (error) {
-            showAlert(error.message);
+            switch (error.message) {
+                case 'ALL_FIELDS_REQUIRED':
+                    showAlert("{{ t 'signin.all_fields_required' }}");
+                    breaks;
+                case 'USER_ALREADY_EXIST':
+                    showAlert("{{ t 'signin.user_already_exist' }}");
+                    breaks;
+                case 'PASSWORD_AND_PASSWORD_CONFIRMATION_MUST_MATCH':
+                    showAlert("{{ t 'signin.password_and_password_confirmation_must_match' }}");
+                    breaks;
+                default:
+                    showAlert("{{ t 'common.unknown_error' }}");
+                    breaks;
+
+            }
         }
     }
 </script>

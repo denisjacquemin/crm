@@ -1,0 +1,10 @@
+{
+  "signin": {
+    "all_fields_required": "signin.all_fields_required",
+    "user_already_exist": "signin.user_already_exist",
+    "password_and_password_confirmation_must_match": "signin.password_and_password_confirmation_must_match"
+  },
+  "common": {
+    "unknown_error": "common.unknown_error"
+  }
+}
