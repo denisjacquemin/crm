@@ -84,15 +84,26 @@
             };
             if (!response.ok) {
                 const {
-                    code,
-                    message
+                    code
                 } =
                 await response.json();
-                throw new Error(message);
+                throw new Error(code);
             }
             return response.json();
         } catch (error) {
-            showAlert(error.message);
+            console.log(error)
+            switch (error.message) {
+                case 'ALL_FIELDS_REQUIRED':
+                    showAlert("{{ t 'signin.all_fields_required' }}");
+                    breaks;
+                case 'USER_NOT_FOUND':
+                    showAlert("{{ t 'signin.user_not_found' }}");
+                    breaks;
+                default:
+                    showAlert("{{ t 'common.unknown_error' }}");
+                    breaks;
+
+            }
         }
     }
 </script>
