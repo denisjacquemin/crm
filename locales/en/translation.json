@@ -8,13 +8,14 @@
     "signin": {
         "sign_in_to_your_account": "Sign in to your account",
         "all_fields_required": "Email and Password are required",
-        "user_not_found": "User not found",
-        "password_and_password_confirmation_must_match": "Password and Password Confirmation must match"
+        "email_or_password_invalid": "Email or Password invalid",
+        "password_and_password_confirmation_must_match": "Password and Password Confirmation must match",
+        "already_authenticated": "Already authenticated"
     },
     "signup": {
         "sign_up_to_your_account": "Sign up to your account",
         "all_fields_required": "Email, Password and Password Confirmation are required",
-        "user_already_exist": "User already exists",
-        "password_and_password_confirmation_must_match": "Password and Password Confirmation must match"
+        "user_already_exists": "User already exists",
+        "passwords_do_not_match": "Password and Password Confirmation do not match"
     }
 }

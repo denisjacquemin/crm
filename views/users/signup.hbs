@@ -10,7 +10,7 @@
         </a>
             </p>
         </div>
-        <form class="mt-8 space-y-6" id="signupForm">
+        <form class="mt-8 space-y-6" id="signupForm" action="/users/signup" method="post">
             <input type="hidden" name="remember" value="true" />
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
@@ -69,56 +69,3 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById("signupForm").addEventListener("submit",
-        onSignupFormSubmit);
-    async function onSignupFormSubmit(event) {
-        event.preventDefault();
-        const form = event.currentTarget;
-        try {
-            const formData = new FormData(form);
-            const plainFormData =
-                Object.fromEntries(formData.entries());
-            const formDataJsonString =
-                JSON.stringify(plainFormData);
-            const response = await fetch("{{API_URL}}/api/signup", {
-                method: "POST",
-                credentials: 'omit', // Should you want to make a fetch request with credentials such as cookies, you should set the credentials of the request to "include" https://web.dev/introduction-to-fetch/
-                mode: 'cors',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: formDataJsonString,
-            });
-            if (response.ok) {
-                window.location.replace("/app");
-            };
-            if (!response.ok) {
-                const {
-                    code
-                } =
-                await response.json();
-                throw new Error(code);
-            }
-            return response.json();
-        } catch (error) {
-            switch (error.message) {
-                case 'ALL_FIELDS_REQUIRED':
-                    showAlert("{{ t 'signin.all_fields_required' }}");
-                    breaks;
-                case 'USER_ALREADY_EXIST':
-                    showAlert("{{ t 'signin.user_already_exist' }}");
-                    breaks;
-                case 'PASSWORD_AND_PASSWORD_CONFIRMATION_MUST_MATCH':
-                    showAlert("{{ t 'signin.password_and_password_confirmation_must_match' }}");
-                    breaks;
-                default:
-                    showAlert("{{ t 'common.unknown_error' }}");
-                    breaks;
-
-            }
-        }
-    }
-</script>

@@ -2,11 +2,60 @@ require("dotenv").config();
 const i18next = require('i18next');
 const i18Middleware = require('i18next-http-middleware');
 const i18nBackend = require('i18next-fs-backend');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
+const crypto = require('crypto');
 
 const express = require("express");
 const path = require("path");
+const db = require("./lib/db/mongo");
+
 const app = express();
+
+const redis = require('redis')
+var session = require('express-session')
+
+let RedisStore = require('connect-redis')(session)
+let redis_url = 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL
+let redisClient = redis.createClient({ legacyMode: true, url: 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL })
+  redisClient.connect();
+
+// redisClient.on('error', (err) => console.log('Redis Client Error', err))
+redisClient.on('connect', () => console.log('Successfully connect to redis'))
+
+let sessionMiddleware = session({
+    name: process.env.CONNECT_SID_NAME,
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,  
+    saveUninitialized: false,
+})
+app.use(sessionMiddleware)
+app.use(function (req, res, next) {
+  var tries = 3
+
+  function lookupSession(error) {
+    if (error) {
+      return next(error)
+    }
+
+    tries -= 1
+
+    if (req.session !== undefined) {
+      return next()
+    }
+
+    if (tries < 0) {
+      return next(new Error('oh no'))
+    }
+
+    sessionMiddleware(req, res, lookupSession)
+  }
+
+  lookupSession()
+})
+
+app.use(flash())
 
 i18next.use(i18nBackend)
        .use(i18Middleware.LanguageDetector)
@@ -58,11 +107,20 @@ app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "views"));
 
+// make req.session available in templates
+app.use(function (req, res, next) {
+  res.locals.session = req.session;
+  next();
+});
 
 app.use("/", require("./routes/global"));
 app.use("/", require("./routes/users"));
 
 app.use("/app", require("./middlewares/auth"));
+
+app.use("/app", require("./routes/app/dashboard"));
+
+
 
 app.get("/app", (req, res) => {
   res.render("home");
@@ -102,6 +160,9 @@ app.use(function (err, req, res, next) {
   res.status(500).render("error", { error: err });
 });
 
-app.listen(3000, () => {
-  console.log("server run successfully");
+db.run().then(() => {
+  app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
+  });
 });
+

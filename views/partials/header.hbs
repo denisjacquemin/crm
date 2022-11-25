@@ -1,3 +1,4 @@
-<a href="/preferences">Preferences</a> |
+<a href="/preferences">Preferences</a>{{#unless session.isAuth}} |
 <a href="/users/signin">Sign in</a> |
-<a href="/users/signup">Sign up</a>
+<a href="/users/signup">Sign up</a> {{/unless}} {{#if session.isAuth}} |
+<a href="/users/logout">Logout</a> {{/if}}

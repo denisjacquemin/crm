@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    {{> header }} {{{body}}}
+    {{#if messages}} {{messages}} {{/if}} {{> header }} {{{body}}}
 
 </body>
 

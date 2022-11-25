@@ -4,7 +4,7 @@
             <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow" />
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{{t 'signin.sign_in_to_your_account' }}</h2>
         </div>
-        <form class="mt-8 space-y-6" id="signinForm">
+        <form class="mt-8 space-y-6" id="signinForm" action="/users/signin" method="post">
             <input type="hidden" name="remember" value="true" />
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
@@ -58,52 +58,3 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById("signinForm").addEventListener("submit",
-        onSigninFormSubmit);
-    async function onSigninFormSubmit(event) {
-        event.preventDefault();
-        const form = event.currentTarget;
-        try {
-            const formData = new FormData(form);
-            const plainFormData =
-                Object.fromEntries(formData.entries());
-            const formDataJsonString =
-                JSON.stringify(plainFormData);
-            const response = await fetch("{{API_URL}}/api/signin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: formDataJsonString,
-            });
-            if (response.ok) {
-                window.location.replace("/app");
-            };
-            if (!response.ok) {
-                const {
-                    code
-                } =
-                await response.json();
-                throw new Error(code);
-            }
-            return response.json();
-        } catch (error) {
-            console.log(error)
-            switch (error.message) {
-                case 'ALL_FIELDS_REQUIRED':
-                    showAlert("{{ t 'signin.all_fields_required' }}");
-                    breaks;
-                case 'USER_NOT_FOUND':
-                    showAlert("{{ t 'signin.user_not_found' }}");
-                    breaks;
-                default:
-                    showAlert("{{ t 'common.unknown_error' }}");
-                    breaks;
-
-            }
-        }
-    }
-</script>
