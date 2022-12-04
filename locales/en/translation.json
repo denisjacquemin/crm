@@ -17,5 +17,11 @@
         "all_fields_required": "Email, Password and Password Confirmation are required",
         "user_already_exists": "User already exists",
         "passwords_do_not_match": "Password and Password Confirmation do not match"
+    },
+    "companies": {
+        "create_new_company": "Create new company",
+        "company_name": "Name",
+        "the_new_company_name": "The new company name",
+        "next": "Next"
     }
 }

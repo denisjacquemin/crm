@@ -4,20 +4,22 @@ const i18Middleware = require('i18next-http-middleware');
 const i18nBackend = require('i18next-fs-backend');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
-const crypto = require('crypto');
+const helmet = require("helmet");
+
 
 const express = require("express");
 const path = require("path");
 const db = require("./lib/db/mongo");
 
 const app = express();
+app.use(helmet());
+
 
 const redis = require('redis')
 var session = require('express-session')
 
 let RedisStore = require('connect-redis')(session)
-let redis_url = 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL
-let redisClient = redis.createClient({ legacyMode: true, url: 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL })
+let redisClient = redis.createClient({ enable_offline_queue: false , legacyMode: true, url: 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL })
   redisClient.connect();
 
 // redisClient.on('error', (err) => console.log('Redis Client Error', err))
@@ -29,7 +31,15 @@ let sessionMiddleware = session({
     secret: process.env.SESSION_SECRET,
     resave: false,  
     saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // only if you use https
+      httpOnly: true,
+      domain: process.env.DOMAIN,
+      path: '/',
+      expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+    }
 })
+
 app.use(sessionMiddleware)
 app.use(function (req, res, next) {
   var tries = 3
@@ -83,6 +93,8 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname,"/views/app")));
+
 app.use(i18Middleware.handle(i18next));
 
 app.get('/lang', (req, res) => {
@@ -113,12 +125,23 @@ app.use(function (req, res, next) {
   next();
 });
 
+
+
+// apply auth middleware to all routes except an array of routes
+
+
+
+
+
+app.use("/", require("./middlewares/auth"));
+app.use("/", require("./middlewares/acl"));
 app.use("/", require("./routes/global"));
 app.use("/", require("./routes/users"));
-
-app.use("/app", require("./middlewares/auth"));
+app.use("/", require("./routes/companies"));
 
 app.use("/app", require("./routes/app/dashboard"));
+app.use("/app", require("./routes/app/invoices"));
+
 
 
 

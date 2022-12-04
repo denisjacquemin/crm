@@ -1,5 +1,7 @@
 const { Router } = require("express");
 const router = Router();
+const path = require('path');
+
 
 
 
@@ -8,6 +10,11 @@ router.get("/preferences", (req, res) => {
     API_URL: process.env.API_URL,
   });
 });
+
+router.get("/templates", (req, res) => {
+  res.sendFile(path.join(__dirname, '../invoice1.html'));
+});
+
 
 router.post("/preferences", async (req, res) => {
 

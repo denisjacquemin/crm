@@ -1,9 +1,22 @@
 module.exports = async function (req, res, next) {
 
-  if (req.session.isAuth) {
+  // if routes match an array of routes, skip auth middleware
+  const skipRoutes = [
+    "/",
+    "/users/signup",
+    "/users/signin",
+    "/forgot-password",
+    "/companies/new",
+    "/companies",
+  ];
+  if (skipRoutes.includes(req.path)) {
     next();
   } else {
-    res.redirect('/users/signin');
+    if (req.session.isAuth) {
+      next();
+    } else {
+      res.redirect('/users/signin');
+    }
   }
 
 

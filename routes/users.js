@@ -37,7 +37,8 @@ router.post("/users/signup", async (req, res) => {
   req.session.email = newUser.email
   req.session.timestamps = []
 
-  res.redirect('/app')
+  // redirect to new company url
+  res.redirect('/companies/new');
 });
 
 
@@ -118,8 +119,10 @@ router.post("/users/signin", async (req, res) => {
 
   req.session.isAuth = true
   req.session.email = user.email
+  req.session.userId = user._id
   req.session.timestamps = []
-
+  req.session.user = user
+  req.session.currentCompany = '1'
   res.redirect('/app')
 });
 
