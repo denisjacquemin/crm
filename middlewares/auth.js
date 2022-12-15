@@ -8,6 +8,7 @@ module.exports = async function (req, res, next) {
     "/forgot-password",
     "/companies/new",
     "/companies",
+    "/preferences",
   ];
   if (skipRoutes.includes(req.path)) {
     next();

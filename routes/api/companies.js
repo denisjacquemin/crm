@@ -1,4 +1,4 @@
-const Company = require("../models/company");
+const Company = require("../../models/company");
 
 const { Router } = require("express");
 const router = Router();

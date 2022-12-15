@@ -9,17 +9,20 @@ window.onload = function() {
 	// get JSON Object from hidden field named config	
 	var config = JSON.parse(document.getElementById('config').value);
 
+	// save config to local storage
+	localStorage.setItem('config', JSON.stringify(config));
+
 	// loop through the config object and set values to input fiedls based on the path matching input's names
 	// only works for input fields with names that match the path
 	// example: config['invoice']['number'] will match input name="invoice.number"
-	// for (var key in config) {
-	// 	var path = key.split('.');
-	// 	var value = config;
-	// 	for (var i = 0; i < path.length; i++) {
-	// 		value = value[path[i]];
-	// 	}
-	// 	document.getElementsByName(key)[0].value = value;
-	// }
+	for (var key in config) {
+		var path = key.split('.');
+		var value = config;
+		for (var i = 0; i < path.length; i++) {
+			value = value[path[i]];
+		}
+		document.getElementsByName(key)[0].value = value;
+	}
 
 
 	
@@ -29,10 +32,12 @@ window.onload = function() {
 
 // use event delagetion to listen to all input changes
 document.addEventListener('input', function(e) {
-    
+	console.log('In input event listener');
     // get the config object from localstorage or create it if i doesn't exist yet
     var config = JSON.parse(localStorage.getItem('config')) || {};
 
+	// set the value of the input field to the config object
+	// example: config['invoice']['number'] will match input name="invoice.number"
     put(config, e.target.name, e.target.value);
 
     localStorage.setItem('config', JSON.stringify(config));
@@ -40,20 +45,20 @@ document.addEventListener('input', function(e) {
 });
 
 // at regular intervals, save config to server
-// setInterval(function() {
+setInterval(function() {
 
-//     // get config from local storage
-//     var config = localStorage.getItem('config');
+    // get config from local storage
+    var config = localStorage.getItem('config');
 
-//         // save values to server
-//         fetch('/invoices/1', {
-//             method: 'PUT',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(config)
-//         });
-//     }, 5000);
+        // save values to server
+        fetch('/invoices/1', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        });
+    }, 5000); 
 
 
 

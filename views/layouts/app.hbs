@@ -4,36 +4,23 @@
 <head>
     <meta charset="utf-8" />
     <title>Milo</title>
-    <link rel="stylesheet" href="/css/styles.css" /> 
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/tailwindcss/components.js" defer></script>
+    <script src="/js/vendor/alpine.3.10.5.min.js" defer></script>
     {{#each scripts}}
-        <script src="{{script}}"></script>
+    <script src="{{script}}"></script>
     {{/each}}
     <script defer src="/js/helpers.js"></script>
 </head>
 
 <body>
-    <div class="min-h-full">
-        {{> nav }}
-        <header class="bg-white shadow">
-            <div class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-            </div>
-        </header>
-        <main>
-            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                <!-- Replace with your content -->
-                <div class="px-4 py-6 sm:px-0">
-                    <div class="h-96 rounded-lg border-4 border-dashed border-gray-200">
-                        {{#if messages}} 
-                            {{messages}} 
-                        {{/if}} 
-                        {{> header }} 
-                        {{{body}}}
-                    </div>
-                </div>
-                <!-- /End replace -->
-            </div>
-        </main>
+    <div class="relative flex absolute inset-0 flex-col">
+        {{> nav }}  
+                 {{#if messages}} 
+{{messages}}  
+        {{/if}} 
+        {{{body}}}
     </div>
 </body>
 

@@ -1,4 +1,6 @@
 require("dotenv").config();
+
+
 const i18next = require('i18next');
 const i18Middleware = require('i18next-http-middleware');
 const i18nBackend = require('i18next-fs-backend');
@@ -12,18 +14,23 @@ const path = require("path");
 const db = require("./lib/db/mongo");
 
 const app = express();
-app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      "script-src": ["'self'", process.env.DOMAIN, "'unsafe-eval'"],
+      "style-src": ["'self'", process.env.DOMAIN, "'unsafe-inline'"]},
+  }));
 
 
 const redis = require('redis')
 var session = require('express-session')
 
 let RedisStore = require('connect-redis')(session)
-let redisClient = redis.createClient({ enable_offline_queue: false , legacyMode: true, url: 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL })
-  redisClient.connect();
+let redisClient = redis.createClient({enable_offline_queue: false , legacyMode: true, url: 'redis://' + process.env.REDIS_USERNAME + ':' + process.env.REDIS_PASSWORD + '@' + process.env.REDIS_URL })
+redisClient.connect();
 
 // redisClient.on('error', (err) => console.log('Redis Client Error', err))
-redisClient.on('connect', () => console.log('Successfully connect to redis'))
+redisClient.on('connect', () => console.log('Successfully connect to Redis @ ' + process.env.REDIS_URL))
 
 let sessionMiddleware = session({
     name: process.env.CONNECT_SID_NAME,

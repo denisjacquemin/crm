@@ -1,5 +1,7 @@
 # Screen architecture 
 
+(The first screen (left) is a list of the latest invoices)
+
 - The left side contains contains the 'config' of the document
 
 The config contains the document template, the paramaters values and also the configuration of the template.
@@ -29,3 +31,8 @@ localstorage acts as a cache and offline feature
             name: "Best Company"
     }
 }
+
+
+# Auto Complete
+
+Le premier champ "Client Name" fait office de full text search. Donc un client peut etre trouvé sur base de son nom, mais egalement les autres champs

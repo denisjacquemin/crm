@@ -1,12 +1,11 @@
 const { Router } = require("express");
-const Invoice = require("../../models/invoice");
 const router = Router();
 
-router.get("/invoices/edit/:invoiceId?", async(req, res) => {
+router.get("/edit/:docId?", async(req, res) => {
     // get invoiceId from req.params.invoiceId
-    let invoiceId = req.params.invoiceId;
+    let docId = req.params.docId;
     // get or create invoice from MongoDB, usersid/invoices/invoiceId collection.
-    let invoice = await Invoice.findOrCreateById(invoiceId);
+    let document = await Document.findOrCreateById(docId);
 
     var scripts = [{ script: '/invoices/edit.js' }];
     res.render("app/invoices/edit", {
@@ -18,7 +17,7 @@ router.get("/invoices/edit/:invoiceId?", async(req, res) => {
 });
 
 // update an invoice config
-router.post("/invoices/edit/:invoiceId?", async(req, res) => {
+router.post("/edit/:docId?", async(req, res) => {
     // get invoiceId from req.params.invoiceId
     let invoiceId = req.params.invoiceId;
     // get invoice from MongoDB, invoices/invoiceId collection with a given userId.
