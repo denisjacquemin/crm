@@ -1,9 +1,9 @@
-const db = require("../lib/db/mongo");
+const db = require("../../lib/db/mongo");
 
 const invoice = {
-  id: "",
-  userId: "",
-  config: {},
+    id: "",
+    userId: "",
+    config: {},
 };
 
 // Find invoice by ID

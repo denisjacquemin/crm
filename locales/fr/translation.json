@@ -6,7 +6,7 @@
         "sign_in_to_your_account": "Se connecter à mon compte"
     },
     "signup": {
-        "sign_up_to_your_account": "Se connecter à son compte",
+        "sign_up_to_your_account": "Créer un nouveau compte",
         "all_fields_required": "Email, Password and Password Confirmation are required",
         "user_already_exist": "User already exists",
         "password_and_password_confirmation_must_match": "Password and Password Confirmation must match"

@@ -3,12 +3,39 @@
     "all_fields_required": "signin.all_fields_required",
     "user_already_exist": "signin.user_already_exist",
     "password_and_password_confirmation_must_match": "signin.password_and_password_confirmation_must_match",
-    "sign_in_to_yout_account": "signin.sign_in_to_yout_account"
+    "sign_in_to_yout_account": "signin.sign_in_to_yout_account",
+    "or": "signin.or",
+    "already_have_an_account": "signin.already_have_an_account",
+    "sign_in": "signin.sign_in",
+    "firstname": "signin.firstname",
+    "not_authenticated": "signin.not_authenticated",
+    "user_does_not_exist": "signin.user_does_not_exist",
+    "incorrect_password": "signin.incorrect_password"
   },
   "common": {
-    "unknown_error": "common.unknown_error"
+    "unknown_error": "common.unknown_error",
+    "languags": "common.languags",
+    "unknown_rror": "common.unknown_rror"
   },
   "signup": {
-    "user_already_exists": "signup.user_already_exists"
+    "user_already_exists": "signup.user_already_exists",
+    "password_confirmation": "signup.password_confirmation",
+    "firstname": "signup.firstname"
+  },
+  "forgot_password": {
+    "email_subject": "forgot_password.email_subject",
+    "email_sent": "forgot_password.email_sent",
+    "email_invalid": "forgot_password.email_invalid",
+    "hi_name": "forgot_password.hi_name",
+    "password_reset_request": "forgot_password.password_reset_request",
+    "reset_password_link": "forgot_password.reset_password_link",
+    "password_unchanged": "forgot_password.password_unchanged",
+    "thanks": "forgot_password.thanks"
+  },
+  "forgotpassword": {
+    "email_content": "forgotpassword.email_content"
+  },
+  "preferences": {
+    "language_changed": "preferences.language_changed"
   }
 }

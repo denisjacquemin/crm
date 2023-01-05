@@ -1,12 +1,25 @@
 {
     "common": {
-        "unknown_error": "Unknown Error"
+        "unknown_error": "Unknown Error",
+        "languages": [
+            { "id": 1, "name": "English", "code": "en" },
+            { "id": 2, "name": "Spanish", "code": "es" },
+            { "id": 3, "name": "French", "code": "fr" }
+        ]
     },
     "home": {
         "title": "HOME !!!?"
     },
     "signin": {
         "sign_in_to_your_account": "Sign in to your account",
+        "or": "Or",
+        "no_account_yet": "sign up if don't already have an account",
+        "email": "Email",
+        "password": "Password",
+        "remember_me": "Remember me",
+        "forgot_password": "Forgot your password?",
+        "or_continue_with": "Or continue with",
+        "sign_in": "Sign in",
         "all_fields_required": "Email and Password are required",
         "email_or_password_invalid": "Email or Password invalid",
         "password_and_password_confirmation_must_match": "Password and Password Confirmation must match",
@@ -14,6 +27,11 @@
     },
     "signup": {
         "sign_up_to_your_account": "Sign up to your account",
+        "or": "Or",
+        "firstname": "Firstname",
+        "already_have_an_account": "sign in if you already have an account",
+        "password_confirmation": "Password confirmation",
+        "sign_up": "Sign up",
         "all_fields_required": "Email, Password and Password Confirmation are required",
         "user_already_exists": "User already exists",
         "passwords_do_not_match": "Password and Password Confirmation do not match"
@@ -23,5 +41,17 @@
         "company_name": "Name",
         "the_new_company_name": "The new company name",
         "next": "Next"
+    },
+    "forgot_password": {
+        "email_subject": "Reset your password",
+        "email_sent": "An email has been sent",
+        "email_invalid": "The Email is invalid",
+        "email_content": {
+            "hi_name": "Hi {{name}},",
+            "password_reset_request": "We received a request to reset the password for your account. If you made this request, please click the link below to set a new password.",
+            "reset_password_link": "Click here to reset your password",
+            "password_unchanged": "If you did not make this request, you can ignore this email and your password will remain unchanged.",
+            "thanks": "Thanks"
+        }
     }
 }
