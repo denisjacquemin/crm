@@ -37,5 +37,11 @@
   },
   "preferences": {
     "language_changed": "preferences.language_changed"
+  },
+  "nav": {
+    "dashboard": "nav.dashboard",
+    "invoices": "nav.invoices",
+    "tickets": "nav.tickets",
+    "clients": "nav.clients"
   }
 }

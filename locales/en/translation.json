@@ -7,8 +7,11 @@
             { "id": 3, "name": "French", "code": "fr" }
         ]
     },
-    "home": {
-        "title": "HOME !!!?"
+    "nav": {
+        "dashboard": "Dashboard",
+        "invoices": "Invoices",
+        "clients": "Clients",
+        "tickets": "Tickets"
     },
     "signin": {
         "sign_in_to_your_account": "Sign in to your account",

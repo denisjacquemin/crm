@@ -1,3 +1,4 @@
+const uuid = require('uuid');
 const bcrypt = require("bcrypt");
 
 class User {
@@ -21,8 +22,10 @@ class User {
     // Create a new user
     async create(email, password) {
         try {
+            const id = uuid.v4();
+
             // Insert the new user into the users collection
-            const result = await this.db.collection('users').insertOne({ email, password })
+            const result = await this.db.collection('users').insertOne({ _id: id, email, password })
 
             // Return the new user document
             return result

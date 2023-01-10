@@ -120,6 +120,9 @@ const hbs = create({
         },
         add: function(variable, addend) {;
             return variable + addend;
+        },
+        ifEquals: function(arg1, arg2, options) {
+            return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
         }
     },
 });
@@ -141,11 +144,10 @@ app.use(function(req, res, next) {
 
 
 
-// app.use("/", require("./src/middlewares/auth"));
-// app.use("/", require("./src/middlewares/acl"));
+app.use("/", require("./src/middlewares/auth"));
+app.use("/", require("./src/middlewares/acl"));
 app.use("/", require("./src/middlewares/languages.dropdown"));
 app.use("/", require("./src/routes/routes"));
-app.use("/", require("./src/routes/global"));
 // app.use("/", require("./routes/users"));
 // app.use("/", require("./routes/companies"));
 
@@ -153,11 +155,6 @@ app.use("/", require("./src/routes/global"));
 // app.use("/app", require("./routes/app/invoices"));
 
 
-
-
-app.get("/app", (req, res) => {
-    res.render("home");
-});
 
 // app.use("/app", dashboardRouter);
 // app.use("/app", invoicingRouter);

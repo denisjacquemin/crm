@@ -29,20 +29,22 @@ async function signupPost(req, res, next) {
     const { email, password, passwordConfirmation } = req.body;
 
     // Trim the whitespace from the email, password, and passwordConfirmation fields
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
-    const trimmedPasswordConfirmation = passwordConfirmation.trim();
+    const trimmedEmail = email && email.trim();
+    const trimmedPassword = password && password.trim();
+    const trimmedPasswordConfirmation = passwordConfirmation && passwordConfirmation.trim();
 
     // Check if any of the required fields are empty
     if (!trimmedEmail || !trimmedPassword || !trimmedPasswordConfirmation) {
         // If any of the fields are empty, render the signup page again with an error message
-        return res.render('users/signup', { messages: req.i18n.t('signup.all_fields_required') })
+        return res.render('users/signup', { notification: { type: 'error', message: req.i18n.t('signup.all_fields_required') } })
     }
 
     // Check if the password and password confirmation fields match
     if (trimmedPassword !== trimmedPasswordConfirmation) {
         // If the passwords do not match, render the signup page again with an error message
-        return res.render('users/signup', { messages: req.i18n.t('signup.passwords_do_not_match') })
+        return res.render('users/signup', {
+            notification: { type: 'error', message: req.i18n.t('signup.passwords_do_not_match') }
+        })
     }
 
     // Get a reference to the MongoDB database
@@ -55,7 +57,9 @@ async function signupPost(req, res, next) {
     const user = await userService.getByEmail(trimmedEmail);
     if (user) {
         // If a user already exists, render the signup page again with an error message
-        return res.render('users/signup', { messages: req.i18n.t('signup.user_already_exists') })
+        return res.render('users/signup', {
+            notification: { type: 'error', messages: req.i18n.t('signup.user_already_exists') }
+        })
     }
 
     // Create a new user with the given email and password
@@ -63,8 +67,8 @@ async function signupPost(req, res, next) {
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
-    req.session.email = newUser.email
-    req.session.timestamps = []
+    req.session.user.email = newUser.email
+    req.session.user.timestamps = []
 
     // Redirect the user to the new company page
     res.redirect('/companies/new');
@@ -94,8 +98,8 @@ async function signinPost(req, res, next) {
     const { email, password } = req.body;
 
     // Trim the whitespace from the email and password fields
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
+    const trimmedEmail = email && email.trim();
+    const trimmedPassword = password && password.trim();
 
     // Check if any of the required fields are empty
     if (!trimmedEmail || !trimmedPassword) {
@@ -125,7 +129,11 @@ async function signinPost(req, res, next) {
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
-    req.session.email = user.email
+    req.session.current_company = user.companies[0]
+    req.session.user = {
+        email: user.email,
+        companies: user.companies
+    }
     req.session.timestamps = []
 
     // Redirect the user to the app page

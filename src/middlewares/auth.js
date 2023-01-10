@@ -2,7 +2,6 @@ module.exports = async function(req, res, next) {
 
     // if routes match an array of routes, skip auth middleware
     const skipRoutes = [
-        "/",
         "/favicon.ico",
         "/preferences",
         "/preferences/changelang",

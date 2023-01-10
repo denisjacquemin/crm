@@ -38,7 +38,7 @@ async function changeLang(req, res) {
     // req.i18n.changeLanguage(lang);
 
     // Set a flash message
-    req.flash('messages', req.i18n.t('preferences.language_changed'));
+    req.flash('notification', req.i18n.t('preferences.language_changed'));
 
 
     const referer = req.get('referer');

@@ -3,9 +3,9 @@
   <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: {{currentIndex}}, activeIndex: {{currentIndex}}, items: {{json languages}} })" x-init="init()">
       <div class="relative mt-1">
         <span x-init="$watch('selected.code', (newValue) => selectedLangChanged(newValue))"></span>
-
         <button type="button" class="relative w-full cursor-pointer py-2 pl-3 pr-10 text-left  focus:outline-none  sm:text-sm" x-ref="button" @keydown.arrow-up.stop.prevent="onButtonClick()" @keydown.arrow-down.stop.prevent="onButtonClick()" @click="onButtonClick()" aria-haspopup="listbox" :aria-expanded="open" aria-expanded="true" aria-labelledby="listbox-label">
-          <span x-text="selected.name" class="block truncate">SelectedItem</span>
+          
+          <span x-cloak x-text="selected.name" class="block truncate">SelectedItem</span>
           <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <svg class="h-5 w-5 text-gray-400" x-description="Heroicon name: mini/chevron-up-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd"></path>
@@ -13,7 +13,7 @@
           </span>
         </button>
         
-          <ul x-show="open" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" x-max="1" @click.away="open = false" x-description="Select popover, show/hide based on select state." @keydown.enter.stop.prevent="onOptionSelect()" @keydown.space.stop.prevent="onOptionSelect()" @keydown.escape="onEscape()" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" x-ref="listbox" tabindex="-1" role="listbox" aria-labelledby="listbox-label" :aria-activedescendant="activeDescendant" aria-activedescendant="">
+          <ul x-cloak x-show="open" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" x-max="1" @click.away="open = false" x-description="Select popover, show/hide based on select state." @keydown.enter.stop.prevent="onOptionSelect()" @keydown.space.stop.prevent="onOptionSelect()" @keydown.escape="onEscape()" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" x-ref="listbox" tabindex="-1" role="listbox" aria-labelledby="listbox-label" :aria-activedescendant="activeDescendant" aria-activedescendant="">
             <!--
         Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
 
@@ -39,10 +39,9 @@
                   </svg>
                 </span>
               </li>
+
             {{/each}}
 
-
-              
           </ul>
         
       </div>
