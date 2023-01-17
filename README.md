@@ -13,10 +13,7 @@ listening on 3000
 
 # Notifications
 
-    '''
-            return res.render('users/signup', { notification: { type: 'success', message: req.i18n.t('signup.all_fields_required'), subMessage: 'Voici un sub message' } })
-
-    '''
+`return res.render('users/signup', { notification: { type: 'success', message: req.i18n.t('signup.all_fields_required'), subMessage: 'Voici un sub message' } })`
 
 
 
