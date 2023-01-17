@@ -1,10 +1,3 @@
-// write a mail service
-//
-//
-
-// Path: src/services/mail.js
-
-// Import the nodemailer package
 const nodemailer = require('nodemailer');
 
 // Create a new transport object
@@ -13,8 +6,7 @@ const transport = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
 
-    // Set the secure option to true
-    // This enables TLS encryption
+    // This enables TLS encryption only in production
     secure: process.env.NODE_ENV === 'production',
 
     // Set the auth option to an object containing the username and password

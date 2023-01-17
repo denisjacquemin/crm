@@ -26,6 +26,6 @@ async function run() {
 // Export the run, get, and close functions
 module.exports = {
     run,
-    get: () => client.db(process.env.MONGO_DBNAME),
+    get: () => client.db(),
     close: () => client.close(),
 };

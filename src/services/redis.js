@@ -25,8 +25,12 @@ const connectToRedis = async() => {
         await redisClient.connect()
         console.log(`Successfully connect to Redis @ ${process.env.REDIS_URL}`)
     } catch (err) {
-        redisClient.close();
-        console.log('Redis error', err)
+        try {
+            redisClient.close();
+            console.log('Redis error', err)
+        } catch (closeErr) {
+            console.log('Error closing Redis connection:', closeErr)
+        }
         if (err.code === 'ETIMEDOUT' && reconnectAttempts < 3) {
             console.log('Reconnecting to Redis...')
             reconnectAttempts++

@@ -1,18 +1,19 @@
-const uuid = require('uuid');
+const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongodb');
 
-
-class Document {
+class User {
     constructor(db) {
         // Store a reference to the database connection
         this.db = db
     }
 
-    // Get a document by their id
+    // Get a user by their id
     async getById(id) {
         try {
-            // Query the documents collection by the id field
-            const result = await this.db.collection('documents').findOne({ _id: ObjectId(id) })
+            // Query the users collection by the id field
+            const result = await this.db.collection('users').findOne({
+                _id: ObjectId(id)
+            })
             return result
         } catch (err) {
             console.error(err.stack)
@@ -20,34 +21,11 @@ class Document {
         }
     }
 
-    // Create a new document
-    async create(config) {
+    // Get a user by their email address
+    async getByEmail(email) {
         try {
-            const id = uuid.v4();
-
-            // Validate the input parameters
-            if (typeof config !== 'object') {
-                throw new Error(`Invalid config: ${config}`);
-            }
-
-            // Insert the new document into the documents collection
-            const result = await this.db.collection('documents').insertOne({ _id: id, config });
-
-            // Return the new document
-            return result;
-        } catch (error) {
-            console.error(error.stack);
-            throw error;
-        }
-    }
-
-    // Update a document
-    async update(id, config) {
-        try {
-            // Update the document in the documents collection
-            const result = await this.db.collection('documents').updateOne({ _id: ObjectId(id) }, { $set: { config } })
-
-            // Return the updated document
+            // Query the users collection by the email field
+            const result = await this.db.collection('users').findOne({ email })
             return result
         } catch (err) {
             console.error(err.stack)
@@ -55,22 +33,77 @@ class Document {
         }
     }
 
-    async findOrCreateById(id, config) {
+    // Create a new user
+    async create(data) {
+
+        const { firstname, email, password } = data;
+
         try {
-            // Try to find a document with the given id
-            const result = await this.db.collection('documents').findOne({ _id: ObjectId(id) })
+            // encrypt password
+            const salt = bcrypt.genSaltSync(15);
+            const hash = bcrypt.hashSync(password, salt);
 
-            // If a document was found, return it
-            if (result) {
-                return result;
-            }
+            // Insert the new user into the users collection
+            const result = await this.db.collection('users').insertOne({ email, firstname, password: hash })
+            const user = await this.db.collection('documents').findOne({
+                _id: result.insertedId
+            });
 
-            // If no document was found, create a new one with the given id and config
-            return this.create({ _id: id, config });
-        } catch (error) {
-            console.error(error.stack);
-            throw error;
+
+            // Return the new user document
+            return user
+        } catch (err) {
+            console.error(err.stack)
+            throw err
         }
     }
+
+    // Update a user by their email address
+    async updateByEmail(email, updates) {
+        try {
+            // Update the user in the users collection using the email field
+            const result = await this.db.collection('users').updateOne({ email }, { $set: updates })
+
+            // Return the number of updated documents
+            return result.modifiedCount
+        } catch (err) {
+            console.error(err.stack)
+            throw err
+        }
+    }
+
+    // Delete a user by their email address
+    async deleteByEmail(email) {
+        try {
+            // Delete the user from the users collection using the email field
+            const result = await this.db.collection('users').deleteOne({ email })
+
+            // Return the number of deleted documents
+            return result.deletedCount
+        } catch (err) {
+            console.error(err.stack)
+            throw err
+        }
+    }
+
+    // create a updateLanguage function
+    async updateLanguage(userId, language) {
+        try {
+            // Update the user in the users collection using the id
+            const result = await this.db.collection('users').updateOne({ _id: ObjectId(userId) }, { $set: { language } })
+
+            // Return the number of updated documents
+            return result.modifiedCount
+        } catch (err) {
+            console.error(err.stack)
+            throw err
+        }
+    }
+
+    comparePassword(password, hash) {
+        return bcrypt.compareSync(password, hash);
+    }
+
 }
-module.exports = Document
+
+module.exports = User
