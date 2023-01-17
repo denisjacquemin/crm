@@ -5,14 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Milo</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <script src="/js/nav.js" defer></script>
-    <script src="/js/tailwindcss/components.js" defer></script>
-    <script src="/js/vendor/alpine/alpine.3.10.5.min.js" defer></script>
-    {{#each scripts}}
-    <script src="{{script}}"></script>
-    {{/each}}
-    <script defer src="/js/helpers.js"></script>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+    <script src="/dist/bundle.js" defer></script>
+    <script src="/public/js/vendor/alpine/alpine.3.10.5.min.js" defer></script>
 </head>
 
 <body>

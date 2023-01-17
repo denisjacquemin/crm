@@ -14,17 +14,17 @@ const { redisClient, RedisStore } = require('./src/services/redis')
 
 
 const app = express();
-// app.use(helmet.contentSecurityPolicy({
-//     useDefaults: true,
-//     directives: {
-//         "script-src": ["'self'", process.env.DOMAIN, "'unsafe-eval'"],
-//         "style-src": ["'self'", process.env.DOMAIN, "'unsafe-inline'"]
-//     },
-// }));
+app.use(helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+        "script-src": ["'self'", process.env.DOMAIN, "'unsafe-eval'"],
+        "style-src": ["'self'", process.env.DOMAIN, "'unsafe-inline'"]
+    },
+}));
 
 
 
-var session = require('express-session')
+var session = require('express-session');
 let sessionMiddleware = session({
     name: process.env.CONNECT_SID_NAME,
     store: new RedisStore({ client: redisClient }),
@@ -40,10 +40,12 @@ let sessionMiddleware = session({
         expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
     }
 })
-
 app.use(sessionMiddleware)
-    // app.use(function(req, res, next) {
-    //     var tries = 3
+
+
+
+// app.use(function(req, res, next) {
+//     var tries = 3
 
 //     function lookupSession(error) {
 //         if (error) {
@@ -94,9 +96,6 @@ const { create } = require("express-handlebars");
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "/public")));
-app.use(express.static(path.join(__dirname, "/views/app")));
-
 app.use(i18Middleware.handle(i18next));
 
 app.get('/lang', (req, res) => {
@@ -143,6 +142,8 @@ app.use(function(req, res, next) {
 
 
 
+app.use('/dist', express.static(path.join(__dirname, "/dist")));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use("/", require("./src/middlewares/auth"));
 app.use("/", require("./src/middlewares/acl"));
@@ -189,6 +190,7 @@ app.use(function(err, req, res, next) {
     }
     res.status(500).render("error", { error: err });
 });
+
 
 mongo.run().then(() => {
     app.listen(process.env.PORT, () => {

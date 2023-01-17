@@ -35,6 +35,5 @@ module.exports = function(req, res, next) {
             res.locals.currentIndex = index;
         }
     });
-    res.locals.scripts = [{ script: '/js/language_dropdown.js' }];
     next();
 };

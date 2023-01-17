@@ -17,15 +17,16 @@ async function edit(req, res) {
     // Create a new User instance
     const documentService = new DocumentService(db);
 
-    // get or create invoice from MongoDB, usersid/invoices/invoiceId collection.
-    let document = await documentService.findOrCreateById(docId);
+    // get or create invoice from MongoDB, usersid/invoices/invoiceId collection, parameters the id and the current company id.
+    const result = await documentService.findOrCreateById(docId, req.session.current_company.id);
 
-    var scripts = [{ script: '/documents/edit.js' }];
+    // const result = await documentService.findOrCreateById(docId, );
+    const insertedDocument = await documentService.getById(result.insertedId);
+
     res.render("documents/edit", {
         layout: 'app',
-        scripts: scripts,
-        documentid: document._id,
-        config: document.config,
+        documentid: insertedDocument._id,
+        config: insertedDocument.config,
     });
 };
 

@@ -7,7 +7,8 @@ module.exports = async function(req, res, next) {
         "/preferences",
         "/preferences/changelang",
         "/test",
-        "/users/signup",
+        "/users/signup-1",
+        "/users/signup-2",
         "/users/signin",
         "/users/forgotpassword",
     ];
@@ -15,7 +16,7 @@ module.exports = async function(req, res, next) {
         next();
     } else {
         // Check that the current company id is present in the user's companies
-        if (req.session.current_company && req.session.user.companies.includes(req.session.current_company)) {
+        if (req.session.current_company._id && req.session.user.companies.includes(req.session.current_company._id)) {
             next();
         } else {
             res.sendFile(path.join(__dirname + '../../public/403.html'));

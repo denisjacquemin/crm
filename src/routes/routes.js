@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const globalController = require('../controllers/globalController');
-const userController = require('../controllers/userController');
+const userController = require('../controllers/usersController');
 const dashboardController = require('../controllers/dashboardController');
 const documentsController = require('../controllers/documentsController');
+// const companiesController = require('../controllers/companiesController');
+
 
 
 // render views/test.hbs template
@@ -13,8 +15,10 @@ router.get("/test", (req, res) => {
 
 router.post("/preferences/changelang", globalController.changeLang);
 
-router.get("/users/signup", userController.signup);
-router.post("/users/signup", userController.signupPost);
+router.get("/users/signup-1", userController.signup1);
+router.post("/users/signup-1", userController.signup1Post);
+router.get("/users/signup-2", userController.signup2);
+router.post("/users/signup-2", userController.signup2Post);
 router.get("/users/signin", userController.signin);
 router.post("/users/signin", userController.signinPost);
 router.get("/users/signout", userController.signout);
@@ -29,6 +33,8 @@ router.get("/documents", documentsController.index);
 
 router.get("/documents/new", documentsController.edit);
 router.get("/documents/edit/:id?", documentsController.edit);
+
+// router.get("/companies/new", companiesController.newCompany);
 
 
 module.exports = router;

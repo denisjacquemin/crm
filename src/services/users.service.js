@@ -4,7 +4,10 @@ const { ObjectId } = require('mongodb');
 class User {
     constructor(db) {
         // Store a reference to the database connection
-        this.db = db
+        this.db = db;
+        this.fields_white_list = ["fisrtname", "email",
+            "password", "companies", "language"
+        ];
     }
 
     // Get a user by their id
@@ -38,9 +41,19 @@ class User {
     // Create a new user
     async create(data) {
 
-        const { companies, firstname, email, password, language } = data;
 
         try {
+
+            // Check if all fields in data are in white list
+            const filteredData = Object.keys(data)
+                .filter(key => this.fields_white_list.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = data[key];
+                    return obj;
+                }, {});
+
+            const { companies, firstname, email, password, language } = filteredData;
+
             // encrypt password
             const salt = bcrypt.genSaltSync(15);
             const hash = bcrypt.hashSync(password, salt);
@@ -61,10 +74,18 @@ class User {
     }
 
     // Update a user by their email address
-    async updateByEmail(email, updates) {
+    async updateByEmail(email, data) {
         try {
+            // Check if all fields in data are in white list
+            const filteredData = Object.keys(data)
+                .filter(key => this.fields_white_list.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = data[key];
+                    return obj;
+                }, {});
+
             // Update the user in the users collection using the email field
-            const result = await this.db.collection('users').updateOne({ email }, { $set: updates })
+            const result = await this.db.collection('users').updateOne({ email }, { $set: filteredData })
 
             // Return the number of updated documents
             return result.modifiedCount
@@ -89,10 +110,10 @@ class User {
     }
 
     // create a updateLanguage function
-    async updateLanguage(userId, language) {
+    async updateLanguage(id, language) {
         try {
             // Update the user in the users collection using the id
-            const result = await this.db.collection('users').updateOne({ _id: ObjectId(userId) }, { $set: { language } })
+            const result = await this.db.collection('users').updateOne({ _id: ObjectId(id) }, { $set: { language } })
 
             // Return the number of updated documents
             return result.modifiedCount

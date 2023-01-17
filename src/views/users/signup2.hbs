@@ -1,0 +1,64 @@
+<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+  
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <h2 class="mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t 'signup.sign_up_to_your_account' }}</h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+        {{t 'signup.or' }}
+        <a href="/users/signin" class="font-medium text-indigo-600 hover:text-indigo-500">{{t 'signup.already_have_an_account' }}</a>
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <form class="space-y-6" action="/users/signup-2" method="POST">
+        
+        <div>
+          <label for="name">{{t 'signup.name' }}</label>
+          <div class="mt-1">
+            <input id="name" name="name" value="{{ session.signup.company.name }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="description">{{t 'signup.description' }}</label>
+          <div class="mt-1">
+            <input id="description" name="description" value="{{ session.signup.company.description }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="address">{{t 'signup.address' }}</label>
+          <div class="mt-1">
+            <input id="address" name="address" value="{{ session.signup.company.address }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="phone_number">{{t 'signup.phone_number' }}</label>
+          <div class="mt-1">
+            <input id="phone_number" name="phone_number" value="{{ session.signup.company.phone_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="email">{{t 'signup.email' }}</label>
+          <div class="mt-1">
+            <input id="email" name="email" value="{{ session.signup.company.email }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="website">{{t 'signup.website' }}</label>
+          <div class="mt-1">
+            <input id="website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">{{t 'signup.sign_up' }}</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

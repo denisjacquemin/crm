@@ -23,15 +23,16 @@ class Company {
     async create(data) {
         try {
             // Check if all fields in data are in white list
-            Object.keys(data).forEach((field) => {
-                if (!this.fields_white_list.includes(field)) {
-                    throw new Error(`Invalid field: ${field}`);
-                }
-            });
+            const filteredData = Object.keys(data)
+                .filter(key => this.fields_white_list.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = data[key];
+                    return obj;
+                }, {});
 
             // Insert the company in the companies collection with data parameter
             const result = await this.db.collection('companies').insertOne({
-                ...data
+                ...filteredData
             });
 
             const company = await this.db.collection('companies').findOne({
@@ -48,16 +49,16 @@ class Company {
 
     async update(id, data) {
         try {
-            delete data._id;
             // Check if all fields in data are in white list
-            Object.keys(data).forEach((field) => {
-                if (!this.fields_white_list.includes(field)) {
-                    throw new Error(`Invalid field: ${field}`);
-                }
-            });
+            const filteredData = Object.keys(data)
+                .filter(key => this.fields_white_list.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = data[key];
+                    return obj;
+                }, {});
 
             // Update the company in the companies collection
-            await this.db.collection('companies').updateOne({ _id: ObjectId(id) }, { $set: data });
+            await this.db.collection('companies').updateOne({ _id: ObjectId(id) }, { $set: filteredData });
 
             const company = await this.db.collection('companies').findOne({ _id: ObjectId(id) });
 

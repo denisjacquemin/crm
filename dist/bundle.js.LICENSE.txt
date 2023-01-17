@@ -1,0 +1,16 @@
+/*!
+ * See https://gomakethings.com/adding-items-to-an-object-at-a-specific-path-with-vanilla-js/
+ * Add items to an object at a specific path
+ * (c) 2021 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * @param  {Object}       obj  The object
+ * @param  {String|Array} path The path to assign the value to
+ * @param  {*}            val  The value to assign
+ * 
+ * Examples:
+ * var lunch = {};
+ * put(lunch, 'sandwich.toppings[]', 'mayo');
+ * put(lunch, 'sandwich.toppings[]', 'tomato');
+ * put(lunch, 'sides.chips', 'Cape Cod');
+ * put(lunch, 'sides.cookie', true);
+ * put(lunch, 'sides.drink', 'soda');
+ */

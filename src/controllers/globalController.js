@@ -31,15 +31,8 @@ async function changeLang(req, res) {
         await userService.updateLanguage(user._id, lang);
     }
 
-    // Update the session's language
-    req.session.lng = lang;
-
-    // Change the language
-    // req.i18n.changeLanguage(lang);
-
     // Set a flash message
     req.flash('notification', req.i18n.t('preferences.language_changed'));
-
 
     const referer = req.get('referer');
     const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lang}`) : `${referer}?lng=${lang}`;

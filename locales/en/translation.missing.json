@@ -20,7 +20,13 @@
   "signup": {
     "user_already_exists": "signup.user_already_exists",
     "password_confirmation": "signup.password_confirmation",
-    "firstname": "signup.firstname"
+    "firstname": "signup.firstname",
+    "name": "signup.name",
+    "description": "signup.description",
+    "address": "signup.address",
+    "phone_number": "signup.phone_number",
+    "email": "signup.email",
+    "website": "signup.website"
   },
   "forgot_password": {
     "email_subject": "forgot_password.email_subject",
