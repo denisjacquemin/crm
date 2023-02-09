@@ -1,0 +1,3 @@
+{{#each timezones}}
+  <option value="{{@selected_key}}" {{#if (eq @selected_key ../userTimezone)}}selected{{/if}}>{{this}}</option>
+{{/each}}

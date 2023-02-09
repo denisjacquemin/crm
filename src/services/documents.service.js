@@ -1,10 +1,10 @@
-const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongodb');
+const Service = require('./_service');
 
-class User {
+
+class User extends Service {
     constructor(db) {
-        // Store a reference to the database connection
-        this.db = db;
+        super(db);
         this.fields_white_list = ["fisrtname", "email",
             "password", "companies", "language"
         ];
@@ -37,91 +37,7 @@ class User {
     }
 
     // Create a new user
-    async create(data) {
 
-        try {
-            // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
-
-            const { firstname, email, password } = filteredData;
-
-            // encrypt password
-            const salt = bcrypt.genSaltSync(15);
-            const hash = bcrypt.hashSync(password, salt);
-
-            // Insert the new user into the users collection
-            const result = await this.db.collection('users').insertOne({ email, firstname, password: hash })
-            const user = await this.db.collection('documents').findOne({
-                _id: result.insertedId
-            });
-
-
-            // Return the new user document
-            return user
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
-    }
-
-    // Update a user by their email address
-    async updateByEmail(email, data) {
-        try {
-            // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
-
-            // Update the user in the users collection using the email field
-            const result = await this.db.collection('users').updateOne({ email }, { $set: filteredData })
-
-            // Return the number of updated documents
-            return result.modifiedCount
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
-    }
-
-    // Delete a user by their email address
-    async deleteByEmail(email) {
-        try {
-            // Delete the user from the users collection using the email field
-            const result = await this.db.collection('users').deleteOne({ email })
-
-            // Return the number of deleted documents
-            return result.deletedCount
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
-    }
-
-    // create a updateLanguage function
-    async updateLanguage(id, language) {
-        try {
-            // Update the user in the users collection using the id
-            const result = await this.db.collection('users').updateOne({ _id: ObjectId(id) }, { $set: { language } })
-
-            // Return the number of updated documents
-            return result.modifiedCount
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
-    }
-
-    comparePassword(password, hash) {
-        return bcrypt.compareSync(password, hash);
-    }
 
 }
 

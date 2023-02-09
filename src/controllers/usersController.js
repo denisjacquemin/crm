@@ -1,21 +1,24 @@
-const { get } = require('../services/mongo');
+const {get, startSession } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
-const transport = require('../services/mailer');
 const crypto = require('crypto');
 const validator = require('validator');
+const Mailer = require('./utils/mailer');
+const moment = require('moment-timezone');
+const { ObjectId } = require('mongodb');
+const { prototype } = require('events');
+
+
 
 
 async function signup1(req, res, next) {
     // Check if the user is already authenticated
     if (req.session.isAuth) {
-        // If the user is already authenticated, set a flash message and redirect to the app page
-        req.flash('messages', req.i18n.t('signin.already_authenticated'));
+        // If the user is already authenticated, redirect to the app page
         return res.redirect('/app');
     }
 
     try {
-        // Render the signup page
         res.render("users/signup1");
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
@@ -26,26 +29,69 @@ async function signup1(req, res, next) {
 
 
 async function signup1Post(req, res, next) {
-    // Destructure the email, password, and passwordConfirmation fields from the request body
-    const { firstname, email, password, passwordConfirmation } = req.body;
+    // Check if the user is already authenticated
+    if (req.session.isAuth) {
+        // If the user is already authenticated, set a flash message and redirect to the app page
+        return res.redirect('/app');
+    }
+
+    // Destructure the crm-email, crm-password, and firstname fields from the request body
+    const { firstname, 'crm-email': crmEmail, 'crm-password': crmPassword } = req.body;
 
     // Trim the whitespace from the email, password, and passwordConfirmation fields
     const trimmedFirstname = firstname && firstname.trim();
-    const trimmedEmail = email && email.trim();
-    const trimmedPassword = password && password.trim();
-    const trimmedPasswordConfirmation = passwordConfirmation && passwordConfirmation.trim();
+    const trimmedEmail = crmEmail && crmEmail.trim();
+    const trimmedPassword = crmPassword && crmPassword.trim();
 
-    // Check if any of the required fields are empty
-    if (!trimmedFirstname || !trimmedEmail || !trimmedPassword || !trimmedPasswordConfirmation) {
-        // If any of the fields are empty, render the signup page again with an error message
-        return res.render('users/signup1', { notification: { type: 'error', message: req.i18n.t('signup.all_fields_required') } })
+    req.session.signup = req.session.signup || {};
+    req.session.signup.user = {
+        firstname: trimmedFirstname,
+        email: trimmedEmail,
+        password: trimmedPassword
     }
 
-    // Check if the password and password confirmation fields match
-    if (trimmedPassword !== trimmedPasswordConfirmation) {
-        // If the passwords do not match, render the signup page again with an error message
+    // Check if any of the required fields are empty
+    if (!trimmedFirstname || !trimmedEmail || !trimmedPassword) {
+        // If any of the fields are empty, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signup.all_fields_required')
+        });
+
         return res.render('users/signup1', {
-            notification: { type: 'error', message: req.i18n.t('signup.passwords_do_not_match') }
+            notifications: req.flash()
+        })
+    }
+
+    // Check if the email is valid
+    if (!validator.isEmail(trimmedEmail)) {
+        // If the email is not valid, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('forgot_password.email_invalid'),
+            submessage: req.i18n.t('forgot_password.email_invalid_sub')
+        });
+
+        return res.render('users/signup1', {
+            notifications: req.flash()
+        })
+    }
+
+    // check if password is strong, customize isStrongPassword() to your needs
+    if (!validator.isStrongPassword(trimmedPassword, {
+            minLength: process.env.PASSWORD_MIN_LENGTH,
+            minLowercase: process.env.PASSWORD_MIN_LOWERCASE,
+            minUppercase: process.env.PASSWORD_MIN_UPPERCASE,
+            minNumbers: process.env.PASSWORD_MIN_NUMBERS,
+            minSymbols: process.env.PASSWORD_MIN_SYMBOLS,
+            returnScore: false
+        })) {
+        // If the password is not strong enough, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signup.password_not_strong_enough'),
+            submessage: req.i18n.t('signup.password_not_strong_enough_sub')
+        });
+
+        return res.render('users/signup1', {
+            notifications: req.flash()
         })
     }
 
@@ -56,35 +102,40 @@ async function signup1Post(req, res, next) {
     const userService = new UserService(db);
 
     // Check if a user already exists with the given email address
-    const user = await userService.getByEmail(trimmedEmail);
-    if (user) {
+    const userExist = await userService.existsByEmail(trimmedEmail);
+    if (userExist) {
         // If a user already exists, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signup.user_already_exists')
+        });
+
+        // return res.render('users/signup1', {
+        //     notifications: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
+        // })
         return res.render('users/signup1', {
-            notification: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
+            notifications: req.flash()
         })
     }
 
     // Create a new user with the given email and password
     // const newUser = await userService.create(trimmedEmail, trimmedPassword);
 
-    // Set the isAuth, email, and timestamps fields on the user's session
-    req.session.signup = req.session.signup || {};
-    req.session.signup.user = {
-        firstname: trimmedFirstname,
-        email: trimmedEmail,
-        password: trimmedPassword,
-    }
-
-    // Redirect the user to the new company page
+    // Go to signup2 - new company page
     res.redirect('/users/signup-2');
+    // res.render('users/signup2');
+
 };
 
 async function signup2(req, res, next) {
     // Check if the user is already authenticated
     if (req.session.isAuth) {
         // If the user is already authenticated, set a flash message and redirect to the app page
-        req.flash('messages', req.i18n.t('signin.already_authenticated'));
         return res.redirect('/app');
+    }
+
+    // req.session.signup or req.session.signup.user are empty, redirect to signup1
+    if (!req.session.signup || !req.session.signup.user) {
+        return res.redirect('/users/signup-1');
     }
 
     try {
@@ -98,6 +149,12 @@ async function signup2(req, res, next) {
 }
 
 async function signup2Post(req, res, next) {
+    // Check if the user is already authenticated
+    if (req.session.isAuth) {
+        // If the user is already authenticated, set a flash message and redirect to the app page
+        return res.redirect('/app');
+    }
+
     // Destructure company fields: name, description, address, phone_number, email, website
     const {
         name,
@@ -117,6 +174,7 @@ async function signup2Post(req, res, next) {
     const trimmedWebsite = website && website.trim();
 
     // put the company fields into session.signup.company
+    req.session.signup = req.session.signup || {};
     req.session.signup.company = {
         name: trimmedName,
         description: trimmedDescription,
@@ -129,44 +187,76 @@ async function signup2Post(req, res, next) {
     // Check if any of the required fields are empty
     if (!trimmedName) {
         // If any of the fields are empty, render the signup page again with an error message
-        return res.render('users/signup2', { notification: { type: 'error', message: req.i18n.t('signup.all_fields_required') } })
+        req.flash('error', {
+            message: req.i18n.t('signup2.name_required')
+        });
+
+        return res.render('users/signup2', { notifications: req.flash() })
     }
 
     // Get a reference to the MongoDB database
     const db = get();
 
-    // Create a new Company instance
+    const userService = new UserService(db);
     const companyService = new CompanyService(db);
 
-    // Create a new company with the given name, description, address, phone_number, email, and website
-    const company = {
-        name: trimmedName,
-        description: trimmedDescription,
-        address: trimmedAddress,
-        phone_number: trimmedPhoneNumber,
-        email: trimmedEmail,
-        website: trimmedWebsite,
+    // Check if a user already exists with the given email address
+    const userExist = await userService.existsByEmail(req.session.signup.user.email);
+    if (userExist) {
+        // If a user already exists, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signup.user_already_exists')
+        });
+
+        // return res.render('users/signup1', {
+        //     notifications: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
+        // })
+        return res.redirect('/users/signup1');
     }
 
-    const newCompany = await companyService.create(company);
+    // Start a transaction
+    const session = startSession();
+    session.startTransaction();
 
-    // add company id to current user
-    const userService = new UserService(db);
+    let newUser = null;
+    let newCompany = null;
 
-    // Get the current user in session.signup
-    const user = req.session.signup.user;
-    user.language = req.i18n.language;
+    try {
+        // Generate ObjectId for the user and the company
+        const userId = new ObjectId();
+        const companyId = new ObjectId();
 
-    // add company id to user companies array
-    user.companies = user.companies || [];
-    user.companies.push(newCompany._id);
+        // Get the current user in session.signup
+        const user = req.session.signup.user;
+        user._id = userId;
+        user.language = req.i18n.language;
+        user.companies = [companyId];
+        user.timezone = moment.tz.guess();
 
-    // create user
-    const newUser = await userService.create(user);
+        // Create the user
+        await userService.create(user, { session });
 
-    newCompany.users = newCompany.users || [];
-    newCompany.users.push(newUser._id);
-    companyService.update(newCompany._id, newCompany);
+        // Get the company
+        const company = req.session.signup.company;
+        company._id = companyId;
+        company.users = [userId];
+
+        // Create the company
+        await companyService.create(company, { session });
+
+        // Commit the transaction
+        await session.commitTransaction();
+
+        newUser = user;
+        newCompany = company;
+    } catch (err) {
+        // If there's an error, abort the transaction and throw an error
+        await session.abortTransaction();
+        return next(err);
+    } finally {
+        // End the session
+        session.endSession();
+    }
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
@@ -183,13 +273,12 @@ async function signin(req, res, next) {
     // Check if the user is already authenticated
     if (req.session.isAuth) {
         // If the user is already authenticated, set a flash message and redirect to the app page
-        req.flash('messages', req.i18n.t('signin.already_authenticated'));
         return res.redirect('/app');
     }
 
     try {
         // Render the signin page
-        res.render("users/signin", {});
+        res.render("users/signin");
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
         console.error(`Error in userController.signin `, err.message);
@@ -199,19 +288,49 @@ async function signin(req, res, next) {
 
 async function signinPost(req, res, next) {
 
-    // Destructure the email and password fields from the request body
-    const { email, password } = req.body;
+    // Check if the user is already authenticated
+    if (req.session.isAuth) {
+        // If the user is already authenticated, set a flash message and redirect to the app page
+        return res.redirect('/app');
+    }
+
+    // Destructure the crm-email and crm-password fields   
+    const { 'crm-email': crmEmail, 'crm-password': crmPassword } = req.body;
+
 
     // Trim the whitespace from the email and password fields
-    const trimmedEmail = email && email.trim();
-    const trimmedPassword = password && password.trim();
+    const trimmedEmail = crmEmail && crmEmail.trim();
+    const trimmedPassword = crmPassword && crmPassword.trim();
+
+    req.session.signin = req.session.signin || {};
+    req.session.signin.user = {
+        email: trimmedEmail,
+        password: trimmedPassword
+    }
 
     // Check if any of the required fields are empty
     if (!trimmedEmail || !trimmedPassword) {
         // If any of the fields are empty, render the signin page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signin.all_fields_require')
+        });
+
         return res.render('users/signin', {
-            notification: { type: 'error', message: req.i18n.t('signin.all_fields_required') }
+            notifications: req.flash()
         })
+    }
+
+    // Check if the email is valid
+    if (!validator.isEmail(trimmedEmail)) {
+        // If the email is not valid, render the signup page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('forgot_password.email_invalid'),
+            submessage: req.i18n.t('forgot_password.email_invalid_sub')
+        });
+
+        return res.render('users/signin', {
+            notifications: req.flash()
+        });
     }
 
     // Get a reference to the MongoDB database
@@ -223,19 +342,28 @@ async function signinPost(req, res, next) {
     // Check if a user exists with the given email address
     const user = await userService.getByEmail(trimmedEmail);
     if (!user) {
+        req.flash('error', {
+            message: req.i18n.t('signin.email_or_password_invalid'),
+        });
+
         // If a user does not exist, render the signin page again with an error message
         return res.render('users/signin', {
-            notification: { type: 'error', message: req.i18n.t('signin.user_does_not_exist') }
+            notifications: req.flash()
         })
     }
 
     // Check if the given password matches the user's password
     const isMatch = await userService.comparePassword(trimmedPassword, user.password);
     if (!isMatch) {
+
         // If the passwords do not match, render the signin page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('signin.email_or_password_invalid'),
+        });
+
         return res.render('users/signin', {
-            notification: { type: 'error', message: req.i18n.t('signin.email_or_password_invalid') }
-        })
+            notifications: req.flash()
+        });
     }
 
     // get company by user.companies[0]
@@ -248,6 +376,8 @@ async function signinPost(req, res, next) {
     req.session.user = user
     req.session.timestamps = []
 
+    delete req.session.signin
+
     // Redirect the user to the app page
     res.redirect(req.session.returnTo || '/');
 }
@@ -255,8 +385,7 @@ async function signinPost(req, res, next) {
 async function signout(req, res, next) {
     // Check if the user is authenticated
     if (!req.session.isAuth) {
-        // If the user is not authenticated, set a flash message and redirect to the signin page
-        req.flash('messages', req.i18n.t('signout.not_authenticated'));
+        // If the user is not authenticated, redirect to the signin pages
         return res.redirect('/users/signin');
     }
 
@@ -276,8 +405,8 @@ async function signout(req, res, next) {
 async function forgotPassword(req, res, next) {
     // Check if the user is already authenticated
     if (req.session.isAuth) {
-        // If the user is already authenticated, set a flash message and redirect to the app page
-        req.flash('messages', req.i18n.t('forgot_password.already_authenticated'));
+
+        // If the user is already authenticated, redirect to the app page
         return res.redirect('/app');
     }
 
@@ -301,13 +430,26 @@ async function forgotPasswordPost(req, res, next) {
     // Check if the email field is empty
     if (!trimmedEmail) {
         // If the email field is empty, render the forgot password page again with an error message
-        return res.render('users/forgot-password', { type: 'error', message: req.i18n.t('forgot_password.email_required') })
+        req.flash('error', {
+            message: req.i18n.t('forgot_password.email_required'),
+        });
+
+        return res.render('users/forgot-password', {
+            notifications: req.flash()
+        })
     }
 
     // Check if email is valid
     if (!validator.isEmail(trimmedEmail)) {
         // If the email is not valid, render the forgot password page again with an error message
-        return res.render('users/forgot-password', { type: 'error', message: req.i18n.t('forgot_password.email_invalid') })
+        req.flash('error', {
+            message: req.i18n.t('forgot_password.email_invalid'),
+            submessage: req.i18n.t('forgot_password.email_invalid_sub')
+        });
+
+        return res.render('users/forgot-password', {
+            notifications: req.flash()
+        })
     }
 
     // Get a reference to the MongoDB database
@@ -320,7 +462,13 @@ async function forgotPasswordPost(req, res, next) {
     const user = await userService.getByEmail(trimmedEmail);
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
-        return res.render('users/forgot-password', { type: 'error', message: req.i18n.t('forgot_password.user_does_not_exist') })
+        req.flash('error', {
+            message: req.i18n.t('forgot_password.user_does_not_exist'),
+        });
+
+        return res.render('users/forgot-password', {
+            notifications: req.flash()
+        });
     }
 
     // Generate a random token
@@ -330,49 +478,213 @@ async function forgotPasswordPost(req, res, next) {
     await userService.updateByEmail(user.email, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 });
 
 
-    const html = `
-  <p>${req.i18n.t('forgot_password.email_content.hi_name', { name: user.name })}</p>
-  <p>${req.i18n.t('forgot_password.email_content.password_reset_request')}</p>
-  <p><a href="${ process.env.HOST }/reset-password/${ token }">${req.i18n.t('forgot_password.email_content.reset_password_link')}</a></p>
-  <p>${req.i18n.t('forgot_password.email_content.password_unchanged')}</p>
-  <p>${req.i18n.t('forgot_password.email_content.thanks')}</p>
-`;
-
-    const text = `
-${req.i18n.t('forgot_password.email_content.hi_name', { name: user.name })}
-
-${req.i18n.t('forgot_password.email_content.password_reset_request')}
-
-${process.env.HOST}/reset-password/${token}
-
-${req.i18n.t('forgot_password.email_content.password_unchanged')}
-
-${req.i18n.t('forgot_password.email_content.thanks')}
-  `
-        // Send an email to the user with a link to reset their password
-        // define the email options
-    const mailOptions = {
-        from: process.env.DEFAULT_SENDER_EMAIL,
-        to: user.email,
-        subject: req.i18n.t('forgot_password.email_subject'),
-        charset: 'utf-8',
-        text: text,
-        html: html
-    }
-
-    // send the email
-    try {
-        const info = await transport.sendMail(mailOptions);
-        console.log(`Email sent: ${info.response}`);
-    } catch (err) {
-        console.error(`Error in userController.forgotPasswordPost `, err.message);
-        next(err);
-    }
+    await Mailer.sendForgotPasswordMessage(req, user, token, next);
 
     // Set a flash message and redirect to the signin page
-    req.flash('messages', req.i18n.t('forgot_password.email_sent'));
-    res.redirect('/users/signin');
+    req.flash('info', {
+        'message': req.i18n.t('forgot_password.email_sent')
+    });
+
+    res.redirect('/users/resetpasswordsent');
 }
+
+// function resetPasswordSent
+
+async function resetPasswordSent(req, res, next) {
+    // Check if the user is already authenticated
+    if (req.session.isAuth) {
+
+        // If the user is already authenticated, redirect to the app page
+        return res.redirect('/app');
+    }
+
+    try {
+        // Render the reset password sent page
+        res.render("users/reset-password-sent", {});
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.resetPasswordSent `, err.message);
+        next(err);
+    }
+}
+
+
+
+async function resetPassword(req, res, next) {
+    // Destructure the token field from the request body
+    const { token } = req.params;
+
+    // Check if the token field is empty
+    if (!token) {
+        req.flash('error', {
+            message: req.i18n.t('reset_password.user_does_not_exist'),
+            submessage: req.i18n.t('reset_password.request_new_token')
+        });
+        return res.redirect('/users/forgotpassword');
+    }
+
+    req.session.resetpassword = req.session.resetpassword || {};
+    req.session.resetpassword = {
+        token: token
+    }
+
+    // Get a reference to the MongoDB database
+    const db = get();
+
+    // Create a new User instance
+    const userService = new UserService(db);
+
+    // Check if a user exists with the given token
+    const user = await userService.getByResetPasswordToken(token);
+    if (!user) {
+        // If a user does not exist, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.user_does_not_exist'),
+            submessage: req.i18n.t('reset_password.request_new_token')
+        });
+        return res.redirect('/users/forgotpassword');
+    }
+
+    // test if the token has expired
+    if (user.resetPasswordExpires < Date.now()) {
+        // If the reset password token has expired, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.token_expired'),
+            // include date in submessage
+
+            // submessage: req.i18n.t(‘reset_password.token_expired_sub’, { date: moment(user.resetPasswordExpires).format(‘DD / MM / YYYY HH: mm’) })
+        });
+
+        return res.redirect('/users/forgotpassword');
+    }
+
+
+
+
+
+
+    // Check if the reset password token has expired
+    if (user.resetPasswordExpires < Date.now()) {
+        // If the reset password token has expired, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.token_expired'),
+            submessage: req.i18n.t('reset_password.request_new_token')
+        });
+
+        return res.redirect('/users/forgotpassword');
+    }
+
+    // Render the reset password page
+    res.render("users/reset-password");
+}
+
+// function restePasswordPost
+
+async function resetPasswordPost(req, res, next) {
+    // Destructure the token field from the request body
+
+    // Destructure the password and confirmPassword fields from the request body
+    const { token, password, confirmPassword } = req.body;
+
+    // Trim the whitespace from the password and confirmPassword fields
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    req.session.resetpassword = req.session.resetpassword || {};
+    req.session.resetpassword = {
+        token: token,
+        password: trimmedPassword,
+        confirmPassword: trimmedConfirmPassword
+    }
+
+    // Check if the password field is empty
+    if (!trimmedPassword) {
+        // If the password field is empty, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.password_required'),
+        });
+
+        return res.render('users/reset-password', {
+            token,
+            notifications: req.flash()
+        })
+    }
+
+    // Check if the confirmPassword field is empty
+    if (!trimmedConfirmPassword) {
+        // If the confirmPassword field is empty, render the reset password page again with an error message    
+        req.flash('error', {
+            message: req.i18n.t('reset_password.confirm_password_required'),
+        });
+
+        return res.render('users/reset-password', {
+            token,
+            notifications: req.flash()
+        })
+    }
+
+    // Check if the password and confirmPassword fields match
+    if (trimmedPassword !== trimmedConfirmPassword) {
+        // If the password and confirmPassword fields do not match, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.passwords_do_not_match'),
+        });
+
+        return res.render('users/reset-password', {
+            token,
+            notifications: req.flash()
+        })
+    }
+
+    // Get a reference to the MongoDB database
+    const db = get();
+
+
+    // Create a new User instance
+    const userService = new UserService(db);
+
+    // Check if a user exists with the given token
+    const user = await userService.getByResetPasswordToken(token);
+    if (!user) {
+        // If a user does not exist, render the reset password page again with an error message
+        req.flash('error', {
+            message: req.i18n.t('reset_password.user_does_not_exist'),
+            submessage: req.i18n.t('reset_password.request_new_token')
+        });
+        return res.redirect('/users/forgotpassword');
+    }
+
+    // Check if the reset password token has expired
+    if (user.resetPasswordExpires < Date.now()) {
+        // If the reset password token has expired, render the reset password page again with an error message  
+        req.flash('error', {
+            message: req.i18n.t('reset_password.token_expired'),
+            submessage: req.i18n.t('reset_password.request_new_token')
+        });
+
+        return res.redirect('/users/forgotpassword');
+    }
+
+    // Hash the password
+    const hashedPassword = await userService.hashPassword(trimmedPassword);
+
+    // Update the user's password and reset password token
+    await userService.updateBy('user_id', user._id, {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null
+    });
+
+    req.flash('info', {
+        message: req.i18n.t('reset_password.password_updated'),
+        submessage: req.i18n.t('reset_password.please_sign_in')
+    });
+
+    res.redirect("users/signin");
+}
+
+
+
 
 
 module.exports = {
@@ -384,5 +696,8 @@ module.exports = {
     signinPost,
     signout,
     forgotPassword,
-    forgotPasswordPost
+    forgotPasswordPost,
+    resetPassword,
+    resetPasswordPost,
+    resetPasswordSent
 };

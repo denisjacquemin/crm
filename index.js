@@ -9,8 +9,8 @@ const helmet = require("helmet");
 
 const express = require("express");
 const path = require("path");
-const mongo = require("./src/services/mongo");
-const { redisClient, RedisStore } = require('./src/services/redis')
+const mongo = require("./src/services/lib/mongo");
+const { redisClient, RedisStore } = require('./src/services/lib/redis')
 
 
 const app = express();
@@ -37,50 +37,25 @@ let sessionMiddleware = session({
         domain: process.env.DOMAIN,
         path: '/',
         sameSite: 'strict',
-        expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+        //expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+        maxAge: 60 * 60 * 1000 // 1 hour
     }
 })
 app.use(sessionMiddleware)
-
-
-
-// app.use(function(req, res, next) {
-//     var tries = 3
-
-//     function lookupSession(error) {
-//         if (error) {
-//             return next(error)
-//         }
-
-//         tries -= 1
-
-//         if (req.session !== undefined) {
-//             return next()
-//         }
-
-//         if (tries < 0) {
-//             return next(new Error('oh no'))
-//         }
-
-//         sessionMiddleware(req, res, lookupSession)
-//     }
-
-//     lookupSession()
-// })
-
 app.use(flash())
 
 i18next.use(i18nBackend)
     .use(i18Middleware.LanguageDetector)
     .init({
+        partialBundledLanguages: true,
+        // ns: ['translation', 'translated_by_hand'],
+        // defaultNS: 'translation',
         detection: {
             lookupCookie: 'lng',
             caches: ['cookie']
         },
         backend: {
-            // eslint-disable-next-line no-path-concat
-            loadPath: __dirname + '/locales/{{lng}}/{{ns}}.json',
-            // eslint-disable-next-line no-path-concat
+            loadPath: `${__dirname}/locales/{{lng}}/translation.json`,
             addPath: __dirname + '/locales/{{lng}}/{{ns}}.missing.json'
         },
         fallbackLng: 'en',
@@ -117,11 +92,28 @@ const hbs = create({
         json: function(context) {
             return JSON.stringify(context);
         },
-        add: function(variable, addend) {;
+        stringify: function(context) {
+            return JSON.stringify(context);
+        },
+        parse: function(context) {
+            return JSON.parse(context);
+        },
+        add: function(variable, addend) {
             return variable + addend;
         },
         ifEquals: function(arg1, arg2, options) {
             return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        },
+        switch: function(value, options) {
+            this.switch_value = value;
+            this.switch_break = false;
+            return options.fn(this);
+        },
+        case: function(value, options) {
+            if (value == this.switch_value || (value == 'default' && this.switch_break == false)) {
+                this.switch_break = true;
+                return options.fn(this);
+            }
         }
     },
 });
@@ -131,6 +123,7 @@ app.set("views", path.join(__dirname, "/src/views"));
 
 // make req.session available in templates
 app.use(function(req, res, next) {
+    res.locals.notifications = req.flash();
     res.locals.session = req.session;
     next();
 });
@@ -186,8 +179,10 @@ app.use("/", require("./src/routes/routes"));
 // handling errors
 app.use(function(err, req, res, next) {
     if (res.headersSent) {
+        console.log("headers sent", res.headersSent);
         return next(err);
     }
+    console.error(err);
     res.status(500).render("error", { error: err });
 });
 

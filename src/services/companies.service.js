@@ -1,34 +1,22 @@
 const { ObjectId } = require('mongodb');
+const Service = require('./_service');
 
-class Company {
+class Company extends Service {
     constructor(db) {
-        this.db = db;
-        this.fields_white_list = ["name", "description",
+        super(db);
+        this.fields_white_list = ["_id", "name", "description",
             "address", "phone_number", "email", "website", "users"
         ];
     }
 
-    async getById(id) {
-        try {
-            // Query the companies collection by the id field
-            return await this.db.collection('companies').findOne({
-                _id: ObjectId(id)
-            })
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
+    async getUserById(id) {
+        return this.getById("companies", id);
     }
 
     async create(data) {
         try {
             // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
+            const filteredData = this.filterWhiteListedFields(data);
 
             // Insert the company in the companies collection with data parameter
             const result = await this.db.collection('companies').insertOne({
@@ -50,12 +38,7 @@ class Company {
     async update(id, data) {
         try {
             // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
+            const filteredData = this.filterWhiteListedFields(data);
 
             // Update the company in the companies collection
             await this.db.collection('companies').updateOne({ _id: ObjectId(id) }, { $set: filteredData });
@@ -72,10 +55,6 @@ class Company {
 
     async findOrCreateById(currentCompanyId, id) {
         try {
-            // Check if the passed id matches the id of the current company
-            if (currentCompanyId !== id) {
-                throw new Error('Unauthorized access to company');
-            }
             // if id is not undefined or null or invalid skip the findOne query
             if (id) {
                 // Try to find a company
@@ -92,5 +71,7 @@ class Company {
             throw error;
         }
     }
+
+
 }
 module.exports = Company

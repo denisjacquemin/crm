@@ -1,4 +1,4 @@
-const { get } = require('../services/mongo');
+const { get } = require('../services/lib/mongo');
 const DocumentService = require('../services/documents.service');
 
 

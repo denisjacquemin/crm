@@ -1,4 +1,4 @@
-const { get } = require('../services/mongo');
+const { get } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
 const validator = require('validator');
 
@@ -30,9 +30,6 @@ async function changeLang(req, res) {
         // Update the user's language in db
         await userService.updateLanguage(user._id, lang);
     }
-
-    // Set a flash message
-    req.flash('notification', req.i18n.t('preferences.language_changed'));
 
     const referer = req.get('referer');
     const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lang}`) : `${referer}?lng=${lang}`;

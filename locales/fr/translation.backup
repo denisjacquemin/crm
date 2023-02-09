@@ -1,7 +1,7 @@
 {
-    "do_not_translate": {
-        "languages": [
-            {
+    "common": {
+        "unknown_error": "Erreur inconnue",
+        "languages": [{
                 "id": "1",
                 "name": "English / Anglais",
                 "code_dnt": "en"
@@ -26,11 +26,8 @@
                 "name": "Русский / Russe",
                 "code_dnt": "ru"
             }
-        ]
-    },
-    "common": {
-        "unknown_error": "Erreur inconnue",
-        "loading_button": "Chargement...",
+        ],
+        "loading_button": "Chargement..",
         "language_changed": "La langue a été changée"
     },
     "nav": {
@@ -43,10 +40,10 @@
         "sign_in_to_your_account": "Connectez-vous à votre compte",
         "or": "Ou",
         "no_account_yet": "Inscrivez-vous si vous n’avez pas encore de compte",
-        "email": "Email",
+        "email": "Messagerie électronique",
         "password": "Mot de passe",
-        "remember_me": "Se souvenir de moi",
-        "forgot_password": "Mot de passe oublié ?",
+        "remember_me": "Souvenez-vous de moi",
+        "forgot_password": "Vous avez oublié votre mot de passe ?",
         "or_continue_with": "Ou continuez avec",
         "sign_in": "Connexion",
         "all_fields_required": "L’adresse e-mail et le mot de passe sont requis",
@@ -68,10 +65,11 @@
     },
     "signup2": {
         "create_company": "Créer une nouvelle entreprise",
+        "name": "Nom",
         "description": "Description",
         "address": "Adresse",
         "phone_number": "Numéro de téléphone",
-        "email": "Email",
+        "email": "Messagerie électronique",
         "website": "Site internet",
         "name_required": "Le nom de l’entreprise est obligatoire"
     },
@@ -82,15 +80,10 @@
         "next": "Prochain"
     },
     "forgot_password": {
-        "reset_your_password": "Réinitialiser votre mot de passe",
-        "instructions": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
-        "send_an_email": "Envoyez-moi des instructions par Email",
         "email_subject": "Réinitialiser votre mot de passe",
         "email_sent": "Un e-mail a été envoyé",
         "email_invalid": "L’adresse e-mail n’est pas valide",
-        "email_required": "Le champ Email est obligatoire",
-        "email_invalid_sub": "Il doit contenir les symboles '@' et '.' , tels que exemple@email.com",
-        "user_does_not_exist": "Nous ne trouvons pas d’utilisateur avec cette adresse e-mail",
+        "email_invalid_sub": "Il doit contenir les symboles '@' et '.' , tels que example@email.com",
         "email_content": {
             "hi_name": "Bonjour {{name}},",
             "password_reset_request": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte. Si vous avez fait cette demande, veuillez cliquer sur le lien ci-dessous pour définir un nouveau mot de passe.",
@@ -98,13 +91,5 @@
             "password_unchanged": "Si vous n’avez pas fait cette demande, vous pouvez ignorer cet e-mail et votre mot de passe restera inchangé.",
             "thanks": "Merci"
         }
-    },
-    "reset_password": {
-        "user_does_not_exist": "Compte introuvable",
-        "request_new_token": "Veuillez réessayer",
-        "token_expired": "Votre demande a expiré"
-    },
-    "reset_password_sent": {
-        "title": "Nous vous avons envoyé un lien de réinitialisation de mot de passe"
     }
 }

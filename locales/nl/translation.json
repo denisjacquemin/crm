@@ -1,0 +1,94 @@
+{
+    "do_not_translate": {
+        "languages": [{
+                "id": 1,
+                "name": "English / Engels",
+                "code_dnt": "en"
+            },
+            {
+                "id": 2,
+                "name": "Español / Spaans",
+                "code_dnt": "es"
+            },
+            {
+                "id": 3,
+                "name": "Français / Frans",
+                "code_dnt": "fr"
+            },
+            {
+                "id": 4,
+                "name": "Nederlands",
+                "code_dnt": "nl"
+            },
+            {
+                "id": 5,
+                "name": "Русский / Russisch",
+                "code_dnt": "ru"
+            }
+        ]
+    },
+    "common": {
+        "unknown_error": "Onbekende fout",
+        "loading_button": "Laden...",
+        "language_changed": "Taal is gewijzigd"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "invoices": "Facturen",
+        "clients": "Cliënten",
+        "tickets": "Tickets"
+    },
+    "signin": {
+        "sign_in_to_your_account": "Meld u aan bij uw account",
+        "no_account_yet": "meld je aan als je nog geen account hebt",
+        "email": "E-mail",
+        "password": "Wachtwoord",
+        "remember_me": "Onthoud mij",
+        "forgot_password": "Wachtwoord vergeten?",
+        "or_continue_with": "Of ga verder met",
+        "sign_in": "Aanmelden",
+        "all_fields_required": "E-mailadres en wachtwoord zijn vereist",
+        "email_or_password_invalid": "E-mailadres of wachtwoord ongeldig",
+        "password_and_password_confirmation_must_match": "Wachtwoord en wachtwoordbevestiging moeten overeenkomen",
+        "already_authenticated": "Al geverifieerd",
+        "not_authenticated": "Gelieve te authenticeren voordat u doorgaat"
+    },
+    "signup": {
+        "sign_up_to_your_account": "Meld u aan voor uw account",
+        "firstname": "Voornaam",
+        "already_have_an_account": "log in als je al een account hebt",
+        "password_confirmation": "Wachtwoord bevestiging",
+        "sign_up": "Inschrijven",
+        "all_fields_required": "Voornaam, e-mailadres, wachtwoord en wachtwoordbevestiging zijn vereist",
+        "user_already_exists": "Gebruiker met hetzelfde e-mailadres bestaat al",
+        "passwords_do_not_match": "Wachtwoord en wachtwoordbevestiging komen niet overeen"
+    },
+    "signup2": {
+        "create_company": "Een nieuw bedrijf maken",
+        "description": "Beschrijving",
+        "address": "Adres",
+        "phone_number": "Telefoonnummer",
+        "email": "E-mail",
+        "website": "Website",
+        "name_required": "De naam van het bedrijf is vereist"
+    },
+    "companies": {
+        "create_new_company": "Creëer een nieuw bedrijf",
+        "company_name": "Naam",
+        "the_new_company_name": "De nieuwe bedrijfsnaam",
+        "next": "Volgend"
+    },
+    "forgot_password": {
+        "email_subject": "Uw wachtwoord opnieuw instellen",
+        "email_sent": "Er is een e-mail verzonden",
+        "email_invalid": "Het e-mailadres is ongeldig",
+        "email_invalid_sub": "Het moet de symbolen '@' en '.' bevatten, zoals voorbeeld@email.com",
+        "email_content": {
+            "hi_name": "Hoi {{name}},",
+            "password_reset_request": "We hebben een verzoek ontvangen om het wachtwoord voor uw account opnieuw in te stellen. Als u dit verzoek hebt ingediend, klikt u op de onderstaande link om een nieuw wachtwoord in te stellen.",
+            "reset_password_link": "Klik hier om uw wachtwoord opnieuw in te stellen",
+            "password_unchanged": "Als u dit verzoek niet hebt gedaan, kunt u deze e-mail negeren en blijft uw wachtwoord ongewijzigd.",
+            "thanks": "Bedankt"
+        }
+    }
+}

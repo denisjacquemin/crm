@@ -2,7 +2,7 @@
   <form action="/preferences/changelang" method="POST" id="lang-form"><input type="hidden" id="lang" name="lang"/></form>
   <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: {{currentIndex}}, activeIndex: {{currentIndex}}, items: {{json languages}} })" x-init="init()">
       <div class="relative mt-1">
-        <span x-init="$watch('selected.code', (newValue) => {
+        <span x-init="$watch('selected.code_dnt', (newValue) => {
             document.querySelector('#lang').value = newValue;
             document.querySelector('#lang-form').submit();
           })">

@@ -1,145 +1,101 @@
-const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongodb');
+const Service = require('./_service');
+const { hashPassword, comparePassword } = require('./lib/password');
 
-class User {
+class User extends Service {
     constructor(db) {
-        // Store a reference to the database connection
-        this.db = db;
-        this.fields_white_list = ["fisrtname", "email",
-            "password", "companies", "language"
+        super(db);
+        this.collection = "users"
+        this.fields_white_list = ["_id", "firstname", "email",
+            "password", "timezone", "companies", "language", "resetPasswordToken", "resetPasswordExpires"
         ];
     }
 
-    // Get a user by their id
-    async getById(id) {
+    async create(data) {
+        if (!data.password) return await super.create(data);
         try {
-            // Query the users collection by the id field
-            const result = await this.db.collection('users').findOne({
-                _id: ObjectId(id)
-            })
-            return result
+            data.password = await hashPassword(data.password);
+            return await super.create(data);
         } catch (err) {
-            console.error(err.stack)
-            throw err
+            console.error(err.stack);
+            throw err;
         }
     }
 
     // Get a user by their email address
     async getByEmail(email) {
-        try {
-            email = email.trim();
-            // Query the users collection by the email field using the $regex operator
-            // RegExp(^${email}$, 'i') creates a new regular expression object that matches the input email exactly and case-insensitive
-            const result = await this.db.collection('users').findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } })
-            return result
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
+        // RegExp(^${email}$, 'i') creates a new regular expression object that matches the input email exactly and case-insensitive
+        return await this.getBy({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
     }
 
-    // Create a new user
-    async create(data) {
-
-
-        try {
-
-            // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
-
-            const { companies, firstname, email, password, language } = filteredData;
-
-            // encrypt password
-            const salt = bcrypt.genSaltSync(15);
-            const hash = bcrypt.hashSync(password, salt);
-
-            // Insert the new user into the users collection
-            const result = await this.db.collection('users').insertOne({ email, firstname, language, companies, password: hash })
-            const user = await this.db.collection('users').findOne({
-                _id: result.insertedId
-            });
-
-
-            // Return the new user document
-            return user
-        } catch (err) {
-            console.error(err.stack)
-            throw err
-        }
+    async getByResetPasswordToken(token) {
+        return await this.getBy({ resetPasswordToken: token });
     }
 
     // Update a user by their email address
     async updateByEmail(email, data) {
         try {
-            // Check if all fields in data are in white list
-            const filteredData = Object.keys(data)
-                .filter(key => this.fields_white_list.includes(key))
-                .reduce((obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                }, {});
-
-            // Update the user in the users collection using the email field
-            const result = await this.db.collection('users').updateOne({ email }, { $set: filteredData })
-
-            // Return the number of updated documents
-            return result.modifiedCount
+            email = email.trim();
+            const result = await this.updateBy('email', { $regex: new RegExp(`^${email}$`, 'i') }, data);
+            return result;
         } catch (err) {
-            console.error(err.stack)
-            throw err
+            console.error(err.stack);
+            throw err;
         }
     }
 
-    // Delete a user by their email address
     async deleteByEmail(email) {
         try {
-            // Delete the user from the users collection using the email field
-            const result = await this.db.collection('users').deleteOne({ email })
-
-            // Return the number of deleted documents
-            return result.deletedCount
+            email = email.trim();
+            const result = await this.deleteBy('email', { $regex: new RegExp(`^${email}$`, 'i') });
+            return result;
         } catch (err) {
-            console.error(err.stack)
-            throw err
+            console.error(err.stack);
+            throw err;
         }
     }
 
-    // create a updateLanguage function
-    async updateLanguage(id, language) {
+
+    async existsById(id) {
+        if (!(id instanceof ObjectId)) {
+            id = ObjectId(id);
+        }
+
         try {
-            // Update the user in the users collection using the id
-            const result = await this.db.collection('users').updateOne({ _id: ObjectId(id) }, { $set: { language } })
-
-            // Return the number of updated documents
-            return result.modifiedCount
+            return await this.existsBy('_id', id);
         } catch (err) {
-            console.error(err.stack)
-            throw err
+            console.error(err.stack);
+            throw err;
         }
     }
 
-    comparePassword(password, hash) {
-        return bcrypt.compareSync(password, hash);
-    }
-
-    // check if user exist by id
-    async checkUserExistById(id) {
+    async existsByEmail(email) {
         try {
-            // Query the users collection by the id field
-            const result = await this.db.collection('users').findOne({
-                _id: ObjectId(id)
-            })
-            return result
+            return await this.existsBy('email', { $regex: new RegExp(`^${email}$`, 'i') });
         } catch (err) {
-            console.error(err.stack)
-            throw err
+            console.error(err.stack);
+            throw err;
         }
     }
+
+    async comparePassword(plainPassword, hashedPassword) {
+        try {
+            return await comparePassword(plainPassword, hashedPassword);
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
+    async hashPassword(password) {
+        try {
+            return await hashPassword(password);
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
 }
 
 module.exports = User

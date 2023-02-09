@@ -9,6 +9,16 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./public/js/global.js":
+/*!*****************************!*\
+  !*** ./public/js/global.js ***!
+  \*****************************/
+/***/ (() => {
+
+eval("// Select all input/button elements with type attribute equals to submit\nvar submitButtons = document.querySelectorAll(\"input[type='submit'], button[type='submit']\");\n// Loop through all submit buttons\nsubmitButtons.forEach(function (button) {\n  // Add a click event listener to each button\n  button.addEventListener(\"click\", function () {\n    // Add the opacity-50 and pointer-events-none classes to the button, disabling it\n    button.classList.add(\"opacity-50\", \"pointer-events-none\");\n    // change the text of the button to loading\n    // assign button.innerText with button data-disbaled-text attribute\n    button.innerText = button.dataset.disabledText;\n    // disabling the button\n    button.disabled = true;\n    // submiting form\n    button.form.submit();\n  });\n});\n\n//# sourceURL=webpack://crm/./public/js/global.js?");
+
+/***/ }),
+
 /***/ "./public/js/nav.js":
 /*!**************************!*\
   !*** ./public/js/nav.js ***!
@@ -45,6 +55,7 @@ eval("if (window.location.href.match(/documents\\/new/)) {\n  // onload set the 
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	__webpack_modules__["./public/js/global.js"]();
 /******/ 	__webpack_modules__["./public/js/nav.js"]();
 /******/ 	__webpack_modules__["./public/js/tailwindcss/components.js"]();
 /******/ 	var __webpack_exports__ = {};

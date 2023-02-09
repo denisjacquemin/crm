@@ -1,0 +1,5 @@
+[{
+    "collection": "users",
+    "field": "email",
+    "unique": true
+}]

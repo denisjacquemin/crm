@@ -1,0 +1,4 @@
+# Setup MONGODB database
+
+
+node ./db/setup ./db/indexes.json

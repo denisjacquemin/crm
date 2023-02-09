@@ -2,17 +2,18 @@ const path = require("path");
 
 module.exports = async function(req, res, next) {
 
-    const skipRoutes = [
-        "/favicon.ico",
+    const skipRoutes = ["/favicon.ico",
         "/preferences",
         "/preferences/changelang",
-        "/test",
         "/users/signup-1",
         "/users/signup-2",
         "/users/signin",
         "/users/forgotpassword",
+        "/users/resetpassword",
+        "/users/resetpasswordsent"
     ];
-    if (skipRoutes.includes(req.path)) {
+
+    if (skipRoutes.some(route => req.path.startsWith(route))) {
         next();
     } else {
         // Check that the current company id is present in the user's companies

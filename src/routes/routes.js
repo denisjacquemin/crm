@@ -24,6 +24,9 @@ router.post("/users/signin", userController.signinPost);
 router.get("/users/signout", userController.signout);
 router.get("/users/forgotpassword", userController.forgotPassword);
 router.post("/users/forgotpassword", userController.forgotPasswordPost);
+router.get("/users/resetpasswordsent", userController.resetPasswordSent);
+router.get("/users/resetpassword/:token", userController.resetPassword);
+router.post("/users/resetpassword", userController.resetPasswordPost);
 
 
 // Needs authentication and ACL
@@ -35,6 +38,7 @@ router.get("/documents/new", documentsController.edit);
 router.get("/documents/edit/:id?", documentsController.edit);
 
 // router.get("/companies/new", companiesController.newCompany);
+
 
 
 module.exports = router;

@@ -1,8 +1,5 @@
-// middleware that put in res.locals the list of languages found in translation common.languages
-//
-
 module.exports = function(req, res, next) {
-    res.locals.languages = req.i18n.t('common.languages', { returnObjects: true })
+    res.locals.languages = req.i18n.t('do_not_translate.languages', { returnObjects: true })
 
     // if req.i18n.language is not found in the list of languages, then we fall back to the default language
 
@@ -10,13 +7,13 @@ module.exports = function(req, res, next) {
     const languageCode = req.i18n.language.split('-')[0];
 
     // check if the language code is found in the list of languages
-    const languageFound = res.locals.languages.find(language => language.code === languageCode);
+    const languageFound = res.locals.languages.find(language => language.code_dnt === languageCode);
 
     // if the language is not found, then we fall back to the default language, if the default language is not found, then we use en-US as default
     if (!languageFound) {
         const defaultLanguage = res.locals.languages.find(language => language.default);
         if (defaultLanguage) {
-            req.i18n.changeLanguage(defaultLanguage.code);
+            req.i18n.changeLanguage(defaultLanguage.code_dnt);
         } else {
             req.i18n.changeLanguage('en-US');
         }
@@ -31,7 +28,7 @@ module.exports = function(req, res, next) {
         // get the language code from req.i18n.language
         const languageCode = req.i18n.language.split('-')[0];
 
-        if (language.code === languageCode) {
+        if (language.code_dnt === languageCode) {
             res.locals.currentIndex = index;
         }
     });

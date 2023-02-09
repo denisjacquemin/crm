@@ -1,13 +1,22 @@
-const { get } = require('../services/mongo');
+const { get } = require('../services/lib/mongo');
 const UsersService = require('../services/users.service');
 
 module.exports = async function(req, res, next) {
 
     // An array of routes that do not require authentication
-    const skipRoutes = ["/favicon.ico", "/preferences", "/preferences/changelang", "/test", "/users/signup-1", "/users/signup-2", "/users/signin", "/users/forgotpassword", ];
+    const skipRoutes = ["/favicon.ico",
+        "/preferences",
+        "/preferences/changelang",
+        "/users/signup-1",
+        "/users/signup-2",
+        "/users/signin",
+        "/users/forgotpassword",
+        "/users/resetpassword",
+        "/users/resetpasswordsent"
+    ];
 
-    // Check if the current route is in the array of routes that do not require authentication
-    if (skipRoutes.includes(req.path)) {
+    // check if the req.path starts with one of the elements in the skiproutes array
+    if (skipRoutes.some(route => req.path.startsWith(route))) {
         next();
     } else {
         const db = get();
@@ -18,15 +27,18 @@ module.exports = async function(req, res, next) {
         if (!req.session.isAuth) {
             redirect = true;
         } else {
-            const userExists = await usersService.checkUserExistById(req.session.user._id);
+            const userExists = await usersService.existsById(req.session.user._id);
             if (!userExists) {
                 redirect = true;
             }
         }
 
         if (redirect) {
-            req.flash('messages', req.i18n.t('signin.not_authenticated'));
+            req.flash('error', {
+                message: req.i18n.t('signin.not_authenticated')
+            });
             req.session.returnTo = req.originalUrl;
+            console.log('No Auth for: ', req.originalUrl);
             res.redirect('/users/signin');
         } else {
             next();

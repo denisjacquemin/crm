@@ -1,53 +1,28 @@
 {
+  "do_not_translate": {
+    "languages": "do_not_translate.languages"
+  },
   "signin": {
-    "all_fields_required": "signin.all_fields_required",
-    "user_already_exist": "signin.user_already_exist",
-    "password_and_password_confirmation_must_match": "signin.password_and_password_confirmation_must_match",
-    "sign_in_to_yout_account": "signin.sign_in_to_yout_account",
-    "or": "signin.or",
-    "already_have_an_account": "signin.already_have_an_account",
-    "sign_in": "signin.sign_in",
-    "firstname": "signin.firstname",
-    "not_authenticated": "signin.not_authenticated",
     "user_does_not_exist": "signin.user_does_not_exist",
-    "incorrect_password": "signin.incorrect_password"
-  },
-  "common": {
-    "unknown_error": "common.unknown_error",
-    "languags": "common.languags",
-    "unknown_rror": "common.unknown_rror"
-  },
-  "signup": {
-    "user_already_exists": "signup.user_already_exists",
-    "password_confirmation": "signup.password_confirmation",
-    "firstname": "signup.firstname",
-    "name": "signup.name",
-    "description": "signup.description",
-    "address": "signup.address",
-    "phone_number": "signup.phone_number",
-    "email": "signup.email",
-    "website": "signup.website"
+    "": {
+      "email_or_password_invalid": "signin..email_or_password_invalid"
+    },
+    "timezone": "signin.timezone",
+    "all_fields_require": "signin.all_fields_require"
   },
   "forgot_password": {
-    "email_subject": "forgot_password.email_subject",
-    "email_sent": "forgot_password.email_sent",
-    "email_invalid": "forgot_password.email_invalid",
-    "hi_name": "forgot_password.hi_name",
-    "password_reset_request": "forgot_password.password_reset_request",
-    "reset_password_link": "forgot_password.reset_password_link",
-    "password_unchanged": "forgot_password.password_unchanged",
-    "thanks": "forgot_password.thanks"
+    "reset_your_password": "forgot_password.reset_your_password",
+    "email_required": "forgot_password.email_required",
+    "user_does_not_exist": "forgot_password.user_does_not_exist"
   },
-  "forgotpassword": {
-    "email_content": "forgotpassword.email_content"
+  "reset_password": {
+    "password_required": "reset_password.password_required",
+    "confirm_password_required": "reset_password.confirm_password_required",
+    "password_updated": "reset_password.password_updated",
+    "please_sign_in": "reset_password.please_sign_in"
   },
-  "preferences": {
-    "language_changed": "preferences.language_changed"
-  },
-  "nav": {
-    "dashboard": "nav.dashboard",
-    "invoices": "nav.invoices",
-    "tickets": "nav.tickets",
-    "clients": "nav.clients"
+  "signup": {
+    "password_not_strong_enough": "signup.password_not_strong_enough",
+    "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub"
   }
 }

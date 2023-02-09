@@ -7,6 +7,9 @@ const mongoDbUrl = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MO
 // Create a new MongoClient instance
 const client = new MongoClient(mongoDbUrl);
 
+// variable to keep track of the number of reconnection attempts
+let reconnectAttempts = 0;
+
 // Asynchronously connect to the MongoDB server and verify the connection
 async function run() {
     try {
@@ -15,11 +18,18 @@ async function run() {
 
         // Establish and verify the connection to the MongoDB server
         await client.db("admin").command({ ping: 1 });
-        console.log(`Successfully connect to MongoDB @ ${process.env.MONGO_URL}`);
+        console.log(`Successfully connected to MongoDB @ ${process.env.MONGO_URL}`);
     } catch (err) {
-        // Log the error and close the client if the connection fails
-        console.log(err.stack);
-        await client.close();
+        if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
+            console.log('Error connecting to MongoDB', err)
+                // check if reconnection attempts are less than 3
+            if (reconnectAttempts < process.env.MONGO_MAX_RECONNECT_ATTEMPTS) {
+                console.log('Reconnecting to MongoDB...')
+                reconnectAttempts++
+                // wait for 5 seconds before attempting to reconnect
+                setTimeout(run, 5000)
+            }
+        }
     }
 }
 
@@ -28,4 +38,5 @@ module.exports = {
     run,
     get: () => client.db(),
     close: () => client.close(),
+    startSession: () => client.startSession()
 };

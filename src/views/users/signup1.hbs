@@ -10,7 +10,7 @@
 
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <form class="space-y-6" action="/users/signup-1" method="POST">
+      <form class="space-y-6" action="/users/signup-1" method="POST" novalidate>
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">{{t 'signup.firstname' }}</label>
           <div class="mt-1">
@@ -18,28 +18,42 @@
           </div>
         </div>
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">{{t 'signin.email' }}</label>
+          <label for="crm-email" class="block text-sm font-medium text-gray-700">{{t 'signin.email' }}</label>
           <div class="mt-1">
-            <input id="email" name="email" value="{{ session.signup.user.email }}" type="email" autocomplete="email" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="crm-email" name="crm-email" value="{{ session.signup.user.email }}" type="email" autocomplete="email" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">{{t 'signin.password' }}</label>
-          <div class="mt-1">
-            <input id="password" name="password" value="{{ session.signup.user.password }}" type="password" autocomplete="new-password" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          <label for="crm-password" class="block text-sm font-medium text-gray-700">{{t 'signin.password' }}</label>
+          <div class="relative" x-data="{ show: false }">
+            <input id="crm-password" name="crm-password" value="{{ session.signup.user.password }}" type="password" autocomplete="off" class="password-field block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm form-input"
+              :type="show ? 'text' : 'password'" />
+            <span class="text-gray-400 absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" @click="show = !show" aria-label="{{t 'common.toggle_password_visbility' }}" :aria-pressed="show">
+            <template x-if="show">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              </template>
+              <template x-if="!show">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                </svg>
+              </template>
+            </span>
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">{{t 'signup.password_confirmation' }}</label>
-          <div class="mt-1">
-            <input id="password-confirmation" name="passwordConfirmation" value="{{ session.signup.user.password }}" type="password" autocomplete="new-password" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-          </div>
-        </div>
-
-        <div>
-          <button type="submit" class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">{{t 'signup.sign_up' }}</button>
+          <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" data-disabled-text="{{t 'common.loading_button' }}">
+            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </span>
+            {{t 'signup.sign_up' }}
+          </button>
         </div>
       </form>
 
@@ -74,7 +88,7 @@
 
           <div>
             <a href="#" class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50">
-              <span class="sr-only">Sign up with GitHub</span>
+              <span class="sr-only">Sign up with Microsoft</span>
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd" />
               </svg>
