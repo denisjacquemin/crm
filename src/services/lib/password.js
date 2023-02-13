@@ -22,7 +22,12 @@
         }
 
         const pepper = process.env.PASSWORD_PEPPER;
-        return await argon2.verify(hashedPassword, plainPassword + pepper);
+        try {
+            return await argon2.verify(hashedPassword, plainPassword + pepper);
+        } catch (err) {
+            console.error(err.stack);
+            return false;
+        }
     }
 
     module.exports = {

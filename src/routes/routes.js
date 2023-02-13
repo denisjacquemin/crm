@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middlewares/auth');
 const globalController = require('../controllers/globalController');
 const userController = require('../controllers/usersController');
 const dashboardController = require('../controllers/dashboardController');
 const documentsController = require('../controllers/documentsController');
-// const companiesController = require('../controllers/companiesController');
-
-
 
 // render views/test.hbs template
 router.get("/test", (req, res) => {
@@ -27,10 +25,11 @@ router.post("/users/forgotpassword", userController.forgotPasswordPost);
 router.get("/users/resetpasswordsent", userController.resetPasswordSent);
 router.get("/users/resetpassword/:token", userController.resetPassword);
 router.post("/users/resetpassword", userController.resetPasswordPost);
-
+router.get("/oauth/google/url", userController.OAuthGoogleURL);
+router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 
 // Needs authentication and ACL
-router.get(["/", "/app", "/dashboard"], dashboardController.index);
+router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 
 router.get("/documents", documentsController.index);
 
@@ -38,6 +37,7 @@ router.get("/documents/new", documentsController.edit);
 router.get("/documents/edit/:id?", documentsController.edit);
 
 // router.get("/companies/new", companiesController.newCompany);
+
 
 
 

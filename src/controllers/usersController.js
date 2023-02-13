@@ -6,9 +6,8 @@ const validator = require('validator');
 const Mailer = require('./utils/mailer');
 const moment = require('moment-timezone');
 const { ObjectId } = require('mongodb');
-const { prototype } = require('events');
-
-
+const { getOAuthGoogleURL, handleGoogleCallback } = require('../services/lib/oauth.google');
+const { use } = require('../services/lib/mailer');
 
 
 async function signup1(req, res, next) {
@@ -260,7 +259,8 @@ async function signup2Post(req, res, next) {
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
-    req.session.user = newUser
+    const { password, ...saferUser } = newUser;
+    req.session.user = saferUser
     req.session.current_company = newCompany
 
     delete req.session.signup
@@ -353,7 +353,7 @@ async function signinPost(req, res, next) {
     }
 
     // Check if the given password matches the user's password
-    const isMatch = await userService.comparePassword(trimmedPassword, user.password);
+    const isMatch = await userService.comparePassword(trimmedPassword, user.password || '123');
     if (!isMatch) {
 
         // If the passwords do not match, render the signin page again with an error message
@@ -373,13 +373,14 @@ async function signinPost(req, res, next) {
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
     req.session.current_company = current_company
-    req.session.user = user
+    const { password, ...saferUser } = user; // remove password key from user object
+    req.session.user = saferUser
     req.session.timestamps = []
 
     delete req.session.signin
 
     // Redirect the user to the app page
-    res.redirect(req.session.returnTo || '/');
+    res.disableBackButtonRedirect(req.session.returnTo || '\'');
 }
 
 async function signout(req, res, next) {
@@ -557,12 +558,6 @@ async function resetPassword(req, res, next) {
 
         return res.redirect('/users/forgotpassword');
     }
-
-
-
-
-
-
     // Check if the reset password token has expired
     if (user.resetPasswordExpires < Date.now()) {
         // If the reset password token has expired, render the reset password page again with an error message
@@ -683,9 +678,63 @@ async function resetPasswordPost(req, res, next) {
     res.redirect("users/signin");
 }
 
+function OAuthGoogleURL(req, res, next) {
+    return res.redirect(getOAuthGoogleURL());
+}
 
+async function OAuthGoogleCallback(req, res, next) {
+    /// get code from body
+    const code = req.query.code;
 
+    const googleUser = await handleGoogleCallback(code);
 
+    const { email, firstname } = googleUser;
+
+    const db = get();
+
+    const userService = new UserService(db);
+
+    const user = await userService.getByEmail(email);
+
+    if (!user) {
+        // make sure session.isAuth is false
+        req.session.isAuth = false;
+
+        req.session.signup = req.session.signup || {};
+        req.session.signup.user = {
+            email,
+            firstname,
+            language: googleUser.locale,
+            timezone: moment.tz.guess(),
+            google_id: googleUser.id,
+            picture: googleUser.picture
+        }
+        return res.disableBackButtonRedirect('/users/signup-2');
+    } else {
+        // add google_id and picture to user variable if not exist 
+        if (!user.google_id) {
+            user.google_id = googleUser.id;
+        }
+        if (!user.picture) {
+            user.picture = googleUser.picture;
+        }
+
+        await userService.updateBy('user_id', user._id, user);
+    }
+
+    req.session.isAuth = true
+    req.session.user = {
+        email: user.email,
+        firstname: user.firstname,
+        language: user.language,
+        timezone: user.timezone,
+        picture: user.picture
+    }
+    const companyService = new CompanyService(db);
+    req.session.current_company = await companyService.getById(user.companies[0]);
+
+    res.disableBackButtonRedirect('/');
+}
 
 module.exports = {
     signup1,
@@ -699,5 +748,7 @@ module.exports = {
     forgotPasswordPost,
     resetPassword,
     resetPasswordPost,
-    resetPasswordSent
+    resetPasswordSent,
+    OAuthGoogleURL,
+    OAuthGoogleCallback
 };

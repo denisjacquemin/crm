@@ -6,8 +6,18 @@ class User extends Service {
     constructor(db) {
         super(db);
         this.collection = "users"
-        this.fields_white_list = ["_id", "firstname", "email",
-            "password", "timezone", "companies", "language", "resetPasswordToken", "resetPasswordExpires"
+        this.fields_white_list = [
+            "_id",
+            "firstname",
+            "email",
+            "password",
+            "timezone",
+            "companies",
+            "language",
+            "resetPasswordToken",
+            "resetPasswordExpires",
+            "google_id",
+            "picture"
         ];
     }
 
@@ -95,6 +105,36 @@ class User extends Service {
             throw err;
         }
     }
+
+    // get user from database by issuer and profile.id
+    async getByIssuerAndId(issuer, id) {
+        try {
+            return await this.getBy({ issuer, id });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
+    async existsByFederatedCredentials(issuer, id) {
+        try {
+            return await this.existsBy({ issuer, id });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
+    async createFederatedUser(issuer, id, email, firstname, lastname) {
+        try {
+            return await this.create({ issuer, id, email, firstname, lastname });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
+
 
 }
 

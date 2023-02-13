@@ -21,7 +21,7 @@ class Service {
         if (!(id instanceof ObjectId)) {
             id = ObjectId(id);
         }
-        return this.getBy(this.collection, { _id: id });
+        return this.getBy({ _id: id });
     }
 
     async updateBy(field, value, data) {

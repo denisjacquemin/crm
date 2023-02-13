@@ -4,6 +4,7 @@ const Service = require('./_service');
 class Company extends Service {
     constructor(db) {
         super(db);
+        this.collection = "companies"
         this.fields_white_list = ["_id", "name", "description",
             "address", "phone_number", "email", "website", "users"
         ];

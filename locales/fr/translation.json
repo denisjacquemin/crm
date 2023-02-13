@@ -1,7 +1,6 @@
 {
     "do_not_translate": {
-        "languages": [
-            {
+        "languages": [{
                 "id": "1",
                 "name": "English / Anglais",
                 "code_dnt": "en"
@@ -56,14 +55,14 @@
         "not_authenticated": "Veuillez vous authentifier avant de continuer"
     },
     "signup": {
-        "sign_up_to_your_account": "Inscrivez-vous à votre compte",
+        "sign_up_to_your_account": "Créez un nouveau compte",
         "or": "Ou",
         "firstname": "Prénom",
         "already_have_an_account": "Connectez-vous si vous avez déjà un compte",
         "password_confirmation": "Confirmation du mot de passe",
         "sign_up": "S’enregistrer",
         "all_fields_required": "Prénom, email, mot de passe et confirmation de mot de passe sont requis",
-        "user_already_exists": "L’utilisateur avec la même adresse e-mail existe déjà",
+        "user_already_exists": "Un utilisateur avec la même adresse e-mail existe déjà",
         "passwords_do_not_match": "Le mot de passe et la confirmation du mot de passe ne correspondent pas"
     },
     "signup2": {
