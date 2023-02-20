@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const Service = require('./_service');
 const { hashPassword, comparePassword } = require('./lib/password');
+const sanitizeEmail = require('../lib/sanitizer').sanitizeEmail;
 
 class User extends Service {
     constructor(db) {
@@ -34,8 +35,9 @@ class User extends Service {
 
     // Get a user by their email address
     async getByEmail(email) {
+        emailSanitized = sanitizeEmail(email);
         // RegExp(^${email}$, 'i') creates a new regular expression object that matches the input email exactly and case-insensitive
-        return await this.getBy({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+        return await this.getBy({ email: emailSanitized });
     }
 
     async getByResetPasswordToken(token) {
