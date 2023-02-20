@@ -35,9 +35,8 @@ class User extends Service {
 
     // Get a user by their email address
     async getByEmail(email) {
-        emailSanitized = sanitizeEmail(email);
         // RegExp(^${email}$, 'i') creates a new regular expression object that matches the input email exactly and case-insensitive
-        return await this.getBy({ email: emailSanitized });
+        return await this.getBy({ email: email });
     }
 
     async getByResetPasswordToken(token) {

@@ -340,7 +340,9 @@ async function signinPost(req, res, next) {
     const userService = new UserService(db);
 
     // Check if a user exists with the given email address
-    const user = await userService.getByEmail(trimmedEmail);
+    emailSanitized = sanitizeEmail(trimmedEmail);
+
+    const user = await userService.getByEmail(emailSanitized);
     if (!user) {
         req.flash('error', {
             message: req.i18n.t('signin.email_or_password_invalid'),
@@ -380,7 +382,7 @@ async function signinPost(req, res, next) {
     delete req.session.signin
 
     // Redirect the user to the app page
-    res.disableBackButtonRedirect(req.session.returnTo || '\'');
+    res.disableBackButtonRedirect(req.session.returnTo || '/');
 }
 
 async function signout(req, res, next) {
@@ -460,7 +462,9 @@ async function forgotPasswordPost(req, res, next) {
     const userService = new UserService(db);
 
     // Check if a user exists with the given email address
-    const user = await userService.getByEmail(trimmedEmail);
+    emailSanitized = sanitizeEmail(trimmedEmail);
+
+    const user = await userService.getByEmail(emailSanitized);
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
         req.flash('error', {
@@ -694,7 +698,8 @@ async function OAuthGoogleCallback(req, res, next) {
 
     const userService = new UserService(db);
 
-    const user = await userService.getByEmail(email);
+    emailSanitized = sanitizeEmail(email);
+    const user = await userService.getByEmail(emailSanitized);
 
     if (!user) {
         // make sure session.isAuth is false
