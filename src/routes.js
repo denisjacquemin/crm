@@ -34,7 +34,6 @@ router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 
 router.get("/documents", auth, documentsController.index);
 router.get("/documents/new", auth, documentsController.newDocument);
-router.get("/documents/new2", auth, documentsController.newDocument2);
 
 router.get("/documents/edit/:slug?", auth, documentsController.edit);
 router.put("/documents", auth, documentsController.update);

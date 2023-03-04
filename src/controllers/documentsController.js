@@ -21,29 +21,6 @@ async function index(req, res) {
     res.render('documents/index', { layout: 'app', documents: documents });
 }
 
-async function newDocument2(req, res) {
-
-    // get a new id and redirect to edit/:id
-    const db = get();
-    const documentService = new DocumentService(db);
-
-    // get a new id
-    const document = await documentService.create({
-        company_id: ObjectId(req.session.current_company._id),
-        config: {
-            updated_at: DateHelper.toISO8601(DateHelper.nowUtc()),
-        },
-        created_by_user_id: ObjectId(req.session.user._id)
-    });
-
-    req.session.current_document_id = document._id;
-
-    res.render("documents/index", {
-        layout: 'app',
-        document: document
-    });
-}
-
 
 async function newDocument(req, res) {
 
@@ -111,6 +88,5 @@ module.exports = {
     index,
     edit,
     newDocument,
-    newDocument2,
     update
 };

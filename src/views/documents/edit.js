@@ -37,20 +37,27 @@ if (window.location.href.match(/documents\/edit/)) {
         // save config to local storage
         localStorage.config = JSON.stringify(config);
 
-        // loop through the config.values object and set values to input fields based on the path matching input's names
-        // only works for input fields with names that match the path
-        // example: config['invoice']['number'] will match input name="invoice.number"
-        for (var key in config) {
-            var path = key.split('.');
-            var value = config;
-            for (var i = 0; i < path.length; i++) {
-                value = value[path[i]];
-            }
-            const el = document.getElementsByName(key)[0]
-            if (el) {
-                el.value = value;
+        function updateInputValues(obj, parentKey = '') {
+            for (const key in obj) {
+                if (typeof obj[key] === 'object') {
+                    updateInputValues(obj[key], `${parentKey}${key}.`);
+                } else {
+                    const input = document.querySelector(`input[name="${parentKey}${key}"]`);
+                    if (input) {
+                        input.value = obj[key];
+                    }
+                }
             }
         }
+
+        updateInputValues(config);
+
+
+
+
+
+
+
 
         // use event delagetion to listen to all input changes
         document.addEventListener('input', function(e) {
