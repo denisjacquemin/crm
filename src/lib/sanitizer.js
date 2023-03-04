@@ -1,4 +1,12 @@
+const blacklist = require('validator/lib/blacklist');
+const isURL = require('validator/lib/isURL');
+
 function sanitizeEmail(email) {
+    // if email is empty return empty string
+    if (!email) {
+        return '';
+    }
+
     // Remove leading and trailing white space
     email = email.trim();
 
@@ -6,15 +14,11 @@ function sanitizeEmail(email) {
     email = email.toLowerCase();
 
     // Remove any invalid characters from the email
-    email = validator.blacklist(email, '\\<\\>\\(\\)\\[\\]\\;\\:\\\\"\\,\\@');
-
-    // Validate that the email is in a valid format
-    if (!validator.isEmail(email)) {
-        throw new Error('Invalid email format');
-    }
+    email = blacklist(email, '\\<\\>\\(\\)\\[\\]\\;\\:\\\\"\\,');
 
     return email;
 }
+
 
 module.exports = {
     sanitizeEmail

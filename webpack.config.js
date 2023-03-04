@@ -2,10 +2,10 @@ const path = require("path");
 const glob = require("glob");
 
 module.exports = {
-    entry: glob.sync(path.join(__dirname, "public", "**", "!(alpine*)", "*.js"))
+    entry: glob.sync(path.join(__dirname, "src", "js", "**", "*.js"))
         .concat(glob.sync(path.join(__dirname, "src", "views", "**", "*.js"))),
     output: {
-        path: path.join(__dirname, "dist"),
+        path: path.join(__dirname, "public"),
         filename: "bundle.js"
     },
     module: {

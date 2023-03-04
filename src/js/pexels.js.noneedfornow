@@ -1,0 +1,25 @@
+const apiKey = "FH02WTxE1Am6Kx3wzNiOh6qzKcSuRVLqzhYIU9kyteekmQgkh1IPFmWD";
+const apiUrl = `https://api.pexels.com/v1/search?query=book&per_page=15`;
+
+// Get a random photo from the API response
+async function getRandomPhoto() {
+    const response = await fetch(apiUrl, {
+        headers: {
+            Authorization: apiKey,
+        },
+    });
+    const data = await response.json();
+    const photos = data.photos;
+    const randomIndex = Math.floor(Math.random() * photos.length);
+    const photo = photos[randomIndex];
+    return photo;
+}
+
+// Set the background image of the viewport to the random photo
+async function setBackground() {
+    const photo = await getRandomPhoto();
+    document.body.style.backgroundImage = `url(${photo.src.large})`;
+    document.body.style.backgroundSize = "100% 100%";
+}
+
+setBackground();

@@ -1,1 +1,254 @@
-<a href="/documents/new">New doc</a>
+
+<div class="flex flex-1 overflow-y-hidden sm:flex-row 2xl:container 2xl:m-auto" x-data="{ currentColumn: 1 }" x-init="
+          $watch('currentColumn', value => {
+            if (value > 1) {
+              navState = 'back'
+            } else {
+              navState = 'menu'
+            }
+            console.log('navState: ', navState);
+          });
+          $watch('navState', value => {
+            if (value == 'menu') {
+              currentColumn = 1
+            }
+          })
+        ">
+  <div class="w-full overflow-y-auto sm:w-96 text-white" x-bind:class="{ 'hidden sm:block': currentColumn >= 2 }">
+    <div class="m-2 flex flex-row">
+      <a href="/documents/new" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Nouveau doc</a>
+      <a href="/documents/new2" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Nouveau doc</a>
+
+      <div class="relative mt-1 flex items-center">
+        <input type="text" name="search" id="search" class="block w-full rounded-md border-gray-300 pr-12 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+        <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+          <kbd class="inline-flex items-center rounded border border-gray-200 px-2 font-sans text-sm font-medium text-gray-400">⌘K</kbd>
+        </div>
+      </div>
+
+    </div>
+    <ul role="list" class="divide-y divide-gray-200">
+      <li @click="currentColumn = 2.1" class="relative bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50">
+        <p class="truncate text-sm font-medium text-gray-900">Commune de Marche en Famenne</p>
+        <div class="flex justify-between space-x-3">
+          <div class="min-w-0 flex-1">
+            <a href="#" class="block focus:outline-none">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="truncate text-sm text-gray-500">
+                <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Facture</span>
+                <span class="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Payée</span>
+              </p>
+            </a>
+          </div>
+          <time datetime="2021-01-27T16:35" class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">23/02/2023</time>
+        </div>
+        <div class="mt-1">
+          <p class="text-sm text-gray-600 line-clamp-2">Facture payée immédiatement</p>
+        </div>
+      </li>
+
+
+
+      <li class="relative bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50">
+        <p class="truncate text-sm font-medium text-gray-900">EFA Léon Maistriau Jurbise</p>
+        <div class="flex justify-between space-x-3">
+          <div class="min-w-0 flex-1">
+            <a href="#" class="block focus:outline-none">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="text-sm text-gray-500">
+                <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Facture</span>
+                <span class="inline-flex items-center rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800">En attente d'infos</span>
+                <span class="inline-flex items-center rounded bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-800">Sdui</span>
+              </p>
+            </a>
+          </div>
+          <time datetime="2021-01-27T16:35" class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">23/02/2023</time>
+        </div>
+        <div class="mt-1">
+          <p class="text-sm text-gray-600 line-clamp-2">Konecto in usage, but invoice Sdui</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="w-full sm:flex sm:flex-col overflow-y-hidden lg:flex-row" x-bind:class="currentColumn > 2 ? 'flex flex-col' : 'hidden'">
+    <div class="lg:hidden">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex flex-1" aria-label="Tabs">
+          <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
+          <a @click="currentColumn = 2.1" class="flex-grow border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm">
+            <!-- Current: "text-indigo-500", Default: "text-gray-400 group-hover:text-gray-500" -->
+            <svg class="text-gray-400 group-hover:text-gray-500 -ml-0.5 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+            </svg>
+            <span>Form</span>
+          </a>
+
+          <a @click="currentColumn = 2.2" class="flex-grow border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm">
+            <svg class="text-gray-400 group-hover:text-gray-500 -ml-0.5 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM7.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM11 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Preview</span>
+          </a>
+
+        </nav>
+      </div>
+    </div>
+    <div class="overflow-y-auto flex flex-col px-2 sm:flex sm:flex-col sm:grow lg:w-72 lg:grow-0 xl:w-80  h-26 text-black" x-bind:class="currentColumn <= 2.1 ? 'flex flex-col' : 'hidden sm:hidden'">
+      {{> 'documents/form' }}
+    </div>
+    <div class="overflow-y-auto sm:grow lg:block lg:grow bg-yellow-500 h-26 text-white" x-bind:class="currentColumn === 2.2 ? 'flex flex-col sm:flex sm:flex-col' : 'hidden'">
+      <p>Preview goes here.</p>
+      <ul>
+        <li class="border-b border-gray-400 py-2">List item 2</li>
+        <li class="border-b border-gray-400 py-2">List item 3</li>
+        <li class="border-b border-gray-400 py-2">List item 4</li>
+        <li class="border-b border-gray-400 py-2">List item 5</li>
+        <li class="border-b border-gray-400 py-2">List item 6</li>
+        <li class="border-b border-gray-400 py-2">List item 7</li>
+        <li class="border-b border-gray-400 py-2">List item 8</li>
+        <li class="border-b border-gray-400 py-2">List item 9</li>
+        <li class="border-b border-gray-400 py-2">List item 1</li>
+        <li class="border-b border-gray-400 py-2">List item 2</li>
+        <li class="border-b border-gray-400 py-2">List item 3</li>
+        <li class="border-b border-gray-400 py-2">List item 4</li>
+        <li class="border-b border-gray-400 py-2">List item 5</li>
+        <li class="border-b border-gray-400 py-2">List item 6</li>
+        <li class="border-b border-gray-400 py-2">List item 7</li>
+        <li class="border-b border-gray-400 py-2">List item 8</li>
+        <li class="border-b border-gray-400 py-2">List item 9</li>  
+        <li class="border-b border-gray-400 py-2">List item 1</li>
+        <li class="border-b border-gray-400 py-2">List item 2</li>
+        <li class="border-b border-gray-400 py-2">List item 3</li>
+        <li class="border-b border-gray-400 py-2">List item 4</li>
+        <li class="border-b border-gray-400 py-2">List item 5</li>
+        <li class="border-b border-gray-400 py-2">List item 6</li>
+        <li class="border-b border-gray-400 py-2">List item 7</li>
+        <li class="border-b border-gray-400 py-2">List item 8</li>
+        <li class="border-b border-gray-400 py-2">List item 9</li> 
+        <li class="border-b border-gray-400 py-2">List item 1</li>
+        <li class="border-b border-gray-400 py-2">List item 2</li>
+        <li class="border-b border-gray-400 py-2">List item 3</li>
+        <li class="border-b border-gray-400 py-2">List item 4</li>
+        <li class="border-b border-gray-400 py-2">List item 5</li>
+        <li class="border-b border-gray-400 py-2">List item 6</li>
+        <li class="border-b border-gray-400 py-2">List item 7</li>
+        <li class="border-b border-gray-400 py-2">List item 8</li>
+        <li class="border-b border-gray-400 py-2">List item 9</li> 
+        <li class="py-2">List item 100000</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{{!-- 
+
+    <div class="flex-1">
+      <div class=" mx-auto xl:container" x-data="{ currentColumn: 1 }" x-init="
+          $watch('currentColumn', value => {
+            if (value > 1) {
+              navState = 'back'
+            } else {
+              navState = 'menu'
+            }
+          });
+          $watch('navState', value => {
+            if (value == 'menu') {
+              currentColumn = 1
+            }
+          })
+        " >
+        <div class="flex flex-row h-screen">
+          <div class="bg-red-300 mt-16 overflow-auto w-full sm:flex-none sm:w-64 md:w-96 px-4" x-bind:class="{ 'hidden sm:block': currentColumn >= 2 }">
+            <ul class="border border-gray-400">
+              <li class="border-b border-gray-400 py-2" @click="currentColumn = 2.1">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li>
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li>  
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li> 
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li> 
+              <li class="py-2">List item 10###</li>
+            </ul>
+          </div> 
+          <div class="mt-16 w-full flex sm:flex-1 md:w-2/3 xl:w-2/3 px-4 flex-col  " x-bind:class="{ 'hidden sm:block': currentColumn < 2 }">
+            <div>
+              <button @click="currentColumn = 2.1">Form</button>
+              <button @click="currentColumn = 2.2">Preview</button>
+            </div>
+            <div class="bg-yellow-300 flex-1 overflow-auto w-full md:w-2/3 xl:block xl:w-1/2" x-bind:class="{ 'hidden ': currentColumn === 2.2 }">
+              <!-- Form content -->
+              <p>Form content goes here.</p>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li>
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li>  
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li> 
+              <li class="border-b border-gray-400 py-2">List item 1</li>
+              <li class="border-b border-gray-400 py-2">List item 2</li>
+              <li class="border-b border-gray-400 py-2">List item 3</li>
+              <li class="border-b border-gray-400 py-2">List item 4</li>
+              <li class="border-b border-gray-400 py-2">List item 5</li>
+              <li class="border-b border-gray-400 py-2">List item 6</li>
+              <li class="border-b border-gray-400 py-2">List item 7</li>
+              <li class="border-b border-gray-400 py-2">List item 8</li>
+              <li class="border-b border-gray-400 py-2">List item 9</li> 
+              <li class="py-2">List item 100000</li>
+            </div>
+            <div class="bg-blue-300 h-full overflow-auto w-full md:w-2/3 xl:block xl:w-1/2" x-bind:class="{ 'hidden ': currentColumn !== 2.2  }">
+              <!-- Preview content -->
+              <p>Preview content goes here.</p>
+              <button @click="currentColumn = 3">View details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> --}}

@@ -7,7 +7,7 @@ class User extends Service {
     constructor(db) {
         super(db);
         this.collection = "users"
-        this.fields_white_list = [
+        this.fields_white_list = new Set([
             "_id",
             "firstname",
             "email",
@@ -19,14 +19,15 @@ class User extends Service {
             "resetPasswordExpires",
             "google_id",
             "picture"
-        ];
+        ]);
     }
 
     async create(data) {
-        if (!data.password) return await super.create(data);
+        const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
+        if (!filteredData.password) return await super.create(filteredData);
         try {
-            data.password = await hashPassword(data.password);
-            return await super.create(data);
+            filteredData.password = await hashPassword(filteredData.password);
+            return await super.create(filteredData);
         } catch (err) {
             console.error(err.stack);
             throw err;

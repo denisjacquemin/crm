@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth');
-const globalController = require('../controllers/globalController');
-const userController = require('../controllers/usersController');
-const dashboardController = require('../controllers/dashboardController');
-const documentsController = require('../controllers/documentsController');
+// const csrfProtection = require('./middlewares/csrf');
+const auth = require('./middlewares/auth');
+const globalController = require('./controllers/globalController');
+const userController = require('./controllers/usersController');
+const dashboardController = require('./controllers/dashboardController');
+const documentsController = require('./controllers/documentsController');
 
 // render views/test.hbs template
 router.get("/test", (req, res) => {
@@ -31,10 +32,12 @@ router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 // Needs authentication and ACL
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 
-router.get("/documents", documentsController.index);
+router.get("/documents", auth, documentsController.index);
+router.get("/documents/new", auth, documentsController.newDocument);
+router.get("/documents/new2", auth, documentsController.newDocument2);
 
-router.get("/documents/new", documentsController.edit);
-router.get("/documents/edit/:id?", documentsController.edit);
+router.get("/documents/edit/:slug?", auth, documentsController.edit);
+router.put("/documents", auth, documentsController.update);
 
 // router.get("/companies/new", companiesController.newCompany);
 

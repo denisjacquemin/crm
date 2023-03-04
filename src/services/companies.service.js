@@ -5,9 +5,9 @@ class Company extends Service {
     constructor(db) {
         super(db);
         this.collection = "companies"
-        this.fields_white_list = ["_id", "name", "description",
+        this.fields_white_list = new Set(["_id", "name", "description",
             "address", "phone_number", "email", "website", "users"
-        ];
+        ]);
     }
 
     async getUserById(id) {
@@ -17,7 +17,7 @@ class Company extends Service {
     async create(data) {
         try {
             // Check if all fields in data are in white list
-            const filteredData = this.filterWhiteListedFields(data);
+            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
 
             // Insert the company in the companies collection with data parameter
             const result = await this.db.collection('companies').insertOne({
@@ -39,7 +39,7 @@ class Company extends Service {
     async update(id, data) {
         try {
             // Check if all fields in data are in white list
-            const filteredData = this.filterWhiteListedFields(data);
+            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
 
             // Update the company in the companies collection
             await this.db.collection('companies').updateOne({ _id: ObjectId(id) }, { $set: filteredData });

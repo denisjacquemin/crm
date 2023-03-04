@@ -1,0 +1,23 @@
+{{#if document}}
+    <input type="hidden" id="config" value="{{stringify document.config}}">
+    <input type="hidden" id="docid" value="{{document._id}}">
+    <div class="py-2"><h3 class="text-lg font-medium leading-6 text-gray-900">Destinataire</h3></div>
+
+    <div class="my-2">
+        <label for="client.name" class="block text-sm font-medium text-gray-700">Client</label>
+        <div class="mt-1">
+            <input type="text" name="client.name" id="client.name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="" aria-describedby="email-description">
+        </div>
+        <p class="mt-2 text-sm text-gray-500" id="email-description">Find by name, adress or anything else</p>
+    </div>
+
+    <div class="my-2">
+        <label for="date" class="block text-sm font-medium text-gray-700">Invoice date</label>
+        <div class="mt-1">
+            <input type="email" value="{{document.values.invoice.date}}" name="invoice.date" id="invoice.date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="" aria-describedby="email-description">
+        </div>
+        <p class="mt-2 text-sm text-gray-500" id="email-description"><a href="#" class="underline">Today</a> <a class="underline" href="#">Tommorow</a></p>
+    </div>
+{{else}}
+    <p>Document not found</p>
+{{/if}}

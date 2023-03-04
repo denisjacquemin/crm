@@ -1,23 +1,43 @@
-if (window.location.href.match(/documents\/new/)) {
+if (window.location.href.match(/documents\/edit/)) {
     // onload set the invoiceid as the last segment of the url path if it doesn't exists yet
+    let w;
+
+    if (typeof(Worker) !== "undefined") {
+        if (typeof(w) == "undefined") {
+            console.log('setting up worker');
+            w = new Worker("/public/js/workers/documents/autosave_worker.js");
+        }
+
+        w.onmessage = function(event) {
+            const data = event.data;
+
+            if (data.hasOwnProperty('updated_at')) {
+                // update lastUpdated in local storage config object
+                const config = JSON.parse(localStorage.getItem('config'));
+                config.updated_at = data.updated_at;
+                localStorage.setItem('config', JSON.stringify(config));
+                console.log('data.updated_at', data.updated_at);
+            }
+        };
+    } else {
+        console.log('Worker not supported');
+    }
+
+    window.onblur = function() {
+        console.log('in window.onblur');
+    }
 
     window.onload = function() {
 
-        // if url pathname ends with /edit/ then set the invoiceid as the last segment of the url path
-        if (window.location.pathname.endsWith('/new')) {
-            let currentUrl = window.location.href;
-            let documentId = document.getElementById("documentId").value;
-            let newUrl = currentUrl.replace("/documents/new", "/documents/edit/" + documentId)
-            window.history.replaceState({}, '', newUrl);
-        }
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         // get JSON Object from hidden field named config	
         var config = JSON.parse(document.getElementById('config').value);
 
         // save config to local storage
-        localStorage.setItem('config', JSON.stringify(config));
+        localStorage.config = JSON.stringify(config);
 
-        // loop through the config object and set values to input fiedls based on the path matching input's names
+        // loop through the config.values object and set values to input fields based on the path matching input's names
         // only works for input fields with names that match the path
         // example: config['invoice']['number'] will match input name="invoice.number"
         for (var key in config) {
@@ -26,12 +46,14 @@ if (window.location.href.match(/documents\/new/)) {
             for (var i = 0; i < path.length; i++) {
                 value = value[path[i]];
             }
-            document.getElementsByName(key)[0].value = value;
+            const el = document.getElementsByName(key)[0]
+            if (el) {
+                el.value = value;
+            }
         }
 
         // use event delagetion to listen to all input changes
         document.addEventListener('input', function(e) {
-            console.log('In input event listener');
             // get the config object from localstorage or create it if i doesn't exist yet
             var config = JSON.parse(localStorage.getItem('config')) || {};
 
@@ -39,30 +61,63 @@ if (window.location.href.match(/documents\/new/)) {
             // example: config['invoice']['number'] will match input name="invoice.number"
             put(config, e.target.name, e.target.value);
             // set last updated date time for the config
-            lastUpdated = new Date();
-            put(config, 'lastUpdated', lastUpdated);
 
-            localStorage.setItem('config', JSON.stringify(config));
+            const now = new Date();
+            const utcNow = new Date(Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds()
+            ));
+
+            put(config, 'lastConfigUpdateAt', utcNow.toISOString());
+
+            localStorage.config = JSON.stringify(config);
 
         });
 
         // at regular intervals, save config to server
         setInterval(function() {
-
             // get config from local storage
             var config = JSON.parse(localStorage.getItem('config'));
 
-            if (config && config.hasOwnProperty('lastUpdated')) {
+
+            if (config && config.hasOwnProperty('lastConfigUpdateAt')) {
                 // check if config was updated after the last time it was sent to the server
-                if (new Date() - new Date(config.lastUpdated) > 5000) {
-                    // save values to server
-                    fetch('/documents/1', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(config)
-                    });
+                console.log('config.lastConfigUpdateAt', config.lastConfigUpdateAt)
+                console.log('config.updated_at', config.updated_at)
+                console.log('Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at)', Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at))
+                if (Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at)) {
+
+                    w.postMessage({ config: config, csrfToken: csrfToken });
+
+
+                    // // save values to server
+                    // fetch('/documents', {
+                    //         method: 'PUT',
+                    //         credentials: 'same-origin',
+                    //         headers: {
+                    //             'Content-Type': 'application/json',
+                    //             'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    //         },
+                    //         body: JSON.stringify({ config: config })
+                    //     })
+                    //     .then(response => {
+                    //         if (response.ok) {
+                    //             const data = response.json();
+                    //             if (data.hasOwnProperty('updated_at')) {
+                    //                 // update lastUpdated in local storage config object
+                    //                 config.updated_at = data.updated_at;
+                    //                 config = JSON.parse(localStorage.getItem('config'));
+                    //                 localStorage.setItem('config', JSON.stringify(config));
+                    //             }
+                    //         }
+                    //     })
+                    //     .catch(error => {
+                    //         console.error('Error updating config:', error);
+                    //     });
                 }
             }
         }, 5000);

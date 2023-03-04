@@ -1,4 +1,9 @@
-# Setup MONGODB database
+# Setup MONGODB indexes database
 
 
-node ./db/setup ./db/indexes.json
+node ./db/setup_indexes ./db/indexes.json
+
+# setup dummy data
+
+node ./db/setup_dummy_data ./db/dummy_data.json
+

@@ -5,6 +5,8 @@ const { MongoClient } = require("mongodb");
 const mongoDbUrl = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URL}`;
 const client = new MongoClient(mongoDbUrl, { useNewUrlParser: true });
 
+
+
 async function run(indexConfigs) {
     try {
         await client.connect();

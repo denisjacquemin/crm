@@ -1,6 +1,5 @@
 const { get } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
-const validator = require('validator');
 
 // Change current language with i18n.changeLanguage and store it session and db if logged in
 async function changeLang(req, res) {

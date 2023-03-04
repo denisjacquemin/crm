@@ -4,10 +4,11 @@ const CompanyService = require('../services/companies.service');
 const crypto = require('crypto');
 const validator = require('validator');
 const Mailer = require('./utils/mailer');
-const moment = require('moment-timezone');
 const { ObjectId } = require('mongodb');
 const { getOAuthGoogleURL, handleGoogleCallback } = require('../services/lib/oauth.google');
 const { use } = require('../services/lib/mailer');
+const { sanitizeEmail } = require('../lib/sanitizer');
+const DateHelper = require('../lib/date-helpers');
 
 
 async function signup1(req, res, next) {
@@ -101,7 +102,8 @@ async function signup1Post(req, res, next) {
     const userService = new UserService(db);
 
     // Check if a user already exists with the given email address
-    const userExist = await userService.existsByEmail(trimmedEmail);
+    const sanitizedEmail = sanitizeEmail(trimmedEmail);
+    const userExist = await userService.existsByEmail(sanitizedEmail);
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -115,9 +117,6 @@ async function signup1Post(req, res, next) {
             notifications: req.flash()
         })
     }
-
-    // Create a new user with the given email and password
-    // const newUser = await userService.create(trimmedEmail, trimmedPassword);
 
     // Go to signup2 - new company page
     res.redirect('/users/signup-2');
@@ -228,9 +227,10 @@ async function signup2Post(req, res, next) {
         // Get the current user in session.signup
         const user = req.session.signup.user;
         user._id = userId;
+        user.email = sanitizedEmail(user.email)
         user.language = req.i18n.language;
         user.companies = [companyId];
-        user.timezone = moment.tz.guess();
+        user.timezone = DateHelper.guess();
 
         // Create the user
         await userService.create(user, { session });
@@ -428,10 +428,10 @@ async function forgotPasswordPost(req, res, next) {
     const { email } = req.body;
 
     // Trim the whitespace from the email field
-    const trimmedEmail = email.trim();
+    const emailSanitized = sanitizeEmail(email);
 
     // Check if the email field is empty
-    if (!trimmedEmail) {
+    if (!emailSanitized) {
         // If the email field is empty, render the forgot password page again with an error message
         req.flash('error', {
             message: req.i18n.t('forgot_password.email_required'),
@@ -443,7 +443,7 @@ async function forgotPasswordPost(req, res, next) {
     }
 
     // Check if email is valid
-    if (!validator.isEmail(trimmedEmail)) {
+    if (!validator.isEmail(emailSanitized)) {
         // If the email is not valid, render the forgot password page again with an error message
         req.flash('error', {
             message: req.i18n.t('forgot_password.email_invalid'),
@@ -462,8 +462,6 @@ async function forgotPasswordPost(req, res, next) {
     const userService = new UserService(db);
 
     // Check if a user exists with the given email address
-    emailSanitized = sanitizeEmail(trimmedEmail);
-
     const user = await userService.getByEmail(emailSanitized);
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
@@ -710,7 +708,7 @@ async function OAuthGoogleCallback(req, res, next) {
             email,
             firstname,
             language: googleUser.locale,
-            timezone: moment.tz.guess(),
+            timezone: DateHelper.guess(),
             google_id: googleUser.id,
             picture: googleUser.picture
         }
