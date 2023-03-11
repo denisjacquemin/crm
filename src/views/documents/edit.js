@@ -37,27 +37,20 @@ if (window.location.href.match(/documents\/edit/)) {
         // save config to local storage
         localStorage.config = JSON.stringify(config);
 
-        function updateInputValues(obj, parentKey = '') {
-            for (const key in obj) {
-                if (typeof obj[key] === 'object') {
-                    updateInputValues(obj[key], `${parentKey}${key}.`);
-                } else {
-                    const input = document.querySelector(`input[name="${parentKey}${key}"]`);
-                    if (input) {
-                        input.value = obj[key];
-                    }
-                }
-            }
-        }
+        // function updateInputValues(obj, parentKey = '') {
+        //     for (const key in obj) {
+        //         if (typeof obj[key] === 'object') {
+        //             updateInputValues(obj[key], `${parentKey}${key}.`);
+        //         } else {
+        //             const input = document.querySelector(`input[name="${parentKey}${key}"]`);
+        //             if (input) {
+        //                 input.value = obj[key];
+        //             }
+        //         }
+        //     }
+        // }
 
-        updateInputValues(config);
-
-
-
-
-
-
-
+        // updateInputValues(config);
 
         // use event delagetion to listen to all input changes
         document.addEventListener('input', function(e) {
@@ -93,38 +86,8 @@ if (window.location.href.match(/documents\/edit/)) {
 
             if (config && config.hasOwnProperty('lastConfigUpdateAt')) {
                 // check if config was updated after the last time it was sent to the server
-                console.log('config.lastConfigUpdateAt', config.lastConfigUpdateAt)
-                console.log('config.updated_at', config.updated_at)
-                console.log('Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at)', Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at))
                 if (Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at)) {
-
                     w.postMessage({ config: config, csrfToken: csrfToken });
-
-
-                    // // save values to server
-                    // fetch('/documents', {
-                    //         method: 'PUT',
-                    //         credentials: 'same-origin',
-                    //         headers: {
-                    //             'Content-Type': 'application/json',
-                    //             'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    //         },
-                    //         body: JSON.stringify({ config: config })
-                    //     })
-                    //     .then(response => {
-                    //         if (response.ok) {
-                    //             const data = response.json();
-                    //             if (data.hasOwnProperty('updated_at')) {
-                    //                 // update lastUpdated in local storage config object
-                    //                 config.updated_at = data.updated_at;
-                    //                 config = JSON.parse(localStorage.getItem('config'));
-                    //                 localStorage.setItem('config', JSON.stringify(config));
-                    //             }
-                    //         }
-                    //     })
-                    //     .catch(error => {
-                    //         console.error('Error updating config:', error);
-                    //     });
                 }
             }
         }, 5000);

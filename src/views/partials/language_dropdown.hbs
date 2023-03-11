@@ -1,10 +1,10 @@
 <div class="mx-auto w-full">
-  <form action="/preferences/changelang" method="POST" id="lang-form"><input type="hidden" id="lang" name="lang"/>{{> csrf }}</form>
-  <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: {{currentIndex}}, activeIndex: {{currentIndex}}, items: {{json languages}} })" x-init="init()">
+  <form action="/preferences/changelang" method="POST" id="lng-form"><input type="hidden" id="lng" name="lng"/>{{> csrf }}</form>
+  <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: {{currentIndex}}, activeIndex: {{currentIndex}}, items: {{stringify languages}} })" x-init="init()">
       <div class="relative mt-1">
         <span x-init="$watch('selected.code_dnt', (newValue) => {
-            document.querySelector('#lang').value = newValue;
-            document.querySelector('#lang-form').submit();
+            document.querySelector('#lng').value = newValue;
+            document.querySelector('#lng-form').submit();
           })">
         </span>
         <button type="button" class="relative w-full cursor-pointer py-2 pl-3 pr-10 text-left  focus:outline-none  sm:text-sm" x-ref="button" @keydown.arrow-up.stop.prevent="onButtonClick()" @keydown.arrow-down.stop.prevent="onButtonClick()" @click="onButtonClick()" aria-haspopup="listbox" :aria-expanded="open" aria-expanded="true" aria-labelledby="listbox-label">

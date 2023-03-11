@@ -4,7 +4,7 @@ const UserService = require('../services/users.service');
 // Change current language with i18n.changeLanguage and store it session and db if logged in
 async function changeLang(req, res) {
     // Get the lang parameter from the request body
-    const { lang } = req.body;
+    const { lng } = req.body;
 
     // Check if the lang parameter is valid
     // if (!validator.isIn(lang, ['en', 'es', 'fr'])) {
@@ -31,7 +31,7 @@ async function changeLang(req, res) {
     }
 
     const referer = req.get('referer');
-    const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lang}`) : `${referer}?lng=${lang}`;
+    const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lng}`) : `${referer}?lng=${lng}`;
 
     res.redirect(redirectUrl);
 

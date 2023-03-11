@@ -15,7 +15,7 @@ async function index(req, res) {
     const documentService = new DocumentService(db);
 
     // get the latest 30 documents
-    const documents = await documentService.getLatest(30, req.session.current_company.id);
+    const documents = await documentService.getLatest(30, req.session.current_company._id);
 
     // Render the dashboard/index view
     res.render('documents/index', { layout: 'app', documents: documents });
@@ -62,6 +62,29 @@ async function edit(req, res) {
     });
 };
 
+async function editAjax(req, res) {
+    // get invoiceId from req.params.invoiceId
+    let slug = req.params.slug;
+
+    // Get a reference to the MongoDB database
+    const db = get();
+
+    // Create a new User instance
+    const documentService = new DocumentService(db);
+
+    // get or create invoice from MongoDB, usersid/invoices/invoiceId collection, parameters the id and the current company id.
+    const document = await documentService.getBySlugAndCompanyId(slug, req.session.current_company._id);
+
+    req.session.current_document_id = document._id;
+
+    res.render("partials/documents/form", {
+        layout: false,
+        document: document
+    });
+};
+
+
+
 // add update function that respond to router.put("/documents/:id?"
 async function update(req, res) {
 
@@ -87,6 +110,7 @@ async function update(req, res) {
 module.exports = {
     index,
     edit,
+    editAjax,
     newDocument,
     update
 };

@@ -24,7 +24,7 @@ class Document extends Service {
                 sort: { created_at: -1 },
                 limit: limit,
             };
-            const result = await this.getBy(query, options);
+            const result = await this.getList(query, options);
             return result;
         } catch (err) {
             console.error(err.stack);

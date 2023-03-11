@@ -22,8 +22,9 @@ const app = express();
 
 
 require("./src/lib/response-helpers")(app);
-
-app.use(helmet());
+app.use(helmet({
+    referrerPolicy: { policy: "same-origin" },
+}));
 app.use(require('./src/middlewares/helmetCSP'));
 
 
@@ -46,7 +47,7 @@ const hbs = create({
             return process.env.API_HOSTNAME;
         },
         json: function(context) {
-            return JSON.stringify(context);
+            return JSON.parse(context);
         },
         stringify: function(context) {
             return JSON.stringify(context);
@@ -60,7 +61,6 @@ const hbs = create({
         ifEquals: function(arg1, arg2, options) {
             return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
         },
-
         switch: function(value, options) {
             this.switch_value = value;
             this.switch_break = false;

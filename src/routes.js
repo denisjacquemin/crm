@@ -36,6 +36,8 @@ router.get("/documents", auth, documentsController.index);
 router.get("/documents/new", auth, documentsController.newDocument);
 
 router.get("/documents/edit/:slug?", auth, documentsController.edit);
+router.get("/documents/editAjax/:slug?", auth, documentsController.editAjax);
+
 router.put("/documents", auth, documentsController.update);
 
 // router.get("/companies/new", companiesController.newCompany);

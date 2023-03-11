@@ -18,6 +18,15 @@ class Service {
         }
     }
 
+    async getList(query, options = {}) {
+        try {
+            return await this.db.collection(this.collection).find(query, options).toArray();
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
     getById(id) {
         if (!(id instanceof ObjectId)) {
             id = ObjectId(id);
