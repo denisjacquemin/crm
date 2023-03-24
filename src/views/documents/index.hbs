@@ -113,45 +113,13 @@
       </template>
     </div>
     <div class="overflow-y-auto sm:grow lg:block lg:grow bg-yellow-500 h-26 text-white" x-bind:class="currentColumn === 2.2 ? 'flex flex-col sm:flex sm:flex-col' : 'hidden'">
-      <p>Preview goes here.</p>
-      <ul>
-        <li class="border-b border-gray-400 py-2">List item 2</li>
-        <li class="border-b border-gray-400 py-2">List item 3</li>
-        <li class="border-b border-gray-400 py-2">List item 4</li>
-        <li class="border-b border-gray-400 py-2">List item 5</li>
-        <li class="border-b border-gray-400 py-2">List item 6</li>
-        <li class="border-b border-gray-400 py-2">List item 7</li>
-        <li class="border-b border-gray-400 py-2">List item 8</li>
-        <li class="border-b border-gray-400 py-2">List item 9</li>
-        <li class="border-b border-gray-400 py-2">List item 1</li>
-        <li class="border-b border-gray-400 py-2">List item 2</li>
-        <li class="border-b border-gray-400 py-2">List item 3</li>
-        <li class="border-b border-gray-400 py-2">List item 4</li>
-        <li class="border-b border-gray-400 py-2">List item 5</li>
-        <li class="border-b border-gray-400 py-2">List item 6</li>
-        <li class="border-b border-gray-400 py-2">List item 7</li>
-        <li class="border-b border-gray-400 py-2">List item 8</li>
-        <li class="border-b border-gray-400 py-2">List item 9</li>  
-        <li class="border-b border-gray-400 py-2">List item 1</li>
-        <li class="border-b border-gray-400 py-2">List item 2</li>
-        <li class="border-b border-gray-400 py-2">List item 3</li>
-        <li class="border-b border-gray-400 py-2">List item 4</li>
-        <li class="border-b border-gray-400 py-2">List item 5</li>
-        <li class="border-b border-gray-400 py-2">List item 6</li>
-        <li class="border-b border-gray-400 py-2">List item 7</li>
-        <li class="border-b border-gray-400 py-2">List item 8</li>
-        <li class="border-b border-gray-400 py-2">List item 9</li> 
-        <li class="border-b border-gray-400 py-2">List item 1</li>
-        <li class="border-b border-gray-400 py-2">List item 2</li>
-        <li class="border-b border-gray-400 py-2">List item 3</li>
-        <li class="border-b border-gray-400 py-2">List item 4</li>
-        <li class="border-b border-gray-400 py-2">List item 5</li>
-        <li class="border-b border-gray-400 py-2">List item 6</li>
-        <li class="border-b border-gray-400 py-2">List item 7</li>
-        <li class="border-b border-gray-400 py-2">List item 8</li>
-        <li class="border-b border-gray-400 py-2">List item 9</li> 
-        <li class="py-2">List item 100000</li>
-      </ul>
+      <template x-if="selectedDocument">
+        {{> documents/preview selectedDocument=selectedDocument}}
+      </template>
+
+      <template  x-if="! selectedDocument">
+        <p>Nothing to preview, Please select a document</p>
+      </template>
     </div>
   </div>
 </div>

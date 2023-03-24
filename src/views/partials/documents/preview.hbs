@@ -1,0 +1,11 @@
+<div x-init="selectedDocument = selectedDocument">
+  <div class="py-2"><h3 class="text-lg font-medium leading-6 text-gray-900">Destinataire</h3></div>
+
+  <div class="my-2">
+    <label for="client.name" class="block text-sm font-medium text-gray-700">Client</label>
+    <div class="mt-1">
+        <p x-text="selectedDocument.config.client.name"></p>
+    </div>
+    
+  </div>
+</div>
