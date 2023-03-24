@@ -1,13 +1,31 @@
 const { ObjectId } = require('mongodb');
+const mongoService = require('./lib/mongo');
 const Service = require('./_service');
 
-class Company extends Service {
+let companyServiceInstance = null;
+class CompanyService extends Service {
     constructor(db) {
         super(db);
         this.collection = "companies"
-        this.fields_white_list = new Set(["_id", "name", "description",
-            "address", "phone_number", "email", "website", "users"
+        this.fields_white_list = new Set([
+            "_id",
+            "name",
+            "description",
+            "address",
+            "phone_number",
+            "email",
+            "website",
+            "users"
         ]);
+    }
+
+    static async getInstance() {
+        if (!companyServiceInstance) {
+            const db = await mongoService.get();
+            companyServiceInstance = new CompanyService(db);
+        }
+
+        return companyServiceInstance;
     }
 
     async getUserById(id) {
@@ -75,4 +93,4 @@ class Company extends Service {
 
 
 }
-module.exports = Company
+module.exports = CompanyService

@@ -11,7 +11,18 @@ class Service {
 
     async getBy(query, options = {}) {
         try {
-            return await this.db.collection(this.collection).findOne(query, options);
+            const projection = options.projection || {};
+            return await this.db.collection(this.collection).findOne(query, {...options, projection });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
+    async getBy(query, options = {}) {
+        try {
+            const projection = options.projection || {};
+            return await this.db.collection(this.collection).findOne(query, {...options, projection });
         } catch (err) {
             console.error(err.stack);
             throw err;
@@ -20,7 +31,8 @@ class Service {
 
     async getList(query, options = {}) {
         try {
-            return await this.db.collection(this.collection).find(query, options).toArray();
+            const projection = options.projection || {};
+            return await this.db.collection(this.collection).find(query, { projection }).toArray();
         } catch (err) {
             console.error(err.stack);
             throw err;

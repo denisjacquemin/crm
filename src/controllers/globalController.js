@@ -16,11 +16,9 @@ async function changeLang(req, res) {
 
     // update in db only if user is logged in
     if (req.session.isAuth) {
-        // Get a reference to the MongoDB database
-        const db = get();
 
         // Create a new User instance
-        const userService = new UserService(db);
+        const userService = new UserService(db.get);
 
         // Get the user by their id
         const user = await userService.getById(req.session

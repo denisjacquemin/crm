@@ -1,33 +1,33 @@
 onmessage = function(event) {
 
-    console.log('in Worker onmessage');
-
-    const config = event.data.config;
+    const document = event.data.document;
+    const slug = event.data.slug;
     const csrfToken = event.data.csrfToken;
 
-    fetch('/documents', {
+    fetch('/document/' + slug, {
             method: 'PUT',
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'CSRF-Token': csrfToken
             },
-            body: JSON.stringify({ config: config })
+            body: JSON.stringify({ document: document })
         })
         .then(response => {
-            if (response.ok) {
-                console.log('response.ok', JSON.stringify(response.json))
+            // if response status is 401 return unauthorized to main thread
+            if (response.status === 401) {
+                postMessage({ unauthorized: true });
+            } else if (response.ok) {
                 return response.json();
             } else {
                 throw new Error('Network response was not ok');
             }
         })
         .then(data => {
-            console.log('then', data)
-                // Send the updated config object back to the main thread
             postMessage(data);
         })
         .catch(error => {
-            console.error('Error updating config:', error);
+            console.error('Error updating document:', error);
         });
 };

@@ -5,6 +5,7 @@ const express = require("express");
 const helmet = require("helmet");
 const path = require("path");
 const mongo = require("./src/services/lib/mongo");
+const compression = require('compression');
 
 // enable rate limiter
 // const rateLimit = require("express-rate-limit");
@@ -16,6 +17,7 @@ const mongo = require("./src/services/lib/mongo");
 // creates expres app using csrf and ratelimit protection
 // file deepcode ignore UseCsurfForExpress: CSRF is used later in the file
 const app = express();
+app.use(compression());
 
 // enable rate limiter
 

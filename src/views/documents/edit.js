@@ -1,65 +1,16 @@
-if (window.location.href.match(/documents\/edit/)) {
-    // onload set the invoiceid as the last segment of the url path if it doesn't exists yet
-    let w;
+// write un runAutosave that will contains all the logic to save the config to the server
+window.runAutoSave = function() {
 
-    if (typeof(Worker) !== "undefined") {
-        if (typeof(w) == "undefined") {
-            console.log('setting up worker');
-            w = new Worker("/public/js/workers/documents/autosave_worker.js");
-        }
-
-        w.onmessage = function(event) {
-            const data = event.data;
-
-            if (data.hasOwnProperty('updated_at')) {
-                // update lastUpdated in local storage config object
-                const config = JSON.parse(localStorage.getItem('config'));
-                config.updated_at = data.updated_at;
-                localStorage.setItem('config', JSON.stringify(config));
-                console.log('data.updated_at', data.updated_at);
-            }
-        };
-    } else {
-        console.log('Worker not supported');
-    }
-
-    window.onblur = function() {
-        console.log('in window.onblur');
-    }
-
-    window.onload = function() {
-
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // get JSON Object from hidden field named config	
-        var config = JSON.parse(document.getElementById('config').value);
-
-        // save config to local storage
-        localStorage.config = JSON.stringify(config);
-
-        // function updateInputValues(obj, parentKey = '') {
-        //     for (const key in obj) {
-        //         if (typeof obj[key] === 'object') {
-        //             updateInputValues(obj[key], `${parentKey}${key}.`);
-        //         } else {
-        //             const input = document.querySelector(`input[name="${parentKey}${key}"]`);
-        //             if (input) {
-        //                 input.value = obj[key];
-        //             }
-        //         }
-        //     }
-        // }
-
-        // updateInputValues(config);
-
-        // use event delagetion to listen to all input changes
+        // setup event listener that will save the document to localstorage
         document.addEventListener('input', function(e) {
+            var documents = JSON.parse(localStorage.getItem('documents')) || {};
             // get the config object from localstorage or create it if i doesn't exist yet
-            var config = JSON.parse(localStorage.getItem('config')) || {};
 
             // set the value of the input field to the config object
             // example: config['invoice']['number'] will match input name="invoice.number"
-            put(config, e.target.name, e.target.value);
+            // target value should be the value of the input field under current document slug
+            var documentSlug = document.getElementById('slug').value;
+            put(documents, documentSlug + '.' + e.target.name, e.target.value);
             // set last updated date time for the config
 
             const now = new Date();
@@ -69,30 +20,83 @@ if (window.location.href.match(/documents\/edit/)) {
                 now.getUTCDate(),
                 now.getUTCHours(),
                 now.getUTCMinutes(),
-                now.getUTCSeconds()
+                now.getUTCSeconds(),
+                now.getUTCMilliseconds(),
             ));
 
-            put(config, 'lastConfigUpdateAt', utcNow.toISOString());
+            put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
 
-            localStorage.config = JSON.stringify(config);
+            localStorage.documents = JSON.stringify(documents);
 
         });
+
+
+        // setup worker if not already done
+        let w;
+        if (typeof(w) == "undefined") {
+            w = setupWorker();
+        }
+
+        // handle worker messages
+        w.onmessage = function(event) {
+            // handle messages from worker when postMessage({ unauthorized: true }); is called
+            if (event.data.hasOwnProperty('unauthorized')) {
+                history.replaceState(null, '', window.location.href);
+                location.reload();
+            }
+
+            const data = event.data;
+
+            if (data.hasOwnProperty('updated_at') && data.hasOwnProperty('slug')) {
+                // update lastUpdated in local storage config object
+                var documents = JSON.parse(localStorage.getItem('documents')) || {};
+                documents[data.slug].updated_at = data.updated_at;
+
+                localStorage.setItem('documents', JSON.stringify(documents));
+            }
+        };
+
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         // at regular intervals, save config to server
         setInterval(function() {
             // get config from local storage
-            var config = JSON.parse(localStorage.getItem('config'));
+            var documents = JSON.parse(localStorage.getItem('documents'));
 
+            // for each keys in documents
+            for (var slug in documents) {
 
-            if (config && config.hasOwnProperty('lastConfigUpdateAt')) {
-                // check if config was updated after the last time it was sent to the server
-                if (Date.parse(config.lastConfigUpdateAt) > Date.parse(config.updated_at)) {
-                    w.postMessage({ config: config, csrfToken: csrfToken });
+                if (documents[slug] && documents[slug].hasOwnProperty('lastConfigUpdateAt')) {
+
+                    if (Date.parse(documents[slug].lastConfigUpdateAt) > Date.parse(documents[slug].updated_at) || !documents[slug].updated_at) {
+                        console.log('sending to worker');
+                        w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
+                    } else {
+                        // if handled slug is not the current slug, removes document from documents in local storage
+                        if (slug != document.getElementById('slug').value) {
+                            delete documents[slug];
+                            localStorage.setItem('documents', JSON.stringify(documents));
+                        }
+                    }
+
                 }
             }
-        }, 5000);
+        }, 10000);
     }
+    // setup worker and return it
+function setupWorker() {
+    let w;
+    if (typeof(Worker) !== "undefined") {
+        if (typeof(w) == "undefined") {
+            w = new Worker("/public/js/workers/documents/autosave_worker.js");
+        }
+    } else {
+        console.log('Worker not supported');
+    }
+
+    return w;
 }
+
 /*!
  * See https://gomakethings.com/adding-items-to-an-object-at-a-specific-path-with-vanilla-js/
  * Add items to an object at a specific path

@@ -81,6 +81,10 @@
         "title": "We’ve sent you a password reset link",
         "instructions": "You will receive an email shortly with a link to reset your password. You may now close this tab."
     },
+    "documents": {
+        "document_not_found": "Document not found",
+        "document_not_found_sub": "The document you are looking for does not exist or has been deleted"
+    },
     "do_not_translate": {
         "languages": [
             { "id": 1, "name": "English", "code_dnt": "en" },

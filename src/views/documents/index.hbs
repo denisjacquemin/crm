@@ -1,18 +1,30 @@
 
-<div class="flex flex-1 overflow-y-hidden sm:flex-row 2xl:container 2xl:m-auto" x-data="{ currentColumn: 1, selectedDocument: null, documents: {{stringify documents}} }" x-init="
+
+<div class="flex flex-1 overflow-y-hidden sm:flex-row 2xl:container 2xl:m-auto" 
+     x-data="{ currentColumn: 1, selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}null{{/if}}, documents: {{ stringify documents }} }" 
+     x-init="
           $watch('currentColumn', value => {
             if (value > 1) {
               navState = 'back'
             } else {
               navState = 'menu'
             }
-            console.log('navState: ', navState);
           });
           $watch('navState', value => {
             if (value == 'menu') {
               currentColumn = 1
             }
-          })
+          });
+          if (selectedDocument) {
+            let documentsElemSelected = documents.find(d => d.slug == selectedDocument.slug);
+            const documentsLS = JSON.parse(localStorage.getItem('documents') || '{}');
+            documentLS = documentsLS[selectedDocument.slug];
+            if (documentLS) {
+              documentsElemSelected.config = documentLS.config;
+            }  
+            selectedDocument = {...selectedDocument, ...documentsElemSelected};             
+            runAutoSave();
+          }
         ">
   <div class="w-full overflow-y-auto sm:w-96 text-white" x-bind:class="{ 'hidden sm:block': currentColumn >= 2 }">
     <div class="m-2 flex flex-row">
@@ -29,21 +41,24 @@
     
     <ul role="list" class="divide-y divide-gray-200" x-data="{ 
           editDocument: function(slug) {
-            fetch(`/documents/editAjax/${slug}`)
-              .then(response => response.text())
-              .then(html => {
-                document.querySelector('#form').innerHTML = html;
+            fetchUrl(`/document/editAjax/${slug}`)
+              .then(data => {
+                
+                {{!-- this.selectedDocument.config = JSON.parse(data).config; --}}
+                Object.assign(this.selectedDocument, this.selectedDocument, JSON.parse(data));
+                history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
+                runAutoSave();
               })
               .catch(error => {
-                console.error('Error fetching document', error);
+                console.error('Error editing document', error);
               });
           }
         }"
     >
       
       <template x-for="(document, index) in documents" :key="index">
-        <li @click.prevent="currentColumn = 2.1; selectedDocument = document" class="relative bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50">
-          <p x-text="document?.config?.client?.name ?? ''" class="truncate text-sm font-medium text-gray-900" />
+        <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="relative bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50">
+          <p class="truncate text-sm font-medium text-gray-900" x-text="document?.config?.client?.name"></p>
           <div class="flex justify-between space-x-3">
             <div class="min-w-0 flex-1">
               <a href="#" class="block focus:outline-none">
@@ -89,29 +104,13 @@
       </div>
     </div> 
     <div class="overflow-y-auto flex flex-col px-2 sm:flex sm:flex-col sm:grow lg:w-72 lg:grow-0 xl:w-80  h-26 text-black" x-bind:class="currentColumn <= 2.1 ? 'flex flex-col' : 'hidden sm:hidden'">
-      <div x-show="selectedDocument">
-        <input type="hidden" id="config" x-bind:value="selectedDocument?.config">
-        <div class="py-2"><h3 class="text-lg font-medium leading-6 text-gray-900">Destinataire</h3></div>
+      <template x-if="selectedDocument">
+        {{> documents/edit_form selectedDocument=selectedDocument}}
+      </template>
 
-        <div class="my-2">
-            <label for="client.name" class="block text-sm font-medium text-gray-700">Client</label>
-            <div class="mt-1">
-                <input type="text" x-bind:value="selectedDocument?.config?.client?.name" name="client.name" id="client.name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" aria-describedby="email-description">
-            </div>
-            <p class="mt-2 text-sm text-gray-500" id="email-description">Find by name, adress or anything else</p>
-        </div>
-
-        <div class="my-2">
-            <label for="date" class="block text-sm font-medium text-gray-700">Invoice date</label>
-            <div class="mt-1">
-                <input type="email" name="invoice.date" id="invoice.date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" aria-describedby="email-description">
-            </div>
-            <p class="mt-2 text-sm text-gray-500" id="email-description"><a href="#" class="underline">Today</a> <a class="underline" href="#">Tommorow</a></p>
-        </div>
-      </div>
-      <div x-show="!selectedDocument">
-          <p>Document not found</p>
-      </div>
+      <template  x-if="! selectedDocument">
+        <p>Please select a document</p>
+      </template>
     </div>
     <div class="overflow-y-auto sm:grow lg:block lg:grow bg-yellow-500 h-26 text-white" x-bind:class="currentColumn === 2.2 ? 'flex flex-col sm:flex sm:flex-col' : 'hidden'">
       <p>Preview goes here.</p>

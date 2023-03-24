@@ -1,5 +1,11 @@
 [{
-    "collection": "users",
-    "field": "email",
-    "unique": true
-}]
+        "collection": "users",
+        "field": "email",
+        "unique": true
+    },
+    {
+        "collection": "documents",
+        "field": "slug",
+        "unique": true
+    }
+]

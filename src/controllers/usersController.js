@@ -1,4 +1,3 @@
-const {get, startSession } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
 const crypto = require('crypto');
@@ -95,12 +94,7 @@ async function signup1Post(req, res, next) {
         })
     }
 
-    // Get a reference to the MongoDB database
-    const db = get();
-
-    // Create a new User instance
-    const userService = new UserService(db);
-
+    const userService = await UserService.getInstance();
     // Check if a user already exists with the given email address
     const sanitizedEmail = sanitizeEmail(trimmedEmail);
     const userExist = await userService.existsByEmail(sanitizedEmail);
@@ -192,10 +186,8 @@ async function signup2Post(req, res, next) {
         return res.render('users/signup2', { notifications: req.flash() })
     }
 
-    // Get a reference to the MongoDB database
-    const db = get();
+    const userService = await UserService.getInstance();
 
-    const userService = new UserService(db);
     const companyService = new CompanyService(db);
 
     // Check if a user already exists with the given email address
@@ -214,7 +206,6 @@ async function signup2Post(req, res, next) {
 
     // Start a transaction
     const session = startSession();
-    session.startTransaction();
 
     let newUser = null;
     let newCompany = null;
@@ -333,11 +324,7 @@ async function signinPost(req, res, next) {
         });
     }
 
-    // Get a reference to the MongoDB database
-    const db = get();
-
-    // Create a new User instance
-    const userService = new UserService(db);
+    const userService = await UserService.getInstance();
 
     // Check if a user exists with the given email address
     emailSanitized = sanitizeEmail(trimmedEmail);
@@ -368,8 +355,7 @@ async function signinPost(req, res, next) {
         });
     }
 
-    // get company by user.companies[0]
-    const companyService = new CompanyService(db);
+    const companyService = await CompanyService.getInstance();
     const current_company = await companyService.getById(user.companies[0]);
 
     // Set the isAuth, email, and timestamps fields on the user's session
@@ -454,12 +440,8 @@ async function forgotPasswordPost(req, res, next) {
             notifications: req.flash()
         })
     }
+    const userService = await UserService.getInstance();
 
-    // Get a reference to the MongoDB database
-    const db = get();
-
-    // Create a new User instance
-    const userService = new UserService(db);
 
     // Check if a user exists with the given email address
     const user = await userService.getByEmail(emailSanitized);
@@ -531,11 +513,7 @@ async function resetPassword(req, res, next) {
         token: token
     }
 
-    // Get a reference to the MongoDB database
-    const db = get();
-
-    // Create a new User instance
-    const userService = new UserService(db);
+    const userService = await UserService.getInstance();
 
     // Check if a user exists with the given token
     const user = await userService.getByResetPasswordToken(token);
@@ -633,12 +611,7 @@ async function resetPasswordPost(req, res, next) {
         })
     }
 
-    // Get a reference to the MongoDB database
-    const db = get();
-
-
-    // Create a new User instance
-    const userService = new UserService(db);
+    const userService = await UserService.getInstance();
 
     // Check if a user exists with the given token
     const user = await userService.getByResetPasswordToken(token);
@@ -692,9 +665,7 @@ async function OAuthGoogleCallback(req, res, next) {
 
     const { email, firstname } = googleUser;
 
-    const db = get();
-
-    const userService = new UserService(db);
+    const userService = await UserService.getInstance();
 
     emailSanitized = sanitizeEmail(email);
     const user = await userService.getByEmail(emailSanitized);

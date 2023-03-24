@@ -1,42 +1,65 @@
-// Import the MongoClient class from the mongodb driver
-const { MongoClient } = require("mongodb");
+// Import the required MongoDB libraries
+const { MongoClient } = require('mongodb');
 
 // Create a MongoDB connection string using environment variables
 const mongoDbUrl = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URL}`;
 
-// Create a new MongoClient instance
-const client = new MongoClient(mongoDbUrl);
+// Create a connection pool with the desired options
+const options = {
+    maxPoolSize: process.env.MONGO_POOL_SIZE || 10,
+    minPoolSize: 1,
+    waitQueueTimeoutMS: 10000, // 10 seconds
+};
+const pool = new MongoClient(mongoDbUrl, options);
 
-// variable to keep track of the number of reconnection attempts
-let reconnectAttempts = 0;
-
-// Asynchronously connect to the MongoDB server and verify the connection
-async function run() {
+// Function to get a database connection from the pool
+async function getDb() {
     try {
-        // Connect the client to the server (optional starting in v4.7)
-        await client.connect();
-
-        // Establish and verify the connection to the MongoDB server
-        await client.db("admin").command({ ping: 1 });
-        console.log(`Successfully connected to MongoDB @ ${process.env.MONGO_URL}`);
-    } catch (err) {
-        if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
-            console.log('Error connecting to MongoDB', err)
-                // check if reconnection attempts are less than 3
-            if (reconnectAttempts < process.env.MONGO_MAX_RECONNECT_ATTEMPTS) {
-                console.log('Reconnecting to MongoDB...')
-                reconnectAttempts++
-                // wait for 5 seconds before attempting to reconnect
-                setTimeout(run, 5000)
-            }
-        }
+        // Get a connection from the pool
+        const conn = await pool.connect();
+        // Return a reference to the database
+        return conn.db();
+    } catch (error) {
+        console.error('Error getting database connection from pool', error);
+        throw error;
     }
 }
 
 // Export the run, get, and close functions
 module.exports = {
-    run,
-    get: () => client.db(),
-    close: () => client.close(),
-    startSession: () => client.startSession()
+    run: async() => {
+        try {
+            // Connect the client to the server (optional starting in v4.7)
+            await pool.connect();
+            // Establish and verify the connection to the MongoDB server
+            await pool.db('admin').command({ ping: 1 });
+            console.log(`Successfully connected to MongoDB @ ${process.env.MONGO_URL}`);
+        } catch (error) {
+            console.error('Error connecting to MongoDB', error);
+            throw error;
+        }
+    },
+    get: () => getDb(),
+    close: async() => {
+        try {
+            // Close the connection pool
+            await pool.close();
+        } catch (error) {
+            console.error('Error closing connection pool', error);
+            throw error;
+        }
+    },
+    startSession: async() => {
+        try {
+            // Start a new client session
+            const session = await pool.startSession();
+            // Start a transaction with the session
+            await session.startTransaction();
+            // Return the session
+            return session;
+        } catch (error) {
+            console.error('Error starting session', error);
+            throw error;
+        }
+    },
 };

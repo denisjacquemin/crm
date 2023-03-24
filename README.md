@@ -13,8 +13,23 @@ listening on 3000
 
 # Notifications
 
-`return res.render('users/signup', { notification: { type: 'success', message: req.i18n.t('signup.all_fields_required'), subMessage: 'Voici un sub message' } })`
+`
+req.flash('error', {
+    message: req.i18n.t('signup.all_fields_required')
+});
 
+return res.render('users/signup1', {
+    notifications: req.flash()
+})
+`
+`
+req.flash('error', {
+    message: req.i18n.t('documents.document_not_found')
+});
+
+
+res.redirect('/documents');
+`
 
 
 

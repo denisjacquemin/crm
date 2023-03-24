@@ -24,5 +24,8 @@
   "signup": {
     "password_not_strong_enough": "signup.password_not_strong_enough",
     "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub"
+  },
+  "documents": {
+    "document_not_found": "documents.document_not_found"
   }
 }

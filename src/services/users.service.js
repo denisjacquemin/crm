@@ -1,9 +1,11 @@
 const { ObjectId } = require('mongodb');
+const mongoService = require('./lib/mongo');
 const Service = require('./_service');
 const { hashPassword, comparePassword } = require('./lib/password');
 const sanitizeEmail = require('../lib/sanitizer').sanitizeEmail;
 
-class User extends Service {
+let userServiceInstance = null;
+class UserService extends Service {
     constructor(db) {
         super(db);
         this.collection = "users"
@@ -20,6 +22,15 @@ class User extends Service {
             "google_id",
             "picture"
         ]);
+    }
+
+    static async getInstance() {
+        if (!userServiceInstance) {
+            const db = await mongoService.get();
+            userServiceInstance = new UserService(db);
+        }
+
+        return userServiceInstance;
     }
 
     async create(data) {
@@ -140,4 +151,4 @@ class User extends Service {
 
 }
 
-module.exports = User
+module.exports = UserService;

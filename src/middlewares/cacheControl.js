@@ -10,6 +10,11 @@
 // This helps to prevent users from accessing secured pages after they have logged out, or after their session has expired.
 
 module.exports = function cacheControl(req, res, next) {
+
+    if (req.url.startsWith('/public/')) {
+        return next();
+    }
+
     if (req.session.isAuth) {
         // Set cache control headers to prevent caching
         res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');

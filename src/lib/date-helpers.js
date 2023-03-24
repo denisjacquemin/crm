@@ -53,7 +53,8 @@ class DateHelper {
             now.getUTCDate(),
             now.getUTCHours(),
             now.getUTCMinutes(),
-            now.getUTCSeconds()
+            now.getUTCSeconds(),
+            now.getUTCMilliseconds()
         ));
         return utcNow;
     }

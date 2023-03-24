@@ -1,8 +1,9 @@
 const { ObjectId } = require('mongodb');
+const mongoService = require('./lib/mongo');
 const Service = require('./_service');
 
-// create a DocumentService class that extends the Service class
-class Document extends Service {
+let documentServiceInstance = null;
+class DocumentService extends Service {
     constructor(db) {
         super(db);
         this.collection = 'documents';
@@ -17,12 +18,22 @@ class Document extends Service {
         ]);
     }
 
+    static async getInstance() {
+        if (!documentServiceInstance) {
+            const db = await mongoService.get();
+            documentServiceInstance = new DocumentService(db);
+        }
+
+        return documentServiceInstance;
+    }
+
     async getLatest(limit = 30, company_id = null) {
         try {
             const query = { company_id: ObjectId(company_id) };
             const options = {
                 sort: { created_at: -1 },
                 limit: limit,
+                projection: { "slug": 1, "config.client.name": 1 },
             };
             const result = await this.getList(query, options);
             return result;
@@ -64,10 +75,11 @@ class Document extends Service {
         }
     }
 
-    async getBySlugAndCompanyId(slug, company_id) {
+    async getBySlugAndCompanyId(slug, company_id, projection = {}) {
         try {
             const query = { slug: slug, company_id: ObjectId(company_id) };
-            return await this.getBy(query);
+            const options = { projection: projection };
+            return await this.getBy(query, options);
         } catch (err) {
             console.error(err.stack);
             throw err;
@@ -77,4 +89,4 @@ class Document extends Service {
 
 }
 
-module.exports = Document;
+module.exports = DocumentService;
