@@ -33,7 +33,7 @@ class DocumentService extends Service {
             const options = {
                 sort: { created_at: -1 },
                 limit: limit,
-                projection: { "slug": 1, "config.client.name": 1 },
+                projection: { "slug": 1, "config.buyer.name": 1, "created_at": 1 },
             };
             const result = await this.getList(query, options);
             return result;

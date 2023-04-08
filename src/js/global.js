@@ -16,12 +16,21 @@ submitButtons.forEach(button => {
     });
 });
 
-window.fetchUrl = function(url) {
-    return fetch(url, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
+window.fetchUrl = function(url, method = 'GET', body = null) {
+    const options = {
+        method: method,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+        options.headers['Content-Type'] = 'application/json';
+    }
+
+    return fetch(url, options)
         .then(response => {
             if (response.status === 401) {
                 history.replaceState(null, '', window.location.href);
@@ -38,3 +47,31 @@ window.fetchUrl = function(url) {
             console.error('Error fetching URL', error);
         });
 };
+
+window.deepMergeObjects = function(target, ...sources) {
+    if (!sources.length) {
+        return target;
+    }
+    const source = sources.shift();
+    if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key]) {
+                    Object.assign(target, {
+                        [key]: {}
+                    });
+                }
+                deepMergeObjects(target[key], source[key]);
+            } else {
+                Object.assign(target, {
+                    [key]: source[key]
+                });
+            }
+        }
+    }
+    return deepMergeObjects(target, ...sources);
+}
+
+function isObject(item) {
+    return item && typeof item === 'object' && !Array.isArray(item);
+}

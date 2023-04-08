@@ -704,7 +704,8 @@ async function OAuthGoogleCallback(req, res, next) {
         timezone: user.timezone,
         picture: user.picture
     }
-    const companyService = new CompanyService(db);
+    const companyService = await CompanyService.getInstance();
+
     req.session.current_company = await companyService.getById(user.companies[0]);
 
     res.disableBackButtonRedirect('/');

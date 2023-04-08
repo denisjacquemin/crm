@@ -26,7 +26,7 @@ const connectToRedis = async() => {
     try {
         // Connect to Redis
         await redisClient.connect()
-        console.log(`Successfully connected to Redis @ ${process.env.REDIS_URL}`)
+        console.log(`😀 Successfully connected to Redis @ ${process.env.REDIS_URL}`)
     } catch (err) {
         if (err.code === 'ECONNRESET' || err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
             console.log('Error connecting to Redis', err)

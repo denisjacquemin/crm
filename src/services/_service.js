@@ -31,8 +31,25 @@ class Service {
 
     async getList(query, options = {}) {
         try {
-            const projection = options.projection || {};
-            return await this.db.collection(this.collection).find(query, { projection }).toArray();
+            const { sort = {}, limit = 0, skip = 0, projection = {} } = options;
+
+            const cursor = this.db.collection(this.collection).find(query, { projection });
+
+            if (Object.keys(sort).length > 0) {
+                cursor.sort(sort);
+            }
+
+            if (limit > 0) {
+                cursor.limit(limit);
+            }
+
+            if (skip > 0) {
+                cursor.skip(skip);
+            }
+
+            const result = await cursor.toArray();
+
+            return result;
         } catch (err) {
             console.error(err.stack);
             throw err;

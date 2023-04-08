@@ -33,12 +33,13 @@ router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 
 router.get("/documents", auth, documentsController.index);
-router.get("/documents/new", auth, documentsController.newDocument);
+
+router.post("/document/new", auth, documentsController.newDocument);
+router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
 
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
-
-router.put("/document/:slug?", auth, documentsController.update);
+router.patch("/document/:slug?", auth, documentsController.update);
 
 // router.get("/companies/new", companiesController.newCompany);
 

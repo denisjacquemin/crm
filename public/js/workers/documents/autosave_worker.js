@@ -5,7 +5,7 @@ onmessage = function(event) {
     const csrfToken = event.data.csrfToken;
 
     fetch('/document/' + slug, {
-            method: 'PUT',
+            method: 'PATCH',
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',

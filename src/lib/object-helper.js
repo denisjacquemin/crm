@@ -1,12 +1,21 @@
-function addMissingProperties(defaultObj, targetObj) {
+function mergeObjects(defaultObj, targetObj) {
+    const mergedObj = {...targetObj };
+
     for (const property in defaultObj) {
         if (!(property in targetObj)) {
-            targetObj[property] = defaultObj[property];
+            mergedObj[property] = defaultObj[property];
+        } else if (isObject(defaultObj[property]) && isObject(targetObj[property])) {
+            mergedObj[property] = mergeObjects(defaultObj[property], targetObj[property]);
         }
     }
-    return targetObj;
+
+    return mergedObj;
+}
+
+function isObject(obj) {
+    return typeof obj === "object" && obj !== null;
 }
 
 module.exports = {
-    addMissingProperties
+    mergeObjects
 };

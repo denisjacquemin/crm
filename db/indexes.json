@@ -7,5 +7,57 @@
         "collection": "documents",
         "field": "slug",
         "unique": true
+    },
+    {
+        "collection": "documents",
+        "field": "created_at",
+        "unique": false
+    },
+    {
+        "collection": "buyers",
+        "fields": [{
+                "field": "name",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 10
+            },
+            {
+                "field": "address",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 8
+            },
+            {
+                "field": "city",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 6
+            },
+            {
+                "field": "country",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 6
+            },
+            {
+                "field": "vatNumber",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 4
+            },
+            {
+                "field": "emailAddress",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 2
+            },
+            {
+                "field": "phoneNumber",
+                "language": "english",
+                "fuzzy": true,
+                "weight": 2
+            }
+        ],
+        "language": "english"
     }
 ]

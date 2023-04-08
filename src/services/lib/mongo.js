@@ -33,7 +33,7 @@ module.exports = {
             await pool.connect();
             // Establish and verify the connection to the MongoDB server
             await pool.db('admin').command({ ping: 1 });
-            console.log(`Successfully connected to MongoDB @ ${process.env.MONGO_URL}`);
+            console.log(`😀 Successfully connected to MongoDB @ ${process.env.MONGO_URL}`);
         } catch (error) {
             console.error('Error connecting to MongoDB', error);
             throw error;

@@ -1,7 +1,7 @@
 
 
 <div class="flex flex-1 overflow-y-hidden sm:flex-row 2xl:container 2xl:m-auto" 
-     x-data="{ currentColumn: 1, selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}null{{/if}}, documents: {{ stringify documents }} }" 
+     x-data="{ currentColumn: 1, openSlide: false, slideContentPartialName: null, selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}null{{/if}}, documents: {{ stringify documents }} }" 
      x-init="
           $watch('currentColumn', value => {
             if (value > 1) {
@@ -16,19 +16,33 @@
             }
           });
           if (selectedDocument) {
-            let documentsElemSelected = documents.find(d => d.slug == selectedDocument.slug);
-            const documentsLS = JSON.parse(localStorage.getItem('documents') || '{}');
-            documentLS = documentsLS[selectedDocument.slug];
-            if (documentLS) {
-              documentsElemSelected.config = documentLS.config;
-            }  
-            selectedDocument = {...selectedDocument, ...documentsElemSelected};             
+            documents = updateDocumentsWithLS(documents);
+            let documentsElemSelected = documents.find(doc => doc.slug == selectedDocument.slug);
+            deepMergeObjects(selectedDocument, documentsElemSelected);    
+            updateNewUrl(selectedDocument.slug);
             runAutoSave();
           }
+          
         ">
   <div class="w-full overflow-y-auto sm:w-96 text-white" x-bind:class="{ 'hidden sm:block': currentColumn >= 2 }">
     <div class="m-2 flex flex-row">
-      <a href="/documents/new" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Nouveau doc</a>
+      
+      <a @click.prevent="fetchUrl('/document/newAjax', 'POST' )
+          .then(data => {
+            let newDocument = JSON.parse(data);
+            documents = [newDocument, ...documents];
+            selectedDocument = newDocument;
+            currentColumn = 2.1;
+            updateNewUrl(newDocument.slug);
+            runAutoSave();
+          })
+          .catch(error => {
+            console.error('Error creating new document', error);
+          });" 
+          href="#" 
+          class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Nouveau doc
+      </a>
 
       <div class="relative mt-1 flex items-center">
         <input type="text" name="search" id="search" class="block w-full rounded-md border-gray-300 pr-12 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -43,9 +57,7 @@
           editDocument: function(slug) {
             fetchUrl(`/document/editAjax/${slug}`)
               .then(data => {
-                
-                {{!-- this.selectedDocument.config = JSON.parse(data).config; --}}
-                Object.assign(this.selectedDocument, this.selectedDocument, JSON.parse(data));
+                this.selectedDocument = deepMergeObjects(this.selectedDocument, JSON.parse(data));
                 history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
                 runAutoSave();
               })
@@ -58,7 +70,7 @@
       
       <template x-for="(document, index) in documents" :key="index">
         <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="relative bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50">
-          <p class="truncate text-sm font-medium text-gray-900" x-text="document?.config?.client?.name"></p>
+          <p class="truncate text-sm font-medium text-gray-900" x-text="document?.config?.buyer?.name"></p>
           <div class="flex justify-between space-x-3">
             <div class="min-w-0 flex-1">
               <a href="#" class="block focus:outline-none">
@@ -104,15 +116,18 @@
       </div>
     </div> 
     <div class="overflow-y-auto flex flex-col px-2 sm:flex sm:flex-col sm:grow lg:w-72 lg:grow-0 xl:w-80  h-26 text-black" x-bind:class="currentColumn <= 2.1 ? 'flex flex-col' : 'hidden sm:hidden'">
+      
       <template x-if="selectedDocument">
-        {{> documents/edit_form selectedDocument=selectedDocument}}
+        {{> documents/edit_form selectedDocument=selectedDocument openSlide = openSlide}}
       </template>
 
       <template  x-if="! selectedDocument">
         <p>Please select a document</p>
       </template>
+
     </div>
-    <div class="overflow-y-auto sm:grow lg:block lg:grow bg-yellow-500 h-26 text-white" x-bind:class="currentColumn === 2.2 ? 'flex flex-col sm:flex sm:flex-col' : 'hidden'">
+    <div class="overflow-y-auto sm:grow lg:block lg:grow h-26 text-white" x-bind:class="currentColumn === 2.2 ? 'flex flex-col sm:flex sm:flex-col' : 'hidden'">
+      
       <template x-if="selectedDocument">
         {{> documents/preview selectedDocument=selectedDocument}}
       </template>
@@ -120,6 +135,8 @@
       <template  x-if="! selectedDocument">
         <p>Nothing to preview, Please select a document</p>
       </template>
+      
     </div>
   </div>
+  {{> documents/slide }}
 </div>

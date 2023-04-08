@@ -1,33 +1,34 @@
 // write un runAutosave that will contains all the logic to save the config to the server
-window.runAutoSave = function() {
-
-        // setup event listener that will save the document to localstorage
+window.runAutoSave = function(elem) {
         document.addEventListener('input', function(e) {
-            var documents = JSON.parse(localStorage.getItem('documents')) || {};
-            // get the config object from localstorage or create it if i doesn't exist yet
 
-            // set the value of the input field to the config object
-            // example: config['invoice']['number'] will match input name="invoice.number"
-            // target value should be the value of the input field under current document slug
-            var documentSlug = document.getElementById('slug').value;
-            put(documents, documentSlug + '.' + e.target.name, e.target.value);
-            // set last updated date time for the config
+            if (e.target.matches('.to-be-autosaved input')) {
+                var documents = JSON.parse(localStorage.getItem('documents')) || {};
+                // get the config object from localstorage or create it if i doesn't exist yet
 
-            const now = new Date();
-            const utcNow = new Date(Date.UTC(
-                now.getUTCFullYear(),
-                now.getUTCMonth(),
-                now.getUTCDate(),
-                now.getUTCHours(),
-                now.getUTCMinutes(),
-                now.getUTCSeconds(),
-                now.getUTCMilliseconds(),
-            ));
+                // set the value of the input field to the config object
+                // example: config['invoice']['number'] will match input name="invoice.number"
+                // target value should be the value of the input field under current document slug
+                var documentSlug = document.getElementById('slug').value;
+                put(documents, documentSlug + '.' + e.target.name, e.target.value);
+                // set last updated date time for the config
 
-            put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
+                const now = new Date();
+                const utcNow = new Date(Date.UTC(
+                    now.getUTCFullYear(),
+                    now.getUTCMonth(),
+                    now.getUTCDate(),
+                    now.getUTCHours(),
+                    now.getUTCMinutes(),
+                    now.getUTCSeconds(),
+                    now.getUTCMilliseconds(),
+                ));
 
-            localStorage.documents = JSON.stringify(documents);
+                put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
 
+                localStorage.documents = JSON.stringify(documents);
+
+            }
         });
 
 
@@ -96,6 +97,29 @@ function setupWorker() {
 
     return w;
 }
+
+window.updateNewUrl = function(slug) {
+    history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
+}
+
+/// write a updateDocumentsWithLS that will go the localstorage and update the documents object
+window.updateDocumentsWithLS = function(documents) {
+    var documentsLS = JSON.parse(localStorage.getItem('documents')) || {};
+
+    for (var slug in documentsLS) {
+        // find the document in documents object that match the slug
+        var document = documents.find(d => d.slug == slug);
+        // if found, update the document with the one from localstorage
+        if (document) {
+            document.config = documentsLS[slug].config;
+        }
+    }
+
+    return documents;
+}
+
+
+
 
 /*!
  * See https://gomakethings.com/adding-items-to-an-object-at-a-specific-path-with-vanilla-js/
