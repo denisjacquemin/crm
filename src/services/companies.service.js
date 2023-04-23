@@ -32,22 +32,12 @@ class CompanyService extends Service {
         return this.getById("companies", id);
     }
 
-    async create(data) {
+    async create(data, options = {}) {
         try {
             // Check if all fields in data are in white list
             const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
+            return await super.create(filteredData, options);
 
-            // Insert the company in the companies collection with data parameter
-            const result = await this.db.collection('companies').insertOne({
-                ...filteredData
-            });
-
-            const company = await this.db.collection('companies').findOne({
-                _id: result.insertedId
-            });
-
-            // Return the new company
-            return company;
         } catch (error) {
             console.error(error.stack);
             throw error;

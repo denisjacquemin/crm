@@ -33,12 +33,12 @@ class UserService extends Service {
         return userServiceInstance;
     }
 
-    async create(data) {
+    async create(data, options = {}) {
         const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
-        if (!filteredData.password) return await super.create(filteredData);
+        if (!filteredData.password) return await super.create(filteredData, options);
         try {
             filteredData.password = await hashPassword(filteredData.password);
-            return await super.create(filteredData);
+            return await super.create(filteredData, options);
         } catch (err) {
             console.error(err.stack);
             throw err;

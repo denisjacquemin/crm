@@ -4,7 +4,8 @@ const flash = require('connect-flash');
 const express = require("express");
 const helmet = require("helmet");
 const path = require("path");
-const mongo = require("./src/services/lib/mongo");
+const { connectToDatabase, closeDatabaseConnection, get: getMongoClient } = require('./src/services/lib/mongo');
+const { connectToTypesense, get: getTypesenseClient } = require('./src/services/lib/typesense');
 const compression = require('compression');
 
 // enable rate limiter
@@ -112,8 +113,31 @@ app.use(function(err, req, res, next) {
 });
 
 
-mongo.run().then(() => {
-    app.listen(process.env.PORT, () => {
-        console.log(`Server is running on port ${process.env.PORT}`);
-    });
-});
+async function startServer() {
+    try {
+        await Promise.all([connectToDatabase(), connectToTypesense()]);
+        app.listen(process.env.PORT, () => {
+            console.log(`🚀 Server is running on port ${process.env.PORT}`);
+        });
+    } catch (error) {
+        console.error('Error starting server', error);
+        process.exit(1);
+    }
+}
+
+
+
+
+async function stopServer() {
+    try {
+        await closeDatabaseConnection();
+        console.log('🛑 Server stopped');
+    } catch (error) {
+        console.error('Error stopping server', error);
+        process.exit(1);
+    }
+}
+
+startServer();
+process.on('SIGINT', stopServer);
+process.on('SIGTERM', stopServer);

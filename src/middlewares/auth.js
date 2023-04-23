@@ -2,6 +2,7 @@ const UserService = require('../services/users.service');
 
 module.exports = async function(req, res, next) {
 
+    console.log(req.originalUrl + ' Session: ', JSON.stringify(req.session.isAuth));
 
 
     let redirect = false;
