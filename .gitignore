@@ -4,3 +4,4 @@ node_modules
 REDIS-CLI.md
 .vscode/
 .dccache
+typesense-data
