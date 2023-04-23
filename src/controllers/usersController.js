@@ -8,6 +8,8 @@ const { getOAuthGoogleURL, handleGoogleCallback } = require('../services/lib/oau
 const { use } = require('../services/lib/mailer');
 const { sanitizeEmail } = require('../lib/sanitizer');
 const DateHelper = require('../lib/date-helpers');
+const mongo = require('../services/lib/mongo');
+
 
 
 async function signup1(req, res, next) {
@@ -96,8 +98,7 @@ async function signup1Post(req, res, next) {
 
     const userService = await UserService.getInstance();
     // Check if a user already exists with the given email address
-    const sanitizedEmail = sanitizeEmail(trimmedEmail);
-    const userExist = await userService.existsByEmail(sanitizedEmail);
+    const userExist = await userService.existsByEmail(sanitizedEmail.trim().toLowerCase());
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -188,7 +189,7 @@ async function signup2Post(req, res, next) {
 
     const userService = await UserService.getInstance();
 
-    const companyService = new CompanyService(db);
+    const companyService = await CompanyService.getInstance();
 
     // Check if a user already exists with the given email address
     const userExist = await userService.existsByEmail(req.session.signup.user.email);
@@ -205,7 +206,7 @@ async function signup2Post(req, res, next) {
     }
 
     // Start a transaction
-    const session = startSession();
+    // const session = await mongo.startTransaction();
 
     let newUser = null;
     let newCompany = null;
@@ -218,13 +219,13 @@ async function signup2Post(req, res, next) {
         // Get the current user in session.signup
         const user = req.session.signup.user;
         user._id = userId;
-        user.email = sanitizedEmail(user.email)
+        user.email = user.email.trim().toLowerCase()
         user.language = req.i18n.language;
         user.companies = [companyId];
         user.timezone = DateHelper.guess();
 
         // Create the user
-        await userService.create(user, { session });
+        await userService.create(user, {}); //await userService.create(user, { session });
 
         // Get the company
         const company = req.session.signup.company;
@@ -232,20 +233,17 @@ async function signup2Post(req, res, next) {
         company.users = [userId];
 
         // Create the company
-        await companyService.create(company, { session });
+        await companyService.create(company, {}); //await companyService.create(company, { session });
 
         // Commit the transaction
-        await session.commitTransaction();
+        // await mongo.commitTransaction(session);
 
         newUser = user;
         newCompany = company;
     } catch (err) {
         // If there's an error, abort the transaction and throw an error
-        await session.abortTransaction();
+        // await mongo.abortTransaction(session);
         return next(err);
-    } finally {
-        // End the session
-        session.endSession();
     }
 
     // Set the isAuth, email, and timestamps fields on the user's session
@@ -368,6 +366,8 @@ async function signinPost(req, res, next) {
     delete req.session.signin
 
     // Redirect the user to the app page
+    const returnTo = req.session.returnTo
+    delete req.session.returnTo
     res.disableBackButtonRedirect(req.session.returnTo || '/');
 }
 
@@ -677,7 +677,7 @@ async function OAuthGoogleCallback(req, res, next) {
         req.session.signup = req.session.signup || {};
         req.session.signup.user = {
             email,
-            firstname,
+            firstname: googleUser.given_name,
             language: googleUser.locale,
             timezone: DateHelper.guess(),
             google_id: googleUser.id,
@@ -695,7 +695,6 @@ async function OAuthGoogleCallback(req, res, next) {
 
         await userService.updateBy('user_id', user._id, user);
     }
-
     req.session.isAuth = true
     req.session.user = {
         email: user.email,

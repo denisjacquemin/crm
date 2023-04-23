@@ -1,0 +1,4 @@
+# Starting mongodb locally in Docker
+
+docker run --name mongodb -p 27017:27017 -v $(pwd)/mongodb-data:/data/db -v $(pwd)/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro -d mongo --replSet myReplicaSet --bind_ip_all
+

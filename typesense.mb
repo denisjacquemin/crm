@@ -1,0 +1,23 @@
+# Starting typesense locally in Docker
+
+# How to install Typesense
+
+docker run -p 8108:8108 -v$(pwd)/typesense-data:/data typesensdisableBackButtonRedirecte/typesense:0.24.1 --data-dir /data --api-key=xyz
+
+- Docker will first check if the typesense/typesense:0.24.1 image is available on your machine. If it's not available, Docker will automatically download the image from Docker Hub, which may take some time depending on your internet connection.
+
+- Once the image is available, Docker will create a container using the image and run the Typesense application inside the container.
+
+- The --data-dir /data and --api-key=$TYPESENSE_API_KEY options will configure Typesense to use the /data directory in the container for data storage, and set the API key for the Typesense instance to the value of the TYPESENSE_API_KEY environment variable.
+
+- The -p 8108:8108 option will map port 8108 in the container to port 8108 on your machine, allowing you to access the Typesense API from your web browser or any HTTP client.
+
+- The -v $(pwd)/typesense-data:/data option will mount a typesense-data directory from the current working directory of your machine to the /data directory inside the container, allowing Typesense to persist data even if the container is stopped or removed.
+
+## Browser's client location
+
+`/public/vendor/typesense/typesense.min.js`
+
+# How to browse typesense
+
+`https://bfritscher.github.io/typesense-dashboard`

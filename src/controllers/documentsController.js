@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const DocumentService = require('../services/documents.service');
+const { DocumentTypesenseService } = require('../services/documents.typesense.service');
 const DateHelper = require('../lib/date-helpers');
 // rquire _.extend from underscore
 const mergeObjects = require('../lib/object-helper').mergeObjects;
@@ -56,11 +57,19 @@ const emptyDoc = {
 
 async function index(req, res) {
     try {
-        const documents = await getLatestDocument(req.session.current_company._id);
+        // const documents = await getLatestDocument(req.session.current_company._id);
+
+        const documentsTypesenseService = new DocumentTypesenseService();
+        const result = await documentsTypesenseService.searchDocuments({ q: '*' }, {
+            'filter_by': `company_id:${req.session.current_company._id}`,
+            'sort_by': 'created_at:desc',
+            'per_page': 30
+        });
+
 
         res.render('documents/index', {
             layout: 'app',
-            documents: documents
+            documents: result.hits.map(hit => hit.document)
         });
     } catch (err) {
         console.error(err);
@@ -72,6 +81,7 @@ async function newDocument(req, res) {
 
     try {
         const documentService = await DocumentService.getInstance();
+        const documentTypesenseService = new DocumentTypesenseService();
 
         const document = await documentService.create(mergeObjects(
             emptyDoc, {
@@ -81,6 +91,8 @@ async function newDocument(req, res) {
                 },
                 created_by_user_id: ObjectId(req.session.user._id)
             }));
+
+        await documentTypesenseService.createDocument(document);
 
         const documents = await getLatestDocument(req.session.current_company._id);
 
@@ -98,8 +110,11 @@ async function newDocument(req, res) {
 
 async function newDocumentAjax(req, res) {
     try {
+        console.time('DocumentService.getInstance()');
         const documentService = await DocumentService.getInstance();
+        console.timeEnd('DocumentService.getInstance()');
 
+        console.time('documentService.create');
         const document = await documentService.create(mergeObjects(
             emptyDoc, {
                 company_id: ObjectId(req.session.current_company._id),
@@ -108,6 +123,14 @@ async function newDocumentAjax(req, res) {
                 },
                 created_by_user_id: ObjectId(req.session.user._id)
             }));
+        console.timeEnd('documentService.create');
+        console.time('new DocumentTypesenseService()');
+        const documentTypesenseService = new DocumentTypesenseService();
+        console.timeEnd('new DocumentTypesenseService()');
+        // create the document in Typesense
+        console.time('documentTypesenseService.createDocument(document)');
+        await documentTypesenseService.createDocument(document);
+        console.timeEnd('documentTypesenseService.createDocument(document)');
 
         res.json(document);
     } catch (err) {
@@ -121,7 +144,12 @@ async function edit(req, res) {
     try {
         const documentService = await DocumentService.getInstance();
 
-        const documents = await getLatestDocument(req.session.current_company._id);
+        const documentsTypesenseService = new DocumentTypesenseService();
+        const result = await documentsTypesenseService.searchDocuments({ q: '*' }, {
+            'filter_by': `company_id:${req.session.current_company._id}`,
+            'sort_by': 'created_at:desc',
+            'per_page': 30
+        });
 
         const selectedDocument = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
@@ -136,7 +164,7 @@ async function edit(req, res) {
 
         res.render("documents/index", {
             layout: 'app',
-            documents: documents,
+            documents: result.hits.map(hit => hit.document),
             selectedDocument: mergeObjects(emptyDoc, selectedDocument)
         });
     } catch (err) {
