@@ -6,6 +6,7 @@ const globalController = require('./controllers/globalController');
 const userController = require('./controllers/usersController');
 const dashboardController = require('./controllers/dashboardController');
 const documentsController = require('./controllers/documentsController');
+const buyersController = require('./controllers/buyersController');
 
 // render views/test.hbs template
 router.get("/test", (req, res) => {
@@ -40,6 +41,12 @@ router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
 router.patch("/document/:slug?", auth, documentsController.update);
+router.get("/documents/search:querystring?", auth, documentsController.search);
+
+
+router.post("/buyer/newAjax", auth, buyersController.newBuyerAjax);
+router.get("/buyers/search:querystring?", auth, buyersController.search);
+
 
 // router.get("/companies/new", companiesController.newCompany);
 

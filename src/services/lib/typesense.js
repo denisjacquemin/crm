@@ -2,6 +2,7 @@ const Typesense = require('typesense');
 const fs = require('fs');
 const path = require('path');
 const documentsTypesenseService = require('../documents.typesense.service');
+const buyersTypesenseService = require('../buyers.typesense.service');
 
 const typesenseApiKey = process.env.TYPESENSE_API_KEY;
 const nodesEnv = process.env.TYPESENSE_NODES;
@@ -41,18 +42,27 @@ async function connectToTypesense(retryCount = 0) {
 
 async function createCollections() {
 
-    // get the schema const value form documentsTypesenseService
-    const collectionName = documentsTypesenseService.collectionName;
-    const schema = documentsTypesenseService.schema;
+    collections = [{
+            name: documentsTypesenseService.collectionName,
+            schema: documentsTypesenseService.schema
+        },
+        {
+            name: buyersTypesenseService.collectionName,
+            schema: buyersTypesenseService.schema
+        }
+    ]
 
-    const collections = await client.collections().retrieve();
-    const existingCollection = collections.find((collection) => collection.name === collectionName);
+    const existingCollections = await client.collections().retrieve();
 
-    if (!existingCollection) {
-        await client.collections().create(schema);
-        console.log(`Created collection ${collectionName}`);
-    } else {
-        console.log(`Using existing collection ${collectionName}`);
+    for (const collection of collections) {
+        const existingCollection = existingCollections.find((c) => c.name === collection.name);
+
+        if (!existingCollection) {
+            await client.collections().create(collection.schema);
+            console.log(`Created collection ${collection.name}`);
+        } else {
+            console.log(`Using existing collection ${collection.name}`);
+        }
     }
 }
 

@@ -1,3 +1,7 @@
+# staring typesense and mongodb locally
+
+    run docker.app and start the containers
+
 # Starting server
 
     npm start

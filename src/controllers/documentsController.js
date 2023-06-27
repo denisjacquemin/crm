@@ -25,7 +25,7 @@ const emptyDoc = {
             "address": "2 High Street",
             "city": "Paris",
             "country": "FR",
-            "vatNumber": "FR0123456789"
+            "vat_number": "FR0123456789"
         },
         "items": [{
                 "name": "Product 1",
@@ -110,11 +110,7 @@ async function newDocument(req, res) {
 
 async function newDocumentAjax(req, res) {
     try {
-        console.time('DocumentService.getInstance()');
         const documentService = await DocumentService.getInstance();
-        console.timeEnd('DocumentService.getInstance()');
-
-        console.time('documentService.create');
         const document = await documentService.create(mergeObjects(
             emptyDoc, {
                 company_id: ObjectId(req.session.current_company._id),
@@ -123,14 +119,9 @@ async function newDocumentAjax(req, res) {
                 },
                 created_by_user_id: ObjectId(req.session.user._id)
             }));
-        console.timeEnd('documentService.create');
-        console.time('new DocumentTypesenseService()');
         const documentTypesenseService = new DocumentTypesenseService();
-        console.timeEnd('new DocumentTypesenseService()');
         // create the document in Typesense
-        console.time('documentTypesenseService.createDocument(document)');
         await documentTypesenseService.createDocument(document);
-        console.timeEnd('documentTypesenseService.createDocument(document)');
 
         res.json(document);
     } catch (err) {
@@ -198,13 +189,21 @@ async function update(req, res) {
         const documentService = await DocumentService.getInstance();
         let document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
-        await documentService.update(document._id, _.merge({},
-            document,
-            req.body.document, { updated_at: DateHelper.toISO8601(DateHelper.nowUtc()) }
-        ));
+        console.log('document', document);
+        console.log('Date.now', Date.now());
+        console.log('DateHelper.nowUtc()', DateHelper.nowUtc());
+        const newUpdatedAt = DateHelper.toISO8601(DateHelper.nowUtc());
+        const updatedDocument = _.merge({}, document, req.body.document, {
+            updated_at: newUpdatedAt,
+        });
+
+        await documentService.update(document._id, updatedDocument);
+
+        const documentTypesenseService = new DocumentTypesenseService();
+        await documentTypesenseService.updateDocument(document._id, updatedDocument);
 
         res.json({
-            updated_at: document.updated_at,
+            updated_at: newUpdatedAt,
             slug: document.slug
         });
     } catch (err) {
@@ -219,6 +218,25 @@ async function getLatestDocument(company_id) {
     return await documentService.getLatest(30, company_id);
 }
 
+async function search(req, res) {
+    try {
+        const documentsTypesenseService = new DocumentTypesenseService();
+        const searchParameters = {
+            q: req.query.q,
+            filter_by: `company_id:${req.session.current_company._id}`,
+            sort_by: 'created_at:desc',
+            per_page: 30,
+            query_by: 'config.buyer.name'
+        };
+
+        const searchResults = await documentsTypesenseService.searchDocuments(searchParameters);
+        res.json(searchResults.hits.map(hit => hit.document));
+    } catch (err) {
+        console.error(err.stack);
+        res.status(500).send(req.i18n.t('common.unknown_error'));
+    }
+}
+
 
 module.exports = {
     index,
@@ -226,5 +244,6 @@ module.exports = {
     editAjax,
     newDocument,
     newDocumentAjax,
-    update
+    update,
+    search
 };

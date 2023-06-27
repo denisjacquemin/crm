@@ -54,23 +54,50 @@ class TypesenseService {
     }
 
     async createDocument(document) {
-        return await this.client.collections(this.collectionName).documents().create(document);
+        try {
+            const docToCreate = {...document, id: document._id };
+            return await this.client.collections(this.collectionName).documents().create(docToCreate);
+        } catch (error) {
+            console.error(`Failed to create document: ${error.message}`);
+            throw error;
+        }
     }
 
     async getDocument(documentId) {
-        return await this.client.collections(this.collectionName).documents(documentId).retrieve();
+        try {
+            return await this.client.collections(this.collectionName).documents(documentId).retrieve();
+        } catch (error) {
+            console.error(`Failed to retrieve document: ${error.message}`);
+            throw error;
+        }
     }
 
     async updateDocument(documentId, document) {
-        return await this.client.collections(this.collectionName).documents(documentId).update(document);
+        try {
+            return await this.client.collections(this.collectionName).documents(documentId).update(document);
+        } catch (error) {
+            console.error(`Failed to update document: ${error.message}`);
+            throw error;
+        }
     }
 
     async deleteDocument(documentId) {
-        return await this.client.collections(this.collectionName).documents(documentId).delete();
+        try {
+            return await this.client.collections(this.collectionName).documents(documentId).delete();
+        } catch (error) {
+            console.error(`Failed to delete document: ${error.message}`);
+            throw error;
+        }
     }
 
+    // add searchDocuments method
     async searchDocuments(query, searchParameters = {}) {
-        return await this.client.collections(this.collectionName).documents().search(query, searchParameters);
+        try {
+            return await this.client.collections(this.collectionName).documents().search(query, searchParameters);
+        } catch (error) {
+            console.error(`Failed to search documents: ${error.message}`);
+            throw error;
+        }
     }
 }
 

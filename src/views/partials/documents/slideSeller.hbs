@@ -8,7 +8,7 @@
     </div>
   </div>
   <fieldset x-data="window.Components.radioGroup({ initialCheckedIndex: 0 })" x-init="init()">
-    <legend class="sr-only"> Pricing plans </legend>
+    <legend class="sr-only">Pricing plans</legend>
     <div class="relative -space-y-px rounded-md bg-white">
       
         <label x-radio-group-option="" class="rounded-tl-md rounded-tr-md relative flex cursor-pointer flex-col border p-4 focus:outline-none md:grid md:grid-cols-3 md:pl-4 md:pr-6 z-10 border-indigo-200 bg-indigo-50" x-description="Checked: &quot;z-10 border-indigo-200 bg-indigo-50&quot;, Not Checked: &quot;border-gray-200&quot;" :class="{ 'z-10 border-indigo-200 bg-indigo-50': (value === 'Startup'), 'border-gray-200': !(value === 'Startup') }">

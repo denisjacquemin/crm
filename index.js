@@ -98,7 +98,7 @@ app.use(function(req, res, next) {
     res.locals.csrfToken = req.csrfToken();
     next();
 });
-app.use(require('./src/middlewares/cacheControl'));
+// app.use(require('./src/middlewares/cacheControl')); // commented out because it was causing issues with the login page
 app.use('/dist', express.static(path.join(__dirname, "/dist")));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use("/", require("./src/middlewares/languages.dropdown"));
@@ -139,5 +139,5 @@ async function stopServer() {
 }
 
 startServer();
-process.on('SIGINT', stopServer);
-process.on('SIGTERM', stopServer);
+// process.on('SIGINT', stopServer);
+// process.on('SIGTERM', stopServer);

@@ -1,101 +1,123 @@
-// write un runAutosave that will contains all the logic to save the config to the server
 window.runAutoSave = function(elem) {
-        document.addEventListener('input', function(e) {
+    document.addEventListener('input', function(e) {
 
-            if (e.target.matches('.to-be-autosaved input')) {
-                var documents = JSON.parse(localStorage.getItem('documents')) || {};
-                // get the config object from localstorage or create it if i doesn't exist yet
+        if (e.target.matches('.to-be-autosaved input')) {
+            var documents = JSON.parse(localStorage.getItem('documents')) || {};
+            // get the config object from localstorage or create it if i doesn't exist yet
 
-                // set the value of the input field to the config object
-                // example: config['invoice']['number'] will match input name="invoice.number"
-                // target value should be the value of the input field under current document slug
-                var documentSlug = document.getElementById('slug').value;
-                put(documents, documentSlug + '.' + e.target.name, e.target.value);
-                // set last updated date time for the config
+            // set the value of the input field to the config object
+            // example: config['invoice']['number'] will match input name="invoice.number"
+            // target value should be the value of the input field under current document slug
+            var documentSlug = document.getElementById('slug').value;
+            put(documents, documentSlug + '.' + e.target.name, e.target.value);
+            // set last updated date time for the config
 
-                const now = new Date();
-                const utcNow = new Date(Date.UTC(
-                    now.getUTCFullYear(),
-                    now.getUTCMonth(),
-                    now.getUTCDate(),
-                    now.getUTCHours(),
-                    now.getUTCMinutes(),
-                    now.getUTCSeconds(),
-                    now.getUTCMilliseconds(),
-                ));
+            setUpdateDate(documents, documentSlug);
 
-                put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
+            localStorage.documents = JSON.stringify(documents);
 
-                localStorage.documents = JSON.stringify(documents);
-
-            }
-        });
-
-
-        // setup worker if not already done
-        let w;
-        if (typeof(w) == "undefined") {
-            w = setupWorker();
         }
+    });
 
-        // handle worker messages
-        w.onmessage = function(event) {
-            // handle messages from worker when postMessage({ unauthorized: true }); is called
-            if (event.data.hasOwnProperty('unauthorized')) {
-                history.replaceState(null, '', window.location.href);
-                location.reload();
-            }
 
-            const data = event.data;
-
-            if (data.hasOwnProperty('updated_at') && data.hasOwnProperty('slug')) {
-                // update lastUpdated in local storage config object
-                var documents = JSON.parse(localStorage.getItem('documents')) || {};
-                documents[data.slug].updated_at = data.updated_at;
-
-                localStorage.setItem('documents', JSON.stringify(documents));
-            }
-        };
-
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // at regular intervals, save config to server
-        setInterval(function() {
-            // get config from local storage
-            var documents = JSON.parse(localStorage.getItem('documents'));
-
-            // for each keys in documents
-            for (var slug in documents) {
-
-                if (documents[slug] && documents[slug].hasOwnProperty('lastConfigUpdateAt')) {
-
-                    if (Date.parse(documents[slug].lastConfigUpdateAt) > Date.parse(documents[slug].updated_at) || !documents[slug].updated_at) {
-                        console.log('sending to worker');
-                        w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
-                    } else {
-                        // if handled slug is not the current slug, removes document from documents in local storage
-                        if (slug != document.getElementById('slug').value) {
-                            delete documents[slug];
-                            localStorage.setItem('documents', JSON.stringify(documents));
-                        }
-                    }
-
-                }
-            }
-        }, 10000);
-    }
-    // setup worker and return it
-function setupWorker() {
+    // setup worker if not already done
     let w;
-    if (typeof(Worker) !== "undefined") {
-        if (typeof(w) == "undefined") {
-            w = new Worker("/public/js/workers/documents/autosave_worker.js");
-        }
-    } else {
-        console.log('Worker not supported');
+    if (typeof(w) == "undefined") {
+        w = setupWorker();
     }
 
-    return w;
+    // handle worker messages
+    w.onmessage = function(event) {
+        // handle messages from worker when postMessage({ unauthorized: true }); is called
+        if (event.data.hasOwnProperty('unauthorized')) {
+            history.replaceState(null, '', window.location.href);
+            location.reload();
+        }
+
+        const data = event.data;
+
+        if (data.hasOwnProperty('updated_at') && data.hasOwnProperty('slug')) {
+            // update lastUpdated in local storage config object
+            var documents = JSON.parse(localStorage.getItem('documents')) || {};
+            documents[data.slug].updated_at = data.updated_at;
+
+            localStorage.setItem('documents', JSON.stringify(documents));
+        }
+    };
+
+    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // at regular intervals, save config to server
+    setInterval(function() {
+        // get config from local storage
+        var documents = JSON.parse(localStorage.getItem('documents'));
+
+        // for each keys in documents
+        for (var slug in documents) {
+
+            if (documents[slug] && documents[slug].hasOwnProperty('lastConfigUpdateAt')) {
+
+                if (Date.parse(documents[slug].lastConfigUpdateAt) > Date.parse(documents[slug].updated_at) || !documents[slug].updated_at) {
+                    console.log('sending to worker');
+                    w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
+                } else {
+                    // if handled slug is not the current slug, removes document from documents in local storage
+                    if (slug != document.getElementById('slug').value) {
+                        delete documents[slug];
+                        localStorage.setItem('documents', JSON.stringify(documents));
+                    }
+                }
+
+            }
+        }
+    }, 20000);
+}
+
+let w;
+
+function setUpdateDate(documents, documentSlug) {
+    const now = new Date();
+    const utcNow = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        now.getUTCSeconds(),
+        now.getUTCMilliseconds()
+    ));
+    put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
+}
+
+function setupWorker() {
+    try {
+        if (typeof(Worker) !== "undefined") {
+            if (typeof(w) == "undefined") {
+                w = new Worker("/public/js/workers/documents/autosave_worker.js");
+            }
+            return w;
+        } else {
+            console.log('Worker not supported');
+            return null;
+        }
+    } catch (e) {
+        console.log('Error setting up worker:', e);
+        return null;
+    }
+}
+window.saveInLocalStorage = function(target, object) {
+    var documents = JSON.parse(localStorage.getItem('documents')) || {};
+    var documentSlug = document.getElementById('slug').value;
+
+    // for each leaf of the object, save the value in localstorage with the path document.slug + target + leaf label
+    for (var leaf in object) {
+        put(documents, documentSlug + '.' + target + '.' + leaf, object[leaf]);
+    }
+
+    setUpdateDate(documents, documentSlug);
+
+
+    localStorage.documents = JSON.stringify(documents);
 }
 
 window.updateNewUrl = function(slug) {
