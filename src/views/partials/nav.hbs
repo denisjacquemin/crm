@@ -1,4 +1,4 @@
-<div x-data="{ open: false }" @keydown.window.escape="open = false" style="background-color: #22272e;" class="bg-gray-800 flex-none z-40">
+<div x-data="{ open: false }" @keydown.window.escape="open = false" style="background-color: #22272e;" class="bg-gray-800 z-40">
 
 
     {{!-- Small screen menu --}}
@@ -205,7 +205,7 @@
                     <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Company</a>
                   </div>
                 <div class="flow-root">
-                    <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Stores</a>
+                    <a href="/documents" class="-m-2 block p-2 font-medium text-gray-900">Documents</a>
                   </div>
                 
               </div>
@@ -287,7 +287,7 @@
         </div>
 
         <!-- Secondary navigation -->
-        <div class="bg-white">
+        <div class="bg-white pb-4">
           <div class="mx-auto xl:container px-4 sm:px-6 lg:px-8">
             <div class="border-b border-gray-200">
               <div class="flex h-16 items-center justify-between">
@@ -504,7 +504,7 @@
                       
 
                       <a href="#" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Company</a>
-                      <a href="#" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Stores</a>
+                      <a href="/documents" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Documents</a>
                       
                     </div>
                   </div>
@@ -512,11 +512,17 @@
 
                 <!-- Mobile menu and search (lg-) -->
                 <div class="flex flex-1 items-center lg:hidden">
-                  <button type="button" x-description="Mobile menu toggle, controls the 'mobileMenuOpen' state." class="-ml-2 rounded-md bg-white p-2 text-gray-400" @click="open = true" spellcheck="false">
+                  <button x-show="navState == 'menu'" type="button" x-description="Mobile menu toggle, controls the 'mobileMenuOpen' state." class="-ml-2 rounded-md bg-white p-2 text-gray-400" @click="open = true" spellcheck="false">
                     <span class="sr-only">Open menu</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
                     </svg>
+                  </button>
+                  <button x-show="navState == 'back'" @click="navState = 'menu'" type="button" class="-ml-2 rounded-md bg-white p-2 text-gray-400" aria-controls="mobile-menu" aria-expanded="false">
+                      <span class="sr-only">back to previews screen</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                      </svg>
                   </button>
 
                   <!-- Search -->

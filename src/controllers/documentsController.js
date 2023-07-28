@@ -224,7 +224,7 @@ async function search(req, res) {
         const searchParameters = {
             q: req.query.q,
             filter_by: `company_id:${req.session.current_company._id}`,
-            sort_by: 'created_at:desc',
+            sort_by: req.query.sort,
             per_page: 30,
             query_by: 'config.buyer.name'
         };

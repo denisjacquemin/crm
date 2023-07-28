@@ -1,150 +1,42 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Test</title>
-    <link rel="stylesheet" href="/public/css/styles.css" />
-</head>
-
-<body>
-    <div class="flex flex-col sm:flex-row md:m-auto xl:m-0 3xl:container 3xl:m-auto">
-        <div class=" w-full h-screen sm:w-96 sm:flex-none overflow-y-scroll">
-            <ul role="list" class="divide-y divide-gray-200 px-1" x-data="{ 
-          editDocument: function(slug) {
-            fetchUrl(`/document/editAjax/${slug}`)
-              .then(data => {
-                this.selectedDocument = deepMergeObjects(this.selectedDocument, JSON.parse(data));
-                history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
-              })
-              .catch(error => {
-                console.error('Error editing document', error);
-              });
-          }
-        }">
-      <template x-if="documents.length === 0">
-        <li class="py-2 text-gray-500">No documents found.</li>
-      </template>
-
-      <template x-for="(document, index) in documents" :key="index">
-        <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="flex flex-col py-2">
-            <div class="flex-auto">
-                <p class="text-sm font-semibold leading-5 text-gray-900 py-2">
-                    <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">F</span><a href="#" class="hover:underline" spellcheck="false" x-text="document?.config?.buyer?.name"></a>
-                </p>
-                <div class="mt-1 flex flex-row flex-wrap items-center gap-x-2 text-xs leading-5 text-gray-500">
-                    <p><a href="#" class="hover:underline" spellcheck="false"><span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">€ 145 589.45</span></a></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z">08/09/2023</time></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z"><em>#</em> 2023 056</time></p>
-                </div>
+    <div class="h-screen flex flex-col">
+        <div class="h-15 flex-none">Menu</div>
+        <div class="bg-yellow-500 flex-grow flex flex-col overflow-hidden">
+            <div id="col1" class="bg-red-500 flex flex-col flex-grow overflow-hidden">
+                <div class="p-4 flex-none"><button type="button" class="w-full bg-white">test</button></div>
+                <div class="p-4 flex-none"><input type="text" class="w-full bg-white"></div>
+                <ul class="bg-blue-500 flex-grow overflow-y-auto"> 
+                   <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</li>
+                   <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</li>
+                   <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</li>
+                   <li>test</li>
+                </ul>
             </div>
-            <dl class="flex-auto">
-                <div class="flex -space-x-0.5">
-                    <ul class="flex flex-row flex-wrap gap-x-2">
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-pink-800">Denis</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">BE</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">Formation planifiée</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-green-800">Gros client</span></li>
-                    </ul>
-                </div>
-            </dl>
-        </li>
-      </template><li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="flex flex-col py-2">
-            <div class="flex-auto">
-                <p class="text-sm font-semibold leading-5 text-gray-900 py-2">
-                    <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">F</span> <a href="#" class="hover:underline" spellcheck="false" x-text="document?.config?.buyer?.name">Voici mon buyer</a>
-                </p>
-                <div class="mt-1 flex flex-row flex-wrap items-center gap-x-2 text-xs leading-5 text-gray-500">
-                    <p><a href="#" class="hover:underline" spellcheck="false"><span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">€ 145 589.45</span></a></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z">08/09/2023</time></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z"><em>#</em> 2023 056</time></p>
-                </div>
-            </div>
-            <dl class="flex-auto">
-                <div class="flex -space-x-0.5">
-                    <ul class="flex flex-row flex-wrap gap-x-2">
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-pink-800">Denis</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">BE</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">Formation planifiée</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-green-800">Gros client</span></li>
-                    </ul>
-                </div>
-            </dl>
-        </li><li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="flex flex-col py-2">
-            <div class="flex-auto">
-                <p class="text-sm font-semibold leading-5 text-gray-900 py-2">
-                    <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">F</span> <a href="#" class="hover:underline" spellcheck="false" x-text="document?.config?.buyer?.name">Sdui germany</a>
-                </p>
-                <div class="mt-1 flex flex-row flex-wrap items-center gap-x-2 text-xs leading-5 text-gray-500">
-                    <p><a href="#" class="hover:underline" spellcheck="false"><span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">€ 145 589.45</span></a></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z">08/09/2023</time></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z"><em>#</em> 2023 056</time></p>
-                </div>
-            </div>
-            <dl class="flex-auto">
-                <div class="flex -space-x-0.5">
-                    <ul class="flex flex-row flex-wrap gap-x-2">
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-pink-800">Denis</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">BE</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">Formation planifiée</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-green-800">Gros client</span></li>
-                    </ul>
-                </div>
-            </dl>
-        </li><li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="flex flex-col py-2">
-            <div class="flex-auto">
-                <p class="text-sm font-semibold leading-5 text-gray-900 py-2">
-                    <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">F</span> <a href="#" class="hover:underline" spellcheck="false" x-text="document?.config?.buyer?.name">Sdui Belgium</a>
-                </p>
-                <div class="mt-1 flex flex-row flex-wrap items-center gap-x-2 text-xs leading-5 text-gray-500">
-                    <p><a href="#" class="hover:underline" spellcheck="false"><span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">€ 145 589.45</span></a></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z">08/09/2023</time></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z"><em>#</em> 2023 056</time></p>
-                </div>
-            </div>
-            <dl class="flex-auto">
-                <div class="flex -space-x-0.5">
-                    <ul class="flex flex-row flex-wrap gap-x-2">
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-pink-800">Denis</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">BE</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">Formation planifiée</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-green-800">Gros client</span></li>
-                    </ul>
-                </div>
-            </dl>
-        </li>
-
-    </ul>
-            {{!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p> --}}
-        </div>
-        <div class="bg-blue-500 text-white overflow-y-scroll w-full h-screen hidden 
-                    sm:block sm:flex-grow
-                    xl:flex-auto xl:w-32">
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
-        </div>
-        <div class="bg-green-500 text-white w-full overflow-y-scroll hidden 
-                    xl:block 
-                    xl:flex-auto
-                    xl:w-96">
-            <p>Column 3</p>
         </div>
     </div>
-</body>
-
-</html>
+    {{!-- <div class="flex flex-col sm:flex-row md:m-auto xl:m-0 3xl:container 3xl:m-auto">
+        <div class="hidden bg-red-500 text-white w-full h-screen sm:w-96 sm:flex-none overflow-y-scroll">
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+        </div>
+        <div class="w-full flex flex-col bg-pink-500 sm:flex-grow sm:flex">
+            <div>
+                <a href="#">Left</a>
+                <a href="#">Right</a>
+            </div>
+            <div class="flex flex-col">
+                <div class="bg-blue-500 text-white overflow-y-scroll w-full h-screen  sm:block sm:flex-grow xl:flex-auto xl:w-32">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse soluta harum expedita repellat. Temporibus dolores voluptas accusantium labore, odio asperiores accusamus dolor aperiam impedit vero necessitatibus optio eligendi cumque vel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore soluta ratione id aperiam consequatur, perspiciatis sunt quia, odio mollitia quos ab error nobis voluptatum placeat sed qui distinctio possimus nisi. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit cupiditate impedit dolorum, velit consequatur repellendus porro officia nulla, alias facere animi quo delectus aperiam illo, quaerat deserunt? Quam, reprehenderit quae.</p>
+                </div>
+                <div class="bg-green-500 hidden text-white w-full overflow-y-scroll  xl:block xl:flex-auto xl:w-96">
+                    <p>Column 3</p>
+                </div>
+            </div>
+        </div>
+    </div> --}}
         
 
 {{!-- <body style="font-size: 16px">

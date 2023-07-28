@@ -1,8 +1,8 @@
-<div class="min-h-[64rem] bg-gray-100">
+<div x-show="openSlide" class="min-h-[64rem] bg-gray-100">
     
     <div @keydown.window.escape="openSlide = false" x-show="openSlide" class="relative z-50" x-ref="dialog" aria-modal="true">
       
-    <div x-show="openSlide" x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-description="Background backdrop, show/hide based on slide-over state." class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+    <div x-show="openSlide"   x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-description="Background backdrop, show/hide based on slide-over state." class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
