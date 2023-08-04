@@ -64,6 +64,18 @@ const hbs = create({
         ifEquals: function(arg1, arg2, options) {
             return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
         },
+        concat: function() {
+            var outStr = '';
+            for (var arg in arguments) {
+               if (typeof arguments[arg] != 'object') {
+                    outStr += arguments[arg];
+                }
+            }
+            return outStr;
+        },
+        startsWith: function(str, prefix) {
+            return str.startsWith(prefix);
+        },
         switch: function(value, options) {
             this.switch_value = value;
             this.switch_break = false;

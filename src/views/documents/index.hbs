@@ -28,8 +28,12 @@
           runAutoSave();
         ">
   {{!-- TODO - col1 --}}
-  <div class="flex flex-col flex-grow overflow-hidden mx-2 sm:w-96 sm:flex-initial md:border-grey-200 md:border-r lg:mx-0" 
-       x-show="currentColumn < 2 || window.innerWidth >= 640">
+  <div class="flex flex-col flex-grow overflow-hidden mx-2 sm:mx-0 sm:flex sm:flex-none sm:flex-col sm:border-r sm:border-grey-200 sm:w-72 md:w-88"
+       :class="{
+                'hidden': currentColumn >= 2,
+                'flex': currentColumn < 2
+              }">
+       {{!-- x-show="currentColumn < 2 || window.innerWidth >= 640"> --}}
       <div class="flex-none sm:mx-2">
         <button type="button" class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           @click.prevent="fetchUrl('/document/newAjax', 'POST' )
@@ -68,7 +72,7 @@
             $watch('searchDocumentTerm', () => { searchDocument() });
           "
       >
-        <input x-model.debounce.250ms="searchDocumentTerm" x-on:keydown.enter.prevent="searchDocument()" type="text" class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6" placeholder="Filter by buyers's name, VAT number, address, ... " autocomplete="off">
+        <input x-model.debounce.200ms="searchDocumentTerm" x-on:keydown.enter.prevent="searchDocument()" type="text" class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6" placeholder="Filter by buyers's name, VAT number, address, ... " autocomplete="off">
 
         <div x-data="Components.menu({ open: false })" x-init="init()" @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)" 
              class="relative inline-block text-left pl-3 pr-3 pt-3 pb-2">
@@ -208,8 +212,12 @@
 
   </div>
   {{!-- TODO - container col2 et col3 --}}
-  <div class="flex flex-col flex-grow overflow-hidden mx-2 sm:flex sm:flex-col lg:flex-row" 
-       x-show="currentColumn > 2 || window.innerWidth >= 640"
+  <div class="hidden overflow-hidden mx-2 sm:flex sm:flex-col sm:flex-grow 2lg:flex-row" 
+       :class="{
+                'flex flex-col sm:flex-grow': currentColumn >= 2,
+                'hidden sm:flex sm:flex-col sm:flex-grow': currentColumn < 2
+              }"
+       {{!-- x-show="currentColumn > 2 || window.innerWidth >= 640" --}}
        x-init="
           if (selectedDocument) {
             indexOfSelectedDocument = documents.findIndex(obj => obj.slug === selectedDocument.slug);
@@ -220,7 +228,7 @@
        "
     >
     {{!-- TODO - tabs --}}
-    <div class="lg:hidden">
+    <div class="2lg:hidden">
       <div class="border-b border-gray-200">
         <nav class="flex" aria-label="Tabs">
           <!-- Current: "bg-gray-100 text-gray-700", Default: "text-gray-500 hover:text-gray-700" -->
@@ -240,8 +248,14 @@
       </div>
     </div> 
     {{!-- TODO - col2 --}}
-    <div class="overflow-y-auto flex flex-col pl-1 pr-4 sm:flex sm:flex-col sm:grow lg:w-72 lg:grow-0 xl:w-80  h-26 text-black" 
-               x-show="currentColumn === 2 || currentColumn === 2.1 || window.innerWidth >= 640">
+    <div class="overflow-y-auto text-black pl-1 pr-4 2lg:flex-initial 2lg:w-96 " 
+         :class="{
+           'flex flex-col sm:flex sm:flex-col sm:grow': currentColumn === 2 || currentColumn === 2.1,
+           'hidden sm:flex sm:flex-col sm:grow': currentColumn < 2 || currentColumn > 2.1,
+           'sm:hidden': currentColumn === 2.2
+         }">
+               
+               {{!-- x-show="currentColumn === 2 || currentColumn === 2.1> --}}
       <template x-if="selectedDocument">
         {{> documents/edit_form selectedDocument=selectedDocument openSlide = openSlide}}
       </template>
@@ -253,12 +267,20 @@
     </div>
     {{!-- TODO - col3 --}}
     <div id="cont" 
-              class="overflow-auto px-2 grow lg:block lg:grow h-26 text-white flex flex-col" 
-              x-show="isVisible"
+              class="overflow-auto px-4"
+              :class="{
+                'flex flex-col flex-grow': currentColumn === 2.2,
+                'hidden 2lg:block xl:flex-grow': currentColumn !== 2.2
+              }" 
               x-init="
-                isVisible = currentColumn == 2.2 || window.innerWidth >= 1024,
+                isVisible = currentColumn === 2.2 || window.innerWidth >= 1124;
+                if (isVisible) {
+                  onShown();
+                };
                 $watch('isVisible', value => {
+                  console.log('value is ', value);
                   if (value) {
+                    console.log('calling onShown', value);
                     onShown();
                   }
                 });
@@ -275,30 +297,21 @@
               x-data="{
                   isVisible: false,
                   scale: 1,
+                  template_name: selectedDocument?.config?.template_name || 'template1',
                   onShown() { 
-                    console.log('onShown'); 
                     this.fitToScreen();
                   },
                   zoomOut() {
-                    const div = document.getElementById('divme');
-                    div.style.height = parseInt(div.style.height) - 100 + 'px';
-                    div.style.width = parseInt(div.style.width) - 100 + 'px';
-
-                    this.scale -= 0.1;
+                    this.scale = Math.max(this.scale - 0.1, 0.3);
                     this.updateScale();
                   },
                   zoomIn() {
-                    const div = document.getElementById('divme');
-                    div.style.height = parseInt(div.style.height) + 100 + 'px';
-                    div.style.width = parseInt(div.style.width) + 100 + 'px';
-
-                    this.scale += 0.1;
+                    this.scale = Math.min(this.scale + 0.1, 0.7);
                     this.updateScale();
                   },
                 
                   fitToScreen() {
                     // wait 3 seconds before executing the code
-
                     setTimeout(() => {
                       const pageContainer = this.$refs.pageContainer;
                       const page = this.$refs.page;
@@ -306,9 +319,11 @@
                       const pageContainerWidth = pageContainer.offsetWidth;
                       console.log('pageWidth', pageWidth);
                       console.log('pageContainerWidth', pageContainerWidth);
-                      this.scale = pageContainerWidth / pageWidth
-                      console.log('this.scale', this.scale);
-                      this.updateScale();
+                      if (pageContainerWidth < pageWidth) {
+                        this.scale = Math.min(Math.max((pageContainerWidth / pageWidth), 0.2), 4);
+                        console.log('scale', this.scale);
+                        this.updateScale();
+                      }
                     }, 1);
                   },
                   updateScale() {
@@ -317,16 +332,26 @@
                 }">
 
       
-      <div class="buttons-container absolute top-5 right-5 flex z-50 ">
-            <button @click="zoomOut" class="text-black bg-white bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
-            <button @click="fitToScreen" class="text-black bg-white bg-opacity-70 px-4 py-2 rounded ml-2">Fit to Screen</button>
-            <button @click="zoomIn" class="text-black bg-white bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
+      <div class="buttons-container absolute bottom-5 mx-auto flex z-50 ">
+            <button @click="zoomOut" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
+            <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to Screen</button>
+            <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
       </div>
-      <page x-ref="pageContainer" class="flex-grow mx-1">
-        <div x-ref="page" id="thepage" style="width: 210mm; height: 296mm" class="sheet padding-10mm bg-red-100 text-black transform-origin-top-center">
-              <!-- Your content here. It will automatically scale to fit the container. -->
-
-              <article>This is an A4 document.</article>
+      <page x-ref="pageContainer" class="mr-2 ">
+        <div id="page-content"
+             x-ref="page" 
+             style="width: 210mm; height: 296mm" 
+             class="sheet padding-10mm bg-red-100 text-black transform-origin-top-left xl:mx-auto">
+             
+              <template x-if="template_name === 'template1'">
+                {{> 'documents/templates/template1' selectedDocument=selectedDocument}}
+              </template>
+              <template x-if="template_name === 'template2'">
+                {{> 'documents/templates/template2' selectedDocument=selectedDocument}}
+              </template>
+              <template x-if="template_name === 'template3'">
+                {{> 'documents/templates/template3' selectedDocument=selectedDocument}}
+              </template>
         </div>
       </page>
 

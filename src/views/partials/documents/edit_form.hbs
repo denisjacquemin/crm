@@ -19,14 +19,14 @@
       <div class="mb-6">
         <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller'" x-model="selectedDocument.config.seller.name" name="config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         <p x-text="`${selectedDocument.config.seller.address}, ${selectedDocument.config.seller.city} ${selectedDocument.config.seller.country}`" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
-        <p x-text="selectedDocument.config.seller.vatNumber" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
+        <p x-text="selectedDocument.config.seller.vat_number" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
       </div>
 
       <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Buyer</label>
       <div class="mb-2">
         <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideBuyer'" x-model="selectedDocument.config.buyer.name" name="config.buyer.name" id="buyer-name" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         <p x-text="`${selectedDocument.config.buyer.address}, ${selectedDocument.config.buyer.city} ${selectedDocument.config.buyer.country}`" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
-        <p x-text="selectedDocument.config.buyer.vatNumber" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
+        <p x-text="selectedDocument.config.buyer.vat_number" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
       </div>
     </div>
 

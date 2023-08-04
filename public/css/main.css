@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 
 /* https://alpinejs.dev/directives/cloak */
@@ -40,7 +40,7 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
    .sheet {
     background: white;
     box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
-    margin: 5mm auto;
+    margin: 5mm 0 5mm 0;
   }
 }
 
@@ -65,7 +65,7 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 }
 
 @layer utilities {
-  .transform-origin-top-center {
+  .transform-origin-top-left {
     transform-origin: top left;
   }
 }

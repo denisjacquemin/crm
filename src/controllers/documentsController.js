@@ -9,47 +9,50 @@ const _ = require('lodash');
 
 const emptyDoc = {
     config: {
-        "invoiceNumber": "INV-1234",
-        "invoiceDate": "2022-04-01",
-        "dueDate": "2022-04-30",
+        "template_name": "template3",
+        "invoice_number": "INV-1234",
+        "invoice_date": "2022-04-01",
+        "due_date": "2022-04-30",
         "currency": "EUR",
         "seller": {
             "name": "ABC Company",
             "address": "1 Main Street",
             "city": "Brussels",
             "country": "BE",
-            "vatNumber": "BE0123456789"
+            "vat_number": "BE0123456789",
+            "phone": "+32 2 123 45 67",
         },
         "buyer": {
             "name": "XYZ Company",
             "address": "2 High Street",
             "city": "Paris",
             "country": "FR",
-            "vat_number": "FR0123456789"
+            "vat_number": "FR0123456789",
+            "phone": "+32 2 123 45 67",
         },
         "items": [{
                 "name": "Product 1",
                 "description": "This is a product",
                 "quantity": 2,
                 "price": 10.00,
-                "taxRate": 21.00,
-                "taxAmount": 4.20,
-                "totalAmount": 24.20
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "tota_amount": 24.20
             },
             {
                 "name": "Product 2",
                 "description": "This is another product",
                 "quantity": 1,
                 "price": 5.00,
-                "taxRate": 21.00,
-                "taxAmount": 1.05,
-                "totalAmount": 6.05
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
             }
         ],
-        "subtotalAmount": 29.00,
-        "taxableAmount": 29.00,
-        "taxAmount": 5.25,
-        "totalAmount": 34.25,
+        "subtotal_amount": 29.00,
+        "taxable_amount": 29.00,
+        "tax_amount": 5.25,
+        "total_amount": 34.25,
         "notes": "Thank you for your business"
     },
     created_at: ''
@@ -59,13 +62,13 @@ async function index(req, res) {
     try {
         // const documents = await getLatestDocument(req.session.current_company._id);
 
+        debugger
         const documentsTypesenseService = new DocumentTypesenseService();
         const result = await documentsTypesenseService.searchDocuments({ q: '*' }, {
             'filter_by': `company_id:${req.session.current_company._id}`,
             'sort_by': 'created_at:desc',
             'per_page': 30
         });
-
 
         res.render('documents/index', {
             layout: 'app',
@@ -156,7 +159,7 @@ async function edit(req, res) {
         res.render("documents/index", {
             layout: 'app',
             documents: result.hits.map(hit => hit.document),
-            selectedDocument: mergeObjects(emptyDoc, selectedDocument)
+            selectedDocument: selectedDocument //mergeObjects(emptyDoc, selectedDocument)
         });
     } catch (err) {
         console.error(err);
@@ -174,7 +177,7 @@ async function editAjax(req, res) {
             return res.status(404).send();
         }
 
-        res.json(mergeObjects(emptyDoc, document));
+        res.json(document);
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));

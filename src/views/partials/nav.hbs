@@ -512,13 +512,21 @@
 
                 <!-- Mobile menu and search (lg-) -->
                 <div class="flex flex-1 items-center lg:hidden">
-                  <button x-show="navState == 'menu'" type="button" x-description="Mobile menu toggle, controls the 'mobileMenuOpen' state." class="-ml-2 rounded-md bg-white p-2 text-gray-400" @click="open = true" spellcheck="false">
+                  <button type="button" x-description="Mobile menu toggle, controls the 'mobileMenuOpen' state." class="-ml-2 rounded-md bg-white p-2 text-gray-400" @click="open = true" spellcheck="false"
+                          :class="{
+                            'hidden sm:block': navState !== 'menu',
+                            'block': navState === 'menu'
+                          }">
                     <span class="sr-only">Open menu</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
                     </svg>
                   </button>
-                  <button x-show="navState == 'back'" @click="navState = 'menu'" type="button" class="-ml-2 rounded-md bg-white p-2 text-gray-400" aria-controls="mobile-menu" aria-expanded="false">
+                  <button @click="navState = 'menu'" type="button" class="-ml-2 rounded-md bg-white p-2 text-gray-400" aria-controls="mobile-menu" aria-expanded="false"
+                          :class="{
+                            'hidden': navState !== 'back',
+                            'block sm:hidden': navState === 'back'
+                          }">
                       <span class="sr-only">back to previews screen</span>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

@@ -1,0 +1,431 @@
+<div>
+    <style>
+        /* reset */
+
+        .template1 * {
+            border: 0;
+            box-sizing: content-box;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            vertical-align: top;
+        }
+
+        /* content editable */
+
+        .template1 *[contenteditable] {
+            border-radius: 0.25em;
+            min-width: 1em;
+            outline: 0;
+        }
+
+        .template1 *[contenteditable] {
+            cursor: pointer;
+        }
+
+        .template1 *[contenteditable]:hover,
+        .template1 *[contenteditable]:focus,
+        .template1 td:hover *[contenteditable],
+        .template1 td:focus *[contenteditable],
+        .template1 img.hover {
+            background: #DEF;
+            box-shadow: 0 0 1em 0.5em #DEF;
+        }
+
+        .template1 span[contenteditable] {
+            display: inline-block;
+        }
+
+        /* heading */
+
+        .template1 h1 {
+            font: bold 100% sans-serif;
+            letter-spacing: 0.5em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* table */
+
+        .template1 table {
+            font-size: 75%;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .template1 table {
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+
+        .template1 th,
+        .template1 td {
+            border-width: 1px;
+            padding: 0.5em;
+            position: relative;
+            text-align: left;
+        }
+
+        .template1 th,
+        .template1 td {
+            border-radius: 0.25em;
+            border-style: solid;
+        }
+
+        .template1 th {
+            background: #EEE;
+            border-color: #BBB;
+        }
+
+        .template1 td {
+            border-color: #DDD;
+        }
+
+        /* page */
+
+        .template1 html {
+            font: 16px/1 'Open Sans', sans-serif;
+            overflow: auto;
+            padding: 0.5in;
+        }
+
+        .template1 html {
+            background: #999;
+            cursor: default;
+        }
+
+        .template1 body {
+            box-sizing: border-box;
+            height: 11in;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 0.5in;
+            width: 8.5in;
+        }
+
+        .template1 body {
+            background: #FFF;
+            border-radius: 1px;
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+        }
+
+        /* header */
+
+        .template1 header {
+            margin: 0 0 3em;
+        }
+
+        .template1 header:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        .template1 header h1 {
+            background: #000;
+            border-radius: 0.25em;
+            color: #FFF;
+            margin: 0 0 1em;
+            padding: 0.5em 0;
+        }
+
+        .template1 header address {
+            float: left;
+            font-size: 75%;
+            font-style: normal;
+            line-height: 1.25;
+            margin: 0 1em 1em 0;
+        }
+
+        .template1 header address p {
+            margin: 0 0 0.25em;
+        }
+
+        .template1 header span,
+        .template1 header img {
+            display: block;
+            float: right;
+        }
+
+        .template1 header span {
+            margin: 0 0 1em 1em;
+            max-height: 25%;
+            max-width: 60%;
+            position: relative;
+        }
+
+        .template1 header img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        .template1 header input {
+            cursor: pointer;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        /* article */
+
+        .template1 article,
+        .template1 article address,
+        .template1 table.meta,
+        .template1 table.inventory {
+            margin: 0 0 3em;
+        }
+
+        .template1 article:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        .template1 article h1 {
+            clip: rect(0 0 0 0);
+            position: absolute;
+        }
+
+        .template1 article address {
+            float: left;
+            font-size: 125%;
+            font-weight: bold;
+        }
+
+        /* table meta & balance */
+
+        .template1 table.meta,
+        .template1 table.balance {
+            float: right;
+            width: 36%;
+        }
+
+        .template1 table.meta:after,
+        .template1 table.balance:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        /* table meta */
+
+        .template1 table.meta th {
+            width: 40%;
+        }
+
+        .template1 table.meta td {
+            width: 60%;
+        }
+
+        /* table items */
+
+        .template1 table.inventory {
+            clear: both;
+            width: 100%;
+        }
+
+        .template1 table.inventory th {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .template1 table.inventory td:nth-child(1) {
+            width: 26%;
+        }
+
+        .template1 table.inventory td:nth-child(2) {
+            width: 38%;
+        }
+
+        .template1 table.inventory td:nth-child(3) {
+            text-align: right;
+            width: 12%;
+        }
+
+        .template1 table.inventory td:nth-child(4) {
+            text-align: right;
+            width: 12%;
+        }
+
+        .template1 table.inventory td:nth-child(5) {
+            text-align: right;
+            width: 12%;
+        }
+
+        /* table balance */
+
+        .template1 table.balance th,
+        .template1 table.balance td {
+            width: 50%;
+        }
+
+        .template1 table.balance td {
+            text-align: right;
+        }
+
+        /* aside */
+
+        .template1 aside h1 {
+            border: none;
+            border-width: 0 0 1px;
+            margin: 0 0 1em;
+        }
+
+        .template1 aside h1 {
+            border-color: #999;
+            border-bottom-style: solid;
+        }
+
+        /* javascript */
+
+        .template1 .add,
+        .template1 .cut {
+            border-width: 1px;
+            display: block;
+            font-size: .8rem;
+            padding: 0.25em 0.5em;
+            float: left;
+            text-align: center;
+            width: 0.6em;
+        }
+
+        .template1 .add,
+        .template1 .cut {
+            background: #9AF;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            background-image: -moz-linear-gradient(#00ADEE 5%, #0078A5 100%);
+            background-image: -webkit-linear-gradient(#00ADEE 5%, #0078A5 100%);
+            border-radius: 0.5em;
+            border-color: #0076A3;
+            color: #FFF;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 0 -1px 2px rgba(0, 0, 0, 0.333);
+        }
+
+        .template1 .add {
+            margin: -2.5em 0 0;
+        }
+
+        .template1 .add:hover {
+            background: #00ADEE;
+        }
+
+        .template1 .cut {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: -1.5em;
+        }
+
+        .template1 .cut {
+            -webkit-transition: opacity 100ms ease-in;
+        }
+
+        .template1 tr:hover .cut {
+            opacity: 1;
+        }
+
+        @media print {
+            .template1 * {
+                -webkit-print-color-adjust: exact;
+            }
+
+            .template1 html {
+                background: none;
+                padding: 0;
+            }
+
+            .template1 body {
+                box-shadow: none;
+            }
+        }
+    </style>
+
+    <div class="template1" x-init="selectedDocument = selectedDocument">
+        <header>
+            <h1>Invoice Template 1</h1>
+            <p x-text="selectedDocument.config.template_id"></p>
+            <address contenteditable>
+                <p x-text="selectedDocument.config.seller.name"></p>
+                <p
+                    x-text="`${selectedDocument.config.seller.address}, ${selectedDocument.config.seller.city} ${selectedDocument.config.seller.country}`">
+                </p>
+                <p x-text="selectedDocument.config.seller.phone"></p>
+                <p x-text="selectedDocument.config.seller.vat_number"></p>
+            </address>
+        </header>
+        <article>
+            <h1>Recipient</h1>
+            <address contenteditable>
+                <p>Some Company<br>c/o Some Guy</p>
+            </address>
+            <table class="meta">
+                <tr>
+                    <th><span contenteditable>Invoice #</span></th>
+                    <td><span contenteditable>101138</span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable>Date</span></th>
+                    <td><span contenteditable>January 1, 2012</span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable>Amount Due</span></th>
+                    <td><span id="prefix" contenteditable>$</span><span>600.00</span></td>
+                </tr>
+            </table>
+            <table class="inventory">
+                <thead>
+                    <tr>
+                        <th><span contenteditable>Item</span></th>
+                        <th><span contenteditable>Description</span></th>
+                        <th><span contenteditable>Rate</span></th>
+                        <th><span contenteditable>Quantity</span></th>
+                        <th><span contenteditable>Price</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a class="cut">-</a><span contenteditable>Front End Consultation</span></td>
+                        <td><span contenteditable>Experience Review</span></td>
+                        <td><span data-prefix>$</span><span contenteditable>150.00</span></td>
+                        <td><span contenteditable>4</span></td>
+                        <td><span data-prefix>$</span><span>600.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="add">+</a>
+            <table class="balance">
+                <tr>
+                    <th><span contenteditable>Total</span></th>
+                    <td><span data-prefix>$</span><span>600.00</span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable>Amount Paid</span></th>
+                    <td><span data-prefix>$</span><span contenteditable>0.00</span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable>Balance Due</span></th>
+                    <td><span data-prefix>$</span><span>600.00</span></td>
+                </tr>
+            </table>
+        </article>
+        <aside>
+            <h1><span contenteditable>Additional Notes</span></h1>
+            <div contenteditable>
+                <p>A finance charge of 1.5% will be made on unpaid balances after 30 days.</p>
+            </div>
+        </aside>
+    </div>
+</div>
