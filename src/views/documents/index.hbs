@@ -1,14 +1,11 @@
-
 {{!-- TODO - Main container --}}
-<div class="flex flex-col flex-grow overflow-hidden sm:flex-row xl:m-0 3xl:container 3xl:m-auto" 
-     x-data="{ 
+<div class="flex flex-col flex-grow overflow-hidden sm:flex-row xl:m-0 3xl:container 3xl:m-auto" x-data="{ 
         currentColumn: 1,
         openSlide: false, 
         slideContentPartialName: null, 
-        selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}null{{/if}}, 
         documents: {{ stringify documents }},
-      }" 
-     x-init="
+        selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}{{ stringify documents.[0] }}{{/if}}, 
+      }" x-init="
           $watch('currentColumn', value => {
             if (value > 1) {
               navState = 'back'
@@ -28,14 +25,16 @@
           runAutoSave();
         ">
   {{!-- TODO - col1 --}}
-  <div class="flex flex-col flex-grow overflow-hidden mx-2 sm:mx-0 sm:flex sm:flex-none sm:flex-col sm:border-r sm:border-grey-200 sm:w-72 md:w-88"
-       :class="{
+  <div
+    class="flex flex-col flex-grow overflow-hidden mx-2 sm:mx-0 sm:flex sm:flex-none sm:flex-col sm:border-r sm:border-grey-200 sm:w-72 md:w-88"
+    :class="{
                 'hidden': currentColumn >= 2,
                 'flex': currentColumn < 2
               }">
-       {{!-- x-show="currentColumn < 2 || window.innerWidth >= 640"> --}}
+    {{!-- x-show="currentColumn < 2 || window.innerWidth>= 640"> --}}
       <div class="flex-none sm:mx-2">
-        <button type="button" class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        <button type="button"
+          class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           @click.prevent="fetchUrl('/document/newAjax', 'POST' )
               .then(data => {
                 let newDocument = JSON.parse(data);
@@ -48,13 +47,13 @@
                 console.error('Error creating new document', error);
               });">
           <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z"
+              clip-rule="evenodd" />
           </svg>
           New Invoice / Quote / ...
         </button>
       </div>
-      <div class="flex-none mt-1 mb-2 sm:mx-2 flex items-center"
-          x-data="{
+      <div class="flex-none mt-1 mb-2 sm:mx-2 flex items-center" x-data="{
               searchDocumentTerm: '',
               sortBy: 'created_at:asc',
               searchDocument: function() {
@@ -67,68 +66,87 @@
                     console.error('Error searching for documents', error);
                   });
               }
-            }"
-          x-init="
+            }" x-init="
             $watch('searchDocumentTerm', () => { searchDocument() });
-          "
-      >
-        <input x-model.debounce.200ms="searchDocumentTerm" x-on:keydown.enter.prevent="searchDocument()" type="text" class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6" placeholder="Filter by buyers's name, VAT number, address, ... " autocomplete="off">
+          ">
+        <input x-model.debounce.200ms="searchDocumentTerm" x-on:keydown.enter.prevent="searchDocument()" type="text"
+          class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
+          placeholder="Filter by buyers's name, VAT number, address, ... " autocomplete="off">
 
-        <div x-data="Components.menu({ open: false })" x-init="init()" @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)" 
-             class="relative inline-block text-left pl-3 pr-3 pt-3 pb-2">
-            
-            <div>
-              <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400" id="menu-button" x-ref="button" @click="onButtonClick()" @keyup.space.prevent="onButtonEnter()" @keydown.enter.prevent="onButtonEnter()" aria-expanded="true" aria-haspopup="true" x-bind:aria-expanded="open.toString()" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
-                </svg>
-              </button>
+        <div x-data="Components.menu({ open: false })" x-init="init()"
+          @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)"
+          class="relative inline-block text-left pl-3 pr-3 pt-3 pb-2">
+
+          <div>
+            <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+              id="menu-button" x-ref="button" @click="onButtonClick()" @keyup.space.prevent="onButtonEnter()"
+              @keydown.enter.prevent="onButtonEnter()" aria-expanded="true" aria-haspopup="true"
+              x-bind:aria-expanded="open.toString()" @keydown.arrow-up.prevent="onArrowUp()"
+              @keydown.arrow-down.prevent="onArrowDown()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
+              </svg>
+            </button>
+          </div>
+
+
+          <div x-show="open" x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95"
+            x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95"
+            class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state."
+            x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical"
+            aria-labelledby="menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()"
+            @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false"
+            @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
+            <div class="px-4 py-3" role="none">
+              <p class="text-sm" role="none">Sort by</p>
             </div>
-
-            
-            <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" 
-                 class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state." x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
-              <div class="px-4 py-3" role="none">
-                <p class="text-sm" role="none">Sort by</p>
-              </div>
-              <ul class="py-1" role="none" x-data="{ menuItems: [
+            <ul class="py-1" role="none" x-data="{ menuItems: [
                     { label: 'Latest first', sortValue: 'created_at:asc' },
                     { label: 'Oldest first', sortValue: 'created_at:desc' },
                     { label: 'Last updated first', sortValue: 'updated_at:asc' },
                     { label: 'Older updated first', sortValue: 'updated_at:desc' }
                 ] }">
-                <!-- Template for each menu item -->
-                <template x-for="(item, index) in menuItems" :key="index">
-                    <li class="relative">
-                        <a x-text="item.label" href="#" class="text-gray-700 block px-4 py-2 text-sm"
-                            :class="{
+              <!-- Template for each menu item -->
+              <template x-for="(item, index) in menuItems" :key="index">
+                <li class="relative">
+                  <a x-text="item.label" href="#" class="text-gray-700 block px-4 py-2 text-sm" :class="{
                                 'bg-indigo-600 text-white': sortBy === item.sortValue,
                                 'text-gray-700': sortBy !== item.sortValue
-                            }"
-                            role="menuitem" tabindex="-1" :id="`menu-item-${index}`"
-                            @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, index)" @mouseleave="onMouseLeave($event)"
-                            @click.prevent="sortBy = item.sortValue; open = false; searchDocument(); focusButton()">
-                        </a>
-                        <span x-show="sortBy === item.sortValue" class="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
-                            </svg>
-                        </span>
-                    </li>
-                </template>
-              </ul>
-            </div>
-            
+                            }" role="menuitem" tabindex="-1" :id="`menu-item-${index}`"
+                    @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, index)"
+                    @mouseleave="onMouseLeave($event)"
+                    @click.prevent="sortBy = item.sortValue; open = false; searchDocument(); focusButton()">
+                  </a>
+                  <span x-show="sortBy === item.sortValue"
+                    class="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                      class="h-5 w-5">
+                      <path fill-rule="evenodd"
+                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                </li>
+              </template>
+            </ul>
+          </div>
+
         </div>
 
 
       </div>
 
-    
 
-    
-    
-    <ul role="list" class="flex-grow overflow-y-scroll divide-y pl-1 pr-4 sm:ml-2 sm:pl-0 divide-gray-200" x-data="{ 
+
+
+
+      <ul role="list" class="flex-grow overflow-y-scroll divide-y pl-1 pr-4 sm:ml-2 sm:pl-0 divide-gray-200" x-data="{ 
           editDocument: function(slug) {
             fetchUrl(`/document/editAjax/${slug}`)
               .then(data => {
@@ -139,140 +157,120 @@
                 console.error('Error editing document', error);
               });
           }
-        }"
-    >
-      <template x-if="documents.length === 0">
-        <li class="py-2 text-gray-500">No documents found.</li>
-      </template>
+        }">
+        <template x-if="documents.length === 0">
+          <li class="py-2 text-gray-500">No documents found.</li>
+        </template>
 
-      <template x-for="(document, index) in documents" :key="index">
+        <template x-for="(document, index) in documents" :key="index">
 
-        <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" 
+          {{!-- <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" --}}
+            <li @click.prevent="currentColumn = 2.1; editDocument(document.slug);"
             class="first:divide-none relative bg-white px-1 py-5 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50"
             :style="index === 0 ? 'border-top: none; padding-top:0' : ''">
-          <p alt="document?.config?.buyer?.name" x-text="document?.config?.buyer?.name" class="truncate text-lg font-medium text-gray-900"></p>
-          <div class="flex justify-between space-x-3 mt-1">
-            <div class="min-w-0 flex-1">
-              <a href="#" class="block focus:outline-none" spellcheck="false">
-                <span class="absolute inset-0" aria-hidden="true"></span>
-                <p class="truncate text-sm text-gray-600"><time datetime="2021-01-27T16:35" class="flex-shrink-0 whitespace-nowrap ">08/09/2023</time></p>
-              </a>
+            <p alt="document?.config?.buyer?.name" x-text="document?.config?.buyer?.name"
+              class="truncate text-lg font-medium text-gray-900"></p>
+            <div class="flex justify-between space-x-3 mt-1">
+              <div class="min-w-0 flex-1">
+                <a href="#" class="block focus:outline-none" spellcheck="false">
+                  <span class="absolute inset-0" aria-hidden="true"></span>
+                  <p class="truncate text-sm text-gray-600"><time datetime="2021-01-27T16:35"
+                      class="flex-shrink-0 whitespace-nowrap ">08/09/2023</time></p>
+                </a>
+              </div>
+              <span class="flex-shrink-0 whitespace-nowrap text-sm text-gray-600">#2023045</span>
             </div>
-            <span class="flex-shrink-0 whitespace-nowrap text-sm text-gray-600">#2023045</span>
-          </div>
-          <div class="mt-1">
-            <ul class="text-sm text-gray-500">
+            <div class="mt-1">
+              <ul class="text-sm text-gray-500">
                 <li class="truncate">Primaire - Licence standard Sdui - Contrat d'un an jusque décembre</li>
                 <li>Remise Konecto école primaire</li>
-            </ul>
-            <p class="line-clamp-2 text-sm text-gray-600">
-              test
-            </p>
-          </div>
-          <div class="mt-1">
-            <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Facture</span>
-            <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Denis Jacquemin</span>
-            <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Segec</span>
-            <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">To Renew Q3-2023</span>
-            <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Badge</span>
-            <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">Badge</span>
-            <span class="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">Badge</span>
-            <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">Badge</span>
-          </div>
-        </li>
-    
-
-        {{!-- <li @click.prevent="currentColumn = 2.1; selectedDocument = document; editDocument(document.slug);" class="flex flex-col sm:mx-2">
-            <div class="flex-auto">
-                <p class="text-sm font-semibold leading-5 text-gray-900 py-2">
-                    <span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">F</span> <a href="#" class="hover:underline truncate" spellcheck="false" x-text="document?.config?.buyer?.name"></a>
-                </p>
-                <div class="mt-1 flex flex-row flex-wrap items-center gap-x-2 text-xs leading-5 text-gray-500">
-                    <p><a href="#" class="hover:underline" spellcheck="false"><span class="inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">€ 145 589.45</span></a></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z">08/09/2023</time></p>
-                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1"></circle></svg>
-                    <p><time datetime="2023-01-23T22:34Z"><em>#</em> 2023 056</time></p>
-                </div>
+              </ul>
+              <p class="line-clamp-2 text-sm text-gray-600">
+                test
+              </p>
             </div>
-            <dl class="flex-auto">
-                <div class="flex -space-x-0.5">
-                    <ul class="flex flex-row flex-wrap gap-x-2">
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-pink-800">Denis</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">BE</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-red-800">Formation planifiée</span></li>
-                      <li><span class="inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-green-800">Gros client</span></li>
-                    </ul>
-                </div>
-            </dl>
-        </li> --}}
-        
-      </template>
-          </ul>
+            <div class="mt-1">
+              <span
+                class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Facture</span>
+              <span
+                class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Denis
+                Jacquemin</span>
+              <span
+                class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Segec</span>
+              <span
+                class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">To
+                Renew Q3-2023</span>
+              <span
+                class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Badge</span>
+              <span
+                class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">Badge</span>
+              <span
+                class="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">Badge</span>
+              <span
+                class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">Badge</span>
+            </div>
+          </li>
+
+
+
+        </template>
+      </ul>
 
   </div>
   {{!-- TODO - container col2 et col3 --}}
-  <div class="hidden overflow-hidden mx-2 sm:flex sm:flex-col sm:flex-grow 2lg:flex-row" 
-       :class="{
+  <div class="hidden overflow-hidden mx-2 sm:flex sm:flex-col sm:flex-grow 2lg:flex-row" :class="{
                 'flex flex-col sm:flex-grow': currentColumn >= 2,
                 'hidden sm:flex sm:flex-col sm:flex-grow': currentColumn < 2
-              }"
-       {{!-- x-show="currentColumn > 2 || window.innerWidth >= 640" --}}
-       x-init="
+              }" {{!-- x-show="currentColumn > 2 || window.innerWidth >= 640" --}} x-init="
           if (selectedDocument) {
             indexOfSelectedDocument = documents.findIndex(obj => obj.slug === selectedDocument.slug);
             documents[indexOfSelectedDocument] = deepMergeObjects(selectedDocument,documents[indexOfSelectedDocument]);
             selectedDocument =  documents[indexOfSelectedDocument];
           }
           
-       "
-    >
+       ">
     {{!-- TODO - tabs --}}
     <div class="2lg:hidden">
       <div class="border-b border-gray-200">
         <nav class="flex" aria-label="Tabs">
           <!-- Current: "bg-gray-100 text-gray-700", Default: "text-gray-500 hover:text-gray-700" -->
-          <a href="#" @click.prevent="currentColumn = 2.1" class="flex-grow text-center text-gray-500 rounded-md m-2 px-3 py-2 text-md font-medium"
-             :class="{
+          <a href="#" @click.prevent="currentColumn = 2.1"
+            class="flex-grow text-center text-gray-500 rounded-md m-2 px-3 py-2 text-md font-medium" :class="{
                 'bg-indigo-100 text-indigo-700': currentColumn <= 2.1,
                 'bg-gray-100 hover:text-gray-700': currentColumn > 2.1
               }">Form</a>
           <div class="border border-gray-200 my-1"></div>
-          <a href="#" @click="currentColumn = 2.2" class="flex-grow text-center rounded-md m-2 px-3 py-2 text-md font-medium"
-             :class="{
+          <a href="#" @click="currentColumn = 2.2"
+            class="flex-grow text-center rounded-md m-2 px-3 py-2 text-md font-medium" :class="{
                 'bg-indigo-100 text-indigo-700': currentColumn === 2.2,
                 'bg-gray-100 hover:text-gray-700': currentColumn !== 2.2
               }">Preview</a>
         </nav>
 
       </div>
-    </div> 
+    </div>
     {{!-- TODO - col2 --}}
-    <div class="overflow-y-auto text-black pl-1 pr-4 2lg:flex-initial 2lg:w-96 " 
-         :class="{
+    <div class="overflow-y-auto text-black pl-1 pr-4 2lg:flex-initial 2lg:w-96 2lg:border-r 2lg:border-grey-200" :class="{
            'flex flex-col sm:flex sm:flex-col sm:grow': currentColumn === 2 || currentColumn === 2.1,
            'hidden sm:flex sm:flex-col sm:grow': currentColumn < 2 || currentColumn > 2.1,
            'sm:hidden': currentColumn === 2.2
          }">
-               
-               {{!-- x-show="currentColumn === 2 || currentColumn === 2.1> --}}
+
+      {{!-- x-show="currentColumn === 2 || currentColumn === 2.1> --}}
       <template x-if="selectedDocument">
         {{> documents/edit_form selectedDocument=selectedDocument openSlide = openSlide}}
       </template>
 
-      <template  x-if="! selectedDocument">
+      <template x-if="! selectedDocument">
         <p>Please select a document</p>
       </template>
 
     </div>
     {{!-- TODO - col3 --}}
-    <div id="cont" 
-              class="overflow-auto px-4"
-              :class="{
+    <div id="cont" class="overflow-auto px-4" :class="{
                 'flex flex-col flex-grow': currentColumn === 2.2,
                 'hidden 2lg:block xl:flex-grow': currentColumn !== 2.2
-              }" 
-              x-init="
+              }" x-init="
                 isVisible = currentColumn === 2.2 || window.innerWidth >= 1124;
                 if (isVisible) {
                   onShown();
@@ -293,8 +291,7 @@
                     isVisible = false;
                   }
                 });
-              "
-              x-data="{
+              " x-data="{
                   isVisible: false,
                   scale: 1,
                   template_name: selectedDocument?.config?.template_name || 'template1',
@@ -309,10 +306,17 @@
                     this.scale = Math.min(this.scale + 0.1, 0.7);
                     this.updateScale();
                   },
-                
+                  generatePdf() {
+                    var element = document.getElementById('pages');
+                    var opt = {
+                      filename:     'myfile.pdf',
+                      jsPDF: {compressPDF: true}
+                    };
+                    html2pdf(element, opt);
+                  },
                   fitToScreen() {
                     // wait 3 seconds before executing the code
-                    setTimeout(() => {
+                    setTimeout(() => {  
                       const pageContainer = this.$refs.pageContainer;
                       const page = this.$refs.page;
                       const pageWidth = page.offsetWidth;
@@ -327,39 +331,31 @@
                     }, 1);
                   },
                   updateScale() {
-                    this.$refs.page.style.transform = `scale(${this.scale})`;
+                    const pages = document.querySelectorAll('.page');
+                    pages.forEach(page => {
+                      page.style.transform = `scale(${this.scale})`;
+                    });
                   },
                 }">
 
-      
+
       <div class="buttons-container absolute bottom-5 mx-auto flex z-50 ">
-            <button @click="zoomOut" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
-            <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to Screen</button>
-            <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
+        <button @click="zoomOut" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
+        <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to
+          Screen</button>
+        <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
+        <button @click="generatePdf"
+          class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Html2Pdf</button>
+        <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"
+          href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
       </div>
-      <page x-ref="pageContainer" class="mr-2 ">
-        <div id="page-content"
-             x-ref="page" 
-             style="width: 210mm; height: 296mm" 
-             class="sheet padding-10mm bg-red-100 text-black transform-origin-top-left xl:mx-auto">
-             
-              <template x-if="template_name === 'template1'">
-                {{> 'documents/templates/template1' selectedDocument=selectedDocument}}
-              </template>
-              <template x-if="template_name === 'template2'">
-                {{> 'documents/templates/template2' selectedDocument=selectedDocument}}
-              </template>
-              <template x-if="template_name === 'template3'">
-                {{> 'documents/templates/template3' selectedDocument=selectedDocument}}
-              </template>
-        </div>
+      <page x-ref="pageContainer" class="mr-2" id="pages">
+        {{> 'documents/preview' selectedDocument=selectedDocument}}
       </page>
-
-
-      <template  x-if="! selectedDocument">
+      <template x-if="! selectedDocument">
         <p>Nothing to preview, Please select a document</p>
       </template>
-      
+
     </div>
   </div>
   {{!-- {{> documents/slide }} --}}

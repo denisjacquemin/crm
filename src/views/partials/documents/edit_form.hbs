@@ -38,19 +38,31 @@
         <input type="text" x-model="selectedDocument.config.invoiceNumber" name="config.invoiceNumber" id="invoiceNumber" autocomplete="invoiceNumber" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
       </div>
 
-      <label for="currency" class="block text-sm font-medium leading-6 text-gray-900">Currency</label>
-      <div class="mb-6">
-        <input type="text" x-model="selectedDocument.config.currency" name="config.currency" id="currency" autocomplete="currency" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-      </div>
+      
 
-      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Buyer</label>
-      <div class="mb-2">
-        <input type="text" x-model="selectedDocument.config.buyer.name" name="config.buyer.name" id="buyer-name" autocomplete="buyer-id" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-        <p x-text="`${selectedDocument.config.buyer.address}, ${selectedDocument.config.buyer.city} ${selectedDocument.config.buyer.country}`" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
-        <p x-text="selectedDocument.config.buyer.vatNumber" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
-      </div>
+      
     </div>
 
+    <div class="col-span-full">
+      <table class="min-w-full divide-y divide-gray-300 max-w-full">
+        <thead>
+          <tr>
+            <th class="text-left text-sm font-semibold text-gray-900" width="auto">Items</th>
+            <th class="text-sm font-semibold text-gray-900 text-right" width="150px">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="(item, index) in selectedDocument.config.items" :key="index">
+            <tr>
+              <td x-text="item.name" class="py-2 text-sm font-medium text-gray-500"></td>
+              <td x-text="`${item.total_amount} €`" class="text-right text-sm font-medium text-gray-500"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    
   </div>
 
 

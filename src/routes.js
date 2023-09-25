@@ -41,11 +41,16 @@ router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
 router.patch("/document/:slug?", auth, documentsController.update);
+
+router.get("/document/:slug/preview", auth, documentsController.preview);
+router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
 router.get("/documents/search:querystring?", auth, documentsController.search);
 
 
 router.post("/buyer/newAjax", auth, buyersController.newBuyerAjax);
 router.get("/buyers/search:querystring?", auth, buyersController.search);
+
+
 
 
 // router.get("/companies/new", companiesController.newCompany);

@@ -2,7 +2,6 @@ require("dotenv").config();
 const i18next = require('i18next');
 const i18Middleware = require('i18next-http-middleware');
 const i18nBackend = require('i18next-fs-backend');
-const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 const helmet = require("helmet");
 

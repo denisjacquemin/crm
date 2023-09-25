@@ -4,7 +4,6 @@ module.exports = async function(req, res, next) {
 
     console.log(req.originalUrl + ' Session: ', JSON.stringify(req.session.isAuth));
 
-
     let redirect = false;
 
     if (!req.session.isAuth) {

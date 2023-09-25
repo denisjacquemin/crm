@@ -14,7 +14,15 @@
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
+}
+
+.sheet:last-child {
+  background: red;
+}
+
+.sheet:not(:last-child) {
   page-break-after: always;
+  background: yellow;
 }
 
 /** Paper sizes **/
@@ -40,12 +48,12 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
    .sheet {
     background: white;
     box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
-    margin: 5mm 0 5mm 0;
+    margin: 0;
   }
 }
 
 /** Fix for Chrome issue #273306 **/
-@media print {
+/* @media print {
 
   :not(page) {
     display: none;
@@ -62,7 +70,7 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
   page.letter, body.legal    { width: 216mm }
   page.letter.landscape      { width: 280mm }
   page.legal.landscape       { width: 357mm }
-}
+} */
 
 @layer utilities {
   .transform-origin-top-left {

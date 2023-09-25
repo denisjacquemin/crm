@@ -1,0 +1,7 @@
+<page x-ref="pageContainer" class="mr-2" id="pages"
+      x-data="{
+        selectedDocument: {{ stringify selectedDocument }},
+        template_name: '{{ selectedDocument.config.template_name }}',
+      }">
+    {{> 'documents/preview' selectedDocument=selectedDocument}}
+</page>

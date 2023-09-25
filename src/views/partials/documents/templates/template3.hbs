@@ -1,3 +1,274 @@
-<div>
-    <p>Template 3</p>
+<div x-data="{
+        firstPageItems: {{stringify (slice selectedDocument.config.items 0 10)}},
+        nextPagesItemsBatche: {{stringify (slice selectedDocument.config.items 10 25)}},
+    }">
+    <style>
+        #template3 .page {
+            position: relative;
+        }
+        #template3 .top-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #template3 .bottom-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        #template3 header {
+            position: relative;
+        }
+
+        #template3 header h1 {
+            position: absolute;
+            top: 30px; 
+             /* Set the left margin to 10mm */
+            right: 10mm; /* Set the right margin to 10mm */
+            width: calc(100% - 20mm);     
+            font: bold 150% sans-serif;
+            letter-spacing: 0.3em;
+            text-align: right;
+            text-transform: uppercase;
+            padding: 5px 0 5px 0;
+            margin-bottom: 20px;
+        }
+
+        #template3 header #seller_address {
+            position: absolute;
+            top: 5cm;
+            left: 10mm;
+            width: 40%;
+            word-wrap: break-word;
+            line-height: initial;
+            {{!-- font-size: 85%; --}}
+            {{!-- font-style: normal;
+            line-height: 1.25; --}}
+            margin: 0 1em 1em 0;
+        }
+
+        #template3 header #billed_to {
+            position: absolute;
+            top: 4cm;
+            left: 11cm;
+        }
+
+        #template3 header #buyer_address {
+            position: absolute;
+            font-size: 100%;
+            font-style: normal;
+            line-height: 1.25;
+            top: 5.5cm;
+            left: 11cm;
+            height: 3.3cm;
+            width: 8.5cm;
+            padding-left: 25px;
+            padding-top: 10px;
+
+                {
+                    {
+                    border: dashed 1px #d0cfcf;             
+                }
+            }
+        }
+
+        #template3 header #buyer_address::before,
+        #template3 header #buyer_address::after {
+            content: "";
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border: 1px dashed #000;
+        }
+
+        #template3 header #buyer_address::before {
+            top: 0;
+            left: 0;
+            border-bottom: none;
+            border-right: none;
+        }
+
+        #template3 header #buyer_address::after {
+            top: 0;
+            right: 0;
+            border-bottom: none;
+            border-left: none;
+        }
+
+        #template3 header #invoice_details {
+            position: absolute;
+            left: 10mm;
+            top: 8cm;
+            border-collapse: collapse;
+            margin-top: 50px;
+            font-size: 85%;
+        }
+        
+        #template3 main {
+            position: relative;
+        }
+
+
+        #template3 main #products {
+            position: absolute;
+            left: 10mm;
+            right: 10mm;
+            top: 14cm;
+            width: calc(100% - 20mm); /* 100% width with 10mm left and right margins */
+        }
+
+        /* Table container */
+        #template3 main #products .table {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Table row */
+        #template3 main #products .tr, #template3 main #products .thead {
+            display: table-row;
+            border-bottom: 1px solid #ccc; /* Optional: Add a border between rows */
+        }
+
+         #template3 main #products .thead .th {
+            display: table-cell;
+            padding: 8px 16px; /* Adjust padding as needed */
+            border: 1px solid #ccc; /* Add cell borders */
+            font-weight: 700;
+         }
+
+        /* Table cell */
+        #template3 main #products .td {
+            display: table-cell;
+            padding: 8px 16px; /* Adjust padding as needed */
+            border: 1px solid #ccc; /* Add cell borders */
+        }
+
+        /* Header row (optional) */
+        #template3 main #products .tr:first-child {
+            background-color: #f0f0f0; /* Add background color to header row */
+            font-weight: bold; /* Make header text bold */
+        }
+
+        #template3 footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Footer column styles (no changes) */
+        #template3 footer .left,
+        #template3 footer .right {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Add styling to individual columns (no changes) */
+        #template3 footer .left {
+            background-color: #555;
+        }
+
+        #template3 footer .middle {
+            background-color: #666;
+        }
+
+        #template3 footer .right {
+            background-color: #777;
+        } --}}
+     </style>
+    <div id="template3">
+{{!-- PAGE 1 - BEGIN --}}
+      <div class="page" style="width: 21cm;
+            {{!-- position: relative; --}}
+            height: 29.7cm;
+            box-sizing: border-box;"
+        class="sheet text-black transform-origin-top-left xl:mx-auto">
+      <span class="top-left">top left - currentPage: <span x-text="currentPage"></span></span>
+      <span class="bottom-right">bottom right</span>
+
+
+        <header>        
+            <h1>Invoice</h1>
+            <div id="seller_address">
+                <span style="font-size: 150%; font-weight: 700;" x-text="selectedDocument.config.seller.name"></span><br/>
+                <span style="" x-text="`${selectedDocument.config.buyer.address}`"></span><br/>
+                <span x-text="`${selectedDocument.config.buyer.postalcode} ${selectedDocument.config.buyer.city}`"></span><br/>
+                <span x-text="selectedDocument.config.buyer.country"></span><br/>
+                <span style=""> TVA: <span x-text="selectedDocument.config.seller.vat_number"></span></span><br/>
+                <span x-text="selectedDocument.config.seller.phone"></span><br/>
+                <span x-text="selectedDocument.config.seller.email"></span>
+            </div>
+            <div id="billed_to"style="font-weight: 400;">Billed To</div>
+            <div id="buyer_address">
+                <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
+                <span style="" x-text="`${selectedDocument.config.buyer.address}`"></span><br/>
+                <span style="" x-text="`${selectedDocument.config.buyer.postalcode} ${selectedDocument.config.buyer.city}`"></span>
+                <span style="" x-text="selectedDocument.config.buyer.country"></span><br/>
+                <br/><br/><br/><br/>
+                <span style=""> TVA: <span x-text="selectedDocument.config.buyer.vat_number"></span></span><br/>
+                <span style="" x-text="selectedDocument.config.buyer.phone"></span><br/>
+                <span style="" x-text="selectedDocument.config.buyer.email"></span>
+            </div>
+            <div id="invoice_details" style="clear:both">
+                    <table style="border-spacing: 0;">
+                        <tr>
+                            <td>Invoice Number:</td>
+                            <td style="text-align: right; font-weight: 700;"
+                                x-text="selectedDocument.config.invoice_number"></td>
+                        </tr>
+                        <tr>
+                            <td>Invoice Date:</td>
+                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.invoice_date">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Due Date:</td>
+                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.due_date"></td>
+                        </tr>
+                        <tr>
+                            <td>Currency:</td>
+                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.currency"></td>
+                        </tr>
+                    </table>
+                </div>
+        </header> 
+        <main>
+            <div id="products">
+                <div class="table">
+                    <div class="thead">
+                        <div class="th" style="width:350px">Description</div>
+                        <div class="th" style="">Quantity</div>
+                        <div class="th" style="">Price</div>
+                        <div class="th" style="">Tax</div>
+                        <div class="th" style="">Total</div>
+                    </div>
+                    <template x-for="(item, rowIndex) in firstPageItems" :key="rowIndex">
+                        <div class="tr">
+                            <div class="td" style="width:350px" x-text="item.name"></div>
+                            <div class="td" style="" x-text="item.quantity"></div>
+                            <div class="td" style="" x-text="item.price"></div>
+                            <div class="td" style="" x-text="item.tax_rate"></div>
+                            <div class="td" style="" x-text="item.total_amount"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <div class="left">Eventuellement un logo</div>
+            <div class="right">Numero de compte etc</div>
+        </footer>
+    </div> 
+{{!-- PAGE 1 - END --}}
+
+    </div>
 </div>

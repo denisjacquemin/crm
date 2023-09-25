@@ -61,8 +61,19 @@ const hbs = create({
         add: function(variable, addend) {
             return variable + addend;
         },
-        ifEquals: function(arg1, arg2, options) {
-            return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        equal: function(a, b, options) {
+            if (a === b) {
+              return options.fn(this);
+            } else {
+              return options.inverse(this);
+            }
+        },
+        batch: function(array, batchSize, options) {
+            var result = [];
+            for (var i = 0; i < array.length; i += batchSize) {
+                result.push(array.slice(i, i + batchSize));
+            }
+            return result;
         },
         concat: function() {
             var outStr = '';
@@ -72,6 +83,16 @@ const hbs = create({
                 }
             }
             return outStr;
+        },
+        slice: function(array, start, end) {
+            if (!Array.isArray(array)) {
+              throw new Error('The first argument to the `slice` helper must be an array.');
+            }
+          
+            start = start || 0;
+            end = end || array.length;
+          
+            return array.slice(start, end);
         },
         startsWith: function(str, prefix) {
             return str.startsWith(prefix);
@@ -118,7 +139,7 @@ app.use("/", require("./src/routes"));
 app.use(function(err, req, res, next) {
     if (res.headersSent) {
         console.log("headers sent", res.headersSent);
-        return next(err);
+        return next(err);   
     }
     console.error(err);
     res.status(500).render("error", { error: err });

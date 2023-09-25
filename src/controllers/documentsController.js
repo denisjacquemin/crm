@@ -5,6 +5,10 @@ const DateHelper = require('../lib/date-helpers');
 // rquire _.extend from underscore
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
+const {jsPDF} = require('jspdf');
+const puppeteer = require('puppeteer')
+
+
 
 
 const emptyDoc = {
@@ -18,17 +22,21 @@ const emptyDoc = {
             "name": "ABC Company",
             "address": "1 Main Street",
             "city": "Brussels",
+            "PostalCode": "1000",
             "country": "BE",
             "vat_number": "BE0123456789",
             "phone": "+32 2 123 45 67",
+            "email": "info@abc.example.com",
         },
         "buyer": {
             "name": "XYZ Company",
             "address": "2 High Street",
             "city": "Paris",
+            "PostalCode": "1000",
             "country": "FR",
             "vat_number": "FR0123456789",
             "phone": "+32 2 123 45 67",
+            "email": "info@xyz.example.com",
         },
         "items": [{
                 "name": "Product 1",
@@ -37,7 +45,205 @@ const emptyDoc = {
                 "price": 10.00,
                 "tax_rate": 21.00,
                 "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 2",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 3",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 4",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 5",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 6",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 7",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 8",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 9",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 10",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 11",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 12",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 13",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 14",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 1",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
                 "tota_amount": 24.20
+            },
+            {
+                "name": "Product 2",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 1",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 2",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 1",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 2",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 1",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
+            },
+            {
+                "name": "Product 2",
+                "description": "This is another product",
+                "quantity": 1,
+                "price": 5.00,
+                "tax_rate": 21.00,
+                "tax_amount": 1.05,
+                "total_amount": 6.05
+            },
+            {
+                "name": "Product 1",
+                "description": "This is a product",
+                "quantity": 2,
+                "price": 10.00,
+                "tax_rate": 21.00,
+                "tax_amount": 4.20,
+                "total_amount": 24.20
             },
             {
                 "name": "Product 2",
@@ -62,7 +268,6 @@ async function index(req, res) {
     try {
         // const documents = await getLatestDocument(req.session.current_company._id);
 
-        debugger
         const documentsTypesenseService = new DocumentTypesenseService();
         const result = await documentsTypesenseService.searchDocuments({ q: '*' }, {
             'filter_by': `company_id:${req.session.current_company._id}`,
@@ -241,6 +446,86 @@ async function search(req, res) {
 }
 
 
+async function preview(req, res) {
+    const documentService = await DocumentService.getInstance();
+    const document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+
+    if (!document) {
+        return res.status(404).send();
+    }
+
+    res.render("documents/preview", {
+        layout: 'preview',
+        selectedDocument: document
+    });
+
+}
+
+
+async function toPDFWithPuppeteer(req, res) {
+    const documentService = await DocumentService.getInstance();
+    const document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+
+    if (!document) {
+        return res.status(404).send();
+    }
+
+    const browser = await puppeteer.launch({headless: "new"});
+    const page = await browser.newPage();
+
+    // get cookie and pass the cookie to the page
+    const cookies = req.cookies;
+    await page.setCookie(...Object.keys(cookies).map(key => ({       
+        name: key,
+        value: cookies[key],
+        domain: 'localhost',
+        path: '/',
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Lax'
+    })));               
+
+    await page.goto(`http://localhost:3000/document/${document.slug}/preview`, {waitUntil: 'load'});
+
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
+
+    res.setHeader('Content-Disposition', `attachment; filename="${document.slug}.pdf"`);
+    
+    res.type('application/pdf');
+    res.send(pdfBuffer);
+}
+
+async function toPDF(req, res) {
+    try {
+        // const documentService = await DocumentService.getInstance();
+        // const document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+
+        // if (!document) {
+        //     return res.status(404).send();
+        // }
+
+        // use jsPdf to generate the PDF, send doc generated back to the browser for download
+        const doc = new jsPDF();
+        doc.text('Hello', 10, 10);
+        doc.text('World', 10, 20);
+
+        const pdfBuffer = doc.output('arraybuffer');
+        res.setHeader('Content-Disposition', 'attachment; filename="dummy.pdf"');
+        // res.setHeader('Content-Type', 'application/pdf');
+
+        // set header content-type to application/pdf, make sure nothing else is sent before and afer this
+        res.type('application/pdf');
+        // Send the PDF buffer as a response
+        res.send(pdfBuffer);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(req.i18n.t('common.unknown_error'));
+    }
+}
+
+
 module.exports = {
     index,
     edit,
@@ -248,5 +533,8 @@ module.exports = {
     newDocument,
     newDocumentAjax,
     update,
-    search
+    search,
+    preview,
+    toPDF,
+    toPDFWithPuppeteer
 };
