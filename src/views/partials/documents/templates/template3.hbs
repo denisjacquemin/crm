@@ -1,10 +1,11 @@
 <div x-data="{
-        firstPageItems: {{stringify (slice selectedDocument.config.items 0 10)}},
-        nextPagesItemsBatche: {{stringify (slice selectedDocument.config.items 10 25)}},
-    }">
+    firstPageItems: {{stringify (slice selectedDocument.config.items 0 5)}},
+    nextPagesItemsChunk: {{stringify (chunk (slice selectedDocument.config.items 10 25) 15)}},
+}">
     <style>
         #template3 .page {
             position: relative;
+            margin-bottom: 20px;
         }
         #template3 .top-left {
             position: absolute;
@@ -115,8 +116,15 @@
             position: absolute;
             left: 10mm;
             right: 10mm;
-            top: 14cm;
             width: calc(100% - 20mm); /* 100% width with 10mm left and right margins */
+        }
+
+        #template3 main #products.page1 {
+            top: 14cm;
+        }
+
+        #template3 main #products.page2plus {
+            top: 4cm;
         }
 
         /* Table container */
@@ -193,7 +201,7 @@
             box-sizing: border-box;"
         class="sheet text-black transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: <span x-text="currentPage"></span></span>
-      <span class="bottom-right">bottom right</span>
+      <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="nextPagesItemsChunk.length +1"></span></span>
 
 
         <header>        
@@ -242,7 +250,7 @@
                 </div>
         </header> 
         <main>
-            <div id="products">
+            <div id="products" class="page1">
                 <div class="table">
                     <div class="thead">
                         <div class="th" style="width:350px">Description</div>
@@ -269,6 +277,46 @@
         </footer>
     </div> 
 {{!-- PAGE 1 - END --}}
+
+
+{{!-- PAGE 2+ - BEGIN --}}
+    <template x-for="(items, chunkIndex) in nextPagesItemsChunk" :key="chunkIndex">
+      <div class="page" style="width: 21cm;
+            {{!-- position: relative; --}}
+            height: 29.7cm;
+            box-sizing: border-box;"
+        class="sheet text-black transform-origin-top-left xl:mx-auto">
+        <span class="top-left">top left - currentPage: <span x-text="currentPage"></span></span>
+        <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="nextPagesItemsChunk.length +1"></span></span>
+        <main>
+            <div id="products" class="page2plus">
+                <div class="table">
+                    <div class="thead">
+                        <div class="th" style="width:350px">Description</div>
+                        <div class="th" style="">Quantity</div>
+                        <div class="th" style="">Price</div>
+                        <div class="th" style="">Tax</div>
+                        <div class="th" style="">Total</div>
+                    </div>
+                    <template x-for="(item, itemIndex) in items" :key="itemIndex">
+                        <div class="tr">
+                            <div class="td" style="width:350px" x-text="item.name"></div>
+                            <div class="td" style="" x-text="item.quantity"></div>
+                            <div class="td" style="" x-text="item.price"></div>
+                            <div class="td" style="" x-text="item.tax_rate"></div>
+                            <div class="td" style="" x-text="item.total_amount"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <div class="left">Eventuellement un logo</div>
+            <div class="right">Numero de compte etc</div>
+        </footer>
+      </div> 
+    </template>
+{{!-- PAGE 2+ - END --}}
 
     </div>
 </div>

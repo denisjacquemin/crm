@@ -68,10 +68,10 @@ const hbs = create({
               return options.inverse(this);
             }
         },
-        batch: function(array, batchSize, options) {
+        chunk: function(array, chunkSize, options) {
             var result = [];
-            for (var i = 0; i < array.length; i += batchSize) {
-                result.push(array.slice(i, i + batchSize));
+            for (var i = 0; i < array.length; i += chunkSize) {
+                result.push(array.slice(i, i + chunkSize));
             }
             return result;
         },
