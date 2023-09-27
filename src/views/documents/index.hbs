@@ -4,7 +4,7 @@
         openSlide: false, 
         slideContentPartialName: null, 
         documents: {{ stringify documents }},
-        selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}{{ stringify documents.[0] }}{{/if}}, 
+        selectedDocument: {{ stringify selectedDocument }}, 
       }" x-init="
           $watch('currentColumn', value => {
             if (value > 1) {
@@ -271,6 +271,7 @@
                 'flex flex-col flex-grow': currentColumn === 2.2,
                 'hidden 2lg:block xl:flex-grow': currentColumn !== 2.2
               }" x-init="
+
                 isVisible = currentColumn === 2.2 || window.innerWidth >= 1124;
                 if (isVisible) {
                   onShown();
@@ -306,24 +307,17 @@
                     this.scale = Math.min(this.scale + 0.1, 0.7);
                     this.updateScale();
                   },
-                  generatePdf() {
-                    var element = document.getElementById('pages');
-                    var opt = {
-                      filename:     'myfile.pdf',
-                      jsPDF: {compressPDF: true}
-                    };
-                    html2pdf(element, opt);
-                  },
                   fitToScreen() {
-                    // wait 3 seconds before executing the code
+                    // wait 1 millisecond before executing the code
                     setTimeout(() => {  
                       const pageContainer = this.$refs.pageContainer;
-                      const page = this.$refs.page;
+                      const page = pageContainer.querySelector('#pageone');
                       const pageWidth = page.offsetWidth;
                       const pageContainerWidth = pageContainer.offsetWidth;
                       console.log('pageWidth', pageWidth);
                       console.log('pageContainerWidth', pageContainerWidth);
-                      if (pageContainerWidth < pageWidth) {
+                      this.scale = Math.min(Math.max((pageContainerWidth / pageWidth), 0.2), 4);
+                      if (this.scale < 1) {
                         this.scale = Math.min(Math.max((pageContainerWidth / pageWidth), 0.2), 4);
                         console.log('scale', this.scale);
                         this.updateScale();
@@ -332,6 +326,7 @@
                   },
                   updateScale() {
                     const pages = document.querySelectorAll('.page');
+                    console.log('pages', pages);
                     pages.forEach(page => {
                       page.style.transform = `scale(${this.scale})`;
                     });
@@ -344,14 +339,12 @@
         <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to
           Screen</button>
         <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
-        <button @click="generatePdf"
-          class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Html2Pdf</button>
         <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"
           href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
       </div>
-      <page x-ref="pageContainer" class="mr-2" id="pages">
-        {{> 'documents/preview' selectedDocument=selectedDocument}}
-      </page>
+      <div x-ref="pageContainer" class="mr-2" id="pages">
+        {{> (concat 'documents/templates/' selectedDocument.config.template_name)}}
+      </div>
       <template x-if="! selectedDocument">
         <p>Nothing to preview, Please select a document</p>
       </template>

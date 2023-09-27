@@ -3,5 +3,5 @@
         selectedDocument: {{ stringify selectedDocument }},
         template_name: '{{ selectedDocument.config.template_name }}',
       }">
-    {{> 'documents/preview' selectedDocument=selectedDocument}}
+    {{> (concat 'documents/templates/' selectedDocument.config.template_name)}}
 </page>

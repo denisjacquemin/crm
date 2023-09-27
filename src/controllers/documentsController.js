@@ -275,9 +275,12 @@ async function index(req, res) {
             'per_page': 30
         });
 
+        const documents = result.hits.map(hit => hit.document);
+
         res.render('documents/index', {
             layout: 'app',
-            documents: result.hits.map(hit => hit.document)
+            documents: documents,
+            selectedDocument: documents[0]
         });
     } catch (err) {
         console.error(err);

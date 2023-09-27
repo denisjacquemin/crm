@@ -2,7 +2,20 @@
     firstPageItems: {{stringify (slice selectedDocument.config.items 0 5)}},
     nextPagesItemsChunk: {{stringify (chunk (slice selectedDocument.config.items 10 25) 15)}},
 }">
+
+
+
     <style>
+
+        .page:last-child {
+        background: red;
+        }
+
+        .page:not(:last-child) {
+        page-break-after:<br/> always;
+        background: yellow;
+        }
+
         #template3 .page {
             position: relative;
             margin-bottom: 20px;
@@ -195,12 +208,12 @@
      </style>
     <div id="template3">
 {{!-- PAGE 1 - BEGIN --}}
-      <div class="page" style="width: 21cm;
+      <div id="pageone" style="width: 21cm;
             {{!-- position: relative; --}}
             height: 29.7cm;
             box-sizing: border-box;"
-        class="sheet text-black transform-origin-top-left xl:mx-auto">
-      <span class="top-left">top left - currentPage: <span x-text="currentPage"></span></span>
+        class="page sheet text-black transform-origin-top-left xl:mx-auto">
+      <span class="top-left">top left - currentPage: </span>
       <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="nextPagesItemsChunk.length +1"></span></span>
 
 
@@ -281,12 +294,12 @@
 
 {{!-- PAGE 2+ - BEGIN --}}
     <template x-for="(items, chunkIndex) in nextPagesItemsChunk" :key="chunkIndex">
-      <div class="page" style="width: 21cm;
+      <div style="width: 21cm;
             {{!-- position: relative; --}}
             height: 29.7cm;
             box-sizing: border-box;"
-        class="sheet text-black transform-origin-top-left xl:mx-auto">
-        <span class="top-left">top left - currentPage: <span x-text="currentPage"></span></span>
+        class="page sheet text-black transform-origin-top-left xl:mx-auto">
+        <span class="top-left">top left - currentPage:</span>
         <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="nextPagesItemsChunk.length +1"></span></span>
         <main>
             <div id="products" class="page2plus">
