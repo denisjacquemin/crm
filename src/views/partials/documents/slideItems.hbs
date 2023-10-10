@@ -1,0 +1,74 @@
+<div>
+<div class="bg-indigo-700 px-4 py-6 sm:px-6" style="position:relative;">
+    <button @click.prevent="
+            newItem = {
+                name: document.getElementById('new-item-name').value,
+                quantity: document.getElementById('new-item-quantity').value,
+                unity: document.getElementById('new-item-unity').value,
+                price: document.getElementById('new-item-price').value,
+                reduction: document.getElementById('new-item-reduction').value,
+                vat: document.getElementById('new-item-vat').value,
+                amount: document.getElementById('new-item-amount').value
+            }
+            selectedDocument.config.items.push(newItem);
+            openSlide = false;
+          "
+          type="button" style="position:absolute; right:15px; top:15px;" class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">
+        Add item
+    </button>
+    <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold leading-6 text-white" id="slide-over-title">Create a new item</h2>
+    </div>
+    <div class="mt-1">
+        <p class="text-sm text-indigo-300">Create and add a item to your invoice.</p>
+    </div>
+</div>
+
+<div class="px-3">
+    <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
+        <div class="col-span-full">
+            <label for="new-item-name" class="block text-sm font-medium leading-6 text-gray-900">Item name</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-name" id="new-item-name" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="col-span-1 sm:col-span-3">
+            <label for="new-item-quantity" class="block text-sm font-medium leading-6 text-gray-900">Quantity</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-quantity" id="new-item-quantity" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="col-span-1 sm:col-span-3">
+            <label for="new-item-unity" class="block text-sm font-medium leading-6 text-gray-900">Unité</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-unity" id="new-item-unity" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        
+        <div class="col-span-full">
+            <label for="new-item-price" class="block text-sm font-medium leading-6 text-gray-900">Price</label>
+            <div class="mt-2">
+            <input type="text" name="new-item-price" id="new-item-price" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="col-span-full">
+            <label for="new-item-reduction" class="block text-sm font-medium leading-6 text-gray-900">Reduction %</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-reduction" id="new-item-reduction" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="col-span-full">
+            <label for="new-item-vat" class="block text-sm font-medium leading-6 text-gray-900">VAT</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-vat" id="new-item-vat" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="col-span-full">
+            <label for="new-item-amount" class="block text-sm font-medium leading-6 text-gray-900">Amount</label>
+            <div class="mt-2">
+                <input type="text" name="new-item-amount" id="new-item-amount" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+    </div>
+</div>
+</div>

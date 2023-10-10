@@ -21,3 +21,11 @@ docker run -p 8108:8108 -v$(pwd)/typesense-data:/data typesensdisableBackButtonR
 # How to browse typesense
 
 `https://bfritscher.github.io/typesense-dashboard`
+
+curl -H "X-TYPESENSE-API-KEY: xyz" \
+     -X GET \
+    "http://localhost:8108/collections/documents"
+
+curl -H "X-TYPESENSE-API-KEY: xyz" \
+     -X DELETE \
+    "http://localhost:8108/collections/documents"    

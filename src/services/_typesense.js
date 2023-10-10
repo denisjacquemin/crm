@@ -74,6 +74,7 @@ class TypesenseService {
 
     async updateDocument(documentId, document) {
         try {
+            console.log('### updateDocument', JSON.stringify(document));
             return await this.client.collections(this.collectionName).documents(documentId).update(document);
         } catch (error) {
             console.error(`Failed to update document: ${error.message}`);

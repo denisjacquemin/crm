@@ -42,6 +42,8 @@ class DocumentTypesenseService extends TypesenseService {
         return await super.searchDocuments(query, searchParameters);
     }
 
+    // why, because Dates need to be converted into Unix timestamps (opens new window)and stored as int64 fields in Typesense
+    // see https://typesense.org/docs/0.25.1/api/collections.html#notes-on-indexing-common-types-of-data
     _convertDatesToUnixTimestamps(document) {
         const documentWithUnixTimestamps = {...document };
         if (document.created_at) {

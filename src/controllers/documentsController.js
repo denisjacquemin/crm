@@ -1,7 +1,6 @@
 const { ObjectId } = require('mongodb');
 const DocumentService = require('../services/documents.service');
 const { DocumentTypesenseService } = require('../services/documents.typesense.service');
-const DateHelper = require('../lib/date-helpers');
 // rquire _.extend from underscore
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
@@ -40,6 +39,7 @@ const emptyDoc = {
         },
         "items": [{
                 "name": "Product 1",
+                "order": 1,
                 "description": "This is a product",
                 "quantity": 2,
                 "price": 10.00,
@@ -49,6 +49,7 @@ const emptyDoc = {
             },
             {
                 "name": "Product 2",
+                "order": 2,
                 "description": "This is another product",
                 "quantity": 1,
                 "price": 5.00,
@@ -58,6 +59,7 @@ const emptyDoc = {
             },
             {
                 "name": "Product 3",
+                "order": 3,
                 "description": "This is a product",
                 "quantity": 2,
                 "price": 10.00,
@@ -67,186 +69,7 @@ const emptyDoc = {
             },
             {
                 "name": "Product 4",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 5",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 6",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 7",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 8",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 9",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 10",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 11",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 12",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 13",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 14",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 1",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "tota_amount": 24.20
-            },
-            {
-                "name": "Product 2",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 1",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 2",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 1",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 2",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 1",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 2",
-                "description": "This is another product",
-                "quantity": 1,
-                "price": 5.00,
-                "tax_rate": 21.00,
-                "tax_amount": 1.05,
-                "total_amount": 6.05
-            },
-            {
-                "name": "Product 1",
-                "description": "This is a product",
-                "quantity": 2,
-                "price": 10.00,
-                "tax_rate": 21.00,
-                "tax_amount": 4.20,
-                "total_amount": 24.20
-            },
-            {
-                "name": "Product 2",
+                "order": 4,
                 "description": "This is another product",
                 "quantity": 1,
                 "price": 5.00,
@@ -261,7 +84,6 @@ const emptyDoc = {
         "total_amount": 34.25,
         "notes": "Thank you for your business"
     },
-    created_at: ''
 }
 
 async function index(req, res) {
@@ -291,19 +113,7 @@ async function index(req, res) {
 async function newDocument(req, res) {
 
     try {
-        const documentService = await DocumentService.getInstance();
-        const documentTypesenseService = new DocumentTypesenseService();
-
-        const document = await documentService.create(mergeObjects(
-            emptyDoc, {
-                company_id: ObjectId(req.session.current_company._id),
-                config: {
-                    updated_at: DateHelper.toISO8601(DateHelper.nowUtc()),
-                },
-                created_by_user_id: ObjectId(req.session.user._id)
-            }));
-
-        await documentTypesenseService.createDocument(document);
+        const document = createNewDocumentInMongoAndTypesense(req)
 
         const documents = await getLatestDocument(req.session.current_company._id);
 
@@ -321,24 +131,29 @@ async function newDocument(req, res) {
 
 async function newDocumentAjax(req, res) {
     try {
-        const documentService = await DocumentService.getInstance();
-        const document = await documentService.create(mergeObjects(
-            emptyDoc, {
-                company_id: ObjectId(req.session.current_company._id),
-                config: {
-                    updated_at: DateHelper.toISO8601(DateHelper.nowUtc()),
-                },
-                created_by_user_id: ObjectId(req.session.user._id)
-            }));
-        const documentTypesenseService = new DocumentTypesenseService();
-        // create the document in Typesense
-        await documentTypesenseService.createDocument(document);
+        const document = await createNewDocumentInMongoAndTypesense(req);
 
         res.json(document);
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));
     }
+}
+
+async function createNewDocumentInMongoAndTypesense(req) {
+    const documentService = await DocumentService.getInstance();
+    const document = await documentService.create(mergeObjects(
+        emptyDoc, {
+        company_id: ObjectId(req.session.current_company._id),
+        // config: {
+        //     updated_at: new Date(),
+        // },
+        created_by_user_id: ObjectId(req.session.user._id)
+    }));
+    const documentTypesenseService = new DocumentTypesenseService();
+    // create the document in Typesense
+    await documentTypesenseService.createDocument(document);
+    return document;
 }
 
 async function edit(req, res) {
@@ -394,18 +209,21 @@ async function editAjax(req, res) {
 
 
 
-// add update function that respond to router.patch("/document/:slug?"
 async function update(req, res) {
     try {
+        console.log('DocumentController.update slug:', req.params.slug);
+        console.log('DocumentController.update req.body.document:', req.body.document);
+        console.log('DocumentController.update req.session.current_company._id:', req.session.current_company._id);
+
         const documentService = await DocumentService.getInstance();
         let document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
-        console.log('document', document);
-        console.log('Date.now', Date.now());
-        console.log('DateHelper.nowUtc()', DateHelper.nowUtc());
-        const newUpdatedAt = DateHelper.toISO8601(DateHelper.nowUtc());
+        if (!document) {
+            return res.status(404).send(req.i18n.t('common.not_found'));
+        }
+
         const updatedDocument = _.merge({}, document, req.body.document, {
-            updated_at: newUpdatedAt,
+            updated_at: new Date(),
         });
 
         await documentService.update(document._id, updatedDocument);
@@ -414,7 +232,7 @@ async function update(req, res) {
         await documentTypesenseService.updateDocument(document._id, updatedDocument);
 
         res.json({
-            updated_at: newUpdatedAt,
+            updated_at: new Date(),
             slug: document.slug
         });
     } catch (err) {
@@ -423,7 +241,6 @@ async function update(req, res) {
     }
 }
 
-// write a private method that get the latest document
 async function getLatestDocument(company_id) {
     const documentService = await DocumentService.getInstance();
     return await documentService.getLatest(30, company_id);
@@ -488,7 +305,7 @@ async function toPDFWithPuppeteer(req, res) {
         sameSite: 'Lax'
     })));               
 
-    await page.goto(`http://localhost:3000/document/${document.slug}/preview`, {waitUntil: 'load'});
+    await page.goto(`http://localhost:3000/document/preview/${document.slug}`, {waitUntil: 'load'});
 
     const pdfBuffer = await page.pdf({ format: 'A4' });
     await browser.close();

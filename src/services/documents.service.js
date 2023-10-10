@@ -56,6 +56,7 @@ class DocumentService extends Service {
     async update(id, data) {
         try {
             const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
+
             return await super.updateBy('_id', ObjectId(id), filteredData);
         } catch (err) {
             console.error(err.stack);
@@ -65,10 +66,11 @@ class DocumentService extends Service {
 
 
     // getByEmail
-    async getByIdAndCompanyId(id, company_id) {
+    async getByIdAndCompanyId(id, company_id, projection = {}) {
         try {
             const query = { _id: ObjectId(id), company_id: ObjectId(company_id) };
-            return await this.getBy(query);
+            const options = { projection: projection };
+            return await this.getBy(query, options);
         } catch (err) {
             console.error(err.stack);
             throw err;
@@ -78,6 +80,7 @@ class DocumentService extends Service {
     async getBySlugAndCompanyId(slug, company_id, projection = {}) {
         try {
             const query = { slug: slug, company_id: ObjectId(company_id) };
+            console.log('query:', query);
             const options = { projection: projection };
             return await this.getBy(query, options);
         } catch (err) {

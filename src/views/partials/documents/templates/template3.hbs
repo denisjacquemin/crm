@@ -1,20 +1,34 @@
-<div x-data="{
-    firstPageItems: {{stringify (slice selectedDocument.config.items 0 5)}},
-    nextPagesItemsChunk: {{stringify (chunk (slice selectedDocument.config.items 10 25) 15)}},
-}">
-
-
-
+<di x-data="{
+        // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
+        numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1
+    }">
     <style>
+        #template3 .page {
+            width: 21cm;
+            height: 29.7cm;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+        }
 
-        .page:last-child {
+        
+        #pages #template3 .page {
+            background: white;
+            box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+            margin: 0;
+        }
+        
+
+
+        #template3 .page:last-child {
         background: red;
         }
 
-        .page:not(:last-child) {
-        page-break-after:<br/> always;
+        {{!-- #template3 .page:not(:last-child) {
+        page-break-after: always;
         background: yellow;
-        }
+        } --}}
 
         #template3 .page {
             position: relative;
@@ -208,13 +222,10 @@
      </style>
     <div id="template3">
 {{!-- PAGE 1 - BEGIN --}}
-      <div id="pageone" style="width: 21cm;
-            {{!-- position: relative; --}}
-            height: 29.7cm;
-            box-sizing: border-box;"
-        class="page sheet text-black transform-origin-top-left xl:mx-auto">
+      <div id="pageone"
+        class="page text-black transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: </span>
-      <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="nextPagesItemsChunk.length +1"></span></span>
+      <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="numberOfPages"></span></span>
 
 
         <header>        
@@ -272,7 +283,7 @@
                         <div class="th" style="">Tax</div>
                         <div class="th" style="">Total</div>
                     </div>
-                    <template x-for="(item, rowIndex) in firstPageItems" :key="rowIndex">
+                    <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
                             <div class="td" style="width:350px" x-text="item.name"></div>
                             <div class="td" style="" x-text="item.quantity"></div>
@@ -293,14 +304,15 @@
 
 
 {{!-- PAGE 2+ - BEGIN --}}
-    <template x-for="(items, chunkIndex) in nextPagesItemsChunk" :key="chunkIndex">
+    <template x-for="(itemsChunk, chunkIndex) in selectedDocument.config.items.slice(5).reduce((acc, _, i) => (i % 15 ? acc : [...acc, selectedDocument.config.items.slice(i + 5, i + 20)]), [])" :key="chunkIndex">
+
       <div style="width: 21cm;
             {{!-- position: relative; --}}
             height: 29.7cm;
             box-sizing: border-box;"
         class="page sheet text-black transform-origin-top-left xl:mx-auto">
         <span class="top-left">top left - currentPage:</span>
-        <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="nextPagesItemsChunk.length +1"></span></span>
+        <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
         <main>
             <div id="products" class="page2plus">
                 <div class="table">
@@ -311,7 +323,7 @@
                         <div class="th" style="">Tax</div>
                         <div class="th" style="">Total</div>
                     </div>
-                    <template x-for="(item, itemIndex) in items" :key="itemIndex">
+                    <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
                         <div class="tr">
                             <div class="td" style="width:350px" x-text="item.name"></div>
                             <div class="td" style="" x-text="item.quantity"></div>

@@ -1,28 +1,41 @@
 {{!-- TODO - Main container --}}
-<div class="flex flex-col flex-grow overflow-hidden sm:flex-row xl:m-0 3xl:container 3xl:m-auto" x-data="{ 
+<div class="flex flex-col flex-grow overflow-hidden sm:flex-row xl:m-0 3xl:container 3xl:m-auto" 
+     x-data="{ 
         currentColumn: 1,
         openSlide: false, 
         slideContentPartialName: null, 
         documents: {{ stringify documents }},
-        selectedDocument: {{ stringify selectedDocument }}, 
-      }" x-init="
-          $watch('currentColumn', value => {
-            if (value > 1) {
-              navState = 'back'
-            } else {
-              navState = 'menu'
-            }
-          });
-          $watch('navState', value => {
-            if (value == 'menu') {  
-              currentColumn = 1
-            }
-          });
-          if (selectedDocument) {
-            documents = updateDocumentsWithLS(documents);
-            updateNewUrl(selectedDocument.slug);
+        selectedDocument: {{#if selectedDocument}}{{ stringify selectedDocument }}{{else}}null{{/if}}
+      }" 
+      x-init="
+        $watch('currentColumn', value => {
+          if (value > 1) {
+            navState = 'back'
+          } else {
+            navState = 'menu'
           }
-          runAutoSave();
+        });
+        $watch('navState', value => {
+          if (value == 'menu') {  
+            currentColumn = 1
+          }
+        });
+        $watch('selectedDocument', (value, oldValue) => {
+          console.log('In watch selectedDocument');
+          var documentsFromLS = JSON.parse(localStorage.getItem('documents')) || {};
+          var documentSlug = document.getElementById('slug').value;
+          documentsFromLS[documentSlug] = { ...value };  
+          documentsFromLS[documentSlug].selectedDocument_updated_at = Math.floor(new Date().getTime() / 1000); // Unix timestamp format in order to compare to dates from mongoDB
+          console.log('before: ', documentsFromLS[documentSlug].selectedDocument_updated_at)
+          localStorage.setItem('documents', JSON.stringify(documentsFromLS));
+          console.log('adter: ', documentsFromLS[documentSlug].selectedDocument_updated_at)
+
+        });
+        if (selectedDocument) {
+          documents = updateDocumentsWithLS(documents);
+          updateNewUrl(selectedDocument.slug);
+        }
+        runAutoSave();
         ">
   {{!-- TODO - col1 --}}
   <div
@@ -151,7 +164,8 @@
             fetchUrl(`/document/editAjax/${slug}`)
               .then(data => {
                 this.selectedDocument = deepMergeObjects(this.selectedDocument, JSON.parse(data));
-                history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
+                documents = updateDocumentsWithLS(documents);
+                updateNewUrl(selectedDocument.slug);
               })
               .catch(error => {
                 console.error('Error editing document', error);
@@ -343,13 +357,14 @@
           href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
       </div>
       <div x-ref="pageContainer" class="mr-2" id="pages">
-        {{> (concat 'documents/templates/' selectedDocument.config.template_name)}}
-      </div>
-      <template x-if="! selectedDocument">
-        <p>Nothing to preview, Please select a document</p>
-      </template>
+        <template x-if="selectedDocument">
+          {{> (concat 'documents/templates/' selectedDocument.config.template_name) }}
+        </template>
+        <template x-if="! selectedDocument">
+          <p>Nothing to preview, Please select a document</p>
+        </template>
 
-    </div>
+      </div>
   </div>
-  {{!-- {{> documents/slide }} --}}
+  {{> documents/slide }}
 </div>

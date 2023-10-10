@@ -1,25 +1,4 @@
 window.runAutoSave = function(elem) {
-    document.addEventListener('input', function(e) {
-
-        if (e.target.matches('.to-be-autosaved input')) {
-            var documents = JSON.parse(localStorage.getItem('documents')) || {};
-            // get the config object from localstorage or create it if i doesn't exist yet
-
-            // set the value of the input field to the config object
-            // example: config['invoice']['number'] will match input name="invoice.number"
-            // target value should be the value of the input field under current document slug
-            var documentSlug = document.getElementById('slug').value;
-            put(documents, documentSlug + '.' + e.target.name, e.target.value);
-            // set last updated date time for the config
-
-            setUpdateDate(documents, documentSlug);
-
-            localStorage.documents = JSON.stringify(documents);
-
-        }
-    });
-
-
     // setup worker if not already done
     let w;
     if (typeof(w) == "undefined") {
@@ -28,40 +7,51 @@ window.runAutoSave = function(elem) {
 
     // handle worker messages
     w.onmessage = function(event) {
+        debugger;
         // handle messages from worker when postMessage({ unauthorized: true }); is called
         if (event.data.hasOwnProperty('unauthorized')) {
             history.replaceState(null, '', window.location.href);
             location.reload();
         }
 
-        const data = event.data;
+        // handle messages from worker when postMessage({ notfound: true }); is called
+        // nothing to do for a 404
 
-        if (data.hasOwnProperty('updated_at') && data.hasOwnProperty('slug')) {
+        // if the documents saved is not the current document, remove it from local storage
+        else if (event.data.hasOwnProperty('slug') != document.getElementById('slug').value) {
+            var documents = JSON.parse(localStorage.getItem('documents'));
+            delete documents[event.data.slug];
+            localStorage.setItem('documents', JSON.stringify(documents));
+        }
+
+        // update the updated_at in local storage config object
+        else if (event.data.hasOwnProperty('updated_at') && event.data.hasOwnProperty('slug')) {
             // update lastUpdated in local storage config object
             var documents = JSON.parse(localStorage.getItem('documents')) || {};
-            documents[data.slug].updated_at = data.updated_at;
+            documents[event.data.slug].updated_at = event.data.updated_at;
 
             localStorage.setItem('documents', JSON.stringify(documents));
         }
     };
 
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
     // at regular intervals, save config to server
-    setInterval(function() {
+    // setInterval(function() {
         // get config from local storage
         var documents = JSON.parse(localStorage.getItem('documents'));
 
         // for each keys in documents
         for (var slug in documents) {
-
-            if (documents[slug] && documents[slug].hasOwnProperty('lastConfigUpdateAt')) {
-
-                if (Date.parse(documents[slug].lastConfigUpdateAt) > Date.parse(documents[slug].updated_at) || !documents[slug].updated_at) {
+            if (documents[slug] && documents[slug].hasOwnProperty('selectedDocument_updated_at')) {
+                console.log('selectedDocument_updated_at:', documents[slug].selectedDocument_updated_at);
+                console.log('updated_at:', documents[slug].updated_at);
+                console.log(' result:', (documents[slug].selectedDocument_updated_at > documents[slug].updated_at) || !documents[slug].updated_at);
+                if (documents[slug].selectedDocument_updated_at > documents[slug].updated_at) {
                     console.log('sending to worker');
+                    debugger;
                     w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
                 } else {
-                    // if handled slug is not the current slug, removes document from documents in local storage
+                    // if the documents[slug] is not the current document, remove it from local storage
                     if (slug != document.getElementById('slug').value) {
                         delete documents[slug];
                         localStorage.setItem('documents', JSON.stringify(documents));
@@ -70,24 +60,10 @@ window.runAutoSave = function(elem) {
 
             }
         }
-    }, 20000);
+    // }, 10000);
 }
 
 let w;
-
-function setUpdateDate(documents, documentSlug) {
-    const now = new Date();
-    const utcNow = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate(),
-        now.getUTCHours(),
-        now.getUTCMinutes(),
-        now.getUTCSeconds(),
-        now.getUTCMilliseconds()
-    ));
-    put(documents, documentSlug + '.' + 'lastConfigUpdateAt', utcNow.toISOString());
-}
 
 function setupWorker() {
     try {
@@ -105,20 +81,6 @@ function setupWorker() {
         return null;
     }
 }
-window.saveInLocalStorage = function(target, object) {
-    var documents = JSON.parse(localStorage.getItem('documents')) || {};
-    var documentSlug = document.getElementById('slug').value;
-
-    // for each leaf of the object, save the value in localstorage with the path document.slug + target + leaf label
-    for (var leaf in object) {
-        put(documents, documentSlug + '.' + target + '.' + leaf, object[leaf]);
-    }
-
-    setUpdateDate(documents, documentSlug);
-
-
-    localStorage.documents = JSON.stringify(documents);
-}
 
 window.updateNewUrl = function(slug) {
     history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
@@ -126,8 +88,9 @@ window.updateNewUrl = function(slug) {
 
 /// write a updateDocumentsWithLS that will go the localstorage and update the documents object
 window.updateDocumentsWithLS = function(documents) {
-    var documentsLS = JSON.parse(localStorage.getItem('documents')) || {};
 
+    console.log('documents from server:', documents);
+    var documentsLS = JSON.parse(localStorage.getItem('documents')) || {};
     for (var slug in documentsLS) {
         // find the document in documents object that match the slug
         var document = documents.find(d => d.slug == slug);
@@ -136,6 +99,8 @@ window.updateDocumentsWithLS = function(documents) {
             document.config = documentsLS[slug].config;
         }
     }
+    console.log('documents after updateDocumentsWithLS:', documents);
+
 
     return documents;
 }

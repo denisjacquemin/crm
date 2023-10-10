@@ -131,11 +131,20 @@ app.use(function(req, res, next) {
     res.locals.csrfToken = req.csrfToken();
     next();
 });
+
 // app.use(require('./src/middlewares/cacheControl')); // commented out because it was causing issues with the login page
 app.use('/dist', express.static(path.join(__dirname, "/dist")));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use("/", require("./src/middlewares/languages.dropdown"));
 app.use("/", require("./src/routes"));
+
+// app.use((req, res, next) => {
+//     const timestamp = new Date().toUTCString();
+//     const logMessage = `🏎️  ${timestamp} | ${req.method} | ${req.originalUrl}`;
+//     console.log(logMessage);
+//     next(); // Call the next middleware in the chain
+// });
+
 app.use(function(err, req, res, next) {
     if (res.headersSent) {
         console.log("headers sent", res.headersSent);

@@ -15,9 +15,10 @@ onmessage = function(event) {
             body: JSON.stringify({ document: document })
         })
         .then(response => {
-            // if response status is 401 return unauthorized to main thread
             if (response.status === 401) {
-                postMessage({ unauthorized: true });
+                return { unauthorized: true };
+            } else if (response.status === 404) {
+                return { notfound: true, slug: slug };
             } else if (response.ok) {
                 return response.json();
             } else {
@@ -29,5 +30,6 @@ onmessage = function(event) {
         })
         .catch(error => {
             console.error('Error updating document:', error);
+            postMessage({ error: error.message });
         });
 };

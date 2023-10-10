@@ -27,5 +27,8 @@
   },
   "documents": {
     "document_not_found": "documents.document_not_found"
+  },
+  "common": {
+    "not_found": "common.not_found"
   }
 }

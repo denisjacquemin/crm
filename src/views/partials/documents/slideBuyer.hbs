@@ -42,7 +42,6 @@
                 selectedDocument.config.buyer.city = buyer.document.city;
                 selectedDocument.config.buyer.country = buyer.document.country;
                 selectedDocument.config.buyer.vat_number = buyer.document.vat_number;
-                saveInLocalStorage('config.buyer', buyer.document);
                 openSlide = false;
               }
             ">
@@ -176,7 +175,6 @@
             selectedDocument.config.buyer.city = dataParsed.buyer.city;
             selectedDocument.config.buyer.country = dataParsed.buyer.country;
             selectedDocument.config.buyer.vat_number = dataParsed.buyer.vat_number;
-            saveInLocalStorage('config.buyer', dataParsed.buyer);
             displayedScreen = 'search-buyer';
             openSlide = false;
           })
