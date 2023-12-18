@@ -8,8 +8,9 @@ const schema = {
         { "name": "_id", "type": "string", "facet": false, "optional": false },
         { "name": "company_id", "type": "string", "facet": false, "optional": false },
         { "name": "config", "type": "object", "facet": false, "optional": false },
-        { "name": "created_at", "type": "int64", "facet": false, "optional": false },
-        { "name": "updated_at", "type": "int64", "facet": false, "optional": false },
+        { "name": "config.payment", "type": "object[]", "facet": false, "optional": false },
+        { "name": "createdAt", "type": "int64", "facet": false, "optional": false },
+        { "name": "updatedAt", "type": "int64", "facet": false, "optional": false },
         { "name": "created_by_user_id", "type": "string", "facet": false, "optional": false },
         { "name": "slug", "type": "string", "facet": false, "optional": false }
     ]
@@ -18,7 +19,6 @@ const schema = {
 class DocumentTypesenseService extends TypesenseService {
 
     constructor() {
-
         super(collectionName, schema);
     }
 
@@ -34,26 +34,38 @@ class DocumentTypesenseService extends TypesenseService {
         return await super.updateDocument(documentId, this._convertDatesToUnixTimestamps(document));
     }
 
+    async upsertDocument(document) {
+        console.log('TYPESENSE ### upsertDocument', document);
+        return await super.upsertDocument(this._convertDatesToUnixTimestamps(document));
+    }
+
     async deleteDocument(documentId) {
         return await super.deleteDocument(documentId);
     }
 
-    async searchDocuments(query, searchParameters = {}) {
-        return await super.searchDocuments(query, searchParameters);
+    async searchDocuments(searchParameters = {}) {
+        return await super.searchDocuments(searchParameters);
     }
 
     // why, because Dates need to be converted into Unix timestamps (opens new window)and stored as int64 fields in Typesense
     // see https://typesense.org/docs/0.25.1/api/collections.html#notes-on-indexing-common-types-of-data
+
+
+    // write a _convertDatesToUnixTimestamps(document) function that return the document with the dates converted to Unix timestamps
     _convertDatesToUnixTimestamps(document) {
-        const documentWithUnixTimestamps = {...document };
-        if (document.created_at) {
-            documentWithUnixTimestamps.created_at = Math.floor(new Date(document.created_at).getTime() / 1000);
+        let documentToReturn = JSON.parse(JSON.stringify(document));
+
+        if (document.createdAt) {
+            documentToReturn.createdAt = Math.floor(new Date(document.createdAt).getTime() / 1000);
         }
-        if (document.updated_at) {
-            documentWithUnixTimestamps.updated_at = Math.floor(new Date(document.updated_at).getTime() / 1000);
+        if (document.updatedAt) {
+            documentToReturn.updatedAt = Math.floor(new Date(document.updatedAt).getTime() / 1000);
         }
-        return documentWithUnixTimestamps;
+
+        return documentToReturn;
     }
+
+    
 }
 
 module.exports = {

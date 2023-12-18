@@ -1,7 +1,7 @@
 <di x-data="{
         // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
         numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1
-    }">
+        }">
     <style>
         #template3 .page {
             width: 21cm;
@@ -278,18 +278,18 @@
                 <div class="table">
                     <div class="thead">
                         <div class="th" style="width:350px">Description</div>
-                        <div class="th" style="">Quantity</div>
-                        <div class="th" style="">Price</div>
-                        <div class="th" style="">Tax</div>
-                        <div class="th" style="">Total</div>
+                        <div class="th" style="text-align:right">Q.</div>
+                        <div class="th" style="text-align:right">UP</div>
+                        <div class="th" style="text-align:right">VAT</div>
+                        <div class="th" style="text-align:right">Total</div>
                     </div>
                     <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
-                            <div class="td" style="width:350px" x-text="item.name"></div>
-                            <div class="td" style="" x-text="item.quantity"></div>
-                            <div class="td" style="" x-text="item.price"></div>
-                            <div class="td" style="" x-text="item.tax_rate"></div>
-                            <div class="td" style="" x-text="item.total_amount"></div>
+                            <div class="td" style="width:350px" x-text="item.description"></div>
+                            <div class="td" style="text-align:right" x-text="item.quantity"></div>
+                            <div class="td" style="text-align:right" x-text="item.unit_price"></div>
+                            <div class="td" style="text-align:right" x-text="item.vat"></div>
+                            <div class="td" style="text-align:right" x-text="item.amountvatincl"></div>
                         </div>
                     </template>
                 </div>
@@ -318,10 +318,10 @@
                 <div class="table">
                     <div class="thead">
                         <div class="th" style="width:350px">Description</div>
-                        <div class="th" style="">Quantity</div>
-                        <div class="th" style="">Price</div>
-                        <div class="th" style="">Tax</div>
-                        <div class="th" style="">Total</div>
+                        <div class="th" style="text-align:right">Q.</div>
+                        <div class="th" style="text-align:right">UP</div>
+                        <div class="th" style="text-align:right">VAT</div>
+                        <div class="th" style="text-align:right">Total</div>
                     </div>
                     <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
                         <div class="tr">

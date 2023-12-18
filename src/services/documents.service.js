@@ -1,95 +1,48 @@
-const { ObjectId } = require('mongodb');
-const mongoService = require('./lib/mongo');
-const Service = require('./_service');
+const Document = require('../models/document.model');
 
-let documentServiceInstance = null;
-class DocumentService extends Service {
-    constructor(db) {
-        super(db);
-        this.collection = 'documents';
-        this.fields_white_list = new Set([
-            '_id',
-            'company_id',
-            'config', // json object that contains all the parameters and values of a document
-            'created_at', // the user that created the document, later an history of all updates will contains the 
-            'updated_at',
-            'created_by_user_id',
-            'slug',
-        ]);
-    }
-
-    static async getInstance() {
-        if (!documentServiceInstance) {
-            const db = await mongoService.get();
-            documentServiceInstance = new DocumentService(db);
-        }
-
-        return documentServiceInstance;
-    }
+class DocumentsService {
 
     async getLatest(limit = 30, company_id = null) {
-        try {
-            const query = { company_id: ObjectId(company_id) };
-            const options = {
-                sort: { created_at: -1 },
-                limit: limit,
-                projection: { "slug": 1, "config.buyer.name": 1, "created_at": 1 },
-            };
-            const result = await this.getList(query, options);
-            return result;
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+        const query = company_id
+        const documents = await Document.find(query).sort({ createdAt: -1 }).limit(limit);
+        return documents;
+    }
+
+    async getByIdAndCompanyId(id, company_id) {
+        return await Document.findOne({ _id: id, company_id });
+    }
+
+    async getBySlugAndCompanyId(slug, company_id, projection = '') {
+        const document = await Document.findOne({ slug, company_id }, projection).exec();
+        return document;
     }
 
     async create(data) {
-        try {
-            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
-            return await super.create(filteredData);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+        const document = new Document(data);
+        await document.save();
+        return document;
     }
 
     async update(id, data) {
         try {
-            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
+            const updatedDocument = await Document.findOneAndUpdate({ _id: id }, data, { new: true });
 
-            return await super.updateBy('_id', ObjectId(id), filteredData);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
+            if (!updatedDocument) {
+                const error = new Error('Document not found');
+                error.status = 404;
+                throw error;
+            }
+
+            return updatedDocument;
+        } catch (error) {
+            throw error;
         }
     }
 
-
-    // getByEmail
-    async getByIdAndCompanyId(id, company_id, projection = {}) {
-        try {
-            const query = { _id: ObjectId(id), company_id: ObjectId(company_id) };
-            const options = { projection: projection };
-            return await this.getBy(query, options);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+    async delete(id) {
+        await Document.deleteOne({ _id: id });
     }
-
-    async getBySlugAndCompanyId(slug, company_id, projection = {}) {
-        try {
-            const query = { slug: slug, company_id: ObjectId(company_id) };
-            console.log('query:', query);
-            const options = { projection: projection };
-            return await this.getBy(query, options);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
-    }
-
-
 }
 
-module.exports = DocumentService;
+module.exports = new DocumentsService;
+

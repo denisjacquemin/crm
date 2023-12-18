@@ -17,7 +17,7 @@
     <div class="col-span-full">
       <label for="seller-name" class="block text-sm font-medium leading-6 text-gray-900">Seller</label>
       <div class="mb-6">
-        <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller'" x-model="selectedDocument.config.seller.name" name="config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller'" x-model="selectedDocument.config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         <p x-text="`${selectedDocument.config.seller.address}, ${selectedDocument.config.seller.city} ${selectedDocument.config.seller.country}`" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
         <p x-text="selectedDocument.config.seller.vat_number" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
       </div>
@@ -44,36 +44,16 @@
     </div>
 
     <div class="col-span-full">
-      <table class="min-w-full divide-y divide-gray-300 max-w-full">
-        <thead>
-          <tr>
-            <td colspan="2">
-              <button type="button"
-                class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                @click.prevent="openSlide = true; slideContentPartialName='slideItems'">
+        <button type="button"
+              class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-1 text-md font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              @click.prevent="openSlide = true; slideContentPartialName='slideItems'">
               <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z"
-                  clip-rule="evenodd" />
+                clip-rule="evenodd" />
               </svg>
-              New Item
-            </td>
-          </tr>
-          <tr>
-            <th class="text-left text-sm font-semibold text-gray-900" width="auto">Items</th>
-            <th class="text-sm font-semibold text-gray-900 text-right" width="150px">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template x-for="(item, index) in selectedDocument.config.items" :key="index">
-            <tr>
-              <input type="hidden" x-model="item.name" name="config.items[].name" />
-              <td x-text="item.name" class="py-2 text-sm font-medium text-gray-500"></td>
-              <td x-text="`${item.total_amount} €`" class="text-right text-sm font-medium text-gray-500"></td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-      </div>
+            Manage Items
+        </button>
+        {{> documents/items }}
     </div>
     
   </div>

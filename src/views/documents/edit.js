@@ -1,3 +1,26 @@
+function getDocumentsFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('documents')) || {};
+}
+
+function setDocumentsToLocalStorage(documents) {
+    localStorage.setItem('documents', JSON.stringify(documents));
+}
+
+function removeDocumentFromLocalStorage(slug) {
+    let documents = getDocumentsFromLocalStorage();
+    delete documents[slug];
+    setDocumentsToLocalStorage(documents);
+}
+
+function updateDocumentInLocalStorage(slug, updatedAt) {
+    console.log('updateDocumentInLocalStorage:', slug, updatedAt);
+    let documents = getDocumentsFromLocalStorage();
+    if (documents[slug]) {
+        documents[slug].selectedDocument_updated_at = updatedAt;
+        setDocumentsToLocalStorage(documents);
+    }
+}
+
 window.runAutoSave = function(elem) {
     // setup worker if not already done
     let w;
@@ -7,52 +30,35 @@ window.runAutoSave = function(elem) {
 
     // handle worker messages
     w.onmessage = function(event) {
-        debugger;
         // handle messages from worker when postMessage({ unauthorized: true }); is called
         if (event.data.hasOwnProperty('unauthorized')) {
             history.replaceState(null, '', window.location.href);
             location.reload();
-        }
-
-        // handle messages from worker when postMessage({ notfound: true }); is called
-        // nothing to do for a 404
-
-        // if the documents saved is not the current document, remove it from local storage
-        else if (event.data.hasOwnProperty('slug') != document.getElementById('slug').value) {
-            var documents = JSON.parse(localStorage.getItem('documents'));
-            delete documents[event.data.slug];
-            localStorage.setItem('documents', JSON.stringify(documents));
-        }
-
-        // update the updated_at in local storage config object
-        else if (event.data.hasOwnProperty('updated_at') && event.data.hasOwnProperty('slug')) {
-            // update lastUpdated in local storage config object
-            var documents = JSON.parse(localStorage.getItem('documents')) || {};
-            documents[event.data.slug].updated_at = event.data.updated_at;
-
-            localStorage.setItem('documents', JSON.stringify(documents));
+        } else {
+            removeDocumentFromLocalStorage(event.data.slug);
         }
     };
 
+
+
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     // at regular intervals, save config to server
-    // setInterval(function() {
+    setInterval(function() {
         // get config from local storage
-        var documents = JSON.parse(localStorage.getItem('documents'));
+        var documents = getDocumentsFromLocalStorage();
 
-        // for each keys in documents
         for (var slug in documents) {
-            if (documents[slug] && documents[slug].hasOwnProperty('selectedDocument_updated_at')) {
-                console.log('selectedDocument_updated_at:', documents[slug].selectedDocument_updated_at);
-                console.log('updated_at:', documents[slug].updated_at);
-                console.log(' result:', (documents[slug].selectedDocument_updated_at > documents[slug].updated_at) || !documents[slug].updated_at);
-                if (documents[slug].selectedDocument_updated_at > documents[slug].updated_at) {
-                    console.log('sending to worker');
-                    debugger;
-                    w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
-                } else {
+            // console.log('document:', slug);
+            if (documents[slug].hasOwnProperty('selectedDocument_updated_at')) {
+                // console.log('selectedDocument_updated_at:', documents[slug].selectedDocument_updated_at);
+                // console.log('updated_at:', documents[slug].updatedAt);
+                // console.log(' result:', (documents[slug].selectedDocument_updated_at > documents[slug].updatedAt));
+                if (documents[slug].selectedDocument_updated_at > documents[slug].updatedAt) {
+                    //  console.log('sending to worker');
+                     w.postMessage({ document: documents[slug], slug, csrfToken: csrfToken });
+                 } else {
                     // if the documents[slug] is not the current document, remove it from local storage
-                    if (slug != document.getElementById('slug').value) {
+                    if (document.getElementsByName('currentSlug').value && slug != document.getElementsByName('currentSlug').value) {
                         delete documents[slug];
                         localStorage.setItem('documents', JSON.stringify(documents));
                     }
@@ -60,7 +66,7 @@ window.runAutoSave = function(elem) {
 
             }
         }
-    // }, 10000);
+    }, 1000);
 }
 
 let w;
@@ -82,15 +88,26 @@ function setupWorker() {
     }
 }
 
+window.loadPreview = async function(slug) {
+    let data = "";
+    if (slug !== undefined) {
+        try {
+            const response = await fetch('/document/preview/' + slug + '?nl=true');
+            data = await response.text();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    return data;
+}
+
+
 window.updateNewUrl = function(slug) {
     history.pushState(null, null, `/document/edit/${slug}${window.location.search}`);
 }
 
-/// write a updateDocumentsWithLS that will go the localstorage and update the documents object
 window.updateDocumentsWithLS = function(documents) {
-
-    console.log('documents from server:', documents);
-    var documentsLS = JSON.parse(localStorage.getItem('documents')) || {};
+    var documentsLS = getDocumentsFromLocalStorage();
     for (var slug in documentsLS) {
         // find the document in documents object that match the slug
         var document = documents.find(d => d.slug == slug);
@@ -99,12 +116,9 @@ window.updateDocumentsWithLS = function(documents) {
             document.config = documentsLS[slug].config;
         }
     }
-    console.log('documents after updateDocumentsWithLS:', documents);
-
 
     return documents;
 }
-
 
 
 

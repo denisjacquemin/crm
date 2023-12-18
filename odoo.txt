@@ -1,0 +1,56 @@
+Peppol does not only cover Belgium ; it's a global network. Odoo is considering getting certified to become an "Access Point (aka AP)" on this network. As for now, Odoo is not yet one. Peppol's usage is promoted and is likely to widen in terms of e-invoicing coverage. 
+
+
+
+In some countries like Norway, not to mention them, it became a real reference. Odoo's current business proposal is to maintain the generic Peppol format (BIS 3) and the national specificities where applicable of some countries : e-fff (BE), Factur-x/XRechnung (FR/DE), NLCIUS 2.1 (NL), EHF (NO) as well as a standard format UBL 2.1. More and more types will be added in Odoo. On a sales journal, you can choose which types of E-invoice you want to create when validating/sending a sales invoice. About FacturX / XRecnhung, the XML file is embedded in the PDF file attached to the invoice for the interoperability between accounting packages supporting this format. 
+
+
+
+Once Odoo gets considered an access point, users won't need to do that anymore and the invoice will be uploaded to the peppol platform automatically upon confirmation. Customers can then go and download it there or if they have software that is also Peppol compliant automatically pull it in.
+
+
+
+[UPDATE 20/06/2022]
+
+The new module 'account_edi_ubl_cii' ("Import/Export electronic invoices with UBL/CII") has just been merged (14.0/15.0 -> master). It allows support of: 
+
+* Factur-X (CII) (the only format enabled by default for everyone) 
+
+* E-FFF (only appear for belgian companies) 
+
+* NLCIUS (only appear for dutch companies) 
+
+* UBL Bis 3 (appear if the company's country is in the EAS list: https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/) * XRechnung (UBL) (appear for german companies) 
+
+* EHF3 (actually, EHF3 is fully supported by UBL Bis 3, see for reference: https://anskaffelser.dev/postaward/g3/spec/current/billing-3.0/norway/#_implementation, so for norwegian companies, only Bis 3 will appear) 
+
+
+
+In master, this new module replaces the modules 'account_edi_facturx', 'account_edi_ubl', 'account_edi_ubl_bis3', 'l10n_be_edi', 'l10n_nl_edi', 'l10n_no_edi' as the formats were outdated. 
+
+In stable, it has to be installed on top of the latter existing modules and serve as a patch. So for instance, if you want to use E-FFF in 14.0, you need to install l10n_be_edi + account_edi_ubl_cii (there are post init hooks to auto install account_edi_ubl_cii when 'l10n_be_edi', 'l10n_no_edi', 'l10n_nl_edi' are installed). 
+
+Once the new module is installed, note that the UBL 2.0 and UBL 2.1 formats will no longer appear in the journal. It has been decided since we support the very similar and more recent format 'UBL Bis 3', and we don't want to have a long list of edi formats which could confuse the user. Bis 3 has essentially the same structure (same tags, same order) as UBL 2.1/UBL 2.0 but with additional constraints. Thus, a Bis 3 invoice should pass a UBL 2.1/UBL 2.0 validator. 
+
+Note also that french customers who wants to submit Factur-X PDF to Chorus Pro should add a system parameter 'edi.use_pdfa' with value: 'true'
+
+
+
+Odoo is still not an access point but is working in that direction. 
+
+
+
+[UPDATE 23/05/2023]
+
+We now support the different main formats that navigate on the Peppol network, at least the ones promoted by the Peppol Authority and BOSA (Belgian public service promoting Peppol). We are currently implementing servers to play both AP and SMP roles. As from 16.2 you can export them in batch (multiple invoices in the format).
+
+AP = Access Point (the operator that sends and receives the end user's messages) SMP = Service Metadata Publisher (thanks to htis role, we'll be able to tell all stakeholders in the network that we "register" new users + migrate them behind our own access point.) 
+
+We are close to start "life tests of sending/receiving".
+
+
+
+[UPDATE 31/08/2023]
+Odoo is since 16.4 AP & SMP for PEPPOL.
+AP = Access Point (the operator that sends and receives the end user's messages)
+SMP = Service Metadata Publisher (thanks to this role, we'll be able to tell all stakeholders in the network that we "register" new users + migrate them behind our own access point.)  

@@ -6,12 +6,10 @@ module.exports = async function(req, res, next) {
 
     let redirect = false;
 
-    if (!req.session.isAuth) {
+    if (!req.session.isAuth) { 
         redirect = true;
     } else {
-        const userService = await UserService.getInstance();
-
-        const userExists = await userService.existsByEmail(req.session.user.email);
+        const userExists = await UserService.existsByEmail(req.session.user.email);
         if (!userExists) {
             redirect = true;
         }

@@ -1,7 +1,3 @@
-<page
-      x-data="{
-        selectedDocument: {{ stringify selectedDocument }},
-        template_name: '{{ selectedDocument.config.template_name }}',
-      }">
-    {{> (concat 'documents/templates/' selectedDocument.config.template_name)}}
+<page>
+    {{> (concat 'documents/templates/' template_name)}}
 </page>

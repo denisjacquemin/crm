@@ -4,9 +4,10 @@ const flash = require('connect-flash');
 const express = require("express");
 const helmet = require("helmet");
 const path = require("path");
-const { connectToDatabase, closeDatabaseConnection, get: getMongoClient } = require('./src/services/lib/mongo');
-const { connectToTypesense, get: getTypesenseClient } = require('./src/services/lib/typesense');
+const Typesense = require('./src/services/lib/typesense');
 const compression = require('compression');
+const mongooseHelper = require('./src/services/lib/mongoose');
+
 
 // enable rate limiter
 // const rateLimit = require("express-rate-limit");
@@ -146,18 +147,20 @@ app.use("/", require("./src/routes"));
 // });
 
 app.use(function(err, req, res, next) {
-    if (res.headersSent) {
-        console.log("headers sent", res.headersSent);
-        return next(err);   
+    // Check if the request is an AJAX request
+    if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+        // Handle AJAX request
+        res.status(err.status || 500).json({ error: err.message });
+    } else {
+        // Handle "normal" request
+        res.status(err.status || 500).send(err.message);
     }
-    console.error(err);
-    res.status(500).render("error", { error: err });
 });
 
 
 async function startServer() {
     try {
-        await Promise.all([connectToDatabase(), connectToTypesense()]);
+        await Promise.all([mongooseHelper.connect(), Typesense.connectToTypesense()]);
         app.listen(process.env.PORT, () => {
             console.log(`🚀 Server is running on port ${process.env.PORT}`);
         });
@@ -172,7 +175,7 @@ async function startServer() {
 
 async function stopServer() {
     try {
-        await closeDatabaseConnection();
+        await mongooseHelper.disconnect();
         console.log('🛑 Server stopped');
     } catch (error) {
         console.error('Error stopping server', error);

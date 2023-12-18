@@ -96,9 +96,8 @@ async function signup1Post(req, res, next) {
         })
     }
 
-    const userService = await UserService.getInstance();
     // Check if a user already exists with the given email address
-    const userExist = await userService.existsByEmail(sanitizedEmail.trim().toLowerCase());
+    const userExist = await UserService.existsByEmail(sanitizedEmail.trim().toLowerCase());
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -187,12 +186,8 @@ async function signup2Post(req, res, next) {
         return res.render('users/signup2', { notifications: req.flash() })
     }
 
-    const userService = await UserService.getInstance();
-
-    const companyService = await CompanyService.getInstance();
-
     // Check if a user already exists with the given email address
-    const userExist = await userService.existsByEmail(req.session.signup.user.email);
+    const userExist = await UserService.existsByEmail(req.session.signup.user.email);
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -225,7 +220,7 @@ async function signup2Post(req, res, next) {
         user.timezone = DateHelper.guess();
 
         // Create the user
-        await userService.create(user, {}); //await userService.create(user, { session });
+        await UserService.create(user, {}); //await userService.create(user, { session });
 
         // Get the company
         const company = req.session.signup.company;
@@ -233,7 +228,7 @@ async function signup2Post(req, res, next) {
         company.users = [userId];
 
         // Create the company
-        await companyService.create(company, {}); //await companyService.create(company, { session });
+        await CompanyService.create(company, {}); //await companyService.create(company, { session });
 
         // Commit the transaction
         // await mongo.commitTransaction(session);
@@ -322,12 +317,10 @@ async function signinPost(req, res, next) {
         });
     }
 
-    const userService = await UserService.getInstance();
-
     // Check if a user exists with the given email address
     emailSanitized = sanitizeEmail(trimmedEmail);
 
-    const user = await userService.getByEmail(emailSanitized);
+    const user = await UserService.getByEmail(emailSanitized);
     if (!user) {
         req.flash('error', {
             message: req.i18n.t('signin.email_or_password_invalid'),
@@ -340,7 +333,7 @@ async function signinPost(req, res, next) {
     }
 
     // Check if the given password matches the user's password
-    const isMatch = await userService.comparePassword(trimmedPassword, user.password || '123');
+    const isMatch = await UserService.comparePassword(trimmedPassword, user.password);
     if (!isMatch) {
 
         // If the passwords do not match, render the signin page again with an error message
@@ -353,8 +346,7 @@ async function signinPost(req, res, next) {
         });
     }
 
-    const companyService = await CompanyService.getInstance();
-    const current_company = await companyService.getById(user.companies[0]);
+    const current_company = await CompanyService.getById(user.companies[0]);
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
@@ -440,11 +432,9 @@ async function forgotPasswordPost(req, res, next) {
             notifications: req.flash()
         })
     }
-    const userService = await UserService.getInstance();
-
 
     // Check if a user exists with the given email address
-    const user = await userService.getByEmail(emailSanitized);
+    const user = await UserService.getByEmail(emailSanitized);
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
         req.flash('error', {
@@ -460,7 +450,7 @@ async function forgotPasswordPost(req, res, next) {
     const token = crypto.randomBytes(20).toString('hex');
 
     // Set the resetPasswordToken and resetPasswordExpires fields on the user
-    await userService.updateByEmail(user.email, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 });
+    await UserService.updateByEmail(user.email, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 });
 
 
     await Mailer.sendForgotPasswordMessage(req, user, token, next);
@@ -513,10 +503,8 @@ async function resetPassword(req, res, next) {
         token: token
     }
 
-    const userService = await UserService.getInstance();
-
     // Check if a user exists with the given token
-    const user = await userService.getByResetPasswordToken(token);
+    const user = await UserService.getByResetPasswordToken(token);
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
@@ -611,10 +599,8 @@ async function resetPasswordPost(req, res, next) {
         })
     }
 
-    const userService = await UserService.getInstance();
-
     // Check if a user exists with the given token
-    const user = await userService.getByResetPasswordToken(token);
+    const user = await UserService.getByResetPasswordToken(token);
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
@@ -636,10 +622,10 @@ async function resetPasswordPost(req, res, next) {
     }
 
     // Hash the password
-    const hashedPassword = await userService.hashPassword(trimmedPassword);
+    const hashedPassword = await UserService.hashPassword(trimmedPassword);
 
     // Update the user's password and reset password token
-    await userService.updateBy('user_id', user._id, {
+    await UserService.updateBy('user_id', user._id, {
         password: hashedPassword,
         resetPasswordToken: null,
         resetPasswordExpires: null
@@ -665,10 +651,8 @@ async function OAuthGoogleCallback(req, res, next) {
 
     const { email, firstname } = googleUser;
 
-    const userService = await UserService.getInstance();
-
     emailSanitized = sanitizeEmail(email);
-    const user = await userService.getByEmail(emailSanitized);
+    const user = await UserService.getByEmail(emailSanitized);
 
     if (!user) {
         // make sure session.isAuth is false
@@ -693,19 +677,19 @@ async function OAuthGoogleCallback(req, res, next) {
             user.picture = googleUser.picture;
         }
 
-        await userService.updateBy('user_id', user._id, user);
+        await UserService.updateById(user._id, user);
     }
     req.session.isAuth = true
     req.session.user = {
+        id: user._id,
         email: user.email,
         firstname: user.firstname,
         language: user.language,
         timezone: user.timezone,
         picture: user.picture
     }
-    const companyService = await CompanyService.getInstance();
 
-    req.session.current_company = await companyService.getById(user.companies[0]);
+    req.session.current_company = await CompanyService.getById(user.companies[0]);
 
     res.disableBackButtonRedirect('/');
 }

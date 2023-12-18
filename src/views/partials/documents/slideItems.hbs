@@ -1,74 +1,469 @@
-<div>
-<div class="bg-indigo-700 px-4 py-6 sm:px-6" style="position:relative;">
-    <button @click.prevent="
-            newItem = {
-                name: document.getElementById('new-item-name').value,
-                quantity: document.getElementById('new-item-quantity').value,
-                unity: document.getElementById('new-item-unity').value,
-                price: document.getElementById('new-item-price').value,
-                reduction: document.getElementById('new-item-reduction').value,
-                vat: document.getElementById('new-item-vat').value,
-                amount: document.getElementById('new-item-amount').value
-            }
-            selectedDocument.config.items.push(newItem);
-            openSlide = false;
-          "
-          type="button" style="position:absolute; right:15px; top:15px;" class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">
-        Add item
-    </button>
-    <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold leading-6 text-white" id="slide-over-title">Create a new item</h2>
-    </div>
-    <div class="mt-1">
-        <p class="text-sm text-indigo-300">Create and add a item to your invoice.</p>
-    </div>
-</div>
+<div class="min-h-full overflow-hidden" 
+     x-data="{
+        initSlideItems: function() {
+            this.showList();
+            this.resetFormItem();
+        },
+        showForm: function() {
+            this.$refs.list.style.transform = 'translateX(-100%)';
+            this.$refs.form.style.transform = 'translateX(0)';
+        },
+        showList: function() {
+            this.$refs.list.style.transform = 'translateX(0)';
+            this.$refs.form.style.transform = 'translateX(100%)';
+        },
+        formItem: null,
+        formEditIndex: null,
+        decimalSymbol: ',',
+        separatorSymbol: '.',
+        cancelEditNewItem: function() {
+            this.showList();
+        },
+        createNewItem: function() {
+            this.resetFormItem();
+            const quantityElem = document.getElementById('new-item-quantity');
+            quantityElem.value = this.formItem.quantity;
+            const unitPriceElem = document.getElementById('new-item-unit-price');
+            unitPriceElem.value = this.formItem.unit_price;
+            const reductionElem = document.getElementById('new-item-reduction');
+            reductionElem.value = this.formItem.reduction;
 
-<div class="px-3">
-    <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
-        <div class="col-span-full">
-            <label for="new-item-name" class="block text-sm font-medium leading-6 text-gray-900">Item name</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-name" id="new-item-name" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            this.showForm();
+        },
+        startEdit: function(index) {
+            this.resetFormItem(); // Clear the form item after saving
+            this.formEditIndex = index;
+            this.formItem = {...this.selectedDocument.config.items[index]};
+            
+            const event = new Event('input', { bubbles: true });
+
+            const quantityElem = document.getElementById('new-item-quantity');
+            quantityElem.value = this.formItem.quantity;
+            quantityElem.dispatchEvent(event);
+
+            const unitPriceElem = document.getElementById('new-item-unit-price');
+            unitPriceElem.value = this.formItem.unit_price;
+            unitPriceElem.dispatchEvent(event);
+
+            const reductionElem = document.getElementById('new-item-reduction');
+            reductionElem.value = this.formItem.reduction;
+            reductionElem.dispatchEvent(event);
+
+
+            this.showForm();
+        },
+        resetFormItem: function() {
+            this.formItem = {
+                description: '',
+                quantity: '',
+                unit_price: '',
+                reduction: '',
+                reduction_unit: '%',
+                vat: '0',
+                amountvat: '',
+                amountvatincl: '',
+                amountvatexcl: '',
+                form_automatic_computation: true,
+            };
+            this.formEditIndex = null;
+        },
+
+        saveItem: function() {
+
+            if (this.formItem.form_automatic_computation) {
+                this.formItem.amountvat = this.itemAmountvat;
+                this.formItem.amountvatincl = this.itemAmountvatincl;
+                this.formItem.amountvatexcl = this.itemAmountvatexcl;
+            }
+
+            if (this.formEditIndex === null) {
+                selectedDocument.config.items.push({
+                    description: this.formItem.description || '',
+                    quantity: this.parseField(this.formItem.quantity),
+                    unit_price: this.parseField(this.formItem.unit_price),
+                    reduction: this.parseField(this.formItem.reduction),
+                    reduction_unit: this.formItem.reduction_unit || '%',
+                    vat: this.parseField(this.formItem.vat),
+                    amountvat: this.parseField(this.formItem.amountvat), 
+                    amountvatincl: this.parseField(this.formItem.amountvatincl),
+                    amountvatexcl: this.parseField(this.formItem.amountvatexcl),
+                    order: selectedDocument.config.items.length || 0,
+                    form_automatic_computation: this.formItem.form_automatic_computation,
+
+                });
+            } else {
+                console.log('this.parseField(this.formItem.quantity)', this.parseField(this.formItem.quantity));
+
+                selectedDocument.config.items[this.formEditIndex] = {
+                    description: this.formItem.description || '',
+                    quantity: this.parseField(this.formItem.quantity),
+                    unit_price: this.parseField(this.formItem.unit_price),
+                    reduction: this.parseField(this.formItem.reduction),
+                    reduction_unit: this.formItem.reduction_unit || '%',
+                    vat: this.parseField(this.formItem.vat), 
+                    order: selectedDocument.config.items[this.formEditIndex].order,
+                    amountvat: this.parseField(this.formItem.amountvat), 
+                    amountvatincl: this.parseField(this.formItem.amountvatincl),
+                    amountvatexcl: this.parseField(this.formItem.amountvatexcl),
+                    form_automatic_computation: this.formItem.form_automatic_computation,
+                };
+            }
+            this.showList();
+        },
+        parseField: function(field) {
+            return this.formItem.form_automatic_computation !== false && field !== '' ? String(this.parseNumber(field)) : field;
+        },
+        parseNumber: function(str) {
+            str = str.replaceAll(' ', '');
+            str = str.replace(this.decimalSymbol, '.');
+            let result = parseFloat(str);
+            return result;        
+        },
+        formatNumber: function(amount) {
+            const formatter = new Intl.NumberFormat('fr-FR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            return formatter.format(amount).replace(',', '.');
+        },
+        get itemAmountvat() {
+            let unitPrice = this.parseNumber(this.formItem.unit_price) || 0;
+            let quantity = this.parseNumber(this.formItem.quantity);
+            quantity = !isNaN(quantity) ? quantity : 1;
+            let reduction = this.parseNumber(this.formItem.reduction) || 0;
+            let vat = this.parseNumber(this.formItem.vat);
+            vat = (vat < 0 || isNaN(vat)) ? 0 : vat;
+
+            let amount = unitPrice * quantity;
+            if (this.formItem.reduction_unit === 'EUR') {
+                amount -= reduction;
+            } else if (this.formItem.reduction_unit === '%') {
+                amount -= amount * (reduction / 100);
+            }
+            var amountVat = amount * (vat / 100);
+
+            if (amountVat > Number.MAX_SAFE_INTEGER) {
+                return '0';
+            }
+            
+            return this.formatNumber(amountVat);
+
+        },
+        get itemAmountvatexcl() { 
+            let unitPrice = this.parseNumber(this.formItem.unit_price) || 0;
+            let quantity = this.parseNumber(this.formItem.quantity);
+            quantity = !isNaN(quantity) ? quantity : 1;
+            let reduction = this.parseNumber(this.formItem.reduction) || 0;
+
+            let amount = unitPrice * quantity;
+            if (this.formItem.reduction_unit === 'EUR') {
+                amount -= reduction;
+            } else if (this.formItem.reduction_unit === '%') {
+                amount -= amount * (reduction / 100);
+            }
+
+            if (amount > Number.MAX_SAFE_INTEGER) {
+                return '0';
+            }
+
+            amount = amount.toFixed(2);
+
+            return this.formatNumber(amount);
+        },
+        get itemAmountvatincl() {
+            let unitPrice = this.parseNumber(this.formItem.unit_price) || 0;
+            let quantity = this.parseNumber(this.formItem.quantity);
+            quantity =!isNaN(quantity) ? quantity : 1;
+            let reduction = this.parseNumber(this.formItem.reduction) || 0;
+            let vat = this.parseNumber(this.formItem.vat);
+            vat = (vat < 0 || isNaN(vat)) ? 0 : vat;
+
+            let amount = unitPrice * quantity;
+            if (this.formItem.reduction_unit === 'EUR') {
+                amount -= reduction;
+            } else if (this.formItem.reduction_unit === '%') {
+                amount -= amount * (reduction / 100);
+            }
+
+            amountTVA = (amount * (vat / 100));
+            amount = amount + amountTVA;
+
+            if (amount > Number.MAX_SAFE_INTEGER) {
+                return '0';
+            }
+
+            return this.formatNumber(amount);
+            
+        },
+        get amountssubtotal() {
+            return selectedDocument.config.items.reduce((total, item) => { return total + Number(item.amountvatexcl); }, 0);
+        },
+        get amountvattotal() {
+            return selectedDocument.config.items.reduce((total, item) => { return total + Number(item.amountvat); }, 0);
+        },
+        moveUp(index) {
+            if (index > 0) {
+                let item = this.selectedDocument.config.items.splice(index, 1)[0];
+                this.selectedDocument.config.items.splice(index - 1, 0, item);
+                this.selectedDocument.config.items[index].order = index;
+                this.selectedDocument.config.items[index - 1].order = index - 1;
+            }
+        },
+        moveDown(index) {
+            if (index < this.selectedDocument.config.items.length - 1) {
+                let item = this.selectedDocument.config.items.splice(index, 1)[0];
+                this.selectedDocument.config.items.splice(index + 1, 0, item);
+                this.selectedDocument.config.items[index].order = index;
+                this.selectedDocument.config.items[index + 1].order = index + 1;
+            }
+        },
+        deleteItem: function(index) {
+            this.selectedDocument.config.items.splice(index, 1);
+            this.selectedDocument.config.items.forEach((item, index) => {
+                item.order = index;
+            });
+        },
+     }"
+     x-init="
+        initSlideItems(); {{!-- fired the first time the partial is called  --}}
+        $watch('openSlide', value => { {{!-- not fired the first time the partial is called, but fired after when openSlide change   --}}
+            if (value) {
+                initSlideItems();
+            }
+        });
+     ">
+    <div x-ref="list" style="position:absolute; height:100%; width:100%; transform: translateX(0); transition: transform 0.5s ease-in-out;">
+            {{!-- test list
+            <span @click="showForm">show form</span> --}}
+
+        <div class="px-3">
+            <div class="col-span-full p-4 mb-2 border-b border-gray-200">
+                <div class="">
+                    <h2 class="text-base font-semibold leading-6 text-gray-800" id="slide-over-title">Items</h2>
+                </div>
+            </div>
+            <div class="col-span-full">
+                <button type="button"
+                    class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-1 text-md font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    @click.prevent="createNewItem">
+                    <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    Create New Item
+                </button>
+            </div>
+            <div x-show="selectedDocument.config.items.length == 0" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 my-5 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <span class="mt-2 block text-sm font-semibold text-gray-500">No item yet</span>
+            </div>
+            <table class="min-w-full divide-y divide-gray-300 max-w-full" x-show="selectedDocument.config.items.length > 0"
+                   x-data="{ dragged: null, items: selectedDocument.config.items, dragElement: null, dropIndex: null }"
+            >
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th class="w-2/3 py-3.5 text-left text-sm font-semibold text-gray-900" width="auto">Description</th>
+                        <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Quantity</th>
+                        <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">UP</th>
+                        <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Reduction</th>                        
+                        <th class="hidden sm:block py-3.5 text-sm font-semibold text-gray-900 text-right" width="150px">VAT</th>
+                        <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Amount VAT Excl.</th>
+                        <th class="hidden w-1/3 py-3.5 text-sm text-right font-semibold text-gray-900" width="150px">Amount VAT Incl.</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody x-ref="itemsBody" class="divide-y divide-gray-200">
+                    <template x-for="(item, index) in selectedDocument.config.items" :key="index">
+                        <tr class="item even:bg-gray-50" style="transition: transform 0.3s ease">
+                            <td class="py-2 align-top">
+                                <button @click="moveUp(index)" type="button" class="inline-block hover:bg-gray-200 ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+                                    </svg>
+                                </button>
+                            </td>
+                            <td class="py-2 align-top">
+                                <button @click="moveDown(index)" type="button" class="inline-block mr-2 hover:bg-gray-200 ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                                    </svg>
+
+                                </button>
+                            </td>
+                            <td class="max-w-0 py-2 pr-2 text-sm sm:pl-0">
+                                <div class="font-medium text-gray-900 truncate" x-text="item.description"></div>
+                                <div>
+                                    <div class="mt-1 truncate text-gray-500" x-text="`${item.amountvatincl} €`" id="amount" contenteditable="true"></div>
+                                    <span x-show="item.reduction"  x-text="`Discount ${item.reduction} ${item.reduction_unit}`" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"></span>
+                            </td>
+                            {{!-- <td class="align-top py-2 pr-2 text-sm font-light text-gray-700 whitespace-nowrap overflow-hidden overflow-ellipsis truncate" x-text="item.description"></td> --}}
+                            <td class="hidden py-2 text-sm font-medium text-gray-500 whitespace-nowrap overflow-hidden overflow-ellipsis" x-text="item.quantity"></td>
+                            <td class="hidden py-2 text-sm font-medium text-gray-500" x-text="item.unit_price"></td>
+                            <td class="hidden py-2 text-sm align-top font-medium text-gray-500" x-text="`${item.reduction} ${item.reduction_unit}`"></td>
+                            <td class="hidden sm:block align-top text-right py-2 text-sm font-medium text-gray-500" x-text="item.vat === '-1' ? 'NA' : `${item.vat} %`"></td>
+                            <td class="hidden py-2 text-sm font-medium text-gray-500" x-text="item.amountvatexcl"></td>
+                            <td class="hidden text-right align-top py-2 text-sm text-gray-500 truncate" x-text="`${item.amountvatincl} €`"></td>
+                            <td class="py-2 pl-3 align-top">
+                                <button @click.prevent="startEdit(index);" type="button" class="inline-block hover:bg-gray-200 ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                    </svg>
+                                </button>
+                            </td>
+                            <td class="py-2 pl-1 align-top">
+                                <button @click="deleteItem(index)" type="button" class="inline-block hover:bg-gray-200 " >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            <div>
+            <div>
+                <div>Subtotal</div>
+                <div>
+                    <p x-text="amountssubtotal" x-show="formItem.form_automatic_computation" class="block w-full py-1.5 mt-2 text-right text-gray-900 sm:text-sm sm:leading-6"></p>
+                    <input x-show="!formItem.form_automatic_computation" type="text" 
+                           x-model="formItem.amountssubtotal" id="new-item-amount-vatincl" autocomplete="off"
+                           class="block w-full rounded-md border-0 py-1.5 mt-2 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
             </div>
         </div>
-        <div class="col-span-1 sm:col-span-3">
-            <label for="new-item-quantity" class="block text-sm font-medium leading-6 text-gray-900">Quantity</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-quantity" id="new-item-quantity" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
         </div>
-        <div class="col-span-1 sm:col-span-3">
-            <label for="new-item-unity" class="block text-sm font-medium leading-6 text-gray-900">Unité</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-unity" id="new-item-unity" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-        </div>
-        
-        <div class="col-span-full">
-            <label for="new-item-price" class="block text-sm font-medium leading-6 text-gray-900">Price</label>
-            <div class="mt-2">
-            <input type="text" name="new-item-price" id="new-item-price" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-        </div>
-        <div class="col-span-full">
-            <label for="new-item-reduction" class="block text-sm font-medium leading-6 text-gray-900">Reduction %</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-reduction" id="new-item-reduction" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-        </div>
-        <div class="col-span-full">
-            <label for="new-item-vat" class="block text-sm font-medium leading-6 text-gray-900">VAT</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-vat" id="new-item-vat" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-        </div>
-        <div class="col-span-full">
-            <label for="new-item-amount" class="block text-sm font-medium leading-6 text-gray-900">Amount</label>
-            <div class="mt-2">
-                <input type="text" name="new-item-amount" id="new-item-amount" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-        </div>
+
+
     </div>
-</div>
+    <div x-ref="form" style="position:absolute; height:100%; width:100%; transform: translateX(100%); transition: transform 0.5s ease-in-out;">
+        <div class="px-3">
+            <div class="col-span-full p-4 mb-2 border-b border-gray-200">
+                <div class="">
+                    <h2 x-text="formEditIndex != null ? 'Updating Item' : 'Creating New Item'" class="text-base font-semibold leading-6 text-gray-800" id="slide-over-title"></h2>
+                </div>
+            </div>
+            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
+                <div class="col-span-full">
+                    <label for="new-item-description" class="block text-sm font-medium leading-6 text-gray-900">Item Description</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="formItem.description" id="new-item-description" autocomplete="off"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-1 sm:col-span-3">
+                    <label for="new-item-quantity"
+                        class="text-right block text-sm font-medium leading-6 text-gray-900">Quantity</label>
+                    <div class="mt-2">
+                        <input type="text" id="new-item-quantity" autocomplete="off"
+                               x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                               x-on:input="formItem.quantity = $event.target.value"
+                               x-bind:placeholder="formItem.form_automatic_computation ? '0' : ''"
+                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+
+                <div class="col-span-1 sm:col-span-3">
+                    <label for="new-item-unit-price" class="text-right block text-sm font-medium leading-6 text-gray-900">Unit Price</label>
+                    <div class="mt-2">
+                        <input  type="text" id="new-item-unit-price" autocomplete="off"
+                                x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                                x-on:input="formItem.unit_price = $event.target.value"
+                                x-bind:placeholder="formItem.form_automatic_computation ? '0,00' : ''"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">                    </div>
+                </div>  
+
+                <div class="col-span-full">
+                    <label for="new-item-reduction"
+                        class="block text-sm font-medium leading-6 text-gray-900">Reduction</label>
+                    <div class="mt-2 flex items-center">
+                        <input  type="text" id="new-item-reduction" autocomplete="off"
+                                x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                                x-on:input="formItem.reduction = $event.target.value"
+                                x-bind:placeholder="formItem.form_automatic_computation ? (formItem.reduction_unit === '%' ? '0' : `0${decimalSymbol}00`) : ''"     
+                                class="block w-full rounded-md border-0 py-1.5 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <select x-model="formItem.reduction_unit"
+                            class="block ml-2 w-24 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option value="%">%</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-span-full grid grid-cols-3 gap-x-2 md:grid-cols-5">
+                    <div class="col-span-1 md:col-span-2">
+                        <label for="new-item-vat" class="block w-full text-sm font-medium leading-6 text-gray-900">VAT</label>
+                        <select x-model="formItem.vat" id="new-item-vat"
+                            class="block  w-full rounded-md border-0 py-1.5 mt-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option value="-1">Not applicable</option>
+                            <option value="0">0%</option>
+                            <option value="6">6%</option>
+                            <option value="20">20%</option>
+                            <option value="21">21%</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2 md:col-span-3 grid grid-cols-2 md:grid-cols-3">
+                        <div class="col-span-2 md:col-span-1 md:flex md:items-center">
+                            <label for="new-item-amount-vat" class="text-right block w-full text-sm font-medium leading-6 text-gray-900">Amount VAT</label>
+                        </div>
+                        <div class="col-span-2 md:col-span-2 md:flex md:items-center">
+                            <input type="text" autocomplete="off" id="new-item-amount-vat"
+                                x-model="formItem.form_automatic_computation ? itemAmountvat : formItem.amountvat"
+                                x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 mt-2 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
+                        </div>
+                    </div>
+                </div>  
+                <div class="col-span-full grid grid-cols-3 gap-x-2">
+                    <div class="col-span-3 grid grid-cols-2 md:grid-cols-5">
+                        <div class="col-span-1 my-3 md:col-start-3 md:col-span-1">
+                            <label for="new-item-amount-vatexcl" 
+                                   class="text-right block w-full text-sm font-medium leading-6 text-gray-900"
+                                   :class="{'mt-3 pr-2': !formItem.form_automatic_computation}"
+                            >Amount excl VAT</label>
+                        </div>  
+                        <div class="col-span-1 my-3 md:col-span-2">
+                            <input type="text" autocomplete="off" id="new-item-amount-vatexcl"
+                                x-model="formItem.form_automatic_computation ? itemAmountvatexcl : formItem.amountvatexcl"
+                                x-bind:readonly="formItem.form_automatic_computation"
+                                x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 mt-2 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
+                        </div>
+                                           
+                        <div class="col-span-1 my-3 md:col-start-3 md:col-span-1">
+                            <label for="new-item-amountvatincl" 
+                                   class="text-right block w-full text-sm font-medium leading-6 text-gray-900"
+                                   :class="{'mt-3 pr-2': !formItem.form_automatic_computation}">Amount Incl VAT</label>
+                        </div>  
+                        <div class="col-span-1 my-3 md:col-span-2">
+                
+                            <input type="text" autocomplete="off" id="new-item-amountvatincl"
+                                x-model="formItem.form_automatic_computation ? itemAmountvatincl : formItem.amountvatincl"
+                                x-bind:readonly="formItem.form_automatic_computation"
+                                x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 mt-2 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
+                        </div>
+                   </div>
+                    <div class="col-span-full border-t border-gray-200 px-2 pt-5 mt-4 sm:px-3">
+                        <div class="grid grid-cols-2">
+                            <div class="col-span-1">
+                                <input type="checkbox" id="automatic-computation" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" 
+                                    x-model="formItem.form_automatic_computation"
+                                />
+                                <label for="automatic-computation" class="text-sm font-light text-gray-500">Automatic Computation and Validation</label>
+                            </div>
+                            <div class="col-span-1 text-right">
+                                <button @click.prevent="cancelEditNewItem" type="button" class="rounded-md bg-white px-3 py-2 mb-2 sm:mb-0 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">Cancel</button>
+                                <button @click.prevent="saveItem();" type="button" x-text="formEditIndex != null ? 'Update Item' : 'Add Item'" class="ml-3 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" />
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        </div>
+
+
+    </div>
 </div>

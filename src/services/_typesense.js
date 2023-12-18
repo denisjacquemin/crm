@@ -1,64 +1,53 @@
 const Typesense = require('typesense');
+const TypesenseHelper = require('./lib/typesense');
 
 class TypesenseService {
 
     constructor(collectionName, schema, connectionOptions = {}) {
-        const apiKey = process.env.TYPESENSE_API_KEY;
-        let nodes = [];
-        const nodesEnv = process.env.TYPESENSE_NODES;
 
-        if (!apiKey) {
-            throw new Error('TYPESENSE_API_KEY environment variable not set');
-        }
-
-        if (nodesEnv) {
-            try {
-                nodes = JSON.parse(nodesEnv);
-            } catch (error) {
-                throw new Error(`Failed to parse TYPESENSE_NODES: ${error}`);
-            }
-        }
-
-        this.client = new Typesense.Client({
-            nodes,
-            apiKey,
-            ...connectionOptions,
-        });
+        this.client = TypesenseHelper.getTypesenseClient();
+        this.schema = schema;
 
         this.collectionName = collectionName;
         this.isConnected = false;
         this.connectionRetryInterval = 5000;
-        this.connect(schema);
+        this.createCollection();
     }
 
-    async connect(schema) {
-        try {
-            await this.client.health.retrieve();
-            console.log('Connected to Typesense');
+    async createCollection() {
 
-            const collections = await this.client.collections().retrieve();
-            const existingCollection = collections.find(collection => collection.name === this.collectionName);
+        const existingCollections = await this.client.collections().retrieve();
 
-            if (!existingCollection) {
-                await this.client.collections().create(schema);
-                console.log(`Created collection ${this.collectionName}`);
-            } else {
-                console.log(`Using existing collection ${this.collectionName}`);
-            }
+        const existingCollection = existingCollections.find((c) => c.name === this.collectionName);
 
-            this.isConnected = true;
-        } catch (error) {
-            console.error(`Failed to connect to Typesense: ${error.message}`);
-            setTimeout(() => this.connect(schema), this.connectionRetryInterval);
+        if (!existingCollection) {
+            await this.client.collections().create(this.schema);
+            console.log(`Created collection ${this.collectionName}`);
+        } else {
+            console.log(`Using existing collection ${this.collectionName}`);
         }
     }
 
+
     async createDocument(document) {
         try {
-            const docToCreate = {...document, id: document._id };
+            const docToCreate = { ...document, id: document._id };
             return await this.client.collections(this.collectionName).documents().create(docToCreate);
         } catch (error) {
             console.error(`Failed to create document: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async upsertDocument(document) {
+        console.log('### upsertDocument', document);
+        try {
+            const docToCreate = { ...document, id: document._id };
+            // console.log('Document.post(save) doc to save: ', docToCreate);
+
+            return await this.client.collections(this.collectionName).documents().upsert(docToCreate);
+        } catch (error) {
+            console.error(`Failed to upsert document: ${error.message}`);
             throw error;
         }
     }
@@ -74,7 +63,6 @@ class TypesenseService {
 
     async updateDocument(documentId, document) {
         try {
-            console.log('### updateDocument', JSON.stringify(document));
             return await this.client.collections(this.collectionName).documents(documentId).update(document);
         } catch (error) {
             console.error(`Failed to update document: ${error.message}`);
@@ -92,9 +80,10 @@ class TypesenseService {
     }
 
     // add searchDocuments method
-    async searchDocuments(query, searchParameters = {}) {
+    async searchDocuments(searchParameters = {}) {
         try {
-            return await this.client.collections(this.collectionName).documents().search(query, searchParameters);
+            console.log('### searchDocuments', searchParameters);
+            return await this.client.collections(this.collectionName).documents().search(searchParameters);
         } catch (error) {
             console.error(`Failed to search documents: ${error.message}`);
             throw error;

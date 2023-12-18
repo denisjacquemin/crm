@@ -1,76 +1,25 @@
-const { ObjectId } = require('mongodb');
-const mongoService = require('./lib/mongo');
-const Service = require('./_service');
+const Buyer = require('../models/buyer.model');
 
-let buyerServiceInstance = null;
-// based on the model ./documents.service.js, build a crud service for buyers
-class BuyerService extends Service {
-    constructor(db) {
-        super(db);
-        this.collection = 'buyers';
-        this.fields_white_list = new Set([
-            '_id',
-            'company_id',
-            'name',
-            'address',
-            'city',
-            'country',
-            'vat_number',
-            'email',
-            'phone',
-            'created_at',
-            'updated_at',
-            'created_by_user_id',
-            'slug',
-        ]);
-    }
-
-    static async getInstance() {
-        if (!buyerServiceInstance) {
-            const db = await mongoService.get();
-            buyerServiceInstance = new BuyerService(db);
-        }
-
-        return buyerServiceInstance;
-    }
+class BuyersService {
 
     async create(data) {
-        try {
-            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
-            return await super.create(filteredData);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+       const buyer = new Buyer(data);
+       await buyer.save();
+       return buyer;
     }
 
     async update(id, data) {
-        try {
-            const filteredData = this.filterWhiteListedFields(data, this.fields_white_list);
-            return await super.updateBy('_id', ObjectId(id), filteredData);
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+        return await Buyer.findOneAndUpdate({ _id: id }, data, { new: true });
     }
 
     async delete(id) {
-        try {
-            return await super.deleteBy('_id', ObjectId(id));
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+        await Buyer.deleteOne({ _id: id });
+
     }
 
-    async getById(id) {
-        try {
-            return await super.getBy('_id', ObjectId(id));
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+    async getById(id, company_id) {
+        return await Document.findOne({ _id: id, company_id });
     }
 }
 
-module.exports = BuyerService;
+module.exports = BuyersService;
