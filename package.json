@@ -26,7 +26,7 @@
         "connect-redis": "^6.1.3",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
-        "dotenv": "^16.0.1",
+        "dotenv": "^16.0.3",
         "express": "^4.18.1",
         "express-handlebars": "^6.0.6",
         "express-limit": "^1.0.0",
