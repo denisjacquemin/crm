@@ -67,7 +67,7 @@ const documentSchema = new mongoose.Schema({
         },
         amounts: {
             subtotal: { type: Number, required: false, default: 0 },
-            tva: { type: Number, required: false, default: 0  },
+            totalvat: { type: Number, required: false, default: 0  },
             total: { type: Number, required: false, default: 0 },
         },
         payment: {
