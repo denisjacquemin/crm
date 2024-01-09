@@ -182,7 +182,62 @@
     </div>
 
 
+    <div x-data="{ 
+      editDocument: async function(index) {
+        try {
+          selectedDocumentIndex = index;
+          const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`);
+          const data = await response.json()
+          documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
+          updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
+          selectedDocument = documents[selectedDocumentIndex];
 
+        } catch (error) { console.error('Error editing document', error); }
+      }
+    }">
+      <template x-if="documents.length === 0">
+        <li class="py-2 text-gray-500">No documents found.</li>
+      </template>
+
+      <template x-if="documents.length > 0">
+        <ul role="list" class="divide-y divide-gray-100">
+          <template x-for="(document  , index) in documents" :key="index">
+            <li class="relative py-5 hover:bg-gray-50"
+                @click.prevent="currentColumn = 2.1; editDocument(index);"
+                :data-slug="document.slug" 
+            >
+              <div class="px-4">
+                <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
+                  <div class="flex min-w-0 gap-x-4">
+                    <div class="min-w-0 flex-auto">
+                      <p class="text-sm font-semibold leading-6 text-gray-900"
+                        
+                      >
+                        <a href="#" x-text="document?.config?.buyer?.name">
+                          <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                          
+                        </a>
+                      </p>
+                      <p class="mt-1 flex text-xs leading-5 text-gray-500">
+                        <a href="mailto:leslie.alexander@example.com" class="relative truncate hover:underline">leslie.alexander@example.com</a>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-x-4">
+                    
+                    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </template>
+        </ul> 
+      </template>
+
+
+    </div>
 
 
     <div role="list" class="flex-grow overflow-y-scroll pl-1 pr-4 sm:ml-2 sm:pl-0" 
@@ -201,6 +256,7 @@
       <template x-if="documents.length === 0">
         <div class="py-2 text-gray-500">No documents found.</div>
       </template>
+
 
       <template x-for="(document, index) in documents" :key="index">
           <div @click.prevent="currentColumn = 2.1; editDocument(index);"

@@ -1,16 +1,152 @@
-<div class="to-be-autosaved">
+<div class="to-be-autosaved"
+  x-data="{
+        formatNumber: function(amount) {
+            const formatter = new Intl.NumberFormat('fr-FR', {
+                useGrouping: true,
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            {{!-- replace non-breaking spaces by spaces --}}
+            return formatter.format(amount).replace(',', '.').replaceAll('\u202F', ' '); 
+        },
+        get amountvattotal() {
+            let totalvat = selectedDocument.config.items.reduce((total, item) => { 
+                    let amountvat = Number(item.amountvat);
+                    return total + (isNaN(amountvat) ? 0 : amountvat);
+            }, 0);
+            this.selectedDocument.config.amounts.totalvat = totalvat;
+            return this.formatNumber(totalvat);
+        },
+        get amountssubtotavatexcl() {
+            let subtotal = this.selectedDocument.config.items.reduce((total, item) => { 
+                let amountvatexcl = Number(item.amountvatexcl);
+                return total + (isNaN(amountvatexcl) ? 0 : amountvatexcl);
+            }, 0);
+            this.selectedDocument.config.amounts.subtotal = subtotal
+            return this.formatNumber(subtotal);
+        },
+        get amountssubtotavatincl() {
+            let total = this.selectedDocument.config.items.reduce((total, item) => { 
+                let amountvatincl = Number(item.amountvatincl);
+                return total + (isNaN(amountvatincl) ? 0 : amountvatincl);
+            }, 0);
+            this.selectedDocument.config.amounts.total = total;
+            return this.formatNumber(total);
+        },
+        updateDueDate: function(termsType, selectedDate) {
+            let daysToAdd = parseInt(termsType.slice(1));
+            let invoice_due_date_value = dayjs(selectedDate).add(daysToAdd, 'day');
+            this.dueDatePicker.setDate(invoice_due_date_value.toDate());
+        },
+        createDueDatePicker: function() {
+            this.dueDatePicker = flatpickr(this.$refs.dueDate, {
+                defaultDate: dayjs.utc(this.selectedDocument.config.invoice_due_date.value).toDate(),
+                dateFormat: 'd/m/Y',
+                onChange: (selectedDates, dateStr, instance) => {
+                  console.log('dueDatePicker onChange');
+                  let selectedDate = dayjs(selectedDates[0]).startOf('day');
+                  this.selectedDocument.config.invoice_due_date.value = dayjs(selectedDate).utc().toISOString(); 
+                }
+            });
+        },
+        invoiceDatePicker: null,
+        dueDatePicker: null,
+        handleTermsType: function(termsType, selectedDate) {
+            if (termsType.startsWith('+')) {
+                if (!this.dueDatePicker) {
+                    this.createDueDatePicker();
+                }
+                this.dueDatePicker.set('onOpen', () => { {{!-- Disable dueDatePicker from opening --}}
+                    this.dueDatePicker.close();
+                });
+                this.updateDueDate(termsType, selectedDate);
+                this.selectedDocument.config.invoice_due_date.value = this.dueDatePicker.selectedDates[0].toISOString();
+
+            } else if (termsType === 'dueonreceipt') {
+                if (this.dueDatePicker) {
+                    this.dueDatePicker.destroy();
+                    this.dueDatePicker = null;
+                }            
+                this.selectedDocument.config.invoice_due_date.value = 'Due on Receipt';
+                this.$refs.dueDate.value = 'Due on Receipt';
+            } else if (termsType === 'custom') {
+                if (!this.dueDatePicker) {
+                    this.createDueDatePicker();
+                }
+                // set dueDatePicker date to today and also set invoice_due_date.value to today
+                this.dueDatePicker.setDate(dayjs().toDate());
+                this.selectedDocument.config.invoice_due_date.value = dayjs().toISOString();
+                this.dueDatePicker.set('onOpen', []);
+                this.dueDatePicker.set('allowInput', true);
+            }
+        },
+        handleChange: function(event) {      
+          console.log('Handle Terms Type change', event.target.value, dayjs(this.invoiceDatePicker.selectedDates[0]).toDate());          
+          this.handleTermsType(event.target.value, dayjs(this.invoiceDatePicker.selectedDates[0]).toDate());
+        },
+        init: function() {
+            this.invoiceDatePicker = flatpickr(this.$refs.invoiceDate, {
+                defaultDate: dayjs.utc(this.selectedDocument.config.invoice_date).toDate(),
+                dateFormat: 'd/m/Y',
+                onChange: (selectedDates, dateStr, instance) => {
+                    let selectedDate = selectedDates[0]; // get the date selected by the user
+
+                    this.selectedDocument.config.invoice_date = selectedDate.toISOString();  // convert date to UTC string
+                    let startOfDay = dayjs(selectedDate).startOf('day'); // get the start of the day in local timezone
+                    this.handleTermsType(this.selectedDocument.config.invoice_due_date.terms_type, startOfDay); // use the start of the day to compute due date
+                }
+            });
+            console.log('Handle Terms Type on init', this.selectedDocument.config.invoice_due_date.terms_type, dayjs.utc(this.selectedDocument.config.invoice_date).local().toDate());
+
+            // Depending on terms_type handle dueDate Picker field
+            this.handleTermsType(this.selectedDocument.config.invoice_due_date.terms_type, dayjs.utc(this.selectedDocument.config.invoice_date).toDate());
+        },
+
+  }" x-init="init()">
   <input type="hidden" x-model="selectedDocument.slug" id="slug" />
-  <div class="grid grid-cols-1 mt-5 sm:mt-0 gap-y-8 gap-x-6 sm:grid-cols-6 md:col-span-2">
-    <div class="sm:col-span-3">
+  <div class="grid grid-cols-1 mt-5 sm:mt-0 gap-y-8 gap-x-6">
+    <div class="">
       <label for="invoiceDate" class="block text-sm font-medium leading-6 text-gray-900">Invoice Date</label>
       <div class="mt-2">
-        <input type="text" x-model="selectedDocument.config.invoiceDate" name="config.invoiceDate" id="invoiceDate" autocomplete="invoiceDate" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        {{!-- <input type="text" x-model="selectedDocument.config.invoiceDate" name="config.invoiceDate" id="invoiceDate" autocomplete="invoiceDate" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"> --}}
+        <div class="relative">
+          <input
+            x-ref="invoiceDate"
+            id="invoiceDate"
+            type="text"
+            placeholder="Select a date"
+            class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          />  
+          <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+      <!-- Heroicons date icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="sm:col-span-3">
-      <label for="dueDate" class="block text-sm font-medium leading-6 text-gray-900">Due Date</label>
-      <div class="mt-2">
-        <input type="text" x-model="selectedDocument.config.dueDate" name="config.dueDate" id="dueDate" autocomplete="dueDate" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+    <div>
+      <label for="invoiceDueDate" class="block text-sm font-medium leading-6 text-gray-900">Invoice Due Date</label>
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <input x-ref="dueDate" type="text" id="invoiceDueDate" class="block w-full rounded-md border-0 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+          </svg>
+        </div>
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <select x-model="selectedDocument.config.invoice_due_date.terms_type"
+                  x-on:change="handleChange($event)" 
+                  id="invoiceDueDateTermsType"
+                  class=" h-full rounded-md border-0 rounded-l-none border-l border-gray-300 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+            <option value="custom">Custom</option>
+            <option value="+15">+ 15</option>
+            <option value="+30">+ 30</option>
+            <option value="dueonreceipt">Due on Receipt</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -54,6 +190,16 @@
             Manage Items
         </button>
         {{> documents/items }}
+    </div>
+
+    
+    <div class="col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total Vat excl</div>
+          <div class="col-span-2 sm:col-span-1 text-right" x-text="amountssubtotavatexcl"></div>
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Vat</div>
+          <div class="col-span-2 sm:col-span-1 text-right" x-text="amountvattotal"></div>
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total vat incl</div>
+          <div class="col-span-2 sm:col-span-1 text-right font-normal" x-text="amountssubtotavatincl"></div>
     </div>
     
   </div>

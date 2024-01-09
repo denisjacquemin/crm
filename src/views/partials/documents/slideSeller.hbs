@@ -1,55 +1,77 @@
-<div>
-  <div class="bg-indigo-700 px-4 py-6 sm:px-6">
-    <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold leading-6 text-white" id="slide-over-title">Choose Sellerrr</h2>
-    </div>
-    <div class="mt-1">
-        <p class="text-sm text-indigo-300">Get started by filling in the information below to create your new project.</p>
-    </div>
-  </div>
-  <fieldset x-data="window.Components.radioGroup({ initialCheckedIndex: 0 })" x-init="init()">
-    <legend class="sr-only">Pricing plans</legend>
-    <div class="relative -space-y-px rounded-md bg-white">
-      
-        <label x-radio-group-option="" class="rounded-tl-md rounded-tr-md relative flex cursor-pointer flex-col border p-4 focus:outline-none md:grid md:grid-cols-3 md:pl-4 md:pr-6 z-10 border-indigo-200 bg-indigo-50" x-description="Checked: &quot;z-10 border-indigo-200 bg-indigo-50&quot;, Not Checked: &quot;border-gray-200&quot;" :class="{ 'z-10 border-indigo-200 bg-indigo-50': (value === 'Startup'), 'border-gray-200': !(value === 'Startup') }">
-          <span class="flex items-center text-sm">
-            <input type="radio" x-model="value" name="pricing-plan" value="Startup" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-600" aria-labelledby="pricing-plans-0-label" aria-describedby="pricing-plans-0-description-0 pricing-plans-0-description-1" spellcheck="false">
-            <span id="pricing-plans-0-label" class="ml-3 font-medium text-indigo-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Startup'), 'text-gray-900': !(value === 'Startup') }">Startup</span>
-          </span>
-          <span id="pricing-plans-0-description-0" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-center">
-            <span class="font-medium text-indigo-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Startup'), 'text-gray-900': !(value === 'Startup') }">$29 / mo</span>
-            <!-- space -->
-            <span x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Startup'), 'text-gray-500': !(value === 'Startup') }" class="text-indigo-700">($290 / yr)</span>
-          </span>
-          <span id="pricing-plans-0-description-1" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-right text-indigo-700" x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Startup'), 'text-gray-500': !(value === 'Startup') }">Up to 5 active job postings</span>
-        </label>
-      
-        <label x-radio-group-option="" class="relative flex cursor-pointer flex-col border p-4 focus:outline-none md:grid md:grid-cols-3 md:pl-4 md:pr-6 border-gray-200" x-description="Checked: &quot;z-10 border-indigo-200 bg-indigo-50&quot;, Not Checked: &quot;border-gray-200&quot;" :class="{ 'z-10 border-indigo-200 bg-indigo-50': (value === 'Business'), 'border-gray-200': !(value === 'Business') }">
-          <span class="flex items-center text-sm">
-            <input type="radio" x-model="value" name="pricing-plan" value="Business" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-600" aria-labelledby="pricing-plans-1-label" aria-describedby="pricing-plans-1-description-0 pricing-plans-1-description-1" spellcheck="false">
-            <span id="pricing-plans-1-label" class="ml-3 font-medium text-gray-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Business'), 'text-gray-900': !(value === 'Business') }">Business</span>
-          </span>
-          <span id="pricing-plans-1-description-0" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-center">
-            <span class="font-medium text-gray-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Business'), 'text-gray-900': !(value === 'Business') }">$99 / mo</span>
-            <!-- space -->
-            <span x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Business'), 'text-gray-500': !(value === 'Business') }" class="text-gray-500">($990 / yr)</span>
-          </span>
-          <span id="pricing-plans-1-description-1" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-right text-gray-500" x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Business'), 'text-gray-500': !(value === 'Business') }">Up to 25 active job postings</span>
-        </label>
-      
-        <label x-radio-group-option="" class="rounded-bl-md rounded-br-md relative flex cursor-pointer flex-col border p-4 focus:outline-none md:grid md:grid-cols-3 md:pl-4 md:pr-6 border-gray-200" x-description="Checked: &quot;z-10 border-indigo-200 bg-indigo-50&quot;, Not Checked: &quot;border-gray-200&quot;" :class="{ 'z-10 border-indigo-200 bg-indigo-50': (value === 'Enterprise'), 'border-gray-200': !(value === 'Enterprise') }">
-          <span class="flex items-center text-sm">
-            <input type="radio" x-model="value" name="pricing-plan" value="Enterprise" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-600" aria-labelledby="pricing-plans-2-label" aria-describedby="pricing-plans-2-description-0 pricing-plans-2-description-1" spellcheck="false">
-            <span id="pricing-plans-2-label" class="ml-3 font-medium text-gray-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Enterprise'), 'text-gray-900': !(value === 'Enterprise') }">Enterprise</span>
-          </span>
-          <span id="pricing-plans-2-description-0" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-center">
-            <span class="font-medium text-gray-900" x-description="Checked: &quot;text-indigo-900&quot;, Not Checked: &quot;text-gray-900&quot;" :class="{ 'text-indigo-900': (value === 'Enterprise'), 'text-gray-900': !(value === 'Enterprise') }">$249 / mo</span>
-            <!-- space -->
-            <span x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Enterprise'), 'text-gray-500': !(value === 'Enterprise') }" class="text-gray-500">($2490 / yr)</span>
-          </span>
-          <span id="pricing-plans-2-description-1" class="ml-6 pl-1 text-sm md:ml-0 md:pl-0 md:text-right text-gray-500" x-description="Checked: &quot;text-indigo-700&quot;, Not Checked: &quot;text-gray-500&quot;" :class="{ 'text-indigo-700': (value === 'Enterprise'), 'text-gray-500': !(value === 'Enterprise') }">Unlimited active job postings</span>
-        </label>
-      
-    </div>
-  </fieldset>
+<div class="min-h-full overflow-hidden">
+    <div>
+      <div class="px-3 mb-5">
+            <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
+                <div class="">
+                    <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">Edit Seller</h2>
+                    <p class="mt-2 text-sm text-gray-700">Update Seller's details.</p>
+                </div>
+            </div>
+            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
+                <div class="col-span-full">
+                  <label for="seller-name" class="block text-sm font-medium leading-6 text-gray-900">Seller Name</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.name" autocomplete="off"
+                            placeholder="This is my company name" id="seller-name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-address" class="block text-sm font-medium leading-6 text-gray-900">Seller Address</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.address" autocomplete="off"
+                            placeholder="Address street and number" id="seller-address"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-zip" class="block text-sm font-medium leading-6 text-gray-900">Seller Zip</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.zip" autocomplete="off"
+                            placeholder="Zip number" id="seller-zip"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-city" class="block text-sm font-medium leading-6 text-gray-900">Seller City</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.city" autocomplete="off"
+                            placeholder="Zip number" id="seller-city"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-phone" class="block text-sm font-medium leading-6 text-gray-900">Seller Phone</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.phone" autocomplete="off"
+                            placeholder="Phone number" id="seller-phone"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-email" class="block text-sm font-medium leading-6 text-gray-900">Seller Email</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.email" autocomplete="off"
+                            placeholder="seller-email" id="seller-email"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full">
+                  <label for="seller-vat" class="block text-sm font-medium leading-6 text-gray-900">Seller VAT Number</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedDocument.config.seller.vat_number" autocomplete="off"
+                            placeholder="VAT number" id="seller-vat"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="col-span-full border-t border-gray-200 px-2 pt-5 mt-4 sm:px-3">
+                  <button type="button"
+                    class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    @click.prevent="openSlide = false">
+                    Done
+                  </button>
+                </div>
+            </div>
+      </div>
+    </div>  
 </div>

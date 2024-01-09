@@ -66,20 +66,23 @@ const documentSchema = new mongoose.Schema({
             },
         },
         amounts: {
-            subtotal: { type: Number, required: false, default: 0 },
-            totalvat: { type: Number, required: false, default: 0  },
-            total: { type: Number, required: false, default: 0 },
+            subtotal: { type: String, required: false, default: 0 },
+            totalvat: { type: String, required: false, default: 0  },
+            total: { type: String, required: false, default: 0 },
         },
         payment: {
             type: [paymentSchema],
         },
         invoice_number: { type: String, required: false, default: '' }, // invoice number
         invoice_date: { type: Date, required: false, default: Date.now() },
-        invoice_due_date: { type: Date, required: false, default: () => {
-            const date = new Date();
-            date.setDate(date.getDate() + 30);
-            return date;
-        }},
+        invoice_due_date: { 
+            type: {
+                value: { type: String, required: false, default: '' },
+                terms_type: { type: String, required: false, default: '' }
+            }, 
+            required: false, 
+            default: {} 
+        },
         currency: { type: String, required: false, default: 'eur' },
         language: { type: String, required: false, default: 'en' },
         notes: { type: String, required: false, default: '' },

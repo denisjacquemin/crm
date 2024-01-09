@@ -5,7 +5,8 @@
 
 /* Your other CSS code here */
 
-
+@import 'flatpickr/dist/flatpickr.min.css';
+@import 'choices.js/public/assets/styles/choices.min.css';
 
 /* https://alpinejs.dev/directives/cloak */
 

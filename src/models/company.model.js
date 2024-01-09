@@ -18,7 +18,16 @@ const companySchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid email address!`
         }
     },
-    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }]
+    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
+    settings: {
+        default_template: { type: String, required: false, default: 'default_template' },
+        default_currency: { type: String, required: false, default: 'EUR' },
+        default_language: { type: String, required: false, default: 'en' },
+        default_vat: { type: String, required: false, default: '21' },
+        default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
+        default_payment_method: { type: String, required: false, default: 'bank_transfer' },
+        default_bank_account: { type: String, required: false, default: '' },
+    },
 });
 
 const Company = mongoose.model('Company', companySchema);

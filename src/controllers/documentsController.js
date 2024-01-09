@@ -62,8 +62,21 @@ async function newDocumentAjax(req, res) {
 
 async function createNewDocumentInMongoAndTypesense(req) {
 
-    const now = new Date();
-    
+    let invoice_date = new Date();
+    invoice_date.setHours(0, 0, 0, 0);
+
+    // get default_payment_terms from company settings
+    let default_invoice_due_date_terms_type = req.session.current_company.settings.default_invoice_due_date_terms_type;
+    let invoice_due_date_value;
+
+    if (default_invoice_due_date_terms_type.startsWith('+')) {
+        let daysToAdd = parseInt(default_invoice_due_date_terms_type.slice(1));
+        invoice_due_date_value = new Date(invoice_date.getTime());
+        invoice_due_date_value.setDate(invoice_date.getDate() + daysToAdd);
+    } else {
+        invoice_due_date_value = default_invoice_due_date_terms_type;
+    }
+
     return await DocumentService.create({
         company_id: req.session.current_company._id,
         created_by_user_id: req.session.user.id,
@@ -74,7 +87,21 @@ async function createNewDocumentInMongoAndTypesense(req) {
         tax_amount: 0,
         total_amount: 0,
         config: {
-            invoice_date: now,
+            invoice_date: invoice_date.toISOString(), // .toISOString(); ensure UTC time
+            invoice_due_date: {
+                value: invoice_due_date_value.toISOString(), // .toISOString(); ensure UTC time
+                terms_type: default_invoice_due_date_terms_type
+            },
+            seller: {
+                name: req.session.current_company.name,
+                address: req.session.current_company.address,
+                city: req.session.current_company.city,
+                zip: req.session.current_company.zip,
+                country: req.session.current_company.country,
+                vat_number: req.session.current_company.vat_number,
+                phone: req.session.current_company.phone,
+                email: req.session.user.email
+            }      
         }
     });
 }

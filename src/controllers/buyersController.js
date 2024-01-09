@@ -38,7 +38,11 @@ async function search(req, res) {
         };
 
         const searchResults = await buyerTypesenseService.search(searchParameters);
-        res.json(searchResults.hits);
+        
+        // Extract the document property from each hit and return an array of buyers
+        const buyers = searchResults.hits.map(hit => hit.document);
+
+        res.json(buyers);
     } catch (err) {
         console.error(err.stack);
         res.status(500).send(req.i18n.t('common.unknown_error'));
