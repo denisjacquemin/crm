@@ -13,7 +13,6 @@ function removeDocumentFromLocalStorage(slug) {
 }
 
 function updateDocumentInLocalStorage(slug, updatedAt) {
-    console.log('updateDocumentInLocalStorage:', slug, updatedAt);
     let documents = getDocumentsFromLocalStorage();
     if (documents[slug]) {
         documents[slug].selectedDocument_updated_at = updatedAt;

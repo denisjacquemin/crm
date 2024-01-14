@@ -13,7 +13,9 @@
   "forgot_password": {
     "reset_your_password": "forgot_password.reset_your_password",
     "email_required": "forgot_password.email_required",
-    "user_does_not_exist": "forgot_password.user_does_not_exist"
+    "user_does_not_exist": "forgot_password.user_does_not_exist",
+    "email_updated": "forgot_password.email_updated",
+    "email_taken": "forgot_password.email_taken"
   },
   "reset_password": {
     "password_required": "reset_password.password_required",

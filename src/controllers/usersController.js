@@ -9,6 +9,8 @@ const { use } = require('../services/lib/mailer');
 const { sanitizeEmail } = require('../lib/sanitizer');
 const DateHelper = require('../lib/date-helpers');
 const mongo = require('../services/lib/mongo');
+const session = require('express-session');
+const { response } = require('express');
 
 
 
@@ -541,7 +543,46 @@ async function resetPassword(req, res, next) {
     res.render("users/reset-password");
 }
 
-// function restePasswordPost
+async function resetEmail(req, res, next) {
+    // Destructure the email field from the request body
+    const email = req.body.value;
+    console.log('email:', email, req.body);
+    try {
+        // Validate and sanitize email
+        const emailSanitized = sanitizeEmail(email);
+        console.log('emailSanitized:', emailSanitized);
+        console.log('validator.isEmail(emailSanitized):', validator.isEmail(emailSanitized));
+        if (!emailSanitized || !validator.isEmail(emailSanitized)) {
+            return res.status(400).json({ message: req.i18n.t('forgot_password.email_invalid') });
+        }
+
+        // Check if the email is already taken
+        const user = await UserService.getByEmail(emailSanitized);
+        if (user) {
+            return res.status(400).json({ message: req.i18n.t('forgot_password.email_taken') });
+        }
+
+        // Update the user's email
+        await UserService.updateById(req.session.user.id, { email: emailSanitized });
+
+        // Update the email field on the user's session
+        req.session.user.email = emailSanitized;
+
+        // Send a success response
+        return res.status(200).json({ message: req.i18n.t('forgot_password.email_updated') });
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.resetEmail `, err.message);
+        next(err);
+    }
+}
+
+
+
+
+
+
 
 async function resetPasswordPost(req, res, next) {
     // Destructure the token field from the request body
@@ -707,6 +748,7 @@ module.exports = {
     resetPassword,
     resetPasswordPost,
     resetPasswordSent,
+    resetEmail,
     OAuthGoogleURL,
     OAuthGoogleCallback
 };

@@ -57,7 +57,7 @@
           }
         });
         $watch('selectedDocument', (value, oldValue) => {
-          {{!-- console.log('selectedDocument changed', value, oldValue); --}}
+          console.log('selectedDocument changed', value, oldValue);
           var documentsFromLS = JSON.parse(localStorage.getItem('documents')) || {};
           documentsFromLS[value.slug] = { ...value };  
 

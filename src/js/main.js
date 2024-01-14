@@ -1,6 +1,7 @@
 // If you imported Alpine into a bundle, you have to make sure you are registering any extension code IN BETWEEN when you import the Alpine global object, and when you initialize Alpine by calling Alpine.start().
 import Alpine from 'alpinejs'
 import mask from '@alpinejs/mask'
+import focus from '@alpinejs/focus'
 import dayjs, { locale } from 'dayjs' // import Day.js
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -19,6 +20,7 @@ import flatpickr from "flatpickr";
 import Choices from 'choices.js';
 window.Choices = Choices;
 
+Alpine.plugin(focus)
 Alpine.plugin(mask)
 
 window.Alpine = Alpine

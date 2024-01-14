@@ -14,6 +14,8 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/preferences/changelang", globalController.changeLang);
+router.get("/settings", auth, globalController.settings);
+
 
 router.get("/users/signup-1", userController.signup1);
 router.post("/users/signup-1", userController.signup1Post);
@@ -29,6 +31,8 @@ router.get("/users/resetpassword/:token", userController.resetPassword);
 router.post("/users/resetpassword", userController.resetPasswordPost);
 router.get("/oauth/google/url", userController.OAuthGoogleURL);
 router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
+router.patch("/user/resetemail", auth, userController.resetEmail);
+
 
 // Needs authentication and ACL
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
