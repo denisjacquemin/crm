@@ -3,7 +3,8 @@
 
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
         <title>Milo</title>
         <meta name="csrf-token" content="{{csrfToken}}">
         <link rel="stylesheet" href="/public/css/styles.css" />
@@ -11,17 +12,45 @@
         {{!-- <script type="text/javascript" src="/public/js/vendor/alpine/alpine.3.13.2.min.js" defer></script> --}}
     </head>
 
-    <body class="" x-data="{ navState: 'menu' }">
+    <body class="" 
+          @updatenavbutton="navState = $event.detail.value"
+          x-data="{ 
+            navState: 'menu',
+            openSettingsModal: false,
+            async loadModalContent(url, callback, anchor, focusInputId) {
+                const response = await fetch(url);
+                const text = await response.text();
+                this.$refs.modalContent.innerHTML = text;
+                this.openSettingsModal = true;
+                if (anchor) {
+                    this.$nextTick(() => {
+                        const targetElement = this.$refs.modalContent.querySelector(`#${anchor}`);
+                        if (targetElement) {
+                            targetElement.scrollIntoView();
+                        }
+                    });
+                }
+                if (focusInputId) {
+                    this.$nextTick(() => {
+                        const inputElement = this.$refs.modalContent.querySelector(`#${focusInputId}`);
+                        if (inputElement) {
+                            inputElement.focus();
+                        }
+                    });
+                }
+                if (callback) callback();
+            }
+          }">
         
         <div class="h-screen flex flex-col">
         {{!-- <div x-text="navState" class="absolute top-0 right-0 z-50 text-red-600"></div> --}}
-            {{> nav }}  
-            {{#if messages}} 
-                {{messages}}  
-            {{/if}}
+            {{> nav }}
             {{{body}}}
+
         </div>
         {{> notifications}}
+        {{> notifications2}}
+        {{> settings_modal }}
     </body>
 
 </html>

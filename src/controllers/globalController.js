@@ -41,32 +41,12 @@ async function settings(req, res) {
     try {
         res.render('global/settings', {
             accountEmail: req.session.user.email,
+            currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
             layout: false
         });
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));
-    }
-}
-
-async function updateSettings(req, res, next) {
-    try {
-
-        
-        let document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
-
-        if (!document) {
-            const error = new Error('Document not found');
-            error.status = 404;
-            throw error;
-        }
-
-        const updatedDocument = await DocumentService.update(document._id, req.body.document);
-        res.json(updatedDocument);
-
-    } catch (error) {
-        console.log('Error in update', error)
-        next(error);
     }
 }
 

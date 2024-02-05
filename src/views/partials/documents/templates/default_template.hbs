@@ -1,4 +1,4 @@
-<di x-data="{
+<div x-data="{
         // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
         numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1
         }">
@@ -6,7 +6,6 @@
         #template3 .page {
             width: 21cm;
             height: 29.7cm;
-            margin: 0;
             overflow: hidden;
             position: relative;
             box-sizing: border-box;
@@ -16,7 +15,6 @@
         #pages #template3 .page {
             background: white;
             box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
-            margin: 0;
         }
         
 
@@ -223,6 +221,7 @@
     <div id="template3">
 {{!-- PAGE 1 - BEGIN --}}
       <div id="pageone"
+        {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: </span>
       <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="numberOfPages"></span></span>

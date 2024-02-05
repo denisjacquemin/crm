@@ -87,18 +87,18 @@ function setupWorker() {
     }
 }
 
-window.loadPreview = async function(slug) {
-    let data = "";
-    if (slug !== undefined) {
-        try {
-            const response = await fetch('/document/preview/' + slug + '?nl=true');
-            data = await response.text();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-    return data;
-}
+// window.loadPreview = async function(slug) {
+//     let data = "";
+//     if (slug !== undefined) {
+//         try {
+//             const response = await fetch('/document/preview/' + slug + '?nl=true');
+//             data = await response.text();
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     }
+//     return data;
+// }
 
 
 window.updateNewUrl = function(slug) {

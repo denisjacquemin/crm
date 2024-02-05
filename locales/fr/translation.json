@@ -86,7 +86,9 @@
         "send_an_email": "Envoyez-moi des instructions par Email",
         "email_subject": "Réinitialiser votre mot de passe",
         "email_sent": "Un e-mail a été envoyé",
-        "email_invalid": "L’adresse e-mail n’est pas valide",
+        "email_updated": "L'e-mail a été mis à jour",
+        "email_invalid": "L’adresse e-mail '{{email}}' n’est pas valide",
+        "email_taken": "L’adresse e-mail '{{email}}' est déjà utilisée",
         "email_required": "Le champ Email est obligatoire",
         "email_invalid_sub": "Il doit contenir les symboles '@' et '.' , tels que exemple@email.com",
         "user_does_not_exist": "Nous ne trouvons pas d’utilisateur avec cette adresse e-mail",
@@ -105,5 +107,8 @@
     },
     "reset_password_sent": {
         "title": "Nous vous avons envoyé un lien de réinitialisation de mot de passe"
+    },
+    "settings": {
+        "current_invoice_sequence_updated": "The invoice sequence has been updated"
     }
 }

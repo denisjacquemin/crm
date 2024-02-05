@@ -60,7 +60,9 @@
         "send_an_email": "Send me instructions by Email",
         "email_subject": "Reset your password",
         "email_sent": "An email has been sent",
-        "email_invalid": "The Email is invalid",
+        "email_updated": "The Email has been updated",
+        "email_invalid": "The Email '{{email}}' is invalid",
+        "email_taken": "The Email '{{email}}' is already taken",
         "email_required": "Email field is required",
         "email_invalid_sub": "It should contain the '@', '.' symbols and a valid TLD, the part after the last dot (e.g. .com, .org, etc.), such as example@email.com",
         "user_does_not_exist": "We can't find a user with that email address",
@@ -84,6 +86,9 @@
     "documents": {
         "document_not_found": "Document not found",
         "document_not_found_sub": "The document you are looking for does not exist or has been deleted"
+    },
+    "settings": {
+        "current_invoice_sequence_updated": "The invoice sequence has been updated"
     },
     "do_not_translate": {
         "languages": [

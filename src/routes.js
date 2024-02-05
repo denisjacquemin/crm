@@ -6,6 +6,7 @@ const globalController = require('./controllers/globalController');
 const userController = require('./controllers/usersController');
 const dashboardController = require('./controllers/dashboardController');
 const documentsController = require('./controllers/documentsController');
+const companiesController = require('./controllers/companiesController');
 const buyersController = require('./controllers/buyersController');
 
 // render views/test.hbs template
@@ -56,6 +57,7 @@ router.get("/buyers/search:querystring?", auth, buyersController.search);
 
 
 
+router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 
 // router.get("/companies/new", companiesController.newCompany);
 

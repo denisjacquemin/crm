@@ -546,20 +546,17 @@ async function resetPassword(req, res, next) {
 async function resetEmail(req, res, next) {
     // Destructure the email field from the request body
     const email = req.body.value;
-    console.log('email:', email, req.body);
     try {
         // Validate and sanitize email
         const emailSanitized = sanitizeEmail(email);
-        console.log('emailSanitized:', emailSanitized);
-        console.log('validator.isEmail(emailSanitized):', validator.isEmail(emailSanitized));
         if (!emailSanitized || !validator.isEmail(emailSanitized)) {
-            return res.status(400).json({ message: req.i18n.t('forgot_password.email_invalid') });
+            return res.status(400).json({ type: 'error', message: req.i18n.t('forgot_password.email_invalid', { email: emailSanitized }) });
         }
 
         // Check if the email is already taken
         const user = await UserService.getByEmail(emailSanitized);
         if (user) {
-            return res.status(400).json({ message: req.i18n.t('forgot_password.email_taken') });
+            return res.status(400).json({ type: 'error', message: req.i18n.t('forgot_password.email_taken', { email: emailSanitized }) });
         }
 
         // Update the user's email
@@ -731,6 +728,8 @@ async function OAuthGoogleCallback(req, res, next) {
     }
 
     req.session.current_company = await CompanyService.getById(user.companies[0]);
+
+    console.log('req.session', req.session);
 
     res.disableBackButtonRedirect('/');
 }

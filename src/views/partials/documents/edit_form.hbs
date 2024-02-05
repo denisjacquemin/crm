@@ -166,13 +166,18 @@
       </div>
     </div>
 
-    <div class="col-span-full">
-      <h2 class="text-base font-semibold leading-7 text-gray-900">More Details</h2>
-
-      <label for="invoiceNumber" class="block text-sm font-medium leading-6 text-gray-900">Invoice Number</label>
-      <div class="mb-6">
-        <input type="text" x-model="selectedDocument.config.invoice_number" id="invoiceNumber" autocomplete="invoiceNumber" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+    <div class="col-span-full flex flex-col">
+      <label for="invoiceNumber" class="block w-full text-sm font-medium leading-6 text-gray-900">Invoice Number</label>
+      <div class="mb-6 w-full flex items-center justify-center">
+        <input  placeholder="YYYY#00000"
+               type="text" x-model="selectedDocument.config.invoice_number" id="invoiceNumber" 
+               autocomplete="off" 
+               class="block flex-1 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        {{> dots_contextual_menu }}
       </div>
+      
+      
+      <div><a href="#" x-on:click="loadModalContent('/settings', null, 'invoicesequence', 'currentInvoiceSequence')">Update sequence in settings</a></div>
 
       
 

@@ -1,3 +1,7 @@
-<page>
+<page style="display:block; width: calc(100% - 60px); /* Subtract the total width of the viewport by 20px */
+    height: calc(100% - 60px); /* Subtract the total height of the viewport by 20px */
+    margin: 30px; /* Add a margin to prevent the container from touching the edge of the viewport */
+    overflow: auto; /* Add scrolling if the content overflows the container */
+    bacground-color: #123455">
     {{> (concat 'documents/templates/' template_name)}}
 </page>

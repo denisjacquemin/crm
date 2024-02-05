@@ -1,4 +1,5 @@
 const DocumentService = require('../services/documents.service');
+const CompanyService = require('../services/companies.service');
 const { DocumentTypesenseService } = require('../services/documents.typesense.service');
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
@@ -12,7 +13,7 @@ async function index(req, res) {
             'q': '*',
             'filter_by': `company_id:${req.session.current_company._id}`,
             'sort_by': 'createdAt:desc',
-            'include_fields': 'slug, createdAt, updatedAt, config.buyer.name, config.template_name',
+            'include_fields': 'slug, createdAt, updatedAt, config.invoice_number, config.invoice_date, config.amounts.total, config.buyer.name, config.template_name',
             'per_page': 30
         });
 
@@ -77,6 +78,10 @@ async function createNewDocumentInMongoAndTypesense(req) {
         invoice_due_date_value = default_invoice_due_date_terms_type;
     }
 
+    const invoiceSequenceValue = await CompanyService.getNextInvoiceSequenceValue(req.session.current_company._id);
+    console.log('invoiceSequenceValue:', invoiceSequenceValue);
+    req.session.current_company.settings.current_invoice_sequence = invoiceSequenceValue;
+
     return await DocumentService.create({
         company_id: req.session.current_company._id,
         created_by_user_id: req.session.user.id,
@@ -101,7 +106,11 @@ async function createNewDocumentInMongoAndTypesense(req) {
                 vat_number: req.session.current_company.vat_number,
                 phone: req.session.current_company.phone,
                 email: req.session.user.email
-            }      
+            },
+            buyer: {
+                name: 'Choose a buyer',
+            },
+            invoice_number: `${new Date().getFullYear()}#${String(req.session.current_company.settings.current_invoice_sequence).padStart(5, '0')}`,   
         }
     });
 }
@@ -114,7 +123,7 @@ async function edit(req, res) {
             'q': '*',
             'filter_by': `company_id:${req.session.current_company._id}`,
             'sort_by': 'createdAt:desc',
-            'include_fields': 'slug, createdAt, updatedAt, config.buyer.name, config.template_name',
+            'include_fields': 'slug, createdAt, updatedAt, config.invoice_number, config.invoice_date, config.amounts.total, config.buyer.name, config.template_name',
             'per_page': 30
         });
 

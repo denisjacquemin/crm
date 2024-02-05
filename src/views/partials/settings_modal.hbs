@@ -1,0 +1,47 @@
+<div
+        x-show="openSettingsModal"
+        style="display: none"
+        x-on:keydown.escape.prevent.stop="openSettingsModal = false"
+        role="dialog"
+        aria-modal="true"
+        x-id="['modal-title']"
+        :aria-labelledby="$id('modal-title')"
+        class="fixed inset-0 z-50"
+    >
+        <!-- Overlay -->
+        <div x-show="openSettingsModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
+ 
+        <!-- Panel -->
+        <div
+          x-show="openSettingsModal" x-transition
+          x-on:click="openSettingsModal = false"
+          class="relative flex min-h-screen items-center justify-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Settings Dialog"
+      >
+          <div
+              x-on:click.stop
+              x-trap.noscroll.inert="openSettingsModal"
+              class="w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20"
+          >
+            <div class="flex mb-2 sm:mb-4 border-b border-gray-200 p-4 sm:px-0">
+                <div class="flex-1">
+                    <h2 class="text-xl font-semibold leading-6 text-gray-900" id="slide-over-title">Settings</h2>
+                    <p class="mt-2 mb-2 inline sm:block sm:mb-4 text-sm text-gray-700">Update any settings.</p>
+                </div>
+                <div class="relative right-0 top-0 -ml-8 flex mb-2 sm:-ml-10">
+                    <button x-on:click="openSettingsModal = false" type="button" class="z-50 rounded-md bg-gray-200 p-2 text-gray-400 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white w-[40px] h-[40px]" spellcheck="false">
+                            <span class="sr-only">Close panel</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                    </button>
+                </div>
+            </div>
+            <div x-ref="modalContent" class="flex-1 overflow-hidden">
+                
+            </div>
+          </div>
+      </div>
+    </div>

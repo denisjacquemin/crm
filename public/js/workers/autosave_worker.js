@@ -4,6 +4,9 @@ onmessage = function(event) {
     const value = event.data.value;
     const url = event.data.url;
 
+    console.log('in worker:', event.data);
+
+
     fetch(url, {
             method: 'PATCH',
             credentials: 'same-origin',
@@ -22,16 +25,18 @@ onmessage = function(event) {
             } else if (response.status === 404) {
                 return { notfound: true, slug: slug };
             } else if (response.ok) {
-                return response.json();
+                return postMessage(response.json());
             } else {
                 throw new Error('Network response was not ok');
             }
         })
         .then(data => {
+            // set the data.status to http response code
+            data.status = 'success';
             postMessage(data);
         })
         .catch(error => {
             console.error('Error in worker:', error);
-            postMessage({ error: error.message });
+            postMessage({ message: error.message, status: 'error' });
         });
 };

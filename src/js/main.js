@@ -2,6 +2,7 @@
 import Alpine from 'alpinejs'
 import mask from '@alpinejs/mask'
 import focus from '@alpinejs/focus'
+import intersect from '@alpinejs/intersect'
 import dayjs, { locale } from 'dayjs' // import Day.js
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -22,8 +23,15 @@ window.Choices = Choices;
 
 Alpine.plugin(focus)
 Alpine.plugin(mask)
+Alpine.plugin(intersect)
 
 window.Alpine = Alpine
+// make  the Alpine dispatch function available on window object
+window.dispatch = function(name, detail = {}) {
+    window.dispatchEvent(new CustomEvent(name, { detail }))
+}
+
+
 dayjs.locale('es') // set Spanish locale
 dayjs.locale('pt-br') // set Portuguese locale
 dayjs.locale('fr') // set French locale

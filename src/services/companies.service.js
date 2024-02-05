@@ -16,6 +16,15 @@ class CompanyService {
         return await Company.findOneAndUpdate({ _id: id }, data, { new: true });
     }
 
+    static async updateById(id, data) {
+        return await Company.findOneAndUpdate({_id: id}, data, { new: true });
+    }
+
+    static async getNextInvoiceSequenceValue(id) {
+        const company = await Company.findOneAndUpdate({_id: id}, {$inc: { "settings.current_invoice_sequence": 1}}, {new: true});
+        return company.settings.current_invoice_sequence;
+    }
+
     // async findOrCreateById(currentCompanyId, id) {
         
     //     try {

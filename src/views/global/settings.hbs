@@ -1,48 +1,69 @@
-<div x-data="{
+<div class="h-full flex flex-col lg:flex-row" 
+    x-data="{
+        currentMenuItem: 'general',
         accountEmail: {{ stringify accountEmail }},
-    {{!--,
-         init() {
-            
-        } --}}
-    }"
-    x-init="
-        $watch('accountEmail', (newVal, oldVal) => {
-            {{!-- if a setting sis updated, save it to localstorage with the updated date --}}
-            var accountEmailFromLS = {};
-            accountEmailFromLS.value = newVal;
-            accountEmailFromLS.updated_at = new Date();
-            localStorage.setItem('accountEmail', JSON.stringify(accountEmailFromLS));             
-        });
-    ">
+        currentInvoiceSequence: {{ stringify currentInvoiceSequence }},
+        csrfToken: document.querySelector('meta[name=\'csrf-token\']').getAttribute('content'),
+        update:  function(button, url, value) {
+            fetch(url, {
+                method: 'PATCH',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'CSRF-Token': this.csrfToken
+                },
+                body: JSON.stringify({ value: value })
+            })
+            .then(async response => {
+                let data = await response.json();
+                button.errorMsg = data.message;
+                if (response.ok) {
+                    button.messageStyle = 'success';
+                } else {
+                    button.messageStyle = 'error';
+                }
+            })
+            .catch(error => {
+                button.errorMsg = 'Error: ' + error.message + '' + JSON.stringify(error);
+            });
+        }
+    }">
 
-    <div class="mx-auto max-w-7xl lg:flex lg:gap-x-16 lg:px-8">
-    <aside class="flex overflow-x-auto border-b border-gray-900/5 lg:block lg:w-48 lg:flex-none lg:border-0 lg:py-4 overflow-y-auto max-h-[80vh]">
+    {{!-- <div class="mx-auto max-w-7xl lg:flex lg:gap-x-16 lg:px-8"> --}}
+    <aside class="flex border-b border-gray-900/5 lg:block lg:w-48 lg:flex-none lg:border-0 py-2 lg:py-4 mb-4 lg:mb-0 overflow-y-auto">
         <nav class="flex-none px-4 sm:px-6 lg:px-0">
         <ul role="list" class="flex gap-x-3 gap-y-1 whitespace-nowrap lg:flex-col">
-            <li>
+            <li id="generalMenu">
             <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-            <a href="#" class="bg-gray-50 text-indigo-600 group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold">
-                <svg class="h-6 w-6 shrink-0 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                General
-            </a>
+                <span @click.prevent="currentMenuItem = 'general'; document.getElementById('general').scrollIntoView({ behavior: 'smooth' })" 
+                class="cursor-pointer group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold"
+                :class="{'bg-gray-50 text-indigo-600': currentMenuItem === 'general', 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50': currentMenuItem !== 'general'}">
+                    <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    General
+                </span>
             </li>
-            <li>
-            <a href="#account" class="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold">
-                <svg class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
-                </svg>
-                Account
-            </a>
+            <li id="accountMenu">
+                <span @click.prevent="currentMenuItem = 'account'; document.getElementById('account').scrollIntoView({ behavior: 'smooth' })" 
+                    :class="{'bg-gray-50 text-indigo-600': currentMenuItem === 'account', 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50': currentMenuItem !== 'account'}"
+                    class="cursor-pointer group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold">
+                    <svg class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
+                    </svg>
+                    Account
+                </span>
             </li>
-            <li>
-            <a href="#" class="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold">
-                <svg class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                </svg>
-                Notifications
-            </a>
+            <li id="invoicesMenu">
+                <span @click.prevent="currentMenuItem = 'invoices'; document.getElementById('invoices').scrollIntoView({ behavior: 'smooth' })"
+                    class="cursor-pointer group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold"
+                    :class="{'bg-gray-50 text-indigo-600': currentMenuItem === 'invoices', 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50': currentMenuItem !== 'invoices'}">
+                    <svg class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                    </svg>
+                    Invoices
+                </span>
             </li>
             <li>
             <a href="#" class="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold">
@@ -72,43 +93,127 @@
         </nav>
     </aside>
 
-    <main class="px-4 py-4 sm:px-6 lg:flex-auto overflow-y-auto max-h-[80vh]">
+    <main class="flex-1 sm:px-6 lg:flex-auto overflow-y-auto max-h-[80vh] px-4">
         <div class="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
-        <div>
-            <h2 class="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-            <p class="mt-1 text-sm leading-6 text-gray-500">This information will be displayed publicly so be careful what you share.</p>
+        
 
-            <dl class="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-            <div class="pt-6 sm:flex">
-                <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Full name</dt>
-                <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                <div class="text-gray-900">Tom Cook</div>
-                <button type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">Update</button>
-                </dd>
+        <div id="general" x-intersect.full="currentMenuItem = 'general'; document.getElementById('generalMenu').scrollIntoView({ behavior: 'smooth' })">
+            <div class="border-b border-gray-300 pb-4">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">General</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-500">Any parameters related to general.</p>
             </div>
-            <div class="pt-6 sm:flex">
-                <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Email address</dt>
-                <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                <div class="text-gray-900">tom.cook@example.com</div>
-                <button type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">Update</button>
-                </dd>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Date format</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="currentInvoiceSequence" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
             </div>
-            <div class="pt-6 sm:flex">
-                <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Title</dt>
-                <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                <div class="text-gray-900">Human Resources Manager</div>
-                <button type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">Update</button>
-                </dd>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Current sequence number</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="currentInvoiceSequence" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
             </div>
-            </dl>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Current sequence number</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="currentInvoiceSequence" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
+            </div>
         </div>
 
-        <div id="account">
+
+        <div id="account" x-intersect.full="currentMenuItem = 'account'; document.getElementById('accountMenu').scrollIntoView({ behavior: 'smooth' })">
+            <div class="border-b border-gray-300 pb-4">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">Account</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-500">Update your email and password associated with your account.</p>
+            </div>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Email Address</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="accountEmail" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/user/resetemail', accountEmail)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
+            </div>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap">
+                <label class="w-full sm:w-44 text-sm block font-medium text-gray-900">Mot de passe</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <p class="text-sm text-gray-500">To update your password, please logout and use the forgot my password link</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="invoices" x-intersect.full="currentMenuItem = 'invoices'; document.getElementById('invoicesMenu').scrollIntoView({ behavior: 'smooth' })">
+            <div class="border-b border-gray-300 pb-4">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">Invoices</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-500">Any parameters related to invoices.</p>
+            </div>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Current sequence number</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="currentInvoiceSequence" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
+            </div>
+        </div>
+
+
+
+        {{!-- <div id="invoices" class="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Invoices</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-500">Any parameters related to invoices.</p>
+
+            <dl id="invoicesequence" class="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
+                <div x-data="{ buttonText: 'Update', errorMsg: '', messageStyle: ''}" class="pt-6 sm:flex">
+                    <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Current sequence number</dt>
+                    <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
+                        <div class="text-gray-900"><input x-model="currentInvoiceSequence" id="currentInvoiceSequence" type="text" class="w-full block mr-4 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" /></div>
+                        <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence, buttonText)" type="button" class="font-semibold text-indigo-600 ">Update</button>
+                    </dd>
+                    <div x-text="errorMsg" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
+                </div>
+                <div class="pt-6 sm:flex">
+                    <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Mot de passe</dt>
+                    <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
+                        <p>To update your password, please logout and use the forgot my password link</p>
+                    </dd>
+                </div>
+            </dl>
+        </div> --}}
+
+
+        <div >
             <h2 class="text-base font-semibold leading-7 text-gray-900">Accounts</h2>
             <p class="mt-1 text-sm leading-6 text-gray-500">Update your email address associated with your account.</p>
+            
+            <dl class="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
+            <div class="pt-6 sm:flex"
+                x-data="{ errorMsg: ''}">
+                <dt class="font-medium text-gray-900 sm:w-44 sm:flex-none sm:pr-6">Email address</dt>
+                <dd class="mt-1 flex sm:mt-0 sm:flex-auto">
+                    <div class="text-gray-900 mr-auto w-3/4"><input x-model="accountEmail" type="text" class="w-full block mr-4 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" value="Human Resources Manager"/></div>
+                    <div class="text-right my-auto w-1/4"><button  x-on:click="update($data, '/user/resetemail', accountEmail)" type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">Update</button></div>
+                    
+                </dd>
+            </div>
 
             <ul role="list" class="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
             <li class="flex justify-between gap-x-6 py-6">
+                
+                
                 <div class="font-medium text-gray-900">Email address</div>
                 <input type="text"  autocomplete="off"
                 x-model="accountEmail"
@@ -175,5 +280,5 @@
         </div>
         </div>
     </main>
-    </div>
+    {{!-- </div> --}}
 </div>
