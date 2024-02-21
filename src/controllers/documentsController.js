@@ -18,11 +18,14 @@ async function index(req, res) {
         });
 
         const documents = result.hits.map(hit => hit.document);
+        const selectedDocument = await DocumentService.getBySlugAndCompanyId(documents[0].slug, req.session.current_company._id);
+
 
         res.render('documents/index', {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: documents.length > 0 ? 0 : -1,
+            selectedDocument: selectedDocument
         });
     } catch (err) {
         console.error(err);
@@ -146,6 +149,7 @@ async function edit(req, res) {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: documents.length > 0 ? 0 : -1,
+            selectedDocument: selectedDocument
         });
     } catch (err) {
         console.error(err);

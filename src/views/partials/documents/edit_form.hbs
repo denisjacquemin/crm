@@ -153,7 +153,7 @@
     <div class="col-span-full">
       <label for="seller-name" class="block text-sm font-medium leading-6 text-gray-900">Seller</label>
       <div class="mb-6">
-        <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller'" x-model="selectedDocument.config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller';" x-model="selectedDocument.config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         <p x-text="`${selectedDocument.config.seller.address}, ${selectedDocument.config.seller.city} ${selectedDocument.config.seller.country}`" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
         <p x-text="selectedDocument.config.seller.vat_number" class="text-sm pl-3 mt-1 leading-4 text-gray-600"></p>
       </div>
@@ -174,14 +174,7 @@
                autocomplete="off" 
                class="block flex-1 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         {{> dots_contextual_menu }}
-      </div>
-      
-      
-      <div><a href="#" x-on:click="loadModalContent('/settings', null, 'invoicesequence', 'currentInvoiceSequence')">Update sequence in settings</a></div>
-
-      
-
-      
+      </div>     
     </div>
 
     <div class="col-span-full">
@@ -199,11 +192,11 @@
 
     
     <div class="col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
-          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total Vat excl</div>
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total Base Amount</div>
           <div class="col-span-2 sm:col-span-1 text-right" x-text="amountssubtotavatexcl"></div>
-          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Vat</div>
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total Vat Amount</div>
           <div class="col-span-2 sm:col-span-1 text-right" x-text="amountvattotal"></div>
-          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total vat incl</div>
+          <div class="col-start-1 col-span-2 sm:col-start-4 sm:col-span-1 text-right">Total Amount</div>
           <div class="col-span-2 sm:col-span-1 text-right font-normal" x-text="amountssubtotavatincl"></div>
     </div>
     

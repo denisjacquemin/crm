@@ -1,7 +1,53 @@
-<page style="display:block; width: calc(100% - 60px); /* Subtract the total width of the viewport by 20px */
+<page style=" width: calc(100% - 60px); /* Subtract the total width of the viewport by 20px */
     height: calc(100% - 60px); /* Subtract the total height of the viewport by 20px */
     margin: 30px; /* Add a margin to prevent the container from touching the edge of the viewport */
     overflow: auto; /* Add scrolling if the content overflows the container */
-    bacground-color: #123455">
+    bacground-color: #123455"
+    class="flex-1 flex"
+    @tabpreviewshown.window="initPinchZoom()"
+    x-data="{
+        scale: 1.0,
+        initPinchZoom() {
+            console.log('initPinchZoom');
+                    
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                new PinchZoom(el);
+            });
+        },
+        fitToScreen() {
+            console.log('fitToScreen');
+            setTimeout(() => {
+                // wait 1 millisecond before executing the code
+                const pageContainer = this.$refs.pageContainer;
+                if (!pageContainer.querySelector('#pageone')) {
+                    return;
+                } 
+                const page = pageContainer.querySelector('#pageone');
+                const pageWidth = page.offsetWidth;
+                console.log('pageWidth', pageWidth);
+                const pageContainerWidth = pageContainer.offsetWidth - 60 ;
+                
+                console.log('pageContainerWidth', pageContainerWidth);
+                this.scale = Math.min(Math.max((pageContainerWidth  / pageWidth), 0.2), 4);
+                if (this.scale < 1) {
+                    this.scale = Math.min(Math.max((pageContainerWidth / pageWidth), 0.2), 4);
+                    console.log('scale', this.scale);
+                    this.updateScale();
+                }
+            }, 1);
+        },
+        updateScale() {
+            console.log('this.sacale', this.scale);
+            const pages = document.querySelectorAll('.page');
+            console.log('pages', pages);
+            pages.forEach(page => {
+                page.style.transform = `scale(${this.scale})`;
+            });
+        }
+    }">
+    {{!-- <div class="w-[500px] h-[500px] bg-green-300">
+        <div id="pageone" class="page bg-red-500 w-[400px] h-[400px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nisi nam quasi, accusamus libero quis quaerat itaque inventore voluptates ducimus ratione dolore repellat sint debitis quae quod dolor sit ad.</div>
+    </div> --}}
     {{> (concat 'documents/templates/' template_name)}}
 </page>

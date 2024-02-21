@@ -1,7 +1,8 @@
 <div x-data="{
         // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
         numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1
-        }">
+        }"
+    class="flex-1 flex">
     <style>
         #template3 .page {
             width: 21cm;
@@ -14,7 +15,8 @@
         
         #pages #template3 .page {
             background: white;
-            box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+            {{!-- box-shadow: 0 .5mm 2mm rgba(0,0,0,.3); --}}
+            border: 1px solid #d3d3d3;
         }
         
 
@@ -218,7 +220,8 @@
             background-color: #777;
         } --}}
      </style>
-    <div id="template3">
+    <div id="template3" class="flex-1"
+>
 {{!-- PAGE 1 - BEGIN --}}
       <div id="pageone"
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}

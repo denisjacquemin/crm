@@ -6,6 +6,8 @@ import intersect from '@alpinejs/intersect'
 import dayjs, { locale } from 'dayjs' // import Day.js
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import PinchZoom from 'pinch-zoom-js';
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -31,6 +33,7 @@ window.dispatch = function(name, detail = {}) {
     window.dispatchEvent(new CustomEvent(name, { detail }))
 }
 
+window.PinchZoom = PinchZoom;
 
 dayjs.locale('es') // set Spanish locale
 dayjs.locale('pt-br') // set Portuguese locale

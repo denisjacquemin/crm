@@ -1,8 +1,9 @@
 <div x-data="{
+            openSlide: false, 
             slideContentPartialName: null, 
             documents: {{ stringify documents }},
             selectedDocumentIndex: {{ stringify selectedDocumentIndex }},
-            selectedDocument: null,
+            selectedDocument: {{ stringify selectedDocument }},
             newDocumentButton: async function() {
                 try {
                     const csrfToken = document.querySelector('meta[name=csrf-token]').getAttribute('content');
@@ -18,7 +19,6 @@
                     this.documents.unshift(newDocument);
                     this.selectedDocumentIndex = 0;
                     this.selectedDocument = newDocument;
-                    this.currentColumn = 2.1;
                     this.updateNewUrl(newDocument.slug);
                     this.showCol2();
                 } catch (error) { 
@@ -26,16 +26,14 @@
                 }
             },
             showCol2: function() {
-                this.$refs.col1.classList.remove('translate-x-0');
-                this.$refs.col1.classList.add('-translate-x-full');
-                this.$refs.col2.classList.remove('translate-x-0');
-                this.$refs.col2.classList.add('-translate-x-full');
+                console.log('showCol2');
+                this.$refs.col1.style.transform = 'translateX(-100%)'; 
+                this.$refs.col2.style.transform = 'translateX(-100%)';
             },
             showCol1: function() {
-                this.$refs.col1.classList.remove('-translate-x-full');
-                this.$refs.col1.classList.add('translate-x-0');
-                this.$refs.col2.classList.remove('-translate-x-full');
-                this.$refs.col2.classList.add('translate-x-0');
+                console.log('showCol1');
+                this.$refs.col1.style.transform = 'translateX(0)';
+                this.$refs.col2.style.transform = 'translateX(0)';
             },
             toggleTab: function(tabRef) {
                 // Hide all tabs and remove highlight
@@ -76,11 +74,20 @@
             } else {
                 showCol1();
             }
-        }
-     );"
+        });
+        if (selectedDocumentIndex >= 0) { {{!-- Only if selectedDocumentIndex is not null --}}
+          (async () => {
+            {{!-- const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`); Get the document from MongoDB --}}
+            {{!-- const data = await response.json(); --}}
+            {{!-- documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  merge the document in documents with the on from MongoDB  --}}
+            updateNewUrl(selectedDocument.slug); {{!-- update the url with to document/edit + slug --}}
+            {{!-- selectedDocument =  documents[selectedDocumentIndex]; set the selectedDocument --}}
+            {{!-- documents = updateDocumentsWithLS(documents); override documents with not already saved updates from local storage, if any --}}
+          })();
+        }"
      class="flex-1 overflow-hidden 2xl:container 2xl:m-auto">
-    <div class="w-[200%] sm:w-full flex flex-nowrap h-full">
-        <div x-ref="col1" class="w-full sm:max-w-[300px] md:max-w-[360px] flex flex-col overflow-y-hidden transition-transform duration-500 ease-in-out sm:transform sm:translate-x-0">
+    <div class="w-[200%] overflow-hidden sm:w-full flex flex-nowrap h-full">
+        <div x-ref="col1" class="w-[100%] sm:max-w-[300px] md:max-w-[360px] flex flex-col overflow-y-hidden transition-transform duration-500 ease-in-out sm:transform sm:translate-x-0">
             <div x-ref="actionBar" class="flex items-center justify-center">
                 <button type="button" id="newDocumentButton"
                     class="mx-3 sm:mx-2 inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -91,7 +98,7 @@
                     New Invoice / Quote / ...
                 </button>
             </div>
-            <div class="pl-3 sm:mx-2 flex items-center shadow-md" 
+            <div class="pl-3 sm:px-2 flex items-center shadow-md " 
                     x-data="{
                         searchDocumentTerm: '',
                         sortBy: 'createdAt:asc',
@@ -182,15 +189,14 @@
             <div x-ref="documentsList" class="flex-1 overflow-y-scroll"
             x-data="{ 
                     editDocument: async function(index) {
-                    try {
-                        selectedDocumentIndex = index;
-                        const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`);
-                        const data = await response.json()
-                        documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
-                        updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
-                        selectedDocument = documents[selectedDocumentIndex];
-                        showCol2();
-                    } catch (error) { console.error('Error editing document', error); }
+                        try {
+                            selectedDocumentIndex = index;
+                            const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`);
+                            const data = await response.json()
+                            documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
+                            updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
+                            selectedDocument = documents[selectedDocumentIndex];
+                        } catch (error) { console.error('Error editing document', error); }
                     }
                 }">
                 <template x-if="documents.length === 0">
@@ -242,21 +248,21 @@
                
             </div>
         </div>
-        <div x-ref="col2" class="w-full sm:border-l sm:border-gray-200 md:flex-1 flex flex-col overflow-hidden transition-transform duration-500 ease-in-out sm:transform sm:translate-x-0">
-            <div x-ref="col2Tabs" class="px-4 2xl:hidden">
-                <div class="border-b border-gray-200">
+        <div x-ref="col2" class="w-[100%] sm:border-l sm:border-gray-200 md:flex-1 flex flex-col overflow-hidden transition-transform duration-500 ease-in-out sm:transform sm:translate-x-0">
+            <div x-ref="col2Tabs" class="z-10 px-4 shadow-md 2xl:hidden">
+                <div class="">
                     <nav class="flex" aria-label="Tabs">
-                    <!-- Current: "bg-gray-100 text-gray-700", Default: "text-gray-500 hover:text-gray-700" -->
-                    <div x-ref="tabForm" @click="toggleTab('tabForm')"
-                        class="cursor-pointer text-indigo-700 bg-indigo-100 m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Form</div>
-                    <div class="border border-gray-200 my-1"></div>
-                    <div x-ref="tabPreview" @click="toggleTab('tabPreview');$dispatch('tabpreviewshown');"
-                        class="cursor-pointer m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Preview</div>
+                        <!-- Current: "bg-gray-100 text-gray-700", Default: "text-gray-500 hover:text-gray-700" -->
+                        <div x-ref="tabForm" @click="toggleTab('tabForm')"
+                            class="cursor-pointer text-indigo-700 bg-indigo-100 m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Form</div>
+                        <div class="border border-gray-200 my-1"></div>
+                        <div x-ref="tabPreview" @click="toggleTab('tabPreview');$dispatch('tabpreviewshown');"
+                            class="cursor-pointer m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Preview</div>
                     </nav>
                 </div>
             </div>
             <div class="flex-1 flex overflow-hidden">
-                <div id="col21" class="flex-1 w-full overflow-y-scroll p-4 2xl:w-auto 2xl:min-w-[350px] 2xl:max-w-[350px]">
+                <div id="col21" class="flex-1 w-full overflow-y-scroll p-4 2xl:block 2xl:w-auto 2xl:min-w-[350px] 2xl:max-w-[350px] 3xl:min-w-[450px] 3xl:max-w-[450px]">
                     <template x-if="selectedDocument">
                         {{> documents/edit_form }}
                     </template>
@@ -265,56 +271,34 @@
                     </template>
                 </div>
                 <div id="col22" 
-                     class="hidden w-full 2xl:flex-1 2xl:block 2xl:w-auto"
-                     @tabpreviewshown.window="fitToScreen()"
+                     style="background-color: #f9fbfd"
+                     class="hidden w-full flex 2xl:flex-1 2xl:block 2xl:w-auto border-l border-gray-200"
                      x-init="
+                            loadPreview(selectedDocument.slug).then(data => {
+                                previewData = data;
+                            });
                           $watch('selectedDocument.slug', () => { 
+                            console.log('coll22 init', selectedDocument.slug)
                             loadPreview(selectedDocument.slug).then(data => {
                                 previewData = data;
                             });
                           });
                      "
                      x-data="{
-                        scale: 1,
                         template_name: 'documents`templates' + selectedDocument?.config?.template_name || 'template1',
                         onShown() { 
+                            console.log('onShown');
                             this.fitToScreen();
                         },
                         zoomOut() {
+                            console.log('zoomOut');
                             this.scale = Math.max(this.scale - 0.1, 0.3);
                             this.updateScale();
                         },
                         zoomIn() {
+                            console.log('zoomIn');
                             this.scale = Math.min(this.scale + 0.1, 0.7);
                             this.updateScale();
-                        },
-                        fitToScreen() {
-                            setTimeout(() => {
-                                // wait 1 millisecond before executing the code
-                                const pageContainer = this.$refs.pageContainer;
-                                if (!pageContainer.querySelector('#pageone')) {
-                                    return;
-                                } 
-                                const page = pageContainer.querySelector('#pageone');
-                                const pageWidth = page.offsetWidth;
-                                console.log('pageWidth', pageWidth);
-                                const pageContainerWidth = pageContainer.offsetWidth - 60 ;
-                                
-                                console.log('pageContainerWidth', pageContainerWidth);
-                                this.scale = Math.min(Math.max((pageContainerWidth  / pageWidth), 0.2), 4);
-                                if (this.scale < 1) {
-                                    this.scale = Math.min(Math.max((pageContainerWidth / pageWidth), 0.2), 4);
-                                    console.log('scale', this.scale);
-                                    this.updateScale();
-                                }
-                            }, 1);
-                        },
-                        updateScale() {
-                            const pages = document.querySelectorAll('.page');
-                            console.log('pages', pages);
-                            pages.forEach(page => {
-                                page.style.transform = `scale(${this.scale})`;
-                            });
                         },
                         previewData: '',
                         loadPreview: async function(slug) {
@@ -338,16 +322,18 @@
                         <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"
                         href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
                     </div>
-                    <div x-ref="pageContainer" class="mr-2" id="pages">
-                        <div id="preview" x-html="previewData"></div>
-                            <template x-if="! selectedDocument">
-                                <p>Nothing to preview, Please select a document</p>
-                            </template>
-                        </div>
+                    <div x-ref="pageContainer" class="mr-2 flex-1 flex" id="pages">
+                        <template x-if="selectedDocument">
+                            <div id="preview" x-html="previewData" class="flex-1 flex" ></div>
+                        </template>
+                        <template x-if="! selectedDocument">
+                            <p>Nothing to preview, Please select a document</p>
+                        </template>
                     </div>
                 </div>
             </div>
             
         </div>
-    </div>  
+    </div> 
+    {{> documents/slide }}
 </div>
