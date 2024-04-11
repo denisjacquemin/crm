@@ -1,13 +1,11 @@
-onmessage = function(event) {
+onmessage = async function(event) {
 
     const csrfToken = event.data.csrfToken;
     const value = event.data.value;
-    const url = event.data.url;
+    const url = '/' + event.data.targetedObject + '/' + value.slug;
 
-    console.log('in worker:', event.data);
-
-
-    fetch(url, {
+    try {
+        const response = await fetch(url, {
             method: 'PATCH',
             credentials: 'same-origin',
             headers: {
@@ -16,27 +14,39 @@ onmessage = function(event) {
                 'CSRF-Token': csrfToken
             },
             body: JSON.stringify({ value: value })
-        })
-        .then(response => {
-            if (response.status === 401) {
-                return { unauthorized: true };
-            } else if (response.status === 400) {
-                return response.json();
-            } else if (response.status === 404) {
-                return { notfound: true, slug: slug };
-            } else if (response.ok) {
-                return postMessage(response.json());
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-            // set the data.status to http response code
-            data.status = 'success';
-            postMessage(data);
-        })
-        .catch(error => {
-            console.error('Error in worker:', error);
-            postMessage({ message: error.message, status: 'error' });
         });
+
+        let result;
+
+        switch (response.status) {
+            case 401:
+                console.log('Autosave worker Unauthorized')
+                result = { unauthorized: true };
+                break;
+            case 400:
+                console.log('Autosave worker 400')
+                result = await response.json();
+                break;
+            case 404:
+                console.log('Autosave worker 404')
+                result = { notfound: true };
+                break;
+            default:
+                console.log('Autosave worker default')
+                if (response.ok) {
+                    console.log('Autosave worker response ok')
+                    result = await response.json();
+                } else {
+                    console.log('Autosave worker response not ok')
+                    throw new Error('Network response was not ok');
+                }
+        }
+        result.targetedObject = event.data.targetedObject;
+        result.slug = value.slug;
+        console.log('Autosave worker after switch', result);
+
+        postMessage(result);
+    } catch (error) {
+        console.error('Error in worker:', error);
+    }
 };

@@ -1,77 +1,65 @@
-<div class="min-h-full overflow-hidden">
-    <div>
-      <div class="px-3 mb-5">
-            <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
-                <div class="">
-                    <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">Edit Seller</h2>
-                    <p class="mt-2 text-sm text-gray-700">Update Seller's details.</p>
-                </div>
-            </div>
-            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
-                <div class="col-span-full">
-                  <label for="seller-name" class="block text-sm font-medium leading-6 text-gray-900">Seller Name</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.name" autocomplete="off"
-                            placeholder="This is my company name" id="seller-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-address" class="block text-sm font-medium leading-6 text-gray-900">Seller Address</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.address" autocomplete="off"
-                            placeholder="Address street and number" id="seller-address"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-zip" class="block text-sm font-medium leading-6 text-gray-900">Seller Zip</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.zip" autocomplete="off"
-                            placeholder="Zip number" id="seller-zip"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-city" class="block text-sm font-medium leading-6 text-gray-900">Seller City</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.city" autocomplete="off"
-                            placeholder="Zip number" id="seller-city"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-phone" class="block text-sm font-medium leading-6 text-gray-900">Seller Phone</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.phone" autocomplete="off"
-                            placeholder="Phone number" id="seller-phone"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-email" class="block text-sm font-medium leading-6 text-gray-900">Seller Email</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.email" autocomplete="off"
-                            placeholder="seller-email" id="seller-email"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="seller-vat" class="block text-sm font-medium leading-6 text-gray-900">Seller VAT Number</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.seller.vat_number" autocomplete="off"
-                            placeholder="VAT number" id="seller-vat"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full border-t border-gray-200 px-2 pt-5 mt-4 sm:px-3">
-                  <button type="button"
-                    class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    @click.prevent="openSlide = false">
-                    Done
-                  </button>
-                </div>
-            </div>
-      </div>
-    </div>  
+<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
+    <div class="col-span-full">
+      <label for="seller-name" class="block text-sm font-medium leading-6 text-gray-900">Seller Name</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.name" autocomplete="off"
+                placeholder="Seller's name" id="seller-name"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-address" class="block text-sm font-medium leading-6 text-gray-900">Seller Address</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.address" autocomplete="off"
+                placeholder="Street and number" id="seller-address"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-zip" class="block text-sm font-medium leading-6 text-gray-900">Seller Zip</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.zip" autocomplete="off"
+                placeholder="Zip number" id="seller-zip"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-city" class="block text-sm font-medium leading-6 text-gray-900">Seller City</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.city" autocomplete="off"
+                placeholder="Zip number" id="seller-city"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-phone" class="block text-sm font-medium leading-6 text-gray-900">Seller Phone</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.phone" autocomplete="off"
+                placeholder="Phone number" id="seller-phone"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-email" class="block text-sm font-medium leading-6 text-gray-900">Seller Email</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.email" autocomplete="off"
+                placeholder="seller-email" id="seller-email"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="seller-vat" class="block text-sm font-medium leading-6 text-gray-900">Seller VAT Number</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.seller.vat_number" autocomplete="off"
+                placeholder="VAT number" id="seller-vat"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full border-t border-gray-200 px-2 pt-5 mt-4 sm:px-3">
+      <button type="button"
+        class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        @click.prevent="openSlide = false">
+        Done
+      </button>
+    </div>
 </div>

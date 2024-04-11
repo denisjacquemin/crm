@@ -914,9 +914,6 @@ select {
 .-ml-0\.5 {
   margin-left: -0.125rem;
 }
-.-ml-1 {
-  margin-left: -0.25rem;
-}
 .-ml-2 {
   margin-left: -0.5rem;
 }
@@ -952,9 +949,6 @@ select {
 }
 .ml-5 {
   margin-left: 1.25rem;
-}
-.ml-auto {
-  margin-left: auto;
 }
 .mr-2 {
   margin-right: 0.5rem;
@@ -1103,9 +1097,6 @@ select {
 .w-1\/4 {
   width: 25%;
 }
-.w-10 {
-  width: 2.5rem;
-}
 .w-12 {
   width: 3rem;
 }
@@ -1124,9 +1115,6 @@ select {
 .w-4 {
   width: 1rem;
 }
-.w-48 {
-  width: 12rem;
-}
 .w-5 {
   width: 1.25rem;
 }
@@ -1135,6 +1123,9 @@ select {
 }
 .w-6 {
   width: 1.5rem;
+}
+.w-60 {
+  width: 15rem;
 }
 .w-8 {
   width: 2rem;
@@ -1156,6 +1147,9 @@ select {
 }
 .w-\[40px\] {
   width: 40px;
+}
+.w-\[50\%\] {
+  width: 50%;
 }
 .w-\[500px\] {
   width: 500px;
@@ -1380,6 +1374,12 @@ select {
 .gap-y-2 {
   row-gap: 0.5rem;
 }
+.gap-y-4 {
+  row-gap: 1rem;
+}
+.gap-y-5 {
+  row-gap: 1.25rem;
+}
 .gap-y-8 {
   row-gap: 2rem;
 }
@@ -1544,10 +1544,6 @@ select {
   --tw-border-opacity: 1;
   border-color: rgb(156 163 175 / var(--tw-border-opacity));
 }
-.border-gray-700 {
-  --tw-border-opacity: 1;
-  border-color: rgb(55 65 81 / var(--tw-border-opacity));
-}
 .border-gray-900\/10 {
   border-color: rgb(17 24 39 / 0.1);
 }
@@ -1622,10 +1618,6 @@ select {
   --tw-bg-opacity: 1;
   background-color: rgb(238 242 255 / var(--tw-bg-opacity));
 }
-.bg-indigo-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
-}
 .bg-indigo-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(79 70 229 / var(--tw-bg-opacity));
@@ -1686,6 +1678,9 @@ select {
 .p-1 {
   padding: 0.25rem;
 }
+.p-10 {
+  padding: 2.5rem;
+}
 .p-12 {
   padding: 3rem;
 }
@@ -1697,6 +1692,9 @@ select {
 }
 .p-4 {
   padding: 1rem;
+}
+.p-5 {
+  padding: 1.25rem;
 }
 .p-6 {
   padding: 1.5rem;
@@ -1723,10 +1721,6 @@ select {
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
-}
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
 }
 .px-6 {
   padding-left: 1.5rem;
@@ -1800,9 +1794,6 @@ select {
 }
 .pb-2 {
   padding-bottom: 0.5rem;
-}
-.pb-3 {
-  padding-bottom: 0.75rem;
 }
 .pb-4 {
   padding-bottom: 1rem;
@@ -2070,6 +2061,10 @@ select {
 .text-yellow-400 {
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity));
+}
+.underline {
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
 }
 .placeholder-gray-400::-moz-placeholder {
   --tw-placeholder-opacity: 1;
@@ -2654,10 +2649,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
-.hover\:bg-gray-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
-}
 .hover\:bg-indigo-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(224 231 255 / var(--tw-bg-opacity));
@@ -2666,10 +2657,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
   --tw-bg-opacity: 1;
   background-color: rgb(99 102 241 / var(--tw-bg-opacity));
 }
-.hover\:bg-indigo-600:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
-}
 .hover\:bg-indigo-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(67 56 202 / var(--tw-bg-opacity));
@@ -2677,6 +2664,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 .hover\:text-gray-100:hover {
   --tw-text-opacity: 1;
   color: rgb(243 244 246 / var(--tw-text-opacity));
+}
+.hover\:text-gray-400:hover {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 .hover\:text-gray-500:hover {
   --tw-text-opacity: 1;
@@ -2706,9 +2697,9 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
   --tw-text-opacity: 1;
   color: rgb(79 70 229 / var(--tw-text-opacity));
 }
-.hover\:text-white:hover {
+.hover\:text-red-400:hover {
   --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+  color: rgb(248 113 113 / var(--tw-text-opacity));
 }
 .hover\:underline:hover {
   -webkit-text-decoration-line: underline;
@@ -2776,9 +2767,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 .focus\:ring-offset-gray-100:focus {
   --tw-ring-offset-color: #f3f4f6;
 }
-.focus\:ring-offset-gray-800:focus {
-  --tw-ring-offset-color: #1f2937;
-}
 .focus-visible\:outline:focus-visible {
   outline-style: solid;
 }
@@ -2827,6 +2815,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 
   .sm\:col-span-3 {
     grid-column: span 3 / span 3;
+  }
+
+  .sm\:col-span-6 {
+    grid-column: span 6 / span 6;
   }
 
   .sm\:col-start-4 {
@@ -2940,6 +2932,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     max-width: 300px;
   }
 
+  .sm\:max-w-\[330px\] {
+    max-width: 330px;
+  }
+
   .sm\:max-w-md {
     max-width: 28rem;
   }
@@ -2995,6 +2991,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   }
 
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .sm\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -3029,6 +3029,11 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 
   .sm\:justify-center {
     justify-content: center;
+  }
+
+  .sm\:gap-x-5 {
+    -moz-column-gap: 1.25rem;
+         column-gap: 1.25rem;
   }
 
   .sm\:space-y-20 > :not([hidden]) ~ :not([hidden]) {
@@ -3123,6 +3128,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     padding-left: 1rem;
   }
 
+  .sm\:pr-2 {
+    padding-right: 0.5rem;
+  }
+
   .sm\:pr-3 {
     padding-right: 0.75rem;
   }
@@ -3152,6 +3161,12 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 
   .sm\:leading-6 {
     line-height: 1.5rem;
+  }
+
+  .sm\:shadow-none {
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 
   .sm\:duration-700 {
@@ -3197,14 +3212,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     margin: auto;
   }
 
-  .md\:ml-4 {
-    margin-left: 1rem;
-  }
-
-  .md\:ml-6 {
-    margin-left: 1.5rem;
-  }
-
   .md\:mt-0 {
     margin-top: 0px;
   }
@@ -3241,10 +3248,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     flex: 1 1 0%;
   }
 
-  .md\:flex-shrink-0 {
-    flex-shrink: 0;
-  }
-
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3267,12 +3270,6 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 
   .md\:gap-8 {
     gap: 2rem;
-  }
-
-  .md\:space-x-4 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 0;
-    margin-right: calc(1rem * var(--tw-space-x-reverse));
-    margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
   .md\:text-lg {
@@ -3322,6 +3319,10 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 
   .lg\:w-80 {
     width: 20rem;
+  }
+
+  .lg\:max-w-\[380px\] {
+    max-width: 380px;
   }
 
   .lg\:max-w-none {

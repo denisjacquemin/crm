@@ -31,22 +31,37 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
     }
 
     return fetch(url, options)
-        .then(response => {
+        .then(async response => {
             if (response.status === 401) {
                 history.replaceState(null, '', window.location.href);
-                console.log('Reloading page');
                 location.reload();
             } else if (response.status !== 200) {
-                console.error('Looks like there was a problem. Status Code: ' + response.status + ' ', response);
-                return;
+                const text = JSON.parse(await response.text());
+                if (text.notification) {
+                    dispatch('notify', { content: text.notification.message, type: text.notification.type? text.notification.type : 'info'})
+                }
+                throw new Error('Looks like there was a problem. Status Code: ' + response.status);
             } else {
                 return response.text();
             }
         })
         .catch(error => {
             console.error('Error fetching URL', error);
+            throw error;
         });
 };
+
+// setInterval(function() {
+//     console.log('checking if still authenticated');
+//     fetchUrl('/isStillAuthenticated', 'GET');
+// }, 6000);
+
+window.formatAddress = function(address, zip, city, country) {
+    var formattedAddress = address && (zip || city || country) ? address + ',' : address || '';    var formattedZip = zip || '';
+    var formattedCity = city || '';
+    var formattedCountry = country || '';
+    return `${formattedAddress} ${formattedZip} ${formattedCity} ${formattedCountry}`;
+}
 
 window.deepMergeObjects = function(target, ...sources) {
     if (!sources.length) {

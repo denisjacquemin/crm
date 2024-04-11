@@ -9,18 +9,19 @@ class DocumentsService {
     }
 
     async getByIdAndCompanyId(id, company_id) {
-        return await Document.findOne({ _id: id, company_id });
+        const document = await Document.findOne({ _id: id, company_id });
+        return document.toObject();
     }
 
     async getBySlugAndCompanyId(slug, company_id, projection = '') {
         const document = await Document.findOne({ slug, company_id }, projection).exec();
-        return document;
+        return document.toObject();
     }
 
     async create(data) {
         const document = new Document(data);
-        await document.save();
-        return document;
+        const documentCreated = await document.save();
+        return documentCreated.toObject();
     }
 
     async update(id, data) {
@@ -33,14 +34,15 @@ class DocumentsService {
                 throw error;
             }
 
-            return updatedDocument;
+            return updatedDocument.toObject();
         } catch (error) {
             throw error;
         }
     }
 
     async delete(id) {
-        await Document.deleteOne({ _id: id });
+        const documentDeleted = await Document.deleteOne({ _id: id });
+        return documentDeleted.toObject();
     }
 }
 

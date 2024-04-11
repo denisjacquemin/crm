@@ -1,0 +1,313 @@
+<div class="flex w-[200%] h-full overflow-hidden sm:w-full"
+     x-data="{
+        showClientForm: function() {
+            console.log('showClientForm');
+            this.$refs.clientsList.style.transform = 'translateX(-100%)'; 
+            this.$refs.clientForm.style.transform = 'translateX(-100%)';
+        },
+        showClientsList: function() {
+            console.log('showClientsList');
+            this.$refs.clientsList.style.transform = 'translateX(0)';
+            this.$refs.clientForm.style.transform = 'translateX(0)';
+        },
+        newBuyer: async function() {
+            try {
+                const data = await fetchUrl('/buyers/newAjax', 'POST');
+                this.selectedBuyer = JSON.parse(data);
+                await this.searchClient();
+                const theBuyers = this.buyers;
+                const theSelectedBuyer = this.selectedBuyer;
+                const index = theBuyers.findIndex((buyer) => buyer.slug === theSelectedBuyer.slug);                console.log('index', index, this.buyers, this.selectedBuyer);
+                if (index >= 0 ) this.buyers[index] = this.selectedBuyer;
+                if (window.innerWidth < 640) this.showClientForm();
+            } catch (error) { 
+                console.error('Error creating new buyer', error); 
+            }
+        },
+        editBuyer: async function(index) {
+            try {
+                const data = await fetchUrl(`/buyers/editAjax/${this.buyers[index].slug}`, 'GET');
+                this.selectedBuyer = JSON.parse(data);
+                this.buyers[index] = this.selectedBuyer;
+                if (window.innerWidth < 640) this.showClientForm();
+            } catch (error) { console.error('Error editing document', error); }
+        },
+        deleteBuyer: async function(slug) {
+            try {
+                const data = await fetchUrl(`/buyers/deleteAjax/${slug}`, 'DELETE');
+                this.selectedBuyer = {};
+                localStorage.removeItem(`autosave#buyer#${slug}`); // if exist of course
+                this.searchClient();
+                if (window.innerWidth < 640) this.showClientsList();
+            } catch (error) { 
+                console.log('Error deleting document', error); 
+            }
+        },
+        searchClientTerm: '',
+        sortBy: 'createdAtdesc',
+        searchClient: async function() {
+            const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
+            await fetchUrl('/buyers/search?q=' + encodeURIComponent(this.searchClientTerm.trim() || '*') + sortByParam, 'GET')
+                .then(data => {
+                    this.buyers = JSON.parse(data);
+                })
+                .catch(error => {
+                    console.error('Error searching for clients', error);
+                });
+        },
+        buyers: {{ stringify buyers }},
+        selectedBuyer: {}
+     }"
+     x-init="
+        $watch('selectedBuyer', (value, oldValue) => { 
+          var buyer = { ...value };
+          if (buyer.slug) {
+            buyer.autosave_updated_at = new Date();
+            localStorage.setItem('autosave#buyer#' + value.slug, JSON.stringify(buyer));
+          }
+        });
+     ">
+    <div x-ref="clientsList"
+         class="flex w-[50%] flex-col h-full sm:max-w-[330px] lg:max-w-[380px] transition-transform duration-500 ease-in-out">
+        {{!-- <a href="#" @click.prevent="showClientForm">Show Form</a> --}}
+        <div class="w-full px-2 sm:pr-2 flex items-center">
+            <button type="button" id="newDocumentButton"
+                class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                @click.prevent="newBuyer">      
+                <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
+                </svg>
+                Create New Client
+            </button>
+        </div>
+        <div class="w-full px-2 sm:pr-2 flex items-center shadow-md sm:shadow-none" 
+            x-init="
+                $watch('searchClientTerm', () => { searchClient() });
+            ">
+            <input x-model.debounce.200ms="searchClientTerm" x-on:keydown.enter.prevent="searchClient()" type="text"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
+                placeholder="Filter by name, address, zip... " autocomplete="off">
+
+            <div x-data="Components.menu({ open: false })" 
+                x-init="init()"
+                @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)"
+                class="relative inline-block text-left pl-3 pr-3 pt-3 pb-2">
+
+                <div>
+                    <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+                        id="menu-button" x-ref="button" @click="onButtonClick()" @keyup.space.prevent="onButtonEnter()"
+                        @keydown.enter.prevent="onButtonEnter()" aria-expanded="true" aria-haspopup="true"
+                        x-bind:aria-expanded="open.toString()" @keydown.arrow-up.prevent="onArrowUp()"
+                        @keydown.arrow-down.prevent="onArrowDown()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute right-0 z-10 mt-2 w-60 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state."
+                    x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical"
+                    aria-labelledby="menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()"
+                    @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false"
+                    @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
+                    <div class="px-4 py-3" role="none">
+                        <p class="text-sm" role="none">Sort by</p>
+                    </div>
+                    <ul class="py-1" role="none" x-data="{ menuItems: [
+                            { label: 'Creation date (latest first)', sortValue: 'createdAtdesc' },
+                            { label: 'Name (A-Z)', sortValue: 'nameasc' },
+                        ] }">
+                        <!-- Template for each menu item -->
+                        <template x-for="(item, index) in menuItems" :key="index">
+                            <li class="relative">
+                                <a x-text="item.label" href="#" class="text-gray-700 block px-4 py-2 text-sm" :class="{
+                                            'bg-indigo-600 text-white': sortBy === item.sortValue,
+                                            'text-gray-700': sortBy !== item.sortValue
+                                        }" role="menuitem" tabindex="-1" :id="`menu-item-${index}`"
+                                @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, index)"
+                                @mouseleave="onMouseLeave($event)"
+                                @click.prevent="sortBy = item.sortValue; open = false; searchClient(); focusButton()">
+                                </a>
+                                <span x-show="sortBy === item.sortValue"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                                        class="h-5 w-5">
+                                        <path fill-rule="evenodd"
+                                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                        clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <div x-ref="buyersList" class="flex-1 w-full overflow-y-scroll">
+            <template x-if="buyers.length === 0">
+                <div class="relative block w-full h-full p-2 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <span class="mt-2 block text-md font-semibold text-gray-500">No client found</span>
+                    </div>
+                </div>
+            </template>
+
+            <template x-if="buyers.length > 0">
+                <ul role="list" class="divide-y divide-gray-100">
+                    <template x-for="(buyer, index) in buyers" :key="index">
+                        <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
+                            @click.prevent="editBuyer(index);"
+                            :data-slug="buyer.slug"
+                            
+                        >
+                        <div class="px-4">
+                            <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
+                                <div class="flex flex-1 min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <div x-text="buyer?.name" 
+                                                class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                                                :class="{
+                                                'text-indigo-700': selectedBuyer.slug === buyer.slug,
+                                                'text-gray-900': selectedBuyer.slug !== buyer.slug
+                                                }">
+                                        </div>
+                                        <div class="mt-1 flex text-xs leading-5 text-gray-500"
+                                             x-data="() => ({
+                                                get address() { return buyer.address },
+                                                get city() { return buyer.city },
+                                                get country() { return buyer.country },
+                                                get zip() { return buyer.zip },
+                                             })"
+                                        >
+                                            <div x-text="window.formatAddress(address, zip, city, country)" class="relative truncate w-full text-left h-5"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex shrink-0 items-center gap-x-4">
+                                    <svg :class="{
+                                                'text-indigo-700 font-medium': selectedBuyer.slug === buyer.slug,
+                                                'text-gray-400 font-normal': selectedBuyer.slug !== buyer.slug
+                                                }"
+                                            class="h-5 w-5 flex-none " viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        </li>
+                    </template>
+                </ul> 
+            </template>
+        </div>
+    </div>
+    <div x-ref="clientForm"
+         class="w-[50%] h-full border-l border-gray-200 flex flex-col sm:flex-1 transition-transform duration-500 ease-in-out">
+        <div x-cloak x-show="Object.keys(selectedBuyer).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <span class="mt-2 block text-md font-semibold text-gray-500">No client selected yet</span>
+            </div>
+        </div>
+        
+        <div x-cloak x-show="Object.keys(selectedBuyer).length !== 0" class="flex flex-col h-full">
+            <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
+                <div class="w-1/2 text-left sm:hidden">
+                    <button @click.prevent="if (window.innerWidth < 640) showClientsList();"
+                        href="#" class="px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="w-1/2 text-right my-auto sm:w-full">
+                    <a href="#"
+                        class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
+                            @click.prevent="deleteBuyer(selectedBuyer.slug)">      
+                        Delete
+                    </a>
+                </div>
+            </div>
+            
+            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll">
+                <div>
+                    <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.name" autocomplete="off"
+                            placeholder="Buyer's name" id="name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="address" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.address" autocomplete="off"
+                            placeholder="Street and number" id="address"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">Zip</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.zip" autocomplete="off"
+                            placeholder="Zip number" id="zip"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.city" autocomplete="off"
+                            placeholder="City" id="city"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.country" autocomplete="off"
+                            placeholder="Country" id="country"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Phone</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.phone" autocomplete="off"
+                            placeholder="Phone number" id="phone"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.email" autocomplete="off"
+                            placeholder="email" id="email"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
+                            placeholder="VAT number" id="vat"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

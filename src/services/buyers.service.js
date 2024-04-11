@@ -3,23 +3,39 @@ const Buyer = require('../models/buyer.model');
 class BuyersService {
 
     async create(data) {
-       const buyer = new Buyer(data);
-       await buyer.save();
-       return buyer;
+        try {
+            const buyer = new Buyer(data);
+            const buyerCreated = await buyer.save();
+            return buyerCreated ? buyerCreated.toObject() : null;
+        } catch (error) {
+            throw error;
+        }
     }
 
     async update(id, data) {
-        return await Buyer.findOneAndUpdate({ _id: id }, data, { new: true });
+            const buyer = await Buyer.findOne({ _id: id });
+            Object.assign(buyer, data);
+            const updatedBuyer = await buyer.save();
+            return buyer && updatedBuyer ? updatedBuyer.toObject() : null;
     }
-
-    async delete(id) {
-        await Buyer.deleteOne({ _id: id });
-
+    
+    async delete(id, company_id) {
+            const buyer = await Buyer.findOne({ _id: id, company_id });
+            const buyerDeleted = await buyer.deleteOne();
+            return buyer && buyerDeleted ? buyerDeleted.toObject() : null;
     }
 
     async getById(id, company_id) {
-        return await Document.findOne({ _id: id, company_id });
+            const buyer = await Buyer.findOne({ _id: id, company_id });
+            return buyer ? buyer.toObject() : null;
+
     }
+
+    async getBySlugAndCompanyId(slug, company_id, projection = '') {
+        const buyer = await Buyer.findOne({ slug, company_id }, projection).exec();
+        return buyer ? buyer.toObject() : null;
+    }
+    
 }
 
-module.exports = BuyersService;
+module.exports = new BuyersService;

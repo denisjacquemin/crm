@@ -1,55 +1,150 @@
 const { ObjectId } = require('mongodb');
-const BuyerService = require('../services/buyers.service');
-const { BuyerTypesenseService } = require('../services/buyers.typesense.service');
+const BuyersService = require('../services/buyers.service');
+const { BuyersTypesenseService } = require('../services/buyers.typesense.service');
 const DateHelper = require('../lib/date-helpers');
 // rquire _.extend from underscore
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
+const { updateMany } = require('../models/document.model');
+const mongoose = require('mongoose');
 
 
-async function newBuyerAjax(req, res) {
+async function index(req, res, next) {
     try {
-        const buyerFromReq = req.body;
-        const buyerService = await BuyerService.getInstance();
-        const buyerTypesenseService = new BuyerTypesenseService(req.db);
-        const buyer = await buyerService.create(mergeObjects(
-            buyerFromReq, {
-                company_id: ObjectId(req.session.current_company._id),
-                updated_at: DateHelper.toISO8601(DateHelper.nowUtc()),
-                created_by_user_id: ObjectId(req.session.user._id)
-            }));
-        await buyerTypesenseService.create(buyer);
-        res.json({ buyer });
+        const buyersTypesenseService = new BuyersTypesenseService();
+        const results = await buyersTypesenseService.search({ 
+            'q': '*',
+            filter_by: `company_id:${req.session.current_company._id}`,
+            sort_by: 'createdAt:desc',
+            per_page: 30,
+            query_by: 'name,address,city,vat_number'
+        });
+        const buyers = results.hits.map(hit => hit.document);
+        console.log('buyers', buyers);
+        res.render('buyers/index', {
+            layout: false,
+            buyers: buyers,
+        });
     } catch (err) {
-        console.error(err.stack);
-        res.status(500).send(req.i18n.t('common.unknown_error'));
+        next(err);
     }
 }
 
-async function search(req, res) {
+async function search(req, res, next) {
     try {
-        const buyerTypesenseService = new BuyerTypesenseService();
+        console.log('searching for:', req.query);
+        let sortBy = 'createdAt:desc';
+        if (req.query.sort && req.query.sort === 'nameasc') {
+            sortBy = 'name:asc';
+        } 
+        const buyersTypesenseService = new BuyersTypesenseService();
         const searchParameters = {
             q: req.query.q,
             filter_by: `company_id:${req.session.current_company._id}`,
-            sort_by: 'created_at:desc',
+            sort_by: sortBy,
             per_page: 30,
-            query_by: 'name,address,city,vat_number'
+            query_by: 'name,address,city,vat_number,zip'
         };
 
-        const searchResults = await buyerTypesenseService.search(searchParameters);
-        
-        // Extract the document property from each hit and return an array of buyers
+        const searchResults = await buyersTypesenseService.search(searchParameters);
+         // Extract the document property from each hit and return an array of buyers
         const buyers = searchResults.hits.map(hit => hit.document);
-
-        res.json(buyers);
+        res.status(200).json(buyers);
     } catch (err) {
-        console.error(err.stack);
-        res.status(500).send(req.i18n.t('common.unknown_error'));
+        next(error);
+    }
+}
+
+async function editAjax(req, res, next) {
+
+    try {
+        const buyer = await BuyersService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+        if (!buyer) {
+            return next({ 
+                status: 404, 
+                message: 'Buyer not found', 
+                notification: { message: 'Buyer not found', type: 'error'}
+            });
+        }
+
+        res.status(200).json(buyer);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+async function deleteAjax(req, res, next) {
+
+    try {
+        const buyerToDelete = await BuyersService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+
+        if (!buyerToDelete) {
+            return next({ 
+                status: 404, 
+                message: 'Buyer not found', 
+                notification: { message: 'Buyer not found', type: 'error'}
+            });
+        }
+
+        const buyerDeleted = await BuyersService.delete(buyerToDelete._id, req.session.current_company._id);
+
+        res.status(200).json(buyerDeleted);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+async function newBuyerAjax(req, res, next) {
+    try {
+        const buyer = await createNewBuyerInMongoAndTypesense(req);
+        res.status(200).json(buyer);
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function createNewBuyerInMongoAndTypesense(req) {
+    // automatically sync in Typense by a mongoose's hook in models/buyer.model.js
+    try {
+        const buyerCreated = await BuyersService.create({
+            company_id: req.session.current_company._id,
+            created_by_user_id: req.session.user.id,
+            slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
+            name: 'Choose a name',
+        });
+        
+        return buyerCreated ? buyerCreated : null;
+
+    } catch (err) {
+        throw new Error('Failed to create buyer in MongoDB', err);
+    }
+}
+
+async function update(req, res, next) {
+    try {
+        let buyer = await BuyersService.getBySlugAndCompanyId(req.body.value.slug, req.session.current_company._id);
+
+        if (!buyer) {
+            return next({ status: 404, message: 'Buyer not found' });
+        }
+        let updatedBuyer = await BuyersService.update(buyer._id, req.body.value);
+
+        updatedBuyer.autosave_updated_at = req.body.value.autosave_updated_at;
+        res.status(200).json(updatedBuyer);
+
+    } catch (error) {
+        next(error);
     }
 }
 
 module.exports = {
+    index,
+    search,
+    editAjax,
+    deleteAjax,
     newBuyerAjax,
-    search
+    update
 };

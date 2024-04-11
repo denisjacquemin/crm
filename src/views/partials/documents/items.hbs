@@ -1,7 +1,6 @@
 <table class="min-w-full divide-y divide-gray-300 max-w-full">
     <thead>
-        
-        <tr>
+        <tr >
             <th class="w-2/3 text-left text-sm font-semibold text-gray-900" width="auto">Description</th>
             <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Quantity</th>
             <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">UP</th>
@@ -15,7 +14,7 @@
     </thead>
     <tbody>
         <template x-for="(item, index) in selectedDocument.config.items" :key="index">
-        <tr>
+        <tr class="even:bg-gray-50">
             <input type="hidden" x-model="item.name" name="config.items[].name" />
             <td x-text="item.description" class="pt-2 pr-2 text-sm font-light text-gray-700 line-clamp-3"></td>
             <td x-text="item.quantity" class="hidden py-2 text-sm font-medium text-gray-500"></td>

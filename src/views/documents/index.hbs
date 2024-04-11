@@ -67,6 +67,12 @@
             }
      }"
      x-init="
+        $watch('selectedDocument', (value, oldValue) => {  
+            console.log('########### selectedDocument changed', value); 
+            var document = { ...value };
+            document.autosave_updated_at = new Date();
+            localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));
+        });
         $watch('navState', () => { 
             console.log('navState changed to ' + navState);
             if (navState === 'back') {
@@ -322,7 +328,7 @@
                         <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"
                         href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
                     </div>
-                    <div x-ref="pageContainer" class="mr-2 flex-1 flex" id="pages">
+                    <div x-ref="pageContainer" class="h-full overflow-hidden mr-2 flex-1 flex" id="pages">
                         <template x-if="selectedDocument">
                             <div id="preview" x-html="previewData" class="flex-1 flex" ></div>
                         </template>

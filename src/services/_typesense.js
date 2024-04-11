@@ -5,26 +5,35 @@ class TypesenseService {
 
     constructor(collectionName, schema, connectionOptions = {}) {
 
-        this.client = TypesenseHelper.getTypesenseClient();
-        this.schema = schema;
-
-        this.collectionName = collectionName;
-        this.isConnected = false;
-        this.connectionRetryInterval = 5000;
-        this.createCollection();
+        try {
+            this.client = TypesenseHelper.getTypesenseClient();
+            this.schema = schema;
+            
+            this.collectionName = collectionName;
+            this.isConnected = false;
+            this.connectionRetryInterval = 5000;
+            this.createCollection();
+        } catch (error) {
+            console.error(`Failed to initialize TypesenseService: ${error.message}`);
+            throw error;
+        }
     }
 
     async createCollection() {
+        try {
+            const existingCollections = await this.client.collections().retrieve();
 
-        const existingCollections = await this.client.collections().retrieve();
+            const existingCollection = existingCollections.find((c) => c.name === this.collectionName);
 
-        const existingCollection = existingCollections.find((c) => c.name === this.collectionName);
-
-        if (!existingCollection) {
-            await this.client.collections().create(this.schema);
-            console.log(`Created collection ${this.collectionName}`);
-        } else {
-            console.log(`Using existing collection ${this.collectionName}`);
+            if (!existingCollection) {
+                await this.client.collections().create(this.schema);
+                console.log(`Created collection ${this.collectionName}`);
+            } else {
+                console.log(`Using existing collection ${this.collectionName}`);
+            }
+        } catch (error) {
+            console.error(`Failed to create collection`);
+            throw error;
         }
     }
 
@@ -40,10 +49,8 @@ class TypesenseService {
     }
 
     async upsertDocument(document) {
-        console.log('### upsertDocument', document);
         try {
             const docToCreate = { ...document, id: document._id };
-            // console.log('Document.post(save) doc to save: ', docToCreate);
 
             return await this.client.collections(this.collectionName).documents().upsert(docToCreate);
         } catch (error) {
@@ -72,17 +79,18 @@ class TypesenseService {
 
     async deleteDocument(documentId) {
         try {
-            return await this.client.collections(this.collectionName).documents(documentId).delete();
+            return await this.client.collections(this.collectionName).documents().delete({
+                filter_by: `_id:${documentId}`
+            });
         } catch (error) {
             console.error(`Failed to delete document: ${error.message}`);
             throw error;
         }
     }
 
-    // add searchDocuments method
     async searchDocuments(searchParameters = {}) {
         try {
-            console.log('### searchDocuments', searchParameters);
+            console.log('### searchDocuments', searchParameters, this.collectionName);
             return await this.client.collections(this.collectionName).documents().search(searchParameters);
         } catch (error) {
             console.error(`Failed to search documents: ${error.message}`);

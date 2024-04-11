@@ -1,162 +1,157 @@
-<div class="min-h-full overflow-hidden">
-    <div>
-      <div class="px-3 mb-5">
-            <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
-                <div class="">
-                    <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">Edit Buyer</h2>
-                    <p class="mt-2 text-sm text-gray-700">Set Buyer's details.</p>
-                </div>
-            </div>
-            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
-                <div class="col-span-full mb-6">
-                  <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Find Company (by name, address, city or VAT number)</label>
-                    <div class="mt-2"
-                        x-init="
-                        $watch('openSlide', value => { {{!-- not fired the first time the partial is called, but fired after when openSlide change   --}}
-                            if (value && slideContentPartialName == 'slideBuyer') {
-                                console.log('openSlide in SlideBuyer');
-                                init();
-                            }
-                        });"
-                        x-data="{
-                          choices: null,
-                          searchResults: [],
-                          searchAndUpdateChoices: null,
-                          init() {
-                            searchResults = [];
-                            if (!this.choices) {
-                              console.log('init this.choices');
-                              this.choices = new Choices(this.$refs.buyerSelect, {
-                                choices: [],
-                                allowHTML: false,
-                                searchResultLimit: 20, // Limit the number of search results
-                                searchFields: ['label', 'value'] // Define the fields to search
-                              });
-                              this.searchAndUpdateChoices = (searchTerm) => {
-                                fetchUrl('/buyers/search?q=' + encodeURIComponent(searchTerm.trim() || '*'), 'GET' )
-                                  .then(data => {
-                                    this.searchResults = JSON.parse(data);
 
-                                    // Clear previous choices
-                                    this.choices.clearChoices();
-                                    this.choices.setChoices(this.searchResults.map(result => ({
-                                      value: result._id, 
-                                      label: result.name, 
-                                      selected: false, 
-                                      disabled: false
-                                    })), 'value', 'label', false);
-                                    
-                                  })
-                                  .catch(error => {
-                                    console.error('Error searching for buyers', error);
-                                  });
-                              }
-                              // Add an event listener for the search event
-                              this.$refs.buyerSelect.addEventListener('search', (event) => {
-                                console.log('search event', event.detail.value);
-                                // Call the search function with the current search value
-                                this.searchAndUpdateChoices(event.detail.value);
-                              });
-                            
+<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">
+    <div class="col-start-2 col-span-1 sm:col-span-3 sm:col-start-4">
+        <div class="text-right">
+            <button @click.prevent="openSlide = false" class="inline-flex items-center gap-x-2 my-2 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                </svg> I'm done
+            </button>
+        </div>
+    </div>    
+    
+    <div class="col-span-full mb-6">
+      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Find a Buyer (by name, address, city or VAT number)</label>
+        <div class="mt-2"
+            x-init="
+            $watch('openSlide', value => { {{!-- not fired the first time the partial is called, but fired after when openSlide change   --}}
+                if (value && slideContentPartialName == 'slideBuyer') {
+                    console.log('openSlide in SlideBuyer');
+                    init();
+                }
+            });"
+            x-data="{
+              choices: null,
+              searchResults: [],
+              searchAndUpdateChoices: null,
+              init() {
+                searchResults = [];
+                if (!this.choices) {
+                  console.log('init this.choices');
+                  this.choices = new Choices(this.$refs.buyerSelect, {
+                    choices: [],
+                    allowHTML: false,
+                    searchResultLimit: 20, // Limit the number of search results
+                    searchFields: ['label', 'value'] // Define the fields to search
+                  });
+                  this.searchAndUpdateChoices = (searchTerm) => {
+                    fetchUrl('/buyers/search?q=' + encodeURIComponent(searchTerm.trim() || '*'), 'GET' )
+                      .then(data => {
+                        this.searchResults = JSON.parse(data);
 
-                              // when a choice is selected, update the selectedDocument.config.buyer
-                              this.$refs.buyerSelect.addEventListener('choice', (event) => {
-                                // no need to search again, we already have the buyer details inm the search results
-                                const selectedBuyer = this.searchResults.find(result => result._id === event.detail.choice.value);
-                                selectedDocument.config.buyer.name = selectedBuyer.name;
-                                selectedDocument.config.buyer.address = selectedBuyer.address;
-                                selectedDocument.config.buyer.city = selectedBuyer.city;
-                                selectedDocument.config.buyer.country = selectedBuyer.country;
-                                selectedDocument.config.buyer.vat_number = selectedBuyer.vat_number;
-                                selectedDocument.config.buyer.email = selectedBuyer.email;
-                                selectedDocument.config.buyer.phone = selectedBuyer.phone;
+                        // Clear previous choices
+                        this.choices.clearChoices();
+                        this.choices.setChoices(this.searchResults.map(result => ({
+                          value: result._id, 
+                          label: result.name, 
+                          selected: false, 
+                          disabled: false
+                        })), 'value', 'label', false);
+                        
+                      })
+                      .catch(error => {
+                        console.error('Error searching for buyers', error);
+                      });
+                  }
+                  // Add an event listener for the search event
+                  this.$refs.buyerSelect.addEventListener('search', (event) => {
+                    console.log('search event', event.detail.value);
+                    // Call the search function with the current search value
+                    this.searchAndUpdateChoices(event.detail.value);
+                  });
+                
 
-                                // Clear the search results
-                                // choices.clearChoices();
+                  // when a choice is selected, update the selectedDocument.config.buyer
+                  this.$refs.buyerSelect.addEventListener('choice', (event) => {
+                    // no need to search again, we already have the buyer details inm the search results
+                    const selectedBuyer = this.searchResults.find(result => result._id === event.detail.choice.value);
+                    selectedDocument.config.buyer.name = selectedBuyer.name;
+                    selectedDocument.config.buyer.address = selectedBuyer.address;
+                    selectedDocument.config.buyer.city = selectedBuyer.city;
+                    selectedDocument.config.buyer.zip = selectedBuyer.zip;
+                    selectedDocument.config.buyer.country = selectedBuyer.country;
+                    selectedDocument.config.buyer.vat_number = selectedBuyer.vat_number;
+                    selectedDocument.config.buyer.email = selectedBuyer.email;
+                    selectedDocument.config.buyer.phone = selectedBuyer.phone;
 
-                                
-                              });
-                            } 
-                          }
-                        }">
-                        <select x-ref="buyerSelect"></select>
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
-                  <div class="mt-2">
-                    <input type="text" x-model="selectedDocument.config.buyer.name" autocomplete="off"
-                          placeholder="This is my company name" id="buyer-name"
-                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                  </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-address" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.address" autocomplete="off"
-                            placeholder="Address street and number" id="buyer-address"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-zip" class="block text-sm font-medium leading-6 text-gray-900">Zip</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.zip" autocomplete="off"
-                            placeholder="Zip number" id="buyer-zip"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.city" autocomplete="off"
-                            placeholder="Zip number" id="buyer-city"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.country" autocomplete="off"
-                            placeholder="Zip number" id="buyer-country"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-phone" class="block text-sm font-medium leading-6 text-gray-900">Phone</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.phone" autocomplete="off"
-                            placeholder="Phone number" id="buyer-phone"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.email" autocomplete="off"
-                            placeholder="buyer-email" id="buyer-email"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full">
-                  <label for="buyer-vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedDocument.config.buyer.vat_number" autocomplete="off"
-                            placeholder="VAT number" id="buyer-vat"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="col-span-full border-t border-gray-200 px-2 pt-5 mt-4 sm:px-3">
-                  <button type="button"
-                    class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    @click.prevent="openSlide = false">
-                    Done
-                  </button>
-                </div>
-            </div>
+                    // Clear the search results
+                    // choices.clearChoices();
+
+                    
+                  });
+                } 
+              }
+            }">
+            <select x-ref="buyerSelect"></select>
+        </div>
+    </div>
+    
+    <div class="col-span-full">
+      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+      <div class="mt-2">
+        <input type="text" x-model="selectedDocument.config.buyer.name" autocomplete="off"
+              placeholder="Buyer's name" id="buyer-name"
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
       </div>
-    </div>  
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-address" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.address" autocomplete="off"
+                placeholder="Street and number" id="buyer-address"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-zip" class="block text-sm font-medium leading-6 text-gray-900">Zip</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.zip" autocomplete="off"
+                placeholder="Zip number" id="buyer-zip"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.city" autocomplete="off"
+                placeholder="City" id="buyer-city"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.country" autocomplete="off"
+                placeholder="Country" id="buyer-country"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-phone" class="block text-sm font-medium leading-6 text-gray-900">Phone</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.phone" autocomplete="off"
+                placeholder="Phone number" id="buyer-phone"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.email" autocomplete="off"
+                placeholder="buyer-email" id="buyer-email"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.vat_number" autocomplete="off"
+                placeholder="VAT number" id="buyer-vat"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
 </div>
+
 
 
 {{!-- <div class="h-full" x-data="{ displayedScreen: 'search-buyer'}" class="overflow-hidden">
@@ -348,7 +343,7 @@
 
       <script>
         function submitNewBuyerForm() {
-            const endpointUrl = '/buyer/newAjax';
+            const endpointUrl = '/buyers/newAjax';
             const headers = {
                 'Content-Type': 'application/json'
             };

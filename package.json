@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && node ./index.js\"",
+        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && pm2 start ./index.js -f --no-daemon\"",        
         "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
         "eslint": "eslint src"

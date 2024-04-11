@@ -18,8 +18,7 @@
             navState: 'menu',
             openSettingsModal: false,
             async loadModalContent(url, callback, anchor, focusInputId) {
-                const response = await fetch(url);
-                const text = await response.text();
+                const text = await fetchUrl(url, 'GET');
                 this.$refs.modalContent.innerHTML = text;
                 this.openSettingsModal = true;
                 if (anchor) {
@@ -48,8 +47,7 @@
             {{{body}}}
 
         </div>
-        {{> notifications}}
-        {{> notifications2}}
+        {{> notifications2 }}
         {{> settings_modal }}
     </body>
 

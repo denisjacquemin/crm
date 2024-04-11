@@ -1,6 +1,6 @@
 const DocumentService = require('../services/documents.service');
 const CompanyService = require('../services/companies.service');
-const { DocumentTypesenseService } = require('../services/documents.typesense.service');
+const { DocumentsTypesenseService } = require('../services/documents.typesense.service');
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
 const { jsPDF } = require('jspdf');
@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer')
 
 async function index(req, res) {
     try {
-        const documentsTypesenseService = new DocumentTypesenseService();
+        const documentsTypesenseService = new DocumentsTypesenseService();
         const result = await documentsTypesenseService.searchDocuments({ 
             'q': '*',
             'filter_by': `company_id:${req.session.current_company._id}`,
@@ -57,6 +57,7 @@ async function newDocumentAjax(req, res) {
         const document = await createNewDocumentInMongoAndTypesense(req);
 
         res.json(document);
+        
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));
@@ -121,7 +122,7 @@ async function createNewDocumentInMongoAndTypesense(req) {
 async function edit(req, res) {
 
     try {
-        const documentsTypesenseService = new DocumentTypesenseService();
+        const documentsTypesenseService = new DocumentsTypesenseService();
         const result = await documentsTypesenseService.searchDocuments({
             'q': '*',
             'filter_by': `company_id:${req.session.current_company._id}`,
@@ -167,6 +168,7 @@ async function editAjax(req, res) {
         }
 
         res.json(document);
+        
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));
@@ -178,15 +180,16 @@ async function editAjax(req, res) {
 async function update(req, res, next) {
     try {
         let document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
-
         if (!document) {
             const error = new Error('Document not found');
             error.status = 404;
             throw error;
         }
 
-        const updatedDocument = await DocumentService.update(document._id, req.body.document);
-        res.json(updatedDocument);
+        const updatedDocument = await DocumentService.update(document._id, req.body.value);
+
+        updatedDocument.autosave_updated_at = req.body.value.autosave_updated_at;
+        res.status(200).json(updatedDocument);
 
     } catch (error) {
         console.log('Error in update', error)
@@ -207,7 +210,7 @@ async function getLatestDocument(company_id) {
 
 async function search(req, res) {
     try {
-        const documentsTypesenseService = new DocumentTypesenseService();
+        const documentsTypesenseService = new DocumentsTypesenseService();
         const searchParameters = {
             q: req.query.q,
             filter_by: `company_id:${req.session.current_company._id}`,

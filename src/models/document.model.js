@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {validateEmail} = require('./_helper.model');
-const { DocumentTypesenseService } = require('../services/documents.typesense.service');
+const { DocumentsTypesenseService } = require('../services/documents.typesense.service');
 
 const paymentSchema = new mongoose.Schema({
     bank: { type: String, required: false },
@@ -101,8 +101,8 @@ const documentSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
-    const documentTypesenseService = new DocumentTypesenseService();
-    await documentTypesenseService.upsertDocument(doc);
+    const documentsTypesenseService = new DocumentsTypesenseService();
+    await documentsTypesenseService.upsertDocument(doc);
     console.log('Document.post(save) ' + '%s has been saved in Typesense', doc._id);
 });
 

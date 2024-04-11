@@ -7,24 +7,28 @@ const schema = {
     "fields": [
         { "name": "_id", "type": "string", "facet": false, "optional": false },
         { "name": "company_id", "type": "string", "facet": false, "optional": false },
-        { "name": "name", "type": "string", "facet": false, "optional": false },
+        { "name": "name", "type": "string", "facet": false, "optional": false, "sort": true },
         { "name": "address", "type": "string", "facet": false, "optional": true },
+        { "name": "zip", "type": "string", "facet": false, "optional": true },
         { "name": "city", "type": "string", "facet": false, "optional": true },
         { "name": "vat_number", "type": "string", "facet": false, "optional": true },
         { "name": "email", "type": "string", "facet": false, "optional": true },
         { "name": "phone", "type": "string", "facet": false, "optional": true },
-        { "name": "created_at", "type": "int64", "facet": false, "optional": false },
-        { "name": "updated_at", "type": "int64", "facet": false, "optional": false },
+        { "name": "createdAt", "type": "int64", "facet": false, "optional": false },
+        { "name": "updatedAt", "type": "int64", "facet": false, "optional": false },
         { "name": "created_by_user_id", "type": "string", "facet": false, "optional": false },
         { "name": "slug", "type": "string", "facet": false, "optional": false }
     ]
 };
 
-class BuyerTypesenseService extends TypesenseService {
+class BuyersTypesenseService extends TypesenseService {
 
     constructor() {
-
-        super(collectionName, schema);
+        try {
+            super(collectionName, schema);
+        } catch (error) {
+            console.error(`An error occurred while creating the BuyersTypesenseService: ${error.message}`);
+        }
     }
 
     async create(buyer) {
@@ -47,20 +51,24 @@ class BuyerTypesenseService extends TypesenseService {
         return await super.searchDocuments(query, searchParameters);
     }
 
+    async upsert(buyer) {
+        return await super.upsertDocument(this._convertDatesToUnixTimestamps(buyer));
+    }
+
     _convertDatesToUnixTimestamps(buyer) {
-        const buyerWithUnixTimestamps = {...buyer };
-        if (buyer.created_at) {
-            buyerWithUnixTimestamps.created_at = Math.floor(new Date(buyer.created_at).getTime() / 1000);
+        let documentToReturn = JSON.parse(JSON.stringify(buyer));
+
+        if (buyer.createdAt) {
+            documentToReturn.createdAt = Math.floor(new Date(buyer.createdAt).getTime() / 1000);        }
+        if (buyer.updatedAt) {
+            documentToReturn.updatedAt = Math.floor(new Date(buyer.updatedAt).getTime() / 1000);
         }
-        if (buyer.updated_at) {
-            buyerWithUnixTimestamps.updated_at = Math.floor(new Date(buyer.updated_at).getTime() / 1000);
-        }
-        return buyerWithUnixTimestamps;
+        return documentToReturn;
     }
 }
 
 module.exports = {
     collectionName,
     schema,
-    BuyerTypesenseService
+    BuyersTypesenseService
 }

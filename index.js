@@ -85,6 +85,13 @@ const hbs = create({
             }
             return outStr;
         },
+        formatAddress: function(address, zip, city, country, options) {
+            var formattedAddress = address ? address + ',' : '';
+            var formattedZip = zip || '';
+            var formattedCity = city || '';
+            var formattedCountry = country || '';
+            return `${formattedAddress} ${formattedZip} ${formattedCity} ${formattedCountry}`;
+        },
         slice: function(array, start, end) {
             if (!Array.isArray(array)) {
               throw new Error('The first argument to the `slice` helper must be an array.');
@@ -150,8 +157,15 @@ app.use(function(err, req, res, next) {
     // Check if the request is an AJAX request
     if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         // Handle AJAX request
-        res.status(err.status || 500).json({ error: err.message });
+        let responseJson = { message: err.message };
+        if (err.notification) {
+            responseJson.notification = err.notification;
+        }
+        console.error('Error catched', err);
+
+        res.status(err.status || 500).json(responseJson);
     } else {
+        console.error('Error catched', err);
         // Handle "normal" request
         res.status(err.status || 500).send(err.message);
     }

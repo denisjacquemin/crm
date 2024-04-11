@@ -10,29 +10,60 @@
             
               <div class="overflow-hidden pointer-events-auto relative w-screen max-w-2xl" x-show="openSlide" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"  x-description="Slide-over panel, show/hide based on slide-over state." @click.away="openSlide = false">
                 
-                <div x-show="openSlide" x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-description="Close button, show/hide based on slide-over state." class="absolute right-0 top-0 -ml-8 flex pr-2 pt-4 sm:-ml-10 sm:pr-4">
+                {{!-- <div x-show="openSlide" x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-description="Close button, show/hide based on slide-over state." class="absolute right-0 top-0 -ml-8 flex pr-2 pt-4 sm:-ml-10 sm:pr-4">
                     <button type="button" class="z-50 rounded-md bg-gray-200 p-2 text-gray-400 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white" @click="openSlide = false" spellcheck="false">
                         <span class="sr-only">Close panel</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
-                </div>
+                </div> --}}
                 
                 <div class="h-full overflow-y-auto bg-white" x-description="Slide-over panel, show/hide based on slide-over state.">
-                  
-                  <template x-if="slideContentPartialName == 'slideSeller'">
-                      {{> documents/slideSeller }}
-                  </template>
+                  <div class="min-h-full overflow-hidden">
+                    <div>
+                      <div class="mb-5">
+                            <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
+                                <div class="px-3">
+                                  <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">
+                                    <template x-if="slideContentPartialName == 'slideSeller'">
+                                      <span>Edit Seller</span>
+                                    </template>
+                                    <template  x-if="slideContentPartialName == 'slideBuyer'">
+                                      <span>Edit Buyer</span>
+                                    </template>
+                                    <template  x-if="slideContentPartialName == 'slideItems'">
+                                      <span>Manage Items</span>
+                                    </template>
+                                    
+                                  </h2>
+                                  <p class="mt-2 text-sm text-gray-700">
+                                    <template x-if="slideContentPartialName == 'slideSeller'">
+                                      <span>Update Seller's details.</span>
+                                    </template>
+                                    <template  x-if="slideContentPartialName == 'slideBuyer'">
+                                      <span>Update Buyer's details.</span>
+                                    </template>
+                                    {{!-- <template  x-if="slideContentPartialName == 'slideItems'">
+                                      <span>Add, update, delete, and rearrange invoice items easily.</span>
+                                    </template>      --}}
+                                  </p>
+                                </div>
+                            </div>
+                            <template x-if="slideContentPartialName == 'slideSeller'">
+                                {{> documents/slideSeller }}
+                            </template>
 
-                  <template  x-if="slideContentPartialName == 'slideBuyer'">
-                      {{> documents/slideBuyer }}
-                  </template>
+                            <template  x-if="slideContentPartialName == 'slideBuyer'">
+                                {{> documents/slideBuyer }}
+                            </template>
 
-                  <template  x-if="slideContentPartialName == 'slideItems'">
-                      {{> documents/slideItems }}
-                  </template>
-                  
+                            <template  x-if="slideContentPartialName == 'slideItems'">
+                                {{> documents/slideItems }}
+                            </template>
+                        </div>
+                      </div>
+                  </div>
                 </div>
             
               </div>

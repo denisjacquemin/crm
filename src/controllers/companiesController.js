@@ -26,7 +26,6 @@ async function updateInvoiceSequence(req, res, next) {
 }
 
 
-
 module.exports = {
-    updateInvoiceSequence,
+    updateInvoiceSequence
 }

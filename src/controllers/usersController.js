@@ -575,7 +575,10 @@ async function resetEmail(req, res, next) {
     }
 }
 
-
+async function isStillAuthenticated(req, res, next) {
+    // do nothing if user is authenticated
+    return res.status(200).json({ message: req.i18n.t('common.still_authenticated') });
+}
 
 
 
@@ -749,5 +752,6 @@ module.exports = {
     resetPasswordSent,
     resetEmail,
     OAuthGoogleURL,
-    OAuthGoogleCallback
+    OAuthGoogleCallback,
+    isStillAuthenticated
 };

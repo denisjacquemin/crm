@@ -6,7 +6,7 @@
         aria-modal="true"
         x-id="['modal-title']"
         :aria-labelledby="$id('modal-title')"
-        class="fixed inset-0 z-50"
+        class="fixed inset-0 z-40"
     >
         <!-- Overlay -->
         <div x-show="openSettingsModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
@@ -23,9 +23,9 @@
           <div
               x-on:click.stop
               x-trap.noscroll.inert="openSettingsModal"
-              class="w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20"
+              class="h-screen w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20"
           >
-            <div class="flex mb-2 sm:mb-4 border-b border-gray-200 p-4 sm:px-0">
+            <div class="flex border-b border-gray-200 p-4 sm:px-0">
                 <div class="flex-1">
                     <h2 class="text-xl font-semibold leading-6 text-gray-900" id="slide-over-title">Settings</h2>
                     <p class="mt-2 mb-2 inline sm:block sm:mb-4 text-sm text-gray-700">Update any settings.</p>

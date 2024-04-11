@@ -33,10 +33,11 @@ router.post("/users/resetpassword", userController.resetPasswordPost);
 router.get("/oauth/google/url", userController.OAuthGoogleURL);
 router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 router.patch("/user/resetemail", auth, userController.resetEmail);
-
+router.get("/isStillAuthenticated", auth, userController.isStillAuthenticated);
 
 // Needs authentication and ACL
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
+
 
 router.get("/documents", auth, documentsController.index);
 
@@ -45,15 +46,19 @@ router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
 
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
-router.patch("/document/:slug?", auth, documentsController.update);
+router.patch("/document/:slug?", auth, documentsController.update); // autosave for documents
 
 router.get("/document/preview/:slug", auth, documentsController.preview);
 router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
 router.get("/documents/search:querystring?", auth, documentsController.search);
 
-
-router.post("/buyer/newAjax", auth, buyersController.newBuyerAjax);
+router.get("/buyers", auth, buyersController.index);
+router.get("/buyers/editAjax/:slug?", auth, buyersController.editAjax);
+router.delete("/buyers/deleteAjax/:slug?", auth, buyersController.deleteAjax);
 router.get("/buyers/search:querystring?", auth, buyersController.search);
+router.post("/buyers/newAjax", auth, buyersController.newBuyerAjax);
+router.patch("/buyer/:slug?", auth, buyersController.update); // autosave for buyers
+
 
 
 

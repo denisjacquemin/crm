@@ -35,7 +35,8 @@
     "document_not_found": "documents.document_not_found"
   },
   "common": {
-    "not_found": "common.not_found"
+    "not_found": "common.not_found",
+    "still_authenticated": "common.still_authenticated"
   },
   "settings": {
     "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated"

@@ -19,10 +19,14 @@ const schema = {
     ]
 };
 
-class DocumentTypesenseService extends TypesenseService {
+class DocumentsTypesenseService extends TypesenseService {
 
     constructor() {
-        super(collectionName, schema);
+        try {
+            super(collectionName, schema);
+        } catch (error) {
+            console.error(`An error occurred while creating the DocumentsTypesenseService: ${error.message}`);
+        }
     }
 
     async createDocument(document) {
@@ -38,7 +42,6 @@ class DocumentTypesenseService extends TypesenseService {
     }
 
     async upsertDocument(document) {
-        console.log('TYPESENSE ### upsertDocument', document);
         return await super.upsertDocument(this._convertDatesToUnixTimestamps(document));
     }
 
@@ -87,5 +90,5 @@ class DocumentTypesenseService extends TypesenseService {
 module.exports = {
     collectionName,
     schema,
-    DocumentTypesenseService
+    DocumentsTypesenseService
 }

@@ -1,5 +1,5 @@
-window.getAutoSaveByKeyFromLocalStorage = function(key) {
-    return JSON.parse(localStorage.getItem('autosave#' + key)) || {};
+window.getByKeyFromLocalStorage = function(key) {
+    return JSON.parse(localStorage.getItem(key)) || {};
 }
 
 window.setByKeyToLocalStorage = function(key, data) {
@@ -31,9 +31,20 @@ workerSettings.onmessage = function(event) {
     if (event.data.hasOwnProperty('unauthorized')) {
         history.replaceState(null, '', window.location.href);
         location.reload();
-    } else if (event.data.hasOwnProperty('message')) {
-        dispatch('notify', { content: event.data.message, type: event.data.type })
+    } 
+
+    // delete from localstorage only if event.data.updatedAt is > then the one in localstorage autosave_updated_at
+    let key = 'autosave#' + event.data.targetedObject + '#' + event.data.slug;
+    let LSObj = getByKeyFromLocalStorage(key);
+    console.log('Last update in LS:', LSObj.autosave_updated_at);
+    console.log('server side update:', event.data.autosave_updated_at);
+    console.log('dates:', new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at));
+    console.log('notfound:', event.data.hasOwnProperty('notfound'));
+    if (event.data.hasOwnProperty('notfound') || (new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at))) {
+        console.log('deleting from localstorage:', key);
+        localStorage.removeItem(key);
     }
+
 };
 
 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -49,25 +60,23 @@ setInterval(function() {
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         // console.log('saving key:', key)
-        if (key.startsWith('autosave#document#')) {
-            let slug = key.split('#')[2];
-            saveToServer(key, '/document/' + slug, csrfToken);
-        }
+        let slug = key.split('#')[2]; // get the slug from the key
+        let targetedObject = key.split('#')[1]; // get the targeted object (document or buyer or... )
+        saveToServer(key, targetedObject, csrfToken);
     }
 
-}, 5000);
+}, 2000);
 
 
-function saveToServer(key, url, csrfToken) {
-    var LSObj = getAutoSaveByKeyFromLocalStorage(key);
-    console.log('settings from LS:', LSObj);
+
+
+function saveToServer(key, targetedObject, csrfToken) {
+    var LSObj = getByKeyFromLocalStorage(key);
+    console.log('Object to be saved:', LSObj, targetedObject);
     if (LSObj.hasOwnProperty('autosave_updated_at')) {
-        // console.log('current time:', new Date());
-        // console.log('autosave_updated_at:', LSObj.autosave_updated_at);
-        // console.log(' result:', (LSObj.autosave_updated_at < new Date()));
         if (new Date(LSObj.autosave_updated_at) < new Date()) {
-            console.log('sending to worker', LSObj.value);
-            workerSettings.postMessage({ value: LSObj.value, csrfToken: csrfToken, url: url });
+            console.log('sending to worker', LSObj, { value: LSObj.value, csrfToken: csrfToken, targetedObject: targetedObject });
+            workerSettings.postMessage({ value: LSObj, csrfToken: csrfToken, targetedObject: targetedObject });
         }
     } // else remove it from localstorage
     else {
