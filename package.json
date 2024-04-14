@@ -54,7 +54,7 @@
         "puppeteer": "^21.1.0",
         "redis": "^4.5.0",
         "redis-rate-limiter": "^1.2.0",
-        "sanitize-html": "^2.10.0",
+        "sanitize-html": "^2.12.1",
         "typesense": "^1.5.3",
         "url": "^0.11.0",
         "validator": "^13.7.0"
