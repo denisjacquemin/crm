@@ -17,7 +17,7 @@ async function index(req, res, next) {
             filter_by: `company_id:${req.session.current_company._id}`,
             sort_by: 'createdAt:desc',
             per_page: 30,
-            query_by: 'name,address,city,vat_number'
+            query_by: 'name,address1,address2,city,vat_number,contact_name,email,phone'
         });
         const buyers = results.hits.map(hit => hit.document);
         console.log('buyers', buyers);
@@ -43,7 +43,7 @@ async function search(req, res, next) {
             filter_by: `company_id:${req.session.current_company._id}`,
             sort_by: sortBy,
             per_page: 30,
-            query_by: 'name,address,city,vat_number,zip'
+            query_by: 'name,address1,address2,city,vat_number,zip,contact_name,email,phone'
         };
 
         const searchResults = await buyersTypesenseService.search(searchParameters);

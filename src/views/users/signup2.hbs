@@ -1,4 +1,4 @@
-<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
   
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <h2 class="mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t 'signup2.create_company' }}</h2>
@@ -20,23 +20,53 @@
         </div>
 
         <div>
-          <label for="description">{{t 'signup2.description' }}</label>
-          <div class="mt-1">
-            <input id="description" name="description" value="{{ session.signup.company.description }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-          </div>
-        </div>
-
-        <div>
           <label for="address">{{t 'signup2.address' }}</label>
           <div class="mt-1">
-            <input id="address" name="address" value="{{ session.signup.company.address }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="address" name="address1" value="{{ session.signup.company.address1 }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="address" name="address2" value="{{ session.signup.company.address2 }}" type="text" class="block w-full mt-2 appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+
           </div>
         </div>
 
         <div>
-          <label for="phone_number">{{t 'signup2.phone_number' }}</label>
+          <label for="zip">{{t 'signup2.zip' }}</label>
           <div class="mt-1">
-            <input id="phone_number" name="phone_number" value="{{ session.signup.company.phone_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="zip" name="zip" value="{{ session.signup.company.zip }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="city">{{t 'signup2.city' }}</label>
+          <div class="mt-1">
+            <input id="city" name="city" value="{{ session.signup.company.city }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="country">{{t 'signup2.country' }}</label>
+          <div class="mt-1">
+            <input id="country" name="country" value="{{ session.signup.company.country }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="vat_number">{{t 'signup2.vat_number' }}</label>
+          <div class="mt-1">
+            <input id="vat_number" name="vat_number" value="{{ session.signup.company.vat_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="contact_name">{{t 'signup2.contact_name' }}</label>
+          <div class="mt-1">
+            <input id="contact_name" name="contact_name" value="{{ session.signup.company.contact_name }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="phone">{{t 'signup2.phone' }}</label>
+          <div class="mt-1">
+            <input id="phone" name="phone" value="{{ session.signup.company.phone }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 

@@ -13,7 +13,7 @@
         startEdit: function(index) {
             this.resetFormItem();
             this.itemIndexEdited = index;
-            const item = selectedDocument.config.items[index];
+            const item = this.selectedDocument.config.items[index];
             this.formItem = {
                 form_automatic_computation: item.form_automatic_computation,
                 reduction_unit: item.reduction_unit,
@@ -65,9 +65,9 @@
                 form_automatic_computation: this.formItem.form_automatic_computation,
             }
             if (this.itemIndexEdited===-1) {
-                selectedDocument.config.items.push(newItem);
+                this.selectedDocument.config.items.push(newItem);
             } else {
-                selectedDocument.config.items[this.itemIndexEdited] = newItem;
+                this.selectedDocument.config.items[this.itemIndexEdited] = newItem;
             }
             this.computeInvoiceAmounts();
             this.showItemsList();
@@ -76,21 +76,23 @@
             let totalAmountVatExcl = 0.0;
             let totalAmountVat = 0.0;
             let totalAmountVatIncl = 0.0;
-            selectedDocument.config.items.forEach(item => {
+            this.selectedDocument.config.items.forEach(item => {
                 totalAmountVatExcl += this.stringToFloat(item.amountvatexcl);
                 totalAmountVat += this.stringToFloat(item.amountvat);
                 totalAmountVatIncl += this.stringToFloat(item.amountvatincl);
-                console.log('in computeInvoiceAmounts', totalAmountVatExcl, totalAmountVat, totalAmountVatIncl);
             });
-            selectedDocument.config.amounts.subtotal = this.formatNumber(totalAmountVatExcl);
-            selectedDocument.config.amounts.totalvat = this.formatNumber(totalAmountVat);
-            selectedDocument.config.amounts.total = this.formatNumber(totalAmountVatIncl);
-            console.log('in computeInvoiceAmounts', selectedDocument.config.amountvatexcl, selectedDocument.config.amountvat, selectedDocument.config.amountvatincl);
+            this.selectedDocument.config.amounts.subtotal = this.formatNumber(totalAmountVatExcl);
+            this.selectedDocument.config.amounts.totalvat = this.formatNumber(totalAmountVat);
+            this.selectedDocument.config.amounts.total = this.formatNumber(totalAmountVatIncl);
+            console.log('in computeInvoiceAmounts', this.selectedDocument.config.amounts.subtotal, this.selectedDocument.config.amounts.totalvat, this.selectedDocument.config.amounts.total);
         },
         deleteItem: function(index) {
+            console.log('before deleteItem in ', index);
             this.selectedDocument.config.items.splice(index, 1);
-            this.selectedDocument.config.items.forEach((item, index) => {
-                item.order = index;
+            this.selectedDocument.config.items.forEach((item, idx) => {
+                console.log('set order ', idx);
+
+                item.order = idx;
             });
             this.computeInvoiceAmounts();
         },

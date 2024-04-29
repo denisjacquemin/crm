@@ -4,19 +4,28 @@
         }"
     class="flex-1 flex">
     <style>
+        {{!-- #template3 {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #000;
+            
+        } --}}
         #template3 .page {
             width: 21cm;
             height: 29.7cm;
             overflow: hidden;
             position: relative;
             box-sizing: border-box;
+            padding: 10mm;
+            border: none;
         }
 
         
-        #pages #template3 .page {
+        #template3 .page {
             background: white;
             {{!-- box-shadow: 0 .5mm 2mm rgba(0,0,0,.3); --}}
-            border: 1px solid #d3d3d3;
+            {{!-- border: 1px solid #d3d3d3; --}}
         }
         
 
@@ -36,14 +45,14 @@
         }
         #template3 .top-left {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 10mm;
+            left: 10mm;
         }
 
         #template3 .bottom-right {
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 10mm;
+            right: 10mm;
         }
 
         #template3 header {
@@ -71,6 +80,7 @@
             width: 40%;
             word-wrap: break-word;
             line-height: initial;
+            text-align: left;
             {{!-- font-size: 85%; --}}
             {{!-- font-style: normal;
             line-height: 1.25; --}}
@@ -87,14 +97,16 @@
             position: absolute;
             font-size: 100%;
             font-style: normal;
+            text-align: left;
             line-height: 1.25;
             top: 5.5cm;
             left: 11cm;
             height: 3.3cm;
-            width: 8.5cm;
+            width: 8.0cm;
             padding-left: 25px;
+            padding-right: 25px;
             padding-top: 10px;
-
+            word-wrap: break-word;
                 {
                     {
                     border: dashed 1px #d0cfcf;             
@@ -176,8 +188,9 @@
 
         /* Table cell */
         #template3 main #products .td {
+            font-size: 80%;
             display: table-cell;
-            padding: 8px 16px; /* Adjust padding as needed */
+            padding: 2px 4px; /* Adjust padding as needed */
             border: 1px solid #ccc; /* Add cell borders */
         }
 
@@ -185,6 +198,12 @@
         #template3 main #products .tr:first-child {
             background-color: #f0f0f0; /* Add background color to header row */
             font-weight: bold; /* Make header text bold */
+        }
+
+        #template3 main #products .amounts{
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
         }
 
         #template3 footer {
@@ -203,7 +222,7 @@
         #template3 footer .left,
         #template3 footer .right {
             flex: 1;
-            padding: 10px;
+            margin: 0 10mm 10mm 10mm;
             box-sizing: border-box;
         }
 
@@ -225,7 +244,7 @@
 {{!-- PAGE 1 - BEGIN --}}
       <div id="pageone"
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
-        class="page text-black transform-origin-top-left xl:mx-auto">
+        class="page text-black sheet transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: </span>
       <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="numberOfPages"></span></span>
 
@@ -234,9 +253,9 @@
             <h1>Invoice</h1>
             <div id="seller_address">
                 <span style="font-size: 150%; font-weight: 700;" x-text="selectedDocument.config.seller.name"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.buyer.address}`"></span><br/>
-                <span x-text="`${selectedDocument.config.buyer.zip} ${selectedDocument.config.buyer.city}`"></span><br/>
-                <span x-text="selectedDocument.config.buyer.country"></span><br/>
+                <span style="" x-text="`${selectedDocument.config.seller.address1} ${selectedDocument.config.seller.address2}`"></span><br/>
+                <span x-text="`${selectedDocument.config.seller.zip} ${selectedDocument.config.seller.city}`"></span><br/>
+                <span x-text="selectedDocument.config.seller.country"></span><br/>
                 <span style=""> TVA: <span x-text="selectedDocument.config.seller.vat_number"></span></span><br/>
                 <span x-text="selectedDocument.config.seller.phone"></span><br/>
                 <span x-text="selectedDocument.config.seller.email"></span>
@@ -244,8 +263,8 @@
             <div id="billed_to"style="font-weight: 400;">Billed To</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.buyer.address}`"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.buyer.postalcode} ${selectedDocument.config.buyer.city}`"></span>
+                <span style="" x-text="`${selectedDocument.config.buyer.address1} ${selectedDocument.config.buyer.address2}`"></span><br/>
+                <span style="" x-text="`${selectedDocument.config.buyer.zip} ${selectedDocument.config.buyer.city}`"></span>
                 <span style="" x-text="selectedDocument.config.buyer.country"></span><br/>
                 <br/><br/><br/><br/>
                 <span style=""> TVA: <span x-text="selectedDocument.config.buyer.vat_number"></span></span><br/>
@@ -266,7 +285,7 @@
                         </tr>
                         <tr>
                             <td>Due Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.due_date"></td>
+                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.invoice_due_date.value"></td>
                         </tr>
                         <tr>
                             <td>Currency:</td>
@@ -279,15 +298,15 @@
             <div id="products" class="page1">
                 <div class="table">
                     <div class="thead">
-                        <div class="th" style="width:350px">Description</div>
-                        <div class="th" style="text-align:right">Q.</div>
+                        <div class="th" style="text-align:left;width:300px">Description</div>
+                        <div class="th" style="text-align:right;width:30px">Q.</div>
                         <div class="th" style="text-align:right">UP</div>
-                        <div class="th" style="text-align:right">VAT</div>
+                        <div class="th" style="text-align:right;width:30px">VAT</div>
                         <div class="th" style="text-align:right">Total</div>
                     </div>
                     <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
-                            <div class="td" style="width:350px" x-text="item.description"></div>
+                            <div class="td" style="text-align:left;width:300px" x-text="item.description"></div>
                             <div class="td" style="text-align:right" x-text="item.quantity"></div>
                             <div class="td" style="text-align:right" x-text="item.unit_price"></div>
                             <div class="td" style="text-align:right" x-text="item.vat"></div>
@@ -295,7 +314,27 @@
                         </div>
                     </template>
                 </div>
+                <template x-if="numberOfPages == 1">
+                    <table class="amounts">
+                        <tr>
+                            <td width="50%"></td>
+                            <td style="text-align: right;">Total excl. VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.subtotal"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right;">VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.totalvat"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right;">Total incl. VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.total"></td>
+                        </tr>
+                    </table>
+                </template>
             </div>
+            
         </main>
         <footer>
             <div class="left">Eventuellement un logo</div>
@@ -306,8 +345,8 @@
 
 
 {{!-- PAGE 2+ - BEGIN --}}
+    {{!-- creating chunks of 15 items each from `selectedDocument.config.items` (ignoring the first 5 items), and then iterating over these chunks --}}
     <template x-for="(itemsChunk, chunkIndex) in selectedDocument.config.items.slice(5).reduce((acc, _, i) => (i % 15 ? acc : [...acc, selectedDocument.config.items.slice(i + 5, i + 20)]), [])" :key="chunkIndex">
-
       <div style="width: 21cm;
             {{!-- position: relative; --}}
             height: 29.7cm;
@@ -327,14 +366,33 @@
                     </div>
                     <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
                         <div class="tr">
-                            <div class="td" style="width:350px" x-text="item.name"></div>
+                            <div class="td" style="width:350px" x-text="item.description"></div>
                             <div class="td" style="" x-text="item.quantity"></div>
-                            <div class="td" style="" x-text="item.price"></div>
-                            <div class="td" style="" x-text="item.tax_rate"></div>
-                            <div class="td" style="" x-text="item.total_amount"></div>
+                            <div class="td" style="" x-text="item.unit_price"></div>
+                            <div class="td" style="" x-text="item.vat"></div>
+                            <div class="td" style="" x-text="item.amountvatincl"></div>
                         </div>
                     </template>
                 </div>
+                <template x-if="numberOfPages == chunkIndex + 2">
+                    <table class="amounts" style="margin-top:15px;">
+                        <tr>
+                            <td width="50%"></td>
+                            <td style="text-align: right;">Total excl. VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.subtotal"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right;">VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.totalvat"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right;">Total incl. VAT</td>
+                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.total"></td>
+                        </tr>
+                    </table>
+                </template>
             </div>
         </main>
         <footer>

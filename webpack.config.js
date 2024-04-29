@@ -3,14 +3,18 @@ const glob = require("glob");
 
 const jsEntry = glob.sync(path.join(__dirname, 'src', 'js', '**', '*.js'));
 const viewsEntry = glob.sync(path.join(__dirname, 'src', 'views', '**', '*.js'));
-// const alpineVendorEntry = [
-// //   path.join(__dirname, 'src', 'lib', 'vendor', 'alpine', 'alpine-mask@0.2.0.min.js'),
-//   path.join(__dirname, 'src', 'lib', 'vendor', 'alpine', 'alpine.3.10.5.min.js'),
-// ];
+
+// Filter out specific files
+const mainEntry = jsEntry.filter(filename => !filename.includes('src/js/app.js'));
+const appEntry = jsEntry.filter(filename => !filename.includes('src/js/main.js'));
 
 module.exports = {
     entry: {
-        app: viewsEntry.concat(jsEntry)
+        app: viewsEntry.concat(appEntry),
+        main: [
+            path.join(__dirname, 'src', 'js', 'tailwindcss', 'components.js'),
+            path.join(__dirname, 'src', 'js', 'main.js')
+        ]
     },
     output: {
         path: path.join(__dirname, "public"),

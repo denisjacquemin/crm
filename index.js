@@ -134,7 +134,22 @@ app.use(function(req, res, next) {
 
 app.use(require('./src/middlewares/csrf'));
 app.use(function(req, res, next) {
-    res.locals.notifications = req.flash();
+    let notifications = [];
+    let flash = { ...req.flash() };
+    if (flash) {
+        for (let type in flash) {
+            flash[type].forEach(message => {
+                notifications.push({
+                id: new Date().getTime(),
+                type: type,
+                content: message.message
+                });
+            });
+        }
+    }
+    res.locals.notifications = notifications;
+    console.log('req.flash()', flash);
+    console.log('notifications', notifications);
     res.locals.session = req.session;
     res.locals.csrfToken = req.csrfToken();
     next();

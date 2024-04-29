@@ -229,29 +229,33 @@ async function search(req, res) {
 
 
 async function preview(req, res) {
-    const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id, 'config.template_name');
+    const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
-    console.log('preview document:', document);
+    console.log('preview document:', req.params.slug, document);
 
     if (!document) {
         return res.status(404).send();
     }
 
     const layout = req.query.nl === 'true' ? false : 'preview';
+
+    console.log('layout:', layout);
     res.render("documents/preview", {
         layout,
+        document: document,
         template_name: document.config.template_name 
     });
 }
 
 
 async function toPDFWithPuppeteer(req, res) {
-    const documentService = await DocumentService.getInstance();
-    const document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
+    // const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
-    if (!document) {
-        return res.status(404).send();
-    }
+    // console.log('toPDFWithPuppeteer document:', document);
+
+    // if (!document) {
+    //     return res.status(404).send();
+    // }
 
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
@@ -265,15 +269,17 @@ async function toPDFWithPuppeteer(req, res) {
         path: '/',
         httpOnly: false,
         secure: false,
-        sameSite: 'Lax'
+        sameSite: 'Lax',
+        preferCSSPageSize: true,
+
     })));
 
-    await page.goto(`http://localhost:3000/document/preview/${document.slug}`, { waitUntil: 'load' });
+    await page.goto(`http://localhost:3000/document/preview/${req.params.slug}`, { waitUntil: 'load' });
 
     const pdfBuffer = await page.pdf({ format: 'A4' });
     await browser.close();
 
-    res.setHeader('Content-Disposition', `attachment; filename="${document.slug}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${req.params.slug}.pdf"`);
 
     res.type('application/pdf');
     res.send(pdfBuffer);

@@ -66,7 +66,8 @@
                     // no need to search again, we already have the buyer details inm the search results
                     const selectedBuyer = this.searchResults.find(result => result._id === event.detail.choice.value);
                     selectedDocument.config.buyer.name = selectedBuyer.name;
-                    selectedDocument.config.buyer.address = selectedBuyer.address;
+                    selectedDocument.config.buyer.address1 = selectedBuyer.address1;
+                    selectedDocument.config.buyer.address2 = selectedBuyer.address2;
                     selectedDocument.config.buyer.city = selectedBuyer.city;
                     selectedDocument.config.buyer.zip = selectedBuyer.zip;
                     selectedDocument.config.buyer.country = selectedBuyer.country;
@@ -97,9 +98,11 @@
     <div class="col-span-full">
       <label for="buyer-address" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
         <div class="mt-2">
-            <input type="text" x-model="selectedDocument.config.buyer.address" autocomplete="off"
+            <input type="text" x-model="selectedDocument.config.buyer.address1" autocomplete="off"
                 placeholder="Street and number" id="buyer-address"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <input type="text" x-model="selectedDocument.config.buyer.address2" autocomplete="off"
+                class="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         </div>
     </div>
     <div class="col-span-full">
@@ -127,22 +130,6 @@
         </div>
     </div>
     <div class="col-span-full">
-      <label for="buyer-phone" class="block text-sm font-medium leading-6 text-gray-900">Phone</label>
-        <div class="mt-2">
-            <input type="text" x-model="selectedDocument.config.buyer.phone" autocomplete="off"
-                placeholder="Phone number" id="buyer-phone"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-        </div>
-    </div>
-    <div class="col-span-full">
-      <label for="buyer-email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
-        <div class="mt-2">
-            <input type="text" x-model="selectedDocument.config.buyer.email" autocomplete="off"
-                placeholder="buyer-email" id="buyer-email"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-        </div>
-    </div>
-    <div class="col-span-full">
       <label for="buyer-vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
         <div class="mt-2">
             <input type="text" x-model="selectedDocument.config.buyer.vat_number" autocomplete="off"
@@ -150,6 +137,30 @@
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         </div>
     </div>
+    <div class="col-span-full">
+      <label for="buyer-contact-name" class="block text-sm font-medium leading-6 text-gray-900">Contact Name</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.contact_name" autocomplete="off"
+                placeholder="Contact Name" id="buyer-contact-name"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    <div class="col-span-full">
+      <label for="buyer-phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Phone</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.phone" autocomplete="off"
+                placeholder="Phone number" id="buyer-phone"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    <div class="col-span-full">
+      <label for="buyer-email" class="block text-sm font-medium leading-6 text-gray-900">Contact Email</label>
+        <div class="mt-2">
+            <input type="text" x-model="selectedDocument.config.buyer.email" autocomplete="off"
+                placeholder="buyer-email" id="buyer-email"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+    </div>
+    
 </div>
 
 
@@ -194,7 +205,8 @@
             <li class="flex items-center justify-between gap-x-6 py-5" @click="
               if (event.target.id !== 'options-menu-0-button') {
                 selectedDocument.config.buyer.name = buyer.document.name;
-                selectedDocument.config.buyer.address = buyer.document.address;
+                selectedDocument.config.buyer.address1 = buyer.document.address1;
+                selectedDocument.config.buyer.address2 = buyer.document.address2;
                 selectedDocument.config.buyer.city = buyer.document.city;
                 selectedDocument.config.buyer.country = buyer.document.country;
                 selectedDocument.config.buyer.vat_number = buyer.document.vat_number;
@@ -327,7 +339,8 @@
           .then(data => {
             dataParsed = JSON.parse(data);
             selectedDocument.config.buyer.name = dataParsed.buyer.name;
-            selectedDocument.config.buyer.address = dataParsed.buyer.address;
+            selectedDocument.config.buyer.address1 = dataParsed.buyer.address1;
+            selectedDocument.config.buyer.address2 = dataParsed.buyer.address2;
             selectedDocument.config.buyer.city = dataParsed.buyer.city;
             selectedDocument.config.buyer.country = dataParsed.buyer.country;
             selectedDocument.config.buyer.vat_number = dataParsed.buyer.vat_number;

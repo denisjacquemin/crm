@@ -146,7 +146,7 @@
                 <h1>Invoice</h1>
                 <div id="seller_address">
                     <p style="font-size: 150%; font-weight: 700;" x-text="selectedDocument.config.seller.name"></p>
-                    <p style="margin-top:5px" x-text="`${selectedDocument.config.buyer.address}`"></p>
+                    <p style="margin-top:5px" x-text="`${selectedDocument.config.buyer.address1} ${selectedDocument.config.buyer.address2}`"></p>
                     <p x-text="`${selectedDocument.config.buyer.postalcode} ${selectedDocument.config.buyer.city}`"></p>
                     <p x-text="selectedDocument.config.buyer.country"></p>
                     <p style="margin-top:10px"> TVA: <span x-text="selectedDocument.config.seller.vat_number"></span></p>
@@ -156,7 +156,7 @@
                 <div id="buyer_address">
                     <p style="margin-top: -30px; font-weight: 400;">Billed To</p>
                     <p style="margin: 20px 10px 0 25px" x-text="selectedDocument.config.buyer.name"></p>
-                    <p style="margin: 5px 10px 0 25px" x-text="`${selectedDocument.config.buyer.address}`"></p>
+                    <p style="margin: 5px 10px 0 25px" x-text="`${selectedDocument.config.buyer.address1} ${selectedDocument.config.buyer.address2${selectedDocument.config.buyer.address}}`"></p>
                     <p style="margin: 15px 10px 0 25px"
                         x-text="`${selectedDocument.config.buyer.postalcode} ${selectedDocument.config.buyer.city}`"></p>
                     <p style="margin: 0 10px 0 10px" x-text="selectedDocument.config.buyer.country"></p>

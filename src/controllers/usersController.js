@@ -11,6 +11,7 @@ const DateHelper = require('../lib/date-helpers');
 const mongo = require('../services/lib/mongo');
 const session = require('express-session');
 const { response } = require('express');
+const Joi = require('joi');
 
 
 
@@ -43,7 +44,7 @@ async function signup1Post(req, res, next) {
 
     // Trim the whitespace from the email, password, and passwordConfirmation fields
     const trimmedFirstname = firstname && firstname.trim();
-    const trimmedEmail = crmEmail && crmEmail.trim();
+    const trimmedEmail = crmEmail && crmEmail.trim().toLowerCase();
     const trimmedPassword = crmPassword && crmPassword.trim();
 
     req.session.signup = req.session.signup || {};
@@ -56,12 +57,8 @@ async function signup1Post(req, res, next) {
     // Check if any of the required fields are empty
     if (!trimmedFirstname || !trimmedEmail || !trimmedPassword) {
         // If any of the fields are empty, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signup.all_fields_required')
-        });
-
         return res.render('users/signup1', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup.all_fields_required')}]
         })
     }
 
@@ -74,7 +71,7 @@ async function signup1Post(req, res, next) {
         });
 
         return res.render('users/signup1', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('forgot_password.email_invalid')}]
         })
     }
 
@@ -93,13 +90,15 @@ async function signup1Post(req, res, next) {
             submessage: req.i18n.t('signup.password_not_strong_enough_sub')
         });
 
+        console.log('In signup1Post: ', req.flash());
+
         return res.render('users/signup1', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup.password_not_strong_enough')}]
         })
     }
 
     // Check if a user already exists with the given email address
-    const userExist = await UserService.existsByEmail(sanitizedEmail.trim().toLowerCase());
+    const userExist = await UserService.existsByEmail(trimmedEmail);
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -149,21 +148,40 @@ async function signup2Post(req, res, next) {
         return res.redirect('/app');
     }
 
+    // Validate the data
+    const { error } = schema.validate(req.body);
+    if (error) {
+        // If the data is invalid, render the signup page again with an error message
+        return res.render('users/signup2', { 
+            notifications: [{id: new Date().getTime(), type: 'error', content: error.details[0].message}]
+        });
+    }
+
     // Destructure company fields: name, description, address, phone_number, email, website
     const {
         name,
-        description,
-        address,
-        phone_number,
+        address1,
+        address2,
+        zip,
+        city,
+        country,
+        vat_number,
+        contact_name,
+        phone,
         email,
         website
     } = req.body;
 
     // Trim the whitespace from the company fields
     const trimmedName = name && name.trim();
-    const trimmedDescription = description && description.trim();
-    const trimmedAddress = address && address.trim();
-    const trimmedPhoneNumber = phone_number && phone_number.trim();
+    const trimmedAddress1 = address1 && address1.trim();
+    const trimmedAddress2 = address2 && address2.trim();
+    const trimmedZip = zip && zip.trim();
+    const trimmedCity = city && city.trim();
+    const trimmedCountry = country && country.trim();
+    const trimmedVatNumber = vat_number && vat_number.trim();
+    const trimmedContactName = contact_name && contact_name.trim();
+    const trimmedPhone = phone && phone.trim();
     const trimmedEmail = email && email.trim();
     const trimmedWebsite = website && website.trim();
 
@@ -171,9 +189,14 @@ async function signup2Post(req, res, next) {
     req.session.signup = req.session.signup || {};
     req.session.signup.company = {
         name: trimmedName,
-        description: trimmedDescription,
-        address: trimmedAddress,
-        phone_number: trimmedPhoneNumber,
+        address1: trimmedAddress1,
+        address2: trimmedAddress2,
+        zip: trimmedZip,
+        city: trimmedCity,
+        country: trimmedCountry,
+        vat_number: trimmedVatNumber,
+        contact_name: trimmedContactName,
+        phone: trimmedPhone,
         email: trimmedEmail,
         website: trimmedWebsite,
     }
@@ -181,11 +204,9 @@ async function signup2Post(req, res, next) {
     // Check if any of the required fields are empty
     if (!trimmedName) {
         // If any of the fields are empty, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signup2.name_required')
-        });
-
-        return res.render('users/signup2', { notifications: req.flash() })
+        return res.render('users/signup2', { 
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup2.name_required')}]
+        })
     }
 
     // Check if a user already exists with the given email address
@@ -196,10 +217,11 @@ async function signup2Post(req, res, next) {
             message: req.i18n.t('signup.user_already_exists')
         });
 
+
         // return res.render('users/signup1', {
         //     notifications: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
         // })
-        return res.redirect('/users/signup1');
+        return res.redirect('/users/signup-1');
     }
 
     // Start a transaction
@@ -297,12 +319,8 @@ async function signinPost(req, res, next) {
     // Check if any of the required fields are empty
     if (!trimmedEmail || !trimmedPassword) {
         // If any of the fields are empty, render the signin page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signin.all_fields_require')
-        });
-
         return res.render('users/signin', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signin.all_fields_required')}]
         })
     }
 
@@ -315,7 +333,7 @@ async function signinPost(req, res, next) {
         });
 
         return res.render('users/signin', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('forgot_password.email_invalid')}]
         });
     }
 
@@ -736,6 +754,24 @@ async function OAuthGoogleCallback(req, res, next) {
 
     res.disableBackButtonRedirect('/');
 }
+
+const schema = Joi.object({
+    // name: Joi.string().trim().required(),
+    name: Joi.number().required().messages({
+        'any.required': req.i18n.t('signup2.name_required'),
+        'number.base': 'Name must be a number',
+    }),
+    address1: Joi.string().trim().allow(''),
+    address2: Joi.string().trim().allow(''),
+    zip: Joi.string().trim().allow(''),
+    city: Joi.string().trim().allow(''),
+    country: Joi.string().trim().allow(''),
+    vat_number: Joi.string().trim().allow(''),
+    contact_name: Joi.string().trim().allow(''),
+    phone: Joi.string().trim().allow(''),
+    email: Joi.string().trim().email().required(),
+    website: Joi.string().trim().allow(''),
+});
 
 module.exports = {
     signup1,

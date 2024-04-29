@@ -3,17 +3,27 @@
     x-data="{
         notifications: [],
         add(e) {
-            console.log('add', e)
+            console.log('add', e);
             this.notifications.push({
                 id: e.timeStamp,
                 type: e.detail.type,
                 content: e.detail.content,
-            })
+            });
         },
         remove(notification) {
             this.notifications = this.notifications.filter(i => i.id !== notification.id)
         },
     }"
+    x-init="
+        console.log('init', {{ stringify notifications }});
+        {{#each notifications}}
+            notifications.push({
+                id: '{{this.id}}',
+                type: '{{this.type}}',
+                content: '{{this.content}}',
+            });
+        {{/each}}   
+    "
     @notify.window="add($event)"
     class="z-50 fixed bottom-0 right-0 flex w-full max-w-xs flex-col space-y-4 pr-4 pb-4 sm:justify-start"
     role="status"
@@ -36,7 +46,7 @@
                 },
             }"
             x-show="show"
-            x-transition.duration.500ms
+            x-transition:enter.duration.500ms
             class="z-50 pointer-events-auto relative w-full max-w-sm rounded-md border border-gray-200 bg-white py-4 pl-6 pr-4 shadow-lg"
         >
             <div class="flex items-start">

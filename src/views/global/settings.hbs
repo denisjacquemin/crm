@@ -3,6 +3,7 @@
         currentMenuItem: 'general',
         accountEmail: {{ stringify accountEmail }},
         currentInvoiceSequence: {{ stringify currentInvoiceSequence }},
+        sellers: {{ stringify sellers }},
         csrfToken: document.querySelector('meta[name=\'csrf-token\']').getAttribute('content'),
         update:  function(button, url, value) {
             fetch(url, {
@@ -63,6 +64,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
                     Invoices
+                </span>
+            </li>
+            <li id="sellersMenu">
+                <span @click.prevent="currentMenuItem = 'sellers'; document.getElementById('sellers').scrollIntoView({ behavior: 'smooth' })"
+                    class="cursor-pointer group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold"
+                    :class="{'bg-gray-50 text-indigo-600': currentMenuItem === 'sellers', 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50': currentMenuItem !== 'sellers'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+
+                    Sellers
                 </span>
             </li>
             <li>
@@ -170,7 +182,21 @@
             </div>
         </div>
 
-
+        <div id="sellers" x-intersect.full="currentMenuItem = 'sellers'; document.getElementById('sellersMenu').scrollIntoView({ behavior: 'smooth' })">
+            <div class="border-b border-gray-300 pb-4">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">Sellers</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-500">Sellers details</p>
+            </div>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
+                 x-data="{ errorMsg: '', messageStyle: ''}">
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium text-gray-900">Address</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <input x-model="sellers" type="text" class="flex-1 rounded-md border-0 py-1 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6" />
+                    <button x-on:click="update($data, '/company/currentInvoiceSequence', currentInvoiceSequence)" type="button" class="text-sm ml-5 md:ml-15 font-semibold text-indigo-600 hover:text-indigo-500 sm:w-20">Update</button>
+                </div>
+                <div x-text="errorMsg" class="pl-1 mt-1" :class="{'text-green-700': messageStyle === 'success', 'text-red-500': messageStyle === 'error'}"></div>
+            </div>
+        </div>
 
         {{!-- <div id="invoices" class="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
             <h2 class="text-base font-semibold leading-7 text-gray-900">Invoices</h2>

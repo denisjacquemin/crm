@@ -185,13 +185,14 @@
                                         </div>
                                         <div class="mt-1 flex text-xs leading-5 text-gray-500"
                                              x-data="() => ({
-                                                get address() { return buyer.address },
+                                                get address1() { return buyer.address1 },
+                                                get address2() { return buyer.address2 },
                                                 get city() { return buyer.city },
                                                 get country() { return buyer.country },
                                                 get zip() { return buyer.zip },
                                              })"
                                         >
-                                            <div x-text="window.formatAddress(address, zip, city, country)" class="relative truncate w-full text-left h-5"></div>
+                                            <div x-text="window.formatAddress(address1, address2, zip, city, country)" class="relative truncate w-full text-left h-5"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -252,11 +253,15 @@
                     </div>
                 </div>
                 <div>
-                    <label for="address" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
+                    <label for="address1" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
                     <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.address" autocomplete="off"
-                            placeholder="Street and number" id="address"
+                        <input type="text" x-model="selectedBuyer.address1" autocomplete="off"
+                            placeholder="Street and number" id="address1"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <input type="text" x-model="selectedBuyer.address2" autocomplete="off"
+                            id="address2"
+                            class="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+
                     </div>
                 </div>
                 <div>
@@ -284,22 +289,6 @@
                     </div>
                 </div>
                 <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Phone</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.phone" autocomplete="off"
-                            placeholder="Phone number" id="phone"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.email" autocomplete="off"
-                            placeholder="email" id="email"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
                     <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
                     <div class="mt-2">
                         <input type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
@@ -307,6 +296,31 @@
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Name</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.contact_name" autocomplete="off"
+                            placeholder="Contact Name" id="phone"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Phone</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.phone" autocomplete="off"
+                            placeholder="Phone number" id="phone"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Contact Email</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.email" autocomplete="off"
+                            placeholder="email" id="email"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

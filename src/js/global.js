@@ -56,11 +56,14 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
 //     fetchUrl('/isStillAuthenticated', 'GET');
 // }, 6000);
 
-window.formatAddress = function(address, zip, city, country) {
-    var formattedAddress = address && (zip || city || country) ? address + ',' : address || '';    var formattedZip = zip || '';
-    var formattedCity = city || '';
-    var formattedCountry = country || '';
-    return `${formattedAddress} ${formattedZip} ${formattedCity} ${formattedCountry}`;
+window.formatAddress = function(address1, address2, zip, city, country) {
+    console.log('formatting address', address1, address2, zip, city, country);
+    var formattedAddress1 = address1 || '';
+    var formattedAddress2 = address2 ? ' ' + address2 : '';
+    var formattedZip = zip ? ' ' + zip : '';
+    var formattedCity = city ? ' ' + city : '';
+    var formattedCountry = country ? ' ' + country : '';
+    return `${formattedAddress1}${formattedAddress2}${formattedZip}${formattedCity}${formattedCountry}`;
 }
 
 window.deepMergeObjects = function(target, ...sources) {

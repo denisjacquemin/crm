@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && pm2 start ./index.js -f --no-daemon\"",        
+        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && pm2 start ./index.js -f --no-daemon\"",
         "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
         "eslint": "eslint src"
@@ -44,6 +44,7 @@
         "i18next-http-middleware": "^3.2.1",
         "instead": "^1.0.3",
         "interactjs": "^1.10.26",
+        "joi": "^17.13.0",
         "jsonwebtoken": "^9.0.0",
         "jspdf": "^2.5.1",
         "moment": "^2.29.4",

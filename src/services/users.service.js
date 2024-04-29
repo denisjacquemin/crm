@@ -9,10 +9,14 @@ const User = require('../models/user.model');
 class UserService  {
 
     static async create(data) {
-        const user = new User(data);
-        user.password = await hashPassword(filteredData.password);
-        await user.save();
-        return user;
+        try {
+            const user = new User(data);
+            user.password = await hashPassword(user.password);
+            await user.save();
+            return user;
+        } catch (error) {
+            throw error;
+        }
     }
 
 

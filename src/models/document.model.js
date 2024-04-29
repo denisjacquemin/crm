@@ -31,7 +31,8 @@ const documentSchema = new mongoose.Schema({
         template_name: { type: String, required: true, default: 'default_template' },
         buyer: {
             name: { type: String, required: false, default: '' },
-            address: { type: String, required: false, default: '' },
+            address1: { type: String, required: false, default: '' },
+            address2: { type: String, required: false, default: '' },
             city: { type: String, required: false, default: '' },
             zip: { type: String, required: false, default: '' },
             country: { type: String, required: false, default: '' },
@@ -49,7 +50,8 @@ const documentSchema = new mongoose.Schema({
         },
         seller: {
             name: { type: String, required: false, default: '' },
-            address: { type: String, required: false, default: '' },
+            address1: { type: String, required: false, default: '' },
+            address2: { type: String, required: false, default: '' },
             city: { type: String, required: false, default: '' },
             zip: { type: String, required: false, default: '' },
             country: { type: String, required: false, default: '' },

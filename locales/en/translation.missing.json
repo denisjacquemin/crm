@@ -40,5 +40,13 @@
   },
   "settings": {
     "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated"
+  },
+  "signup2": {
+    "zip": "signup2.zip",
+    "city": "signup2.city",
+    "country": "signup2.country",
+    "vat_number": "signup2.vat_number",
+    "phone": "signup2.phone",
+    "contact_name": "signup2.contact_name"
   }
 }

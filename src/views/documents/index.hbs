@@ -67,7 +67,9 @@
             }
      }"
      x-init="
-        $watch('selectedDocument', (value, oldValue) => {  
+        
+        $watch('selectedDocument', (value, oldValue) => {
+              
             console.log('########### selectedDocument changed', value); 
             var document = { ...value };
             document.autosave_updated_at = new Date();
@@ -82,6 +84,7 @@
             }
         });
         if (selectedDocumentIndex >= 0) { {{!-- Only if selectedDocumentIndex is not null --}}
+          {{!-- documents[selectedDocumentIndex] = selectedDocument; --}}
           (async () => {
             {{!-- const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`); Get the document from MongoDB --}}
             {{!-- const data = await response.json(); --}}
@@ -284,7 +287,6 @@
                                 previewData = data;
                             });
                           $watch('selectedDocument.slug', () => { 
-                            console.log('coll22 init', selectedDocument.slug)
                             loadPreview(selectedDocument.slug).then(data => {
                                 previewData = data;
                             });
@@ -325,12 +327,11 @@
                         <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to
                         Screen</button>
                         <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
-                        <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"
-                        href="/document/{{ selectedDocument.slug }}.pdf">jsPdf</a>
+                        <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"target="_blank" x-bind:href="'/document/' + selectedDocument.slug + '.pdf'">jsPdf</a>
                     </div>
-                    <div x-ref="pageContainer" class="h-full overflow-hidden mr-2 flex-1 flex" id="pages">
+                    <div x-ref="pageContainer" class="h-full overflow-auto mr-2 flex py-8" id="pages">
                         <template x-if="selectedDocument">
-                            <div id="preview" x-html="previewData" class="flex-1 flex" ></div>
+                            <div id="preview" x-html="previewData" style="margin:0 auto"></div>
                         </template>
                         <template x-if="! selectedDocument">
                             <p>Nothing to preview, Please select a document</p>
