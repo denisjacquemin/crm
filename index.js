@@ -21,10 +21,6 @@ const mongooseHelper = require('./src/services/lib/mongoose');
 const app = express();
 app.use(compression());
 
-// enable rate limiter
-
-
-
 require("./src/lib/response-helpers")(app);
 app.use(helmet({
     referrerPolicy: { policy: "same-origin" },
@@ -133,6 +129,10 @@ app.use(function(req, res, next) {
 });
 
 app.use(require('./src/middlewares/csrf'));
+app.use((req, res, next) => {
+    delete req.body._csrf; // remove _csrf from the request body
+    next();
+});
 app.use(function(req, res, next) {
     let notifications = [];
     let flash = { ...req.flash() };
@@ -148,8 +148,6 @@ app.use(function(req, res, next) {
         }
     }
     res.locals.notifications = notifications;
-    console.log('req.flash()', flash);
-    console.log('notifications', notifications);
     res.locals.session = req.session;
     res.locals.csrfToken = req.csrfToken();
     next();

@@ -1,10 +1,10 @@
 <div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="mx-2 mb-3 sm:mx-auto sm:w-full sm:max-w-md">
     {{!-- <img class="mx-auto h-12 w-auto" src="" alt="Your Company"> --}}
-    <h2 class="sm:mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t 'signup.sign_up_to_your_account' }}</h2>
+    <h2 class="sm:mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t 'users.views.signup1.sign_up_to_your_account' }}</h2>
     <p class="mt-2 text-center text-sm text-gray-600">
-        {{t 'signup.or' }}
-        <a href="/users/signin" class="font-medium text-indigo-600 hover:text-indigo-500">{{t 'signup.already_have_an_account' }}</a>
+        {{t 'users.views.signup1.or' }}
+        <a href="/users/signin" class="font-medium text-indigo-600 hover:text-indigo-500">{{t 'users.views.signup1.already_have_an_account' }}</a>
     </p>
   </div>
 
@@ -13,20 +13,20 @@
       <form class="space-y-6" action="/users/signup-1" method="POST" novalidate>
         {{> csrf }}
         <div class="mt-0">
-          <label for="email" class="block text-sm font-medium text-gray-700">{{t 'signup.firstname' }}</label>
+          <label for="email" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup1.firstname' }}</label>
           <div class="mt-1">
             <input id="" autofocus="" name="firstname" value="{{ session.signup.user.firstname }}" type="text" autocomplete="given-name" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
         <div>
-          <label for="crm-email" class="block text-sm font-medium text-gray-700">{{t 'signin.email' }}</label>
+          <label for="crm-email" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup1.email' }}</label>
           <div class="mt-1">
             <input id="crm-email" name="crm-email" value="{{ session.signup.user.email }}" type="email" autocomplete="email" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 
         <div>
-          <label for="crm-password" class="block text-sm font-medium text-gray-700">{{t 'signin.password' }}</label>
+          <label for="crm-password" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup1.password' }}</label>
           <div class="relative" x-data="{ show: false }">
             <input id="crm-password" name="crm-password" value="{{ session.signup.user.password }}" type="password" autocomplete="off" class="password-field block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm form-input"
               :type="show ? 'text' : 'password'" />
@@ -53,7 +53,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
             </span>
-            {{t 'signup.sign_up' }}
+            {{t 'users.views.signup1.sign_up' }}
           </button>
         </div>
       </form>
@@ -64,7 +64,7 @@
             <div class="w-full border-t border-gray-300"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="bg-white px-2 text-gray-500">{{t 'signin.or_continue_with' }}</span>
+            <span class="bg-white px-2 text-gray-500">{{t 'users.views.signup1.or_continue_with' }}</span>
           </div>
         </div>
 

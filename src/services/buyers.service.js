@@ -6,7 +6,7 @@ class BuyersService {
         try {
             const buyer = new Buyer(data);
             const buyerCreated = await buyer.save();
-            return buyerCreated ? buyerCreated.toObject() : null;
+            return buyerCreated ? buyerCreated : null;
         } catch (error) {
             throw error;
         }
@@ -16,24 +16,24 @@ class BuyersService {
             const buyer = await Buyer.findOne({ _id: id });
             Object.assign(buyer, data);
             const updatedBuyer = await buyer.save();
-            return buyer && updatedBuyer ? updatedBuyer.toObject() : null;
+            return buyer && updatedBuyer ? updatedBuyer : null;
     }
     
     async delete(id, company_id) {
             const buyer = await Buyer.findOne({ _id: id, company_id });
             const buyerDeleted = await buyer.deleteOne();
-            return buyer && buyerDeleted ? buyerDeleted.toObject() : null;
+            return buyer && buyerDeleted ? buyerDeleted : null;
     }
 
     async getById(id, company_id) {
             const buyer = await Buyer.findOne({ _id: id, company_id });
-            return buyer ? buyer.toObject() : null;
+            return buyer ? buyer : null;
 
     }
 
     async getBySlugAndCompanyId(slug, company_id, projection = '') {
         const buyer = await Buyer.findOne({ slug, company_id }, projection).exec();
-        return buyer ? buyer.toObject() : null;
+        return buyer ? buyer : null;
     }
     
 }

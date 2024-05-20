@@ -67,7 +67,7 @@ async function editAjax(req, res, next) {
             });
         }
 
-        res.status(200).json(buyer);
+        res.status(200).json(buyer.toObject());
 
     } catch (error) {
         next(error);
@@ -89,7 +89,7 @@ async function deleteAjax(req, res, next) {
 
         const buyerDeleted = await BuyersService.delete(buyerToDelete._id, req.session.current_company._id);
 
-        res.status(200).json(buyerDeleted);
+        res.status(200).json(buyerDeleted.toObject());
 
     } catch (error) {
         next(error);
@@ -109,14 +109,15 @@ async function newBuyerAjax(req, res, next) {
 async function createNewBuyerInMongoAndTypesense(req) {
     // automatically sync in Typense by a mongoose's hook in models/buyer.model.js
     try {
+        console.log('req.session.current_company._id', req.session.current_company._id);
         const buyerCreated = await BuyersService.create({
             company_id: req.session.current_company._id,
-            created_by_user_id: req.session.user.id,
+            created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: 'Choose a name',
         });
         
-        return buyerCreated ? buyerCreated : null;
+        return buyerCreated ? buyerCreated.toObject() : null;
 
     } catch (err) {
         throw new Error('Failed to create buyer in MongoDB', err);
@@ -131,6 +132,7 @@ async function update(req, res, next) {
             return next({ status: 404, message: 'Buyer not found' });
         }
         let updatedBuyer = await BuyersService.update(buyer._id, req.body.value);
+        updatedBuyer = updatedBuyer.toObject();
 
         updatedBuyer.autosave_updated_at = req.body.value.autosave_updated_at;
         res.status(200).json(updatedBuyer);

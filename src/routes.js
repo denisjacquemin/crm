@@ -33,7 +33,6 @@ router.post("/users/resetpassword", userController.resetPasswordPost);
 router.get("/oauth/google/url", userController.OAuthGoogleURL);
 router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 router.patch("/user/resetemail", auth, userController.resetEmail);
-router.get("/isStillAuthenticated", auth, userController.isStillAuthenticated);
 
 // Needs authentication and ACL
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);

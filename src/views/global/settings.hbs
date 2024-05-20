@@ -110,9 +110,15 @@
         
 
         <div id="general" x-intersect.full="currentMenuItem = 'general'; document.getElementById('generalMenu').scrollIntoView({ behavior: 'smooth' })">
-            <div class="border-b border-gray-300 pb-4">
+            <div class="border-b border-gray-300 pb-4 ">
                 <h2 class="text-base font-semibold leading-7 text-gray-900">General</h2>
                 <p class="mt-1 text-sm leading-6 text-gray-500">Any parameters related to general.</p>
+            </div>
+            <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center text-red-500">             
+                <label class="w-full mr-2 sm:w-44 text-sm block font-medium">{{t 'global.settings.sign_me_out' }}</label>
+                <div class="flex mt-3 sm:flex-auto sm:mt-0">
+                    <a class="underline" href="/users/signout">{{t 'global.settings.signout' }}</a>
+                </div>
             </div>
             <div class="pt-6 flex flex-col sm:flex-row sm:flex-wrap items-center"
                  x-data="{ errorMsg: '', messageStyle: ''}">

@@ -10,9 +10,6 @@ const { sanitizeEmail } = require('../lib/sanitizer');
 const DateHelper = require('../lib/date-helpers');
 const mongo = require('../services/lib/mongo');
 const session = require('express-session');
-const { response } = require('express');
-const Joi = require('joi');
-
 
 
 async function signup1(req, res, next) {
@@ -58,20 +55,15 @@ async function signup1Post(req, res, next) {
     if (!trimmedFirstname || !trimmedEmail || !trimmedPassword) {
         // If any of the fields are empty, render the signup page again with an error message
         return res.render('users/signup1', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup.all_fields_required')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.all_fields_required')}]
         })
     }
 
     // Check if the email is valid
     if (!validator.isEmail(trimmedEmail)) {
         // If the email is not valid, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('forgot_password.email_invalid'),
-            submessage: req.i18n.t('forgot_password.email_invalid_sub')
-        });
-
         return res.render('users/signup1', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('forgot_password.email_invalid')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: trimmedEmail}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
         })
     }
 
@@ -85,15 +77,14 @@ async function signup1Post(req, res, next) {
             returnScore: false
         })) {
         // If the password is not strong enough, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signup.password_not_strong_enough'),
-            submessage: req.i18n.t('signup.password_not_strong_enough_sub')
-        });
-
-        console.log('In signup1Post: ', req.flash());
-
         return res.render('users/signup1', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup.password_not_strong_enough')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.password_not_strong_enough'), subcontent: req.i18n.t('users.controller.password_not_strong_enough_sub', {
+                minLength: process.env.PASSWORD_MIN_LENGTH,
+                minLowercase: process.env.PASSWORD_MIN_LOWERCASE,
+                minUppercase: process.env.PASSWORD_MIN_UPPERCASE,
+                minNumbers: process.env.PASSWORD_MIN_NUMBERS,
+                minSymbols: process.env.PASSWORD_MIN_SYMBOLS
+              })}]
         })
     }
 
@@ -101,22 +92,14 @@ async function signup1Post(req, res, next) {
     const userExist = await UserService.existsByEmail(trimmedEmail);
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signup.user_already_exists')
-        });
-
-        // return res.render('users/signup1', {
-        //     notifications: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
-        // })
         return res.render('users/signup1', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.user_already_exists')}]
+
         })
     }
 
     // Go to signup2 - new company page
     res.redirect('/users/signup-2');
-    // res.render('users/signup2');
-
 };
 
 async function signup2(req, res, next) {
@@ -146,15 +129,6 @@ async function signup2Post(req, res, next) {
     if (req.session.isAuth) {
         // If the user is already authenticated, set a flash message and redirect to the app page
         return res.redirect('/app');
-    }
-
-    // Validate the data
-    const { error } = schema.validate(req.body);
-    if (error) {
-        // If the data is invalid, render the signup page again with an error message
-        return res.render('users/signup2', { 
-            notifications: [{id: new Date().getTime(), type: 'error', content: error.details[0].message}]
-        });
     }
 
     // Destructure company fields: name, description, address, phone_number, email, website
@@ -201,12 +175,16 @@ async function signup2Post(req, res, next) {
         website: trimmedWebsite,
     }
 
-    // Check if any of the required fields are empty
     if (!trimmedName) {
-        // If any of the fields are empty, render the signup page again with an error message
-        return res.render('users/signup2', { 
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signup2.name_required')}]
-        })
+        return res.render('users/signup2', {
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.name_is_required')}]
+        });
+    }
+    
+    if (!validator.isEmail(trimmedEmail)) {
+        return res.render('users/signup2', {
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: email}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
+        });
     }
 
     // Check if a user already exists with the given email address
@@ -214,12 +192,12 @@ async function signup2Post(req, res, next) {
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
-            message: req.i18n.t('signup.user_already_exists')
+            message: req.i18n.t('users.controller.user_already_exists')
         });
 
 
         // return res.render('users/signup1', {
-        //     notifications: { type: 'error', message: req.i18n.t('signup.user_already_exists') }
+        //     notifications: { type: 'error', message: req.i18n.t('users.controller.user_already_exists') }
         // })
         return res.redirect('/users/signup-1');
     }
@@ -227,8 +205,8 @@ async function signup2Post(req, res, next) {
     // Start a transaction
     // const session = await mongo.startTransaction();
 
-    let newUser = null;
-    let newCompany = null;
+    let userCreated = null;
+    let companyCreated = null;
 
     try {
         // Generate ObjectId for the user and the company
@@ -244,7 +222,7 @@ async function signup2Post(req, res, next) {
         user.timezone = DateHelper.guess();
 
         // Create the user
-        await UserService.create(user, {}); //await userService.create(user, { session });
+        userCreated = await UserService.create(user, {}); //await userService.create(user, { session });
 
         // Get the company
         const company = req.session.signup.company;
@@ -252,13 +230,11 @@ async function signup2Post(req, res, next) {
         company.users = [userId];
 
         // Create the company
-        await CompanyService.create(company, {}); //await companyService.create(company, { session });
+        companyCreated = await CompanyService.create(company, {}); //await companyService.create(company, { session });
 
         // Commit the transaction
         // await mongo.commitTransaction(session);
 
-        newUser = user;
-        newCompany = company;
     } catch (err) {
         // If there's an error, abort the transaction and throw an error
         // await mongo.abortTransaction(session);
@@ -267,9 +243,9 @@ async function signup2Post(req, res, next) {
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
-    const { password, ...saferUser } = newUser;
+    const { password, ...saferUser } = userCreated.toObject();
     req.session.user = saferUser
-    req.session.current_company = newCompany
+    req.session.current_company = companyCreated.toObject();
 
     delete req.session.signup
 
@@ -307,49 +283,63 @@ async function signinPost(req, res, next) {
 
 
     // Trim the whitespace from the email and password fields
-    const trimmedEmail = crmEmail && crmEmail.trim();
+    const emailSanitized = crmEmail && sanitizeEmail(crmEmail);
     const trimmedPassword = crmPassword && crmPassword.trim();
 
-    req.session.signin = req.session.signin || {};
-    req.session.signin.user = {
-        email: trimmedEmail,
-        password: trimmedPassword
-    }
+    // req.session.signin = req.session.signin || {};
+    // req.session.signin.user = {
+    //     email: trimmedEmail,
+    //     password: trimmedPassword
+    // }
 
     // Check if any of the required fields are empty
-    if (!trimmedEmail || !trimmedPassword) {
+    if (!emailSanitized || !trimmedPassword) {
         // If any of the fields are empty, render the signin page again with an error message
         return res.render('users/signin', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('signin.all_fields_required')}]
+            email: crmEmail,
+            password: trimmedPassword,
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.all_fields_required')}]
         })
     }
 
     // Check if the email is valid
-    if (!validator.isEmail(trimmedEmail)) {
+    if (!validator.isEmail(emailSanitized)) {
         // If the email is not valid, render the signup page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('forgot_password.email_invalid'),
-            submessage: req.i18n.t('forgot_password.email_invalid_sub')
-        });
-
         return res.render('users/signin', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('forgot_password.email_invalid')}]
+            email: crmEmail,
+            password: trimmedPassword,
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: trimmedEmail}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
         });
     }
 
-    // Check if a user exists with the given email address
-    emailSanitized = sanitizeEmail(trimmedEmail);
+
 
     const user = await UserService.getByEmail(emailSanitized);
     if (!user) {
-        req.flash('error', {
-            message: req.i18n.t('signin.email_or_password_invalid'),
-        });
-
         // If a user does not exist, render the signin page again with an error message
         return res.render('users/signin', {
-            notifications: req.flash()
+            email: crmEmail,
+            password: trimmedPassword,
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_or_password_invalid')}]
         })
+    }
+
+    // Check if the user has a password
+    if (!user.password) {
+        // If the user does not have a password, they signed up with an OAuth provider. Show an error message telling them to sign in with the correct provider.
+        let provider;
+        if (user.google_id !== '') {
+            provider = 'google';
+        } else if (user.microsoft_id !== '') {
+            provider = 'microsoft';
+        } else if (user.twitter_id !== '') {
+            provider = 'twitter';
+        }
+        return res.render('users/signin', {
+            email: crmEmail,
+            password: trimmedPassword,
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t(`users.controller.signin_with_${provider}`)}]
+        });
     }
 
     // Check if the given password matches the user's password
@@ -357,12 +347,11 @@ async function signinPost(req, res, next) {
     if (!isMatch) {
 
         // If the passwords do not match, render the signin page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('signin.email_or_password_invalid'),
-        });
-
         return res.render('users/signin', {
-            notifications: req.flash()
+            email: crmEmail,
+            password: trimmedPassword,
+            message: req.i18n.t('users.controller.email_or_password_invalid'),
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_or_password_invalid')}]
         });
     }
 
@@ -371,11 +360,10 @@ async function signinPost(req, res, next) {
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
     req.session.current_company = current_company
-    const { password, ...saferUser } = user; // remove password key from user object
-    req.session.user = saferUser
+    let saferUser = user.toObject();
+    delete saferUser.password;
+    req.session.user = saferUser;
     req.session.timestamps = []
-
-    delete req.session.signin
 
     // Redirect the user to the app page
     const returnTo = req.session.returnTo
@@ -431,25 +419,21 @@ async function forgotPasswordPost(req, res, next) {
     // Check if the email field is empty
     if (!emailSanitized) {
         // If the email field is empty, render the forgot password page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('forgot_password.email_required'),
-        });
-
         return res.render('users/forgot-password', {
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_required')}]
         })
     }
 
     // Check if email is valid
     if (!validator.isEmail(emailSanitized)) {
         // If the email is not valid, render the forgot password page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('forgot_password.email_invalid'),
-            submessage: req.i18n.t('forgot_password.email_invalid_sub')
-        });
-
         return res.render('users/forgot-password', {
-            notifications: req.flash()
+            email: emailSanitized,
+            notifications: [{
+                id: new Date().getTime(), type: 'error', 
+                content: req.i18n.t('users.controller.email_invalid', { email: emailSanitized }), 
+                subcontent: req.i18n.t('users.controller.email_invalid_sub')
+            }]
         })
     }
 
@@ -458,7 +442,7 @@ async function forgotPasswordPost(req, res, next) {
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('forgot_password.user_does_not_exist'),
+            message: req.i18n.t('users.controllers.user_does_not_exist'),
         });
 
         return res.render('users/forgot-password', {
@@ -477,7 +461,7 @@ async function forgotPasswordPost(req, res, next) {
 
     // Set a flash message and redirect to the signin page
     req.flash('info', {
-        'message': req.i18n.t('forgot_password.email_sent')
+        'message': req.i18n.t('users.controller_password.email_sent')
     });
 
     res.redirect('/users/resetpasswordsent');
@@ -512,8 +496,8 @@ async function resetPassword(req, res, next) {
     // Check if the token field is empty
     if (!token) {
         req.flash('error', {
-            message: req.i18n.t('reset_password.user_does_not_exist'),
-            submessage: req.i18n.t('reset_password.request_new_token')
+            message: req.i18n.t('users.controller.user_does_not_exist'),
+            submessage: req.i18n.t('users.controller.request_new_token')
         });
         return res.redirect('/users/forgotpassword');
     }
@@ -528,8 +512,8 @@ async function resetPassword(req, res, next) {
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.user_does_not_exist'),
-            submessage: req.i18n.t('reset_password.request_new_token')
+            message: req.i18n.t('users.controller.user_does_not_exist'),
+            submessage: req.i18n.t('users.controller.request_new_token')
         });
         return res.redirect('/users/forgotpassword');
     }
@@ -538,7 +522,7 @@ async function resetPassword(req, res, next) {
     if (user.resetPasswordExpires < Date.now()) {
         // If the reset password token has expired, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.token_expired'),
+            message: req.i18n.t('users.controller.token_expired'),
             // include date in submessage
 
             // submessage: req.i18n.t(‘reset_password.token_expired_sub’, { date: moment(user.resetPasswordExpires).format(‘DD / MM / YYYY HH: mm’) })
@@ -550,8 +534,8 @@ async function resetPassword(req, res, next) {
     if (user.resetPasswordExpires < Date.now()) {
         // If the reset password token has expired, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.token_expired'),
-            submessage: req.i18n.t('reset_password.request_new_token')
+            message: req.i18n.t('users.controller.token_expired'),
+            submessage: req.i18n.t('users.controller.request_new_token')
         });
 
         return res.redirect('/users/forgotpassword');
@@ -568,13 +552,13 @@ async function resetEmail(req, res, next) {
         // Validate and sanitize email
         const emailSanitized = sanitizeEmail(email);
         if (!emailSanitized || !validator.isEmail(emailSanitized)) {
-            return res.status(400).json({ type: 'error', message: req.i18n.t('forgot_password.email_invalid', { email: emailSanitized }) });
+            return res.status(400).json({ type: 'error', message: req.i18n.t('users.controller.email_invalid', { email: emailSanitized }) });
         }
 
         // Check if the email is already taken
         const user = await UserService.getByEmail(emailSanitized);
         if (user) {
-            return res.status(400).json({ type: 'error', message: req.i18n.t('forgot_password.email_taken', { email: emailSanitized }) });
+            return res.status(400).json({ type: 'error', message: req.i18n.t('users_controller.email_taken', { email: emailSanitized }) });
         }
 
         // Update the user's email
@@ -584,7 +568,7 @@ async function resetEmail(req, res, next) {
         req.session.user.email = emailSanitized;
 
         // Send a success response
-        return res.status(200).json({ message: req.i18n.t('forgot_password.email_updated') });
+        return res.status(200).json({ message: req.i18n.t('users.controller.email_updated') });
 
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
@@ -592,14 +576,6 @@ async function resetEmail(req, res, next) {
         next(err);
     }
 }
-
-async function isStillAuthenticated(req, res, next) {
-    // do nothing if user is authenticated
-    return res.status(200).json({ message: req.i18n.t('common.still_authenticated') });
-}
-
-
-
 
 
 async function resetPasswordPost(req, res, next) {
@@ -623,7 +599,7 @@ async function resetPasswordPost(req, res, next) {
     if (!trimmedPassword) {
         // If the password field is empty, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.password_required'),
+            message: req.i18n.t('users.controller.password_required'),
         });
 
         return res.render('users/reset-password', {
@@ -636,7 +612,7 @@ async function resetPasswordPost(req, res, next) {
     if (!trimmedConfirmPassword) {
         // If the confirmPassword field is empty, render the reset password page again with an error message    
         req.flash('error', {
-            message: req.i18n.t('reset_password.confirm_password_required'),
+            message: req.i18n.t('users.controller.confirm_password_required'),
         });
 
         return res.render('users/reset-password', {
@@ -649,7 +625,7 @@ async function resetPasswordPost(req, res, next) {
     if (trimmedPassword !== trimmedConfirmPassword) {
         // If the password and confirmPassword fields do not match, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.passwords_do_not_match'),
+            message: req.i18n.t('users.controller.passwords_do_not_match'),
         });
 
         return res.render('users/reset-password', {
@@ -663,8 +639,8 @@ async function resetPasswordPost(req, res, next) {
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('reset_password.user_does_not_exist'),
-            submessage: req.i18n.t('reset_password.request_new_token')
+            message: req.i18n.t('users.controller.user_does_not_exist'),
+            submessage: req.i18n.t('users.controller.request_new_token')
         });
         return res.redirect('/users/forgotpassword');
     }
@@ -673,8 +649,8 @@ async function resetPasswordPost(req, res, next) {
     if (user.resetPasswordExpires < Date.now()) {
         // If the reset password token has expired, render the reset password page again with an error message  
         req.flash('error', {
-            message: req.i18n.t('reset_password.token_expired'),
-            submessage: req.i18n.t('reset_password.request_new_token')
+            message: req.i18n.t('users.controller.token_expired'),
+            submessage: req.i18n.t('users.controller.request_new_token')
         });
 
         return res.redirect('/users/forgotpassword');
@@ -691,8 +667,8 @@ async function resetPasswordPost(req, res, next) {
     });
 
     req.flash('info', {
-        message: req.i18n.t('reset_password.password_updated'),
-        submessage: req.i18n.t('reset_password.please_sign_in')
+        message: req.i18n.t('users.controller.password_updated'),
+        submessage: req.i18n.t('users.controller.please_sign_in')
     });
 
     res.redirect("users/signin");
@@ -739,14 +715,7 @@ async function OAuthGoogleCallback(req, res, next) {
         await UserService.updateById(user._id, user);
     }
     req.session.isAuth = true
-    req.session.user = {
-        id: user._id,
-        email: user.email,
-        firstname: user.firstname,
-        language: user.language,
-        timezone: user.timezone,
-        picture: user.picture
-    }
+    req.session.user = user;
 
     req.session.current_company = await CompanyService.getById(user.companies[0]);
 
@@ -754,24 +723,6 @@ async function OAuthGoogleCallback(req, res, next) {
 
     res.disableBackButtonRedirect('/');
 }
-
-const schema = Joi.object({
-    // name: Joi.string().trim().required(),
-    name: Joi.number().required().messages({
-        'any.required': req.i18n.t('signup2.name_required'),
-        'number.base': 'Name must be a number',
-    }),
-    address1: Joi.string().trim().allow(''),
-    address2: Joi.string().trim().allow(''),
-    zip: Joi.string().trim().allow(''),
-    city: Joi.string().trim().allow(''),
-    country: Joi.string().trim().allow(''),
-    vat_number: Joi.string().trim().allow(''),
-    contact_name: Joi.string().trim().allow(''),
-    phone: Joi.string().trim().allow(''),
-    email: Joi.string().trim().email().required(),
-    website: Joi.string().trim().allow(''),
-});
 
 module.exports = {
     signup1,
@@ -788,6 +739,5 @@ module.exports = {
     resetPasswordSent,
     resetEmail,
     OAuthGoogleURL,
-    OAuthGoogleCallback,
-    isStillAuthenticated
+    OAuthGoogleCallback
 };

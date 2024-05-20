@@ -16,16 +16,23 @@ async function index(req, res) {
             'include_fields': 'slug, createdAt, updatedAt, config.invoice_number, config.invoice_date, config.amounts.total, config.buyer.name, config.template_name',
             'per_page': 30
         });
+        if (result.hits.length === 0) {
+            return res.render('documents/index', {
+                layout: 'app',
+                documents: [],
+                selectedDocumentIndex: -1,
+                selectedDocument: null
+            });
+        }
 
         const documents = result.hits.map(hit => hit.document);
         const selectedDocument = await DocumentService.getBySlugAndCompanyId(documents[0].slug, req.session.current_company._id);
-
 
         res.render('documents/index', {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: documents.length > 0 ? 0 : -1,
-            selectedDocument: selectedDocument
+            selectedDocument: selectedDocument.toObject()
         });
     } catch (err) {
         console.error(err);
@@ -70,7 +77,8 @@ async function createNewDocumentInMongoAndTypesense(req) {
     let invoice_date = new Date();
     invoice_date.setHours(0, 0, 0, 0);
 
-    // get default_payment_terms from company settings
+    // get default_payment_terms from company 
+    console.log('req.session.current_company:', req.session.current_company);
     let default_invoice_due_date_terms_type = req.session.current_company.settings.default_invoice_due_date_terms_type;
     let invoice_due_date_value;
 
@@ -83,12 +91,10 @@ async function createNewDocumentInMongoAndTypesense(req) {
     }
 
     const invoiceSequenceValue = await CompanyService.getNextInvoiceSequenceValue(req.session.current_company._id);
-    console.log('invoiceSequenceValue:', invoiceSequenceValue);
     req.session.current_company.settings.current_invoice_sequence = invoiceSequenceValue;
-
-    return await DocumentService.create({
+    const documentCreated = await DocumentService.create({
         company_id: req.session.current_company._id,
-        created_by_user_id: req.session.user.id,
+        created_by_user_id: req.session.user._id,
         slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
         items: [],
         subtotal_amount: 0,
@@ -103,7 +109,8 @@ async function createNewDocumentInMongoAndTypesense(req) {
             },
             seller: {
                 name: req.session.current_company.name,
-                address: req.session.current_company.address,
+                address1: req.session.current_company.address1,
+                address2: req.session.current_company.address2,
                 city: req.session.current_company.city,
                 zip: req.session.current_company.zip,
                 country: req.session.current_company.country,
@@ -117,6 +124,7 @@ async function createNewDocumentInMongoAndTypesense(req) {
             invoice_number: `${new Date().getFullYear()}#${String(req.session.current_company.settings.current_invoice_sequence).padStart(5, '0')}`,   
         }
     });
+    return documentCreated.toObject();
 }
 
 async function edit(req, res) {
@@ -150,7 +158,7 @@ async function edit(req, res) {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: documents.length > 0 ? 0 : -1,
-            selectedDocument: selectedDocument
+            selectedDocument: selectedDocument.toObject()
         });
     } catch (err) {
         console.error(err);
@@ -167,7 +175,7 @@ async function editAjax(req, res) {
             return res.status(404).send();
         }
 
-        res.json(document);
+        res.json(document.toObject());
         
     } catch (err) {
         console.error(err);
@@ -186,8 +194,8 @@ async function update(req, res, next) {
             throw error;
         }
 
-        const updatedDocument = await DocumentService.update(document._id, req.body.value);
-
+        let updatedDocument = await DocumentService.update(document._id, req.body.value);
+        updatedDocument = updatedDocument.toObject();
         updatedDocument.autosave_updated_at = req.body.value.autosave_updated_at;
         res.status(200).json(updatedDocument);
 
@@ -231,8 +239,6 @@ async function search(req, res) {
 async function preview(req, res) {
     const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
-    console.log('preview document:', req.params.slug, document);
-
     if (!document) {
         return res.status(404).send();
     }
@@ -242,21 +248,14 @@ async function preview(req, res) {
     console.log('layout:', layout);
     res.render("documents/preview", {
         layout,
-        document: document,
+        document: document.toObject(),
         template_name: document.config.template_name 
     });
 }
 
 
 async function toPDFWithPuppeteer(req, res) {
-    // const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
-
-    // console.log('toPDFWithPuppeteer document:', document);
-
-    // if (!document) {
-    //     return res.status(404).send();
-    // }
-
+ 
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
@@ -276,7 +275,7 @@ async function toPDFWithPuppeteer(req, res) {
 
     await page.goto(`http://localhost:3000/document/preview/${req.params.slug}`, { waitUntil: 'load' });
 
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }, preferCSSPageSize: true});
     await browser.close();
 
     res.setHeader('Content-Disposition', `attachment; filename="${req.params.slug}.pdf"`);
@@ -287,14 +286,6 @@ async function toPDFWithPuppeteer(req, res) {
 
 async function toPDF(req, res) {
     try {
-        // const documentService = await DocumentService.getInstance();
-        // const document = await documentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
-
-        // if (!document) {
-        //     return res.status(404).send();
-        // }
-
-        // use jsPdf to generate the PDF, send doc generated back to the browser for download
         const doc = new jsPDF();
         doc.text('Hello', 10, 10);
         doc.text('World', 10, 20);

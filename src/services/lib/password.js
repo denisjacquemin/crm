@@ -14,6 +14,8 @@
     }
 
     async function comparePassword(plainPassword, hashedPassword) {
+        console.log('plain', typeof plainPassword);
+        console.log('hashed', typeof hashedPassword);
         if (typeof plainPassword !== 'string' || typeof hashedPassword !== 'string') {
             throw new TypeError('Both arguments must be strings');
         }

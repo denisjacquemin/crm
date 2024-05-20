@@ -15,14 +15,14 @@
         <div style="margin-top:5px;">
           <label for="crm-email" class="block text-sm font-medium text-gray-700">{{t 'signin.email' }}</label>
           <div class="mt-1">
-            <input id="crm-email" name="crm-email" value="{{ session.signin.user.email }}" autofocus="" type="email" autocomplete="email" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="crm-email" name="crm-email" value="{{ email }}" autofocus="" type="email" autocomplete="email" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 
         <div style="margin-top: 15px;">
           <label for="crm-password" class="block text-sm font-medium text-gray-700">{{t 'signin.password' }}</label>
           <div class="relative" x-data="{ show: false }">
-            <input id="crm-password" name="crm-password" type="password" value="{{ session.signin.user.password }}" class="password-field block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm form-input"
+            <input id="crm-password" name="crm-password" type="password" value="{{ password }}" class="password-field block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm form-input"
               :type="show ? 'text' : 'password'" />
             <span class="text-gray-400 absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" @click="show = !show" aria-label="{{t 'common.toggle_password_visbility' }}" :aria-pressed="show">
             <template x-if="show">

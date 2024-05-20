@@ -32,9 +32,7 @@ onmessage = async function(event) {
                 result = { notfound: true };
                 break;
             default:
-                console.log('Autosave worker default')
                 if (response.ok) {
-                    console.log('Autosave worker response ok')
                     result = await response.json();
                 } else {
                     console.log('Autosave worker response not ok')
@@ -43,7 +41,6 @@ onmessage = async function(event) {
         }
         result.targetedObject = event.data.targetedObject;
         result.slug = value.slug;
-        console.log('Autosave worker after switch', result);
 
         postMessage(result);
     } catch (error) {

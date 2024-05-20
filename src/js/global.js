@@ -51,13 +51,9 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
         });
 };
 
-// setInterval(function() {
-//     console.log('checking if still authenticated');
-//     fetchUrl('/isStillAuthenticated', 'GET');
-// }, 6000);
+
 
 window.formatAddress = function(address1, address2, zip, city, country) {
-    console.log('formatting address', address1, address2, zip, city, country);
     var formattedAddress1 = address1 || '';
     var formattedAddress2 = address2 ? ' ' + address2 : '';
     var formattedZip = zip ? ' ' + zip : '';

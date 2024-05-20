@@ -5,11 +5,93 @@
         "language_changed": "Language has been changed",
         "toggle_password_visbility": "Toggle password visibility"
     },
+    "global": {
+        "settings": {
+            "sign_me_out": "Sign me out",
+            "signout": "Sign out"
+        }
+    },
     "nav": {
-        "dashboard": "Dashboard",
-        "invoices": "Invoices",
-        "clients": "Clients",
-        "tickets": "Tickets"
+        "documents": "Documents",
+        "signout": "Sign out",
+        "signout_alt": "Click here to sign out "
+    },
+    "documents": {
+        "views": {
+            "index": {
+                "new_invoice": "Create a new Invoice",
+                "no_document_found": "No documents found.",
+                "no_document_selected": "No document selected. Details for the selected document will display here.",
+                "nothing_to_preview": "No document selected. Preview for the selected document will display here.",
+                "search_placeholder": "Filter by buyers's name, VAT number, address,...",
+                "search_sort_by": "Sort by",
+                "search_latest_first": "Latest first",
+                "search_oldest_first": "Oldest first",
+                "search_last_updated_first": "Lastest updated first",
+                "search_oldest_updated_first": "Oldest updated first"
+
+
+            }
+        }
+    },
+    "users": {
+        "views": {
+            "signup1": {
+                "sign_up_to_your_account": "Sign up to your account",
+                "create_account": "Create an account",
+                "firstname": "First Name",
+                "already_have_an_account": "sign in if you already have an account",
+                "or": "Or",
+                "email": "Email",
+                "password": "Password",
+                "sign_up": "Sign up",
+                "or_continue_with": "Or continue with"
+            },
+            "signup2": {
+                "create_company": "Create a new Company",
+                "already_have_an_account": "sign in if you already have an account",
+                "or": "Or",
+                "name": "Name",
+                "zip": "Zip",
+                "city": "City",
+                "country": "Country",
+                "vat_number": "VAT Number",
+                "contact_name": "Contact Name",
+                "phone": "Phone",
+                "email":"Email",
+                "description": "Description",
+                "address": "Address",
+                "phone_number": "Phone Number",
+                "website": "Website",
+                "sign_up": "Sign up"
+            }
+        },
+        "controller": {
+            "password_not_strong_enough": "Password is not strong enough",
+            "password_not_strong_enough_sub": "<ul><li>Your password must be at least {{minLength}} characters long</li><li>include at least {{minLowercase}} lowercase letter(s)</li><li>{{minUppercase}} uppercase letter(s)</li><li>{{minNumbers}} number(s)</li><li>{{minSymbols}} symbol(s)</li></ul>",
+            "email_invalid": "The Email <em>{{email}}</em> is invalid",
+            "email_required": "Email field is required",
+            "email_invalid_sub": "Your email should include an <em>@</em> symbol and a period. After the period, it should have a valid ending like <em>.com</em> or <em>.org</em>. For example, <em>example@email.com</em>.",
+            "user_already_exists": "User with the same Email already exists",
+            "all_fields_required": "Email and Password are required",
+            "name_required": "The Name of the company is required",
+            "user_does_not_exist": "We can't find a user with that email address",
+            "email_sent": "An email has been sent",
+            "request_new_token": "Please try again",
+            "token_expired": "Your request expired",
+            "email_taken": "The Email '{{email}}' is already taken",
+            "email_updated": "The Email has been updated",
+            "email_or_password_invalid": "Email or Password invalid",
+            "password_required": "Password field is required",
+            "confirm_password_required": "Password Confirmation field is required",
+            "passwords_do_not_match": "Password and Password Confirmation do not match",
+            "password_updated": "The Password has been updated",
+            "please_sign_in": "Please sign in",
+            "signin_with_google": "Seems you&rsquo;ve logged in using Google before. To access your account, please proceed with Google sign-in.",
+            "signin_with_microsoft": "Seems you&rsquo;ve logged in using Microsoft before. To access your account, please proceed with Microsoft sign-in.",
+            "signin_with_twitter": "Seems you&rsquo;ve logged in using X/Twitter before. To access your account, please proceed with X/Twitter sign-in.",
+            "name_is_required": "At least a name is required"
+        }   
     },
     "signin": {
         "sign_in_to_your_account": "Sign in to your account",
@@ -21,32 +103,9 @@
         "forgot_password": "Forgot your password?",
         "or_continue_with": "Or continue with",
         "sign_in": "Sign in",
-        "all_fields_required": "Email and Password are required",
-        "email_or_password_invalid": "Email or Password invalid",
         "password_and_password_confirmation_must_match": "Password and Password Confirmation must match",
         "already_authenticated": "Already authenticated",
         "not_authenticated": "Please authenticate before proceeding"
-    },
-    "signup": {
-        "sign_up_to_your_account": "Sign up to your account",
-        "or": "Or",
-        "firstname": "Firstname",
-        "already_have_an_account": "sign in if you already have an account",
-        "password_confirmation": "Password confirmation",
-        "sign_up": "Sign up",
-        "all_fields_required": "Firstname, Email, Password and Password Confirmation are required",
-        "user_already_exists": "User with the same Email already exists",
-        "passwords_do_not_match": "Password and Password Confirmation do not match"
-    },
-    "signup2": {
-        "create_company": "Create a new Company",
-        "name": "Name",
-        "description": "Description",
-        "address": "Address",
-        "phone_number": "Phone Number",
-        "email": "Email",
-        "website": "Website",
-        "name_required": "The Name of the company is required"
     },
     "companies": {
         "create_new_company": "Create new company",
@@ -59,13 +118,7 @@
         "instructions": "Enter your email and we'll send you a link to reset your password",
         "send_an_email": "Send me instructions by Email",
         "email_subject": "Reset your password",
-        "email_sent": "An email has been sent",
-        "email_updated": "The Email has been updated",
         "email_invalid": "The Email '{{email}}' is invalid",
-        "email_taken": "The Email '{{email}}' is already taken",
-        "email_required": "Email field is required",
-        "email_invalid_sub": "It should contain the '@', '.' symbols and a valid TLD, the part after the last dot (e.g. .com, .org, etc.), such as example@email.com",
-        "user_does_not_exist": "We can't find a user with that email address",
         "email_content": {
             "hi_name": "Hi {{name}},",
             "password_reset_request": "We received a request to reset the password for your account. If you made this request, please click the link below to set a new password.",
@@ -74,18 +127,9 @@
             "thanks": "Thanks"
         }
     },
-    "reset_password": {
-        "user_does_not_exist": "Account not found",
-        "request_new_token": "Please try again",
-        "token_expired": "Your request expired"
-    },
     "reset_password_sent": {
         "title": "We’ve sent you a password reset link",
         "instructions": "You will receive an email shortly with a link to reset your password. You may now close this tab."
-    },
-    "documents": {
-        "document_not_found": "Document not found",
-        "document_not_found_sub": "The document you are looking for does not exist or has been deleted"
     },
     "settings": {
         "current_invoice_sequence_updated": "The invoice sequence has been updated"

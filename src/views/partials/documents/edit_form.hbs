@@ -97,7 +97,6 @@
                     this.handleTermsType(this.selectedDocument.config.invoice_due_date.terms_type, startOfDay); // use the start of the day to compute due date
                 }
             });
-            console.log('Handle Terms Type on init', this.selectedDocument.config.invoice_due_date.terms_type, dayjs.utc(this.selectedDocument.config.invoice_date).local().toDate());
 
             // Depending on terms_type handle dueDate Picker field
             this.handleTermsType(this.selectedDocument.config.invoice_due_date.terms_type, dayjs.utc(this.selectedDocument.config.invoice_date).toDate());
@@ -161,7 +160,7 @@
             })"
       >
         <input type="text" @click.prevent="openSlide = true; slideContentPartialName='slideSeller';" x-model="selectedDocument.config.seller.name" id="seller-id" autocomplete="off" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-        <p x-text="window.formatAddress(address1, address2, zip, city, country)" class="pl-3 mt-1 text-sm leading-4 text-gray-600 h-5"></p>
+        <p x-text="window.formatAddress(address1, address2, zip, city, country)" class="pl-3 mt-1 text-sm leading-4 text-gray-600"></p>
         <p x-text="selectedDocument.config.seller.vat_number" class="text-sm pl-3 mt-1 leading-4 text-gray-600 h-5"></p>
       </div>
 

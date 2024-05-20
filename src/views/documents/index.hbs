@@ -19,8 +19,8 @@
                     this.documents.unshift(newDocument);
                     this.selectedDocumentIndex = 0;
                     this.selectedDocument = newDocument;
-                    this.updateNewUrl(newDocument.slug);
-                    this.showCol2();
+                    updateNewUrl(newDocument.slug);
+                    if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'});
                 } catch (error) { 
                     console.error('Error creating new document', error); 
                 }
@@ -67,10 +67,8 @@
             }
      }"
      x-init="
-        
         $watch('selectedDocument', (value, oldValue) => {
               
-            console.log('########### selectedDocument changed', value); 
             var document = { ...value };
             document.autosave_updated_at = new Date();
             localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));
@@ -83,6 +81,7 @@
                 showCol1();
             }
         });
+
         if (selectedDocumentIndex >= 0) { {{!-- Only if selectedDocumentIndex is not null --}}
           {{!-- documents[selectedDocumentIndex] = selectedDocument; --}}
           (async () => {
@@ -104,7 +103,8 @@
                     <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
                     </svg>
-                    New Invoice / Quote / ...
+                    {{t 'documents.views.index.new_invoice' }}
+                    {{!-- New Invoice / Quote / ... --}}
                 </button>
             </div>
             <div class="pl-3 sm:px-2 flex items-center shadow-md " 
@@ -127,7 +127,7 @@
                     ">
                 <input x-model.debounce.200ms="searchDocumentTerm" x-on:keydown.enter.prevent="searchDocument()" type="text"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
-                    placeholder="Filter by buyers's name, VAT number, address, ... " autocomplete="off">
+                    placeholder="{{t 'documents.views.index.search_placeholder' }}" autocomplete="off">
 
                 <div x-data="Components.menu({ open: false })" 
                     x-init="init()"
@@ -160,13 +160,13 @@
                         @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false"
                         @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
                         <div class="px-4 py-3" role="none">
-                            <p class="text-sm" role="none">Sort by</p>
+                            <p class="text-sm" role="none">{{t 'documents.views.index.search_sort_by' }}</p>
                         </div>
                         <ul class="py-1" role="none" x-data="{ menuItems: [
-                                { label: 'Latest first', sortValue: 'createdAt:asc' },
-                                { label: 'Oldest first', sortValue: 'createdAt:desc' },
-                                { label: 'Last updated first', sortValue: 'updatedAt:asc' },
-                                { label: 'Older updated first', sortValue: 'updatedAt:desc' }
+                                { label: '{{t 'documents.views.index.search_latest_first' }}', sortValue: 'createdAt:asc' },
+                                { label: '{{t 'documents.views.index.search_oldest_first' }}', sortValue: 'createdAt:desc' },
+                                { label: '{{t 'documents.views.index.search_last_updated_first' }}', sortValue: 'updatedAt:asc' },
+                                { label: '{{t 'documents.views.index.search_oldest_updated_first' }}', sortValue: 'updatedAt:desc' }
                             ] }">
                             <!-- Template for each menu item -->
                             <template x-for="(item, index) in menuItems" :key="index">
@@ -205,18 +205,27 @@
                             documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
                             updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
                             selectedDocument = documents[selectedDocumentIndex];
+                            console.log('window.innerWidth', window.innerWidth);
+                            if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'}); 
                         } catch (error) { console.error('Error editing document', error); }
                     }
                 }">
                 <template x-if="documents.length === 0">
-                    <div class="py-2 text-gray-500">No documents found.</div>
+                    <div class="relative block w-full h-full p-4 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                            <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'documents.views.index.no_document_found' }}</span>
+                        </div>
+                    </div>
                 </template>
 
                 <template x-if="documents.length > 0">
                     <ul role="list" class="divide-y divide-gray-100">
                         <template x-for="(document  , index) in documents" :key="index">
                             <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
-                                @click.prevent="if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'}); editDocument(index);"
+                                @click.prevent="editDocument(index);"
                                 :data-slug="document.slug"
                                 
                             >
@@ -276,21 +285,21 @@
                         {{> documents/edit_form }}
                     </template>
                     <template x-if="! selectedDocument">
-                        <p>Please select a document</p>
+                        <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'documents.views.index.no_document_selected' }}</span>
+                            </div>
+                        </div>
                     </template>
                 </div>
                 <div id="col22" 
                      style="background-color: #f9fbfd"
                      class="hidden w-full flex 2xl:flex-1 2xl:block 2xl:w-auto border-l border-gray-200"
                      x-init="
-                            loadPreview(selectedDocument.slug).then(data => {
-                                previewData = data;
-                            });
-                          $watch('selectedDocument.slug', () => { 
-                            loadPreview(selectedDocument.slug).then(data => {
-                                previewData = data;
-                            });
-                          });
+                          
                      "
                      x-data="{
                         template_name: 'documents`templates' + selectedDocument?.config?.template_name || 'template1',
@@ -322,21 +331,87 @@
                             return data;
                         }
                     }">
-                    <div class="buttons-container absolute bottom-5 mx-auto flex z-50 ">
-                        <button @click="zoomOut" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
-                        <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to
-                        Screen</button>
-                        <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
-                        <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"target="_blank" x-bind:href="'/document/' + selectedDocument.slug + '.pdf'">jsPdf</a>
-                    </div>
-                    <div x-ref="pageContainer" class="h-full overflow-auto mr-2 flex py-8" id="pages">
-                        <template x-if="selectedDocument">
+                    <template x-if="! selectedDocument">
+                        <div class="relative block p-4 w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'documents.views.index.nothing_to_preview' }}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="selectedDocument">
+                        <div x-init="loadPreview(selectedDocument.slug).then(data => {
+                                previewData = data;
+                             });
+                             $watch('selectedDocument.slug', () => { 
+                                loadPreview(selectedDocument.slug).then(data => {
+                                    previewData = data;
+                                });
+                             });" 
+                            x-ref="pageContainer" class="h-full overflow-auto flex flex-col" id="pages">
+
+                            <div class="toolbar gap-x-4 z-50 sticky flex-1 top-0 w-full flex justify-center bg-gray-700 py-2 text-white"
+                                
+                                x-data="{
+                                    printDiv(divId) {
+                                        // Get the HTML of div
+                                        var divElements = document.getElementById(divId).innerHTML;
+
+                                        // Create a new invisible iframe
+                                        var iframe = document.createElement('iframe');
+                                        iframe.style.visibility = 'hidden';
+                                        iframe.style.position = 'fixed';
+                                        iframe.style.right = '0';
+                                        iframe.style.bottom = '0';
+
+                                        document.body.appendChild(iframe);
+
+                                        // Write the div content and CSS into it
+                                        iframe.contentDocument.write('<html><head><title></title><style>');
+                                        iframe.contentDocument.write('body { margin: 0; padding:0; }'); // Add margin:0 to body
+                                        iframe.contentDocument.write('</style></head><body>');
+                                        iframe.contentDocument.write(divElements);
+                                        iframe.contentDocument.write('</body></html>');
+                                        iframe.contentDocument.close();
+
+                                        // Print it
+                                        iframe.contentWindow.print();
+
+                                        // Remove the iframe when done
+                                        iframe.parentNode.removeChild(iframe);
+                                    }
+                                }"
+                                x-init="
+                                document.addEventListener('keydown', function(event) {
+                                    if ((event.metaKey || event.ctrlKey) && event.key === 'p') {
+                                        event.preventDefault();
+                                        printDiv('printme');
+                                    }
+                                });">
+                                <a x-bind:href="'/document/' + selectedDocument.slug + '.pdf'" class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                </a>
+                                <a @click="printDiv('printme')" class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                                    </svg>
+
+                                </a>
+                            </div>
                             <div id="preview" x-html="previewData" style="margin:0 auto"></div>
-                        </template>
-                        <template x-if="! selectedDocument">
-                            <p>Nothing to preview, Please select a document</p>
-                        </template>
-                    </div>
+                            <div class="buttons-container absolute bottom-5 mx-auto flex z-50 ">
+                                <button @click="zoomOut" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded">Zoom Out</button>
+                                <button @click="fitToScreen" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Fit to
+                                Screen</button>
+                                <button @click="zoomIn" class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2">Zoom In</button>
+                                <a class="text-black bg-gray-200 bg-opacity-70 px-4 py-2 rounded ml-2"target="_blank" x-bind:href="'/document/' + selectedDocument.slug + '.pdf'">jsPdf</a>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
             

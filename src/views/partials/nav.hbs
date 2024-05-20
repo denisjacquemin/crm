@@ -35,7 +35,7 @@
                             <p id="mobile-featured-heading-0" class="font-medium text-gray-900">Featured</p>
                             <ul role="list" aria-labelledby="mobile-featured-heading-0" class="mt-6 space-y-6">
                               <li class="flex">
-                                  <a href="#" class="text-gray-500">Sleep</a>
+                                  <a href="/users/signout" class="text-gray-500">{{t 'nav.signout'}}</a>
                                 </li>
                               <li class="flex">
                                   <a href="#" class="text-gray-500">Swimwear</a>
@@ -205,7 +205,7 @@
                     <a href="#" @click.prevent="loadModalContent('/buyers')" class="-m-2 block p-2 font-medium text-gray-900">Clients</a>
                   </div>
                 <div class="flow-root">
-                    <a href="/documents" class="-m-2 block p-2 font-medium text-gray-900">Documents</a>
+                    <a href="/documents" class="-m-2 block p-2 font-medium text-gray-900">{{t 'nav.documents' }}</a>
                 </div>
               </div>
 
@@ -503,7 +503,7 @@
                       
 
                       <a href="#" @click.prevent="loadModalContent('/buyers')" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Clients</a>
-                      <a href="/documents" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800" style="background-color: #fff7ca; background-image: linear-gradient(to right, #fff2ac, #fff7ca)">Documents</a>
+                      <a href="/documents" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800" style="background-color: #fff7ca; background-image: linear-gradient(to right, #fff2ac, #fff7ca)">{{t 'nav.documents' }}</a>
                       
                     </div>
                   </div>
@@ -571,13 +571,26 @@
 
                     <span class="mx-4 h-6 w-px bg-gray-200 lg:mx-6" aria-hidden="true"></span>
 
-                    <div class="flow-root">
-                      <button x-on:click="loadModalContent('/settings')" class="group -m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        </svg>
-                      </button>
+                    <div class="flex">
+                      <div class="flex ">
+                        <div class="flex">
+                          <a x-on:click="loadModalContent('/settings')" class="cursor-pointer group -m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          </a>
+                        </div>
+                        <span class="hidden sm:block mx-4 h-6 w-px bg-gray-200 " aria-hidden="true"></span>
+
+                        <div class="hidden sm:flex">
+                          <a alt="{{t 'nav.signout_alt' }}" href="/users/signout" class="cursor-pointer group -m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

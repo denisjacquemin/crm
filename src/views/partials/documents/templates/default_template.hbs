@@ -1,16 +1,29 @@
 <div x-data="{
         // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
-        numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1
+            numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1,
+            orEmpty(value) {
+                return value || '';
+            }
         }"
+    id="printme"
     class="flex-1 flex">
     <style>
-        {{!-- #template3 {
+        {{!-- #template3 #pageone {
+            border: 1px solid black;
+        } --}}
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        #template3 {
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-size: 14px;
             color: #000;
             
-        } --}}
+        }
         #template3 .page {
             width: 21cm;
             height: 29.7cm;
@@ -20,20 +33,14 @@
             padding: 10mm;
             border: none;
         }
-
-        
         #template3 .page {
             background: white;
             {{!-- box-shadow: 0 .5mm 2mm rgba(0,0,0,.3); --}}
             {{!-- border: 1px solid #d3d3d3; --}}
         }
-        
-
-
-        #template3 .page:last-child {
+        {{!-- #template3 .page:last-child {
         background: red;
-        }
-
+        } --}}
         {{!-- #template3 .page:not(:last-child) {
         page-break-after: always;
         background: yellow;
@@ -84,7 +91,6 @@
             {{!-- font-size: 85%; --}}
             {{!-- font-style: normal;
             line-height: 1.25; --}}
-            margin: 0 1em 1em 0;
         }
 
         #template3 header #billed_to {
@@ -246,53 +252,73 @@
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black sheet transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: </span>
-      <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page 1/<span x-text="numberOfPages"></span></span>
+      <span class="bottom-right">Invoice - <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - page 1/<span x-text="orEmpty(numberOfPages)"></span></span>
 
 
         <header>        
             <h1>Invoice</h1>
             <div id="seller_address">
-                <span style="font-size: 150%; font-weight: 700;" x-text="selectedDocument.config.seller.name"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.seller.address1} ${selectedDocument.config.seller.address2}`"></span><br/>
-                <span x-text="`${selectedDocument.config.seller.zip} ${selectedDocument.config.seller.city}`"></span><br/>
-                <span x-text="selectedDocument.config.seller.country"></span><br/>
-                <span style=""> TVA: <span x-text="selectedDocument.config.seller.vat_number"></span></span><br/>
-                <span x-text="selectedDocument.config.seller.phone"></span><br/>
-                <span x-text="selectedDocument.config.seller.email"></span>
+                <span style="font-size: 150%; font-weight: 700;" x-text="orEmpty(selectedDocument.config.seller.name)"></span><br/>
+                <span style="" x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br/>
+                <span x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br/>
+                <span x-text="orEmpty(selectedDocument.config.seller.country)"></span><br/><br/>
+                <span> TVA: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br/>
+                <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/>
+                <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
+                <table style="border-spacing: 0;">
+                    <tr>
+                        <td>Invoice Number:</td>
+                        <td style="text-align: right; font-weight: 700;"
+                            x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
+                    </tr>
+                    <tr>
+                        <td>Invoice Date:</td>
+                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Due Date:</td>
+                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
+                    </tr>
+                    <tr>
+                        <td>Currency:</td>
+                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.currency)"></td>
+                    </tr>
+                </table>
             </div>
             <div id="billed_to"style="font-weight: 400;">Billed To</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.buyer.address1} ${selectedDocument.config.buyer.address2}`"></span><br/>
-                <span style="" x-text="`${selectedDocument.config.buyer.zip} ${selectedDocument.config.buyer.city}`"></span>
-                <span style="" x-text="selectedDocument.config.buyer.country"></span><br/>
+                <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
+                <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
+                <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br/>
                 <br/><br/><br/><br/>
-                <span style=""> TVA: <span x-text="selectedDocument.config.buyer.vat_number"></span></span><br/>
-                <span style="" x-text="selectedDocument.config.buyer.phone"></span><br/>
-                <span style="" x-text="selectedDocument.config.buyer.email"></span>
+                <span style=""> TVA: <span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
+                <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br/>
+                <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
             </div>
-            <div id="invoice_details" style="clear:both">
+            {{!-- <div id="invoice_details" style="clear:both">
                     <table style="border-spacing: 0;">
                         <tr>
                             <td>Invoice Number:</td>
                             <td style="text-align: right; font-weight: 700;"
-                                x-text="selectedDocument.config.invoice_number"></td>
+                                x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
                         </tr>
                         <tr>
                             <td>Invoice Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.invoice_date">
+                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
                             </td>
                         </tr>
                         <tr>
                             <td>Due Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.invoice_due_date.value"></td>
+                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
                         </tr>
                         <tr>
                             <td>Currency:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.currency"></td>
+                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.currency)"></td>
                         </tr>
                     </table>
-                </div>
+                </div> --}}
         </header> 
         <main>
             <div id="products" class="page1">
@@ -306,11 +332,11 @@
                     </div>
                     <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
-                            <div class="td" style="text-align:left;width:300px" x-text="item.description"></div>
-                            <div class="td" style="text-align:right" x-text="item.quantity"></div>
-                            <div class="td" style="text-align:right" x-text="item.unit_price"></div>
-                            <div class="td" style="text-align:right" x-text="item.vat"></div>
-                            <div class="td" style="text-align:right" x-text="item.amountvatincl"></div>
+                            <div class="td" style="text-align:left;width:300px" x-text="orEmpty(item.description)"></div>
+                            <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
+                            <div class="td" style="text-align:right" x-text="orEmpty(item.unit_price)"></div>
+                            <div class="td" style="text-align:right" x-text="orEmpty(item.vat)"></div>
+                            <div class="td" style="text-align:right" x-text="orEmpty(item.amountvatincl)"></div>
                         </div>
                     </template>
                 </div>

@@ -19,7 +19,8 @@
     "email_required": "forgot_password.email_required",
     "user_does_not_exist": "forgot_password.user_does_not_exist",
     "email_updated": "forgot_password.email_updated",
-    "email_taken": "forgot_password.email_taken"
+    "email_taken": "forgot_password.email_taken",
+    "email_invalid_sub": "forgot_password.email_invalid_sub"
   },
   "reset_password": {
     "password_required": "reset_password.password_required",
@@ -29,10 +30,14 @@
   },
   "signup": {
     "password_not_strong_enough": "signup.password_not_strong_enough",
-    "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub"
+    "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub",
+    "sign_up": "signup.sign_up"
   },
   "documents": {
-    "document_not_found": "documents.document_not_found"
+    "document_not_found": "documents.document_not_found",
+    "index": {
+      "new_invoice": "documents.index.new_invoice"
+    }
   },
   "common": {
     "not_found": "common.not_found",
@@ -48,5 +53,20 @@
     "vat_number": "signup2.vat_number",
     "phone": "signup2.phone",
     "contact_name": "signup2.contact_name"
+  },
+  "global": {
+    "settings": {
+      "logout": "global.settings.logout",
+      "sign_me_out": "global.settings.sign_me_out",
+      "signout": "global.settings.signout"
+    }
+  },
+  "users": {
+    "controller": {
+      "password_not_strong_enough": "users.controller.password_not_strong_enough",
+      "password_not_strong_enough_sub": "users.controller.password_not_strong_enough_sub",
+      "all_fields_required": "users.controller.all_fields_required",
+      "address1_is_required": "users.controller.address1_is_required"
+    }
   }
 }

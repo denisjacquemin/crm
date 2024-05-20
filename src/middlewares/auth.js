@@ -9,6 +9,7 @@ module.exports = async function(req, res, next) {
     if (!req.session.isAuth) { 
         redirect = true;
     } else {
+        // console.log('req.session.user.email', req.session.user)
         const userExists = await UserService.existsByEmail(req.session.user.email);
         if (!userExists) {
             redirect = true;

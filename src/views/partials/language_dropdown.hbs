@@ -3,6 +3,7 @@
   <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: {{currentIndex}}, activeIndex: {{currentIndex}}, items: {{stringify languages}} })" x-init="init()">
       <div class="relative mt-1">
         <span x-init="$watch('selected.code_dnt', (newValue) => {
+            console.log('selected', selected);
             document.querySelector('#lng').value = newValue;
             document.querySelector('#lng-form').submit();
           })">
@@ -26,7 +27,8 @@
             
             {{#each languages }}
 
-                <li x-state:on="Highlighted" x-state:off="Not Highlighted" class="relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" x-description="Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation." id="listbox-option-{{add id -1}}" role="option" @click="choose({{add id -1}})" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, {{add id -1}})" @mouseleave="onMouseLeave($event)" :class="{ 'text-white bg-indigo-600': activeIndex === {{add id -1}}, 'text-gray-900': !(activeIndex === {{add id -1}}) }">
+                <li x-state:on="Highlighted" x-state:off="Not Highlighted" class="relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" x-description="Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation." id="listbox-option-{{add id -1}}" role="option" 
+                    @click="choose({{add id -1}})" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, {{add id -1}})" @mouseleave="onMouseLeave($event)" :class="{ 'text-white bg-indigo-600': activeIndex === {{add id -1}}, 'text-gray-900': !(activeIndex === {{add id -1}}) }">
                         <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
 
                 <span x-state:on="Selected" x-state:off="Not Selected" class="font-normal block truncate" :class="{ 'font-semibold': selectedIndex === {{add id -1}}, 'font-normal': !(selectedIndex === {{add id -1}}) }">{{name}}</span>

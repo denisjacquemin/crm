@@ -11,6 +11,7 @@ const companySchema = new mongoose.Schema({
     zip: { type: String, required: false },
     country: { type: String, required: false },
     vat_number: { type: String, required: false },
+    phone: { type: String, required: false },
     email: {
         type: String,
         required: false,
@@ -32,7 +33,7 @@ const companySchema = new mongoose.Schema({
     },
 
 
-});
+}, { timestamps: true });
 
 const Company = mongoose.model('Company', companySchema);
 

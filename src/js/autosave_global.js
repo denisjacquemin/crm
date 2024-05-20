@@ -26,7 +26,6 @@ window.setupWorker = function (pathToWorker) {
 workerSettings = setupWorker("/public/js/workers/autosave_worker.js");
 
 workerSettings.onmessage = function(event) {
-    console.log('in workerSettings:', event.data);
     // handle messages from worker when postMessage({ unauthorized: true }); is called
     if (event.data.hasOwnProperty('unauthorized')) {
         history.replaceState(null, '', window.location.href);
@@ -36,10 +35,10 @@ workerSettings.onmessage = function(event) {
     // delete from localstorage only if event.data.updatedAt is > then the one in localstorage autosave_updated_at
     let key = 'autosave#' + event.data.targetedObject + '#' + event.data.slug;
     let LSObj = getByKeyFromLocalStorage(key);
-    console.log('Last update in LS:', LSObj.autosave_updated_at);
-    console.log('server side update:', event.data.autosave_updated_at);
-    console.log('dates:', new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at));
-    console.log('notfound:', event.data.hasOwnProperty('notfound'));
+    // console.log('Last update in LS:', LSObj.autosave_updated_at);
+    // console.log('server side update:', event.data.autosave_updated_at);
+    // console.log('dates:', new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at));
+    // console.log('notfound:', event.data.hasOwnProperty('notfound'));
     if (event.data.hasOwnProperty('notfound') || (new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at))) {
         console.log('deleting from localstorage:', key);
         localStorage.removeItem(key);
@@ -51,7 +50,7 @@ var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('
 
 setInterval(function() {
     // get config from local storage
-    console.log('infinite loop in autosave_global.js');
+    // console.log('infinite loop in autosave_global.js');
 
     // get all keys from locastorgae that start by 'autosave#'
     var keys = Object.keys(localStorage).filter(function(key) {
@@ -72,10 +71,8 @@ setInterval(function() {
 
 function saveToServer(key, targetedObject, csrfToken) {
     var LSObj = getByKeyFromLocalStorage(key);
-    console.log('Object to be saved:', LSObj, targetedObject);
     if (LSObj.hasOwnProperty('autosave_updated_at')) {
         if (new Date(LSObj.autosave_updated_at) < new Date()) {
-            console.log('sending to worker', LSObj, { value: LSObj.value, csrfToken: csrfToken, targetedObject: targetedObject });
             workerSettings.postMessage({ value: LSObj, csrfToken: csrfToken, targetedObject: targetedObject });
         }
     } // else remove it from localstorage

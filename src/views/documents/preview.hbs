@@ -9,16 +9,17 @@
             pages.forEach(page => {
                 new PinchZoom(page);
             });
-        },
+        }   
      }"
      x-init="
         if (typeof selectedDocument === 'undefined') {
             {{!-- When generating pdf, selectedDocument doesn't exist yet --}}
             $data.selectedDocument = {{stringify document}};
         }
+
+        
      "
 >
-
     {{> (concat 'documents/templates/' template_name)}}
 
 </div>
