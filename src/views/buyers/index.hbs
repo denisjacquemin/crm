@@ -243,7 +243,44 @@
                 </div>
             </div>
             
-            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll">
+            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll"
+                 x-data="{
+                    getBuyerInfo(event) {
+                        fetch(`/buyer/byCompanyNumber/${event.target.value}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                this.selectedBuyer = data;
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                 }" 
+            >
+                <div>
+                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.country" autocomplete="off"
+                            placeholder="Country" id="country"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
+                    <div class="mt-2">
+                        <input x-on:blur="getBuyerInfo($event)"
+                            type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
+                            placeholder="VAT number" id="vat"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900">BCE Number</label>
+                    <div class="mt-2">
+                        <input type="text" x-model="selectedBuyer.bce_number" autocomplete="off"
+                            placeholder="BCE number" id="bce"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                
                 <div>
                     <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
                     <div class="mt-2">
@@ -280,22 +317,7 @@
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
-                <div>
-                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.country" autocomplete="off"
-                            placeholder="Country" id="country"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
-                            placeholder="VAT number" id="vat"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
+                
                 <div>
                     <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Name</label>
                     <div class="mt-2">

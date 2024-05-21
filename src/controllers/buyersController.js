@@ -148,5 +148,5 @@ module.exports = {
     editAjax,
     deleteAjax,
     newBuyerAjax,
-    update
+    update,
 };

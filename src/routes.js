@@ -59,8 +59,6 @@ router.post("/buyers/newAjax", auth, buyersController.newBuyerAjax);
 router.patch("/buyer/:slug?", auth, buyersController.update); // autosave for buyers
 
 
-
-
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 
 // router.get("/companies/new", companiesController.newCompany);
