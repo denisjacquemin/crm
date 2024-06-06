@@ -2,16 +2,20 @@ const UserService = require('../services/users.service');
 
 module.exports = async function(req, res, next) {
 
-    console.log(req.originalUrl + ' Session: ', JSON.stringify(req.session.isAuth));
+    console.log(req.originalUrl + ' Session is valid? ', JSON.stringify(req.session.isAuth), req.session.user);
 
     let redirect = false;
 
-    if (!req.session.isAuth) { 
+    if (!req.session.isAuth || !req.session.user) { 
+        req.session.isAuth = false; // isAuth is true and session.user is empty then set isAuth to false
+        req.session.destroy(); // and make sure the session is destroyed
+
         redirect = true;
     } else {
-        // console.log('req.session.user.email', req.session.user)
         const userExists = await UserService.existsByEmail(req.session.user.email);
         if (!userExists) {
+            req.session.isAuth = false; // isAuth is true and session.user is empty then set isAuth to false
+            req.session.destroy(); // and make sure the session is destroyed
             redirect = true;
         }
     }
@@ -21,10 +25,6 @@ module.exports = async function(req, res, next) {
             // Return a 401 error for AJAX requests
             res.status(401).send("Unauthorized");
         } else {
-            req.flash('error', {
-                message: req.i18n.t('signin.not_authenticated')
-            });
-            req.session.returnTo = req.originalUrl;
             console.log('No Auth for: ', req.originalUrl);
             res.redirect('/users/signin');
         }

@@ -37,6 +37,7 @@
         "express-rate-limit": "^6.7.0",
         "express-session": "^1.17.3",
         "flatpickr": "^4.6.13",
+        "geoip-lite": "^1.4.10",
         "glob": "^8.0.3",
         "helmet": "^6.0.0",
         "i18next": "^22.5.1",

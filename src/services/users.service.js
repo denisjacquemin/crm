@@ -8,11 +8,14 @@ const User = require('../models/user.model');
 
 class UserService  {
 
-    static async create(data) {
+    static async create(data, options = {}) {
         try {
             const user = new User(data);
-            user.password = await hashPassword(user.password);
-            await user.save();
+            console.log('user', user);
+            if (!user.google_id) { // if not google user it should hash the password
+                user.password = await hashPassword(user.password);
+            }
+            await user.save(options);
             return user;
         } catch (error) {
             throw error;
@@ -23,6 +26,10 @@ class UserService  {
     // Get a user by their email address
     static async getByEmail(email) {
         return await User.findOne({ email });
+    }
+
+    static async getById(id) {
+        return await User.findById(id);
     }
 
     static async getByResetPasswordToken(resetPasswordToken) {
@@ -97,6 +104,17 @@ class UserService  {
             throw err;
         }
     }
+
+    static async updateCompanies(userId, companies) {
+        try {
+            return await
+                User.findOneAndUpdate({ _id: userId }, { companies }, { new: true });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
+    }
+
 }
 
 module.exports = UserService;

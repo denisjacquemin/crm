@@ -11,15 +11,11 @@ const companySchema = new mongoose.Schema({
     zip: { type: String, required: false },
     country: { type: String, required: false },
     vat_number: { type: String, required: false },
+    without_vat: { type: Boolean, required: false },
+    company_registration_number: { type: String, required: false },
+    contact_name: { type: String, required: false },
     phone: { type: String, required: false },
-    email: {
-        type: String,
-        required: false,
-        validate: {
-            validator: validateEmail,
-            message: props => `${props.value} is not a valid email address!`
-        }
-    },
+    email: { type: String, required: false},
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     settings: {
         default_template: { type: String, required: false, default: 'default_template' },
@@ -29,7 +25,7 @@ const companySchema = new mongoose.Schema({
         default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
         default_payment_method: { type: String, required: false, default: 'bank_transfer' },
         default_bank_account: { type: String, required: false, default: '' },
-        current_invoice_sequence: { type: Number, required: false, default: 1 },
+        current_invoice_sequence: { type: Number, required: false, default: 1 }
     },
 
 

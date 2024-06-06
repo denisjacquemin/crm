@@ -9,7 +9,6 @@
         <meta name="csrf-token" content="{{csrfToken}}">
         <link rel="stylesheet" href="/public/css/styles.css" />
         <script type="text/javascript" src="/public/app.bundle.js"></script>
-        {{!-- <script type="text/javascript" src="/public/js/vendor/alpine/alpine.3.13.2.min.js" defer></script> --}}
     </head>
 
     <body class="" 
@@ -19,6 +18,7 @@
             openSettingsModal: false,
             async loadModalContent(url, callback, anchor, focusInputId) {
                 const text = await fetchUrl(url, 'GET');
+                if (!text) return;
                 this.$refs.modalContent.innerHTML = text;
                 this.openSettingsModal = true;
                 if (anchor) {

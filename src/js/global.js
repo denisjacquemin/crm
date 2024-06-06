@@ -32,17 +32,24 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
 
     return fetch(url, options)
         .then(async response => {
+            const contentType = response.headers.get("content-type");
+            let data;
+            if (contentType && contentType.includes("application/json")) {
+                data = JSON.parse(await response.text());
+            } else if (contentType && contentType.includes("text/html")) {
+                data = await response.text();
+            }
+            if (data && data.notification) {
+                dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
+            }
+
             if (response.status === 401) {
                 history.replaceState(null, '', window.location.href);
                 location.reload();
             } else if (response.status !== 200) {
-                const text = JSON.parse(await response.text());
-                if (text.notification) {
-                    dispatch('notify', { content: text.notification.message, type: text.notification.type? text.notification.type : 'info'})
-                }
                 throw new Error('Looks like there was a problem. Status Code: ' + response.status);
             } else {
-                return response.text();
+                return data;
             }
         })
         .catch(error => {

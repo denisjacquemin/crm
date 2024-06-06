@@ -11,16 +11,10 @@ const userSchema = new mongoose.Schema({
     google_id: { type: String, required: false },
     picture: { type: String, required: false },
     companies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Company' }],
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-            validator: validateEmail,
-            message: props => `${props.value} is not a valid email address!`
-        }
-    },
-    password: { type: String, required: true },
+    email: {type: String, required: true, unique: true },
+    password: { type: String, required: false },
+    resetPasswordToken: { type: String, required: false },
+    resetPasswordExpires: { type: Date, required: false },
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     created_at: { type: Date, required: true, default: new Date() },
     updated_at: { type: Date, required: true, default: new Date() },

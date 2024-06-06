@@ -24,6 +24,7 @@ async function index(req, res, next) {
         res.render('buyers/index', {
             layout: false,
             buyers: buyers,
+            countries: req.i18n.t('buyers.views.countries',  { returnObjects: true })
         });
     } catch (err) {
         next(err);
@@ -114,7 +115,7 @@ async function createNewBuyerInMongoAndTypesense(req) {
             company_id: req.session.current_company._id,
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
-            name: 'Choose a name',
+            name: req.i18n.t('buyers.controller.default_company_name'),
         });
         
         return buyerCreated ? buyerCreated.toObject() : null;
@@ -131,6 +132,7 @@ async function update(req, res, next) {
         if (!buyer) {
             return next({ status: 404, message: 'Buyer not found' });
         }
+        console.log('updating buyer', req.body.value);
         let updatedBuyer = await BuyersService.update(buyer._id, req.body.value);
         updatedBuyer = updatedBuyer.toObject();
 

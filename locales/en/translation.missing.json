@@ -31,7 +31,9 @@
   "signup": {
     "password_not_strong_enough": "signup.password_not_strong_enough",
     "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub",
-    "sign_up": "signup.sign_up"
+    "sign_up": "signup.sign_up",
+    "or": "signup.or",
+    "already_have_an_account": "signup.already_have_an_account"
   },
   "documents": {
     "document_not_found": "documents.document_not_found",
@@ -44,7 +46,12 @@
     "still_authenticated": "common.still_authenticated"
   },
   "settings": {
-    "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated"
+    "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated",
+    "views": {
+      "tabs": {
+        "": "settings.views.tabs."
+      }
+    }
   },
   "signup2": {
     "zip": "signup2.zip",
@@ -67,6 +74,35 @@
       "password_not_strong_enough_sub": "users.controller.password_not_strong_enough_sub",
       "all_fields_required": "users.controller.all_fields_required",
       "address1_is_required": "users.controller.address1_is_required"
+    },
+    "views": {
+      "signup2": {
+        "company_registration_number": "users.views.signup2.company_registration_number",
+        "company_registration_number_undefined": "users.views.signup2.company_registration_number_undefined",
+        "company_registration_number_": "users.views.signup2.company_registration_number_",
+        "company_registration_number_BE": "users.views.signup2.company_registration_number_BE"
+      }
+    },
+    "controller_password": {
+      "email_sent": "users.controller_password.email_sent"
+    }
+  },
+  "buyers": {
+    "views_countries": "buyers.views_countries"
+  },
+  "session": {
+    "signup": {
+      "company": {
+        "country": "session.signup.company.country"
+      }
+    }
+  },
+  "users_controller": {
+    "email_taken": "users_controller.email_taken"
+  },
+  "companies": {
+    "controller": {
+      "default_company_name": "companies.controller.default_company_name"
     }
   }
 }

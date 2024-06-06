@@ -6,10 +6,23 @@ class CompanyService {
         return await Company.findOne({_id: id});
     }
 
+    static async getByIds(ids) {
+        return await Company.find({_id: { $in: ids }});
+    }
+
+    static async getBySlug(slug, projection = '') {
+        const company = await Company.findOne({ slug}, projection).exec();
+        return company ? company : null;
+    }
+
     static async create(data, options = {}) {
-        const company = new Company(data);
-        await company.save();
-        return company;
+        try {
+            const company = new Company(data);
+            await company.save(options);
+            return company;
+        } catch (error) {
+            throw error;
+        }
     }
 
     static async update(id, data) {

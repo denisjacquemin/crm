@@ -33,6 +33,7 @@ router.post("/users/resetpassword", userController.resetPasswordPost);
 router.get("/oauth/google/url", userController.OAuthGoogleURL);
 router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 router.patch("/user/resetemail", auth, userController.resetEmail);
+router.patch("/user/resetpasswordfromsettings", auth, userController.resetPasswordFromSettings);
 
 // Needs authentication and ACL
 router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
@@ -60,6 +61,10 @@ router.patch("/buyer/:slug?", auth, buyersController.update); // autosave for bu
 
 
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
+router.get("/companies/editAjax/:slug?", auth, companiesController.editAjax);
+router.post("/company/newAjax", auth, companiesController.newCompanyAjax);
+router.patch("/company/:slug?", auth, companiesController.update); // autosave for buyers
+
 
 // router.get("/companies/new", companiesController.newCompany);
 

@@ -1,7 +1,6 @@
 <div class="flex w-[200%] h-full overflow-hidden sm:w-full"
      x-data="{
         showClientForm: function() {
-            console.log('showClientForm');
             this.$refs.clientsList.style.transform = 'translateX(-100%)'; 
             this.$refs.clientForm.style.transform = 'translateX(-100%)';
         },
@@ -13,7 +12,7 @@
         newBuyer: async function() {
             try {
                 const data = await fetchUrl('/buyers/newAjax', 'POST');
-                this.selectedBuyer = JSON.parse(data);
+                this.selectedBuyer = data;
                 await this.searchClient();
                 const theBuyers = this.buyers;
                 const theSelectedBuyer = this.selectedBuyer;
@@ -27,10 +26,10 @@
         editBuyer: async function(index) {
             try {
                 const data = await fetchUrl(`/buyers/editAjax/${this.buyers[index].slug}`, 'GET');
-                this.selectedBuyer = JSON.parse(data);
+                this.selectedBuyer = data;
                 this.buyers[index] = this.selectedBuyer;
                 if (window.innerWidth < 640) this.showClientForm();
-            } catch (error) { console.error('Error editing document', error); }
+            } catch (error) { console.error('Error editing buyer', error); }
         },
         deleteBuyer: async function(slug) {
             try {
@@ -49,17 +48,19 @@
             const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
             await fetchUrl('/buyers/search?q=' + encodeURIComponent(this.searchClientTerm.trim() || '*') + sortByParam, 'GET')
                 .then(data => {
-                    this.buyers = JSON.parse(data);
+                    this.buyers = data;
                 })
                 .catch(error => {
                     console.error('Error searching for clients', error);
                 });
         },
         buyers: {{ stringify buyers }},
-        selectedBuyer: {}
+        selectedBuyer: {},
+        countries: {{ stringify countries }},
      }"
      x-init="
-        $watch('selectedBuyer', (value, oldValue) => { 
+        $watch('selectedBuyer', (value, oldValue) => {
+          console.log('selectedBuyer', value);
           var buyer = { ...value };
           if (buyer.slug) {
             buyer.autosave_updated_at = new Date();
@@ -243,18 +244,7 @@
                 </div>
             </div>
             
-            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll"
-                 x-data="{
-                    getBuyerInfo(event) {
-                        fetch(`/buyer/byCompanyNumber/${event.target.value}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                this.selectedBuyer = data;
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
-                 }" 
-            >
+            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll">
                 <div>
                     <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
                     <div class="mt-2">
@@ -262,21 +252,32 @@
                             placeholder="Country" id="country"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
+                    <select x-model="selectedBuyer.country" id="country" 
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <template x-for="(country, index) in countries" :key="index">
+                            <option :value="country.value" x-text="country.name"></option>
+                        </template>
+                    </select>
                 </div>
                 <div>
                     <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
                     <div class="mt-2">
-                        <input x-on:blur="getBuyerInfo($event)"
+                        <input x-bind:disabled="selectedBuyer.without_vat"
                             type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
                             placeholder="VAT number" id="vat"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
+                        <div class="mt-1">
+                            <input x-model="selectedBuyer.without_vat" 
+                                type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">Without VAT Number</label>
+                        </div>
                     </div>
                 </div>
                 <div>
-                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900">BCE Number</label>
+                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900">Company Number</label>
                     <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.bce_number" autocomplete="off"
-                            placeholder="BCE number" id="bce"
+                        <input type="text" x-model="selectedBuyer.company_registration_number" autocomplete="off"
+                            placeholder="Company number" id="bce"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>

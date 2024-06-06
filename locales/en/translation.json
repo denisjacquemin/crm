@@ -16,6 +16,15 @@
         "signout": "Sign out",
         "signout_alt": "Click here to sign out "
     },
+    "companies": {
+        "controller" : {
+            "default_company_name": "Choose a name"
+        },
+        "create_new_company": "Create new company",
+        "company_name": "Name",
+        "the_new_company_name": "The new company name",
+        "next": "Next"
+    },
     "documents": {
         "views": {
             "index": {
@@ -56,6 +65,7 @@
                 "city": "City",
                 "country": "Country",
                 "vat_number": "VAT Number",
+                "without_vat": "Without VAT Number",
                 "contact_name": "Contact Name",
                 "phone": "Phone",
                 "email":"Email",
@@ -63,7 +73,85 @@
                 "address": "Address",
                 "phone_number": "Phone Number",
                 "website": "Website",
-                "sign_up": "Sign up"
+                "sign_up": "Sign up",
+                "frequently_selected_countries": "Frequently Selected",
+                "all_countries": "All",
+                "company_registration_number":  "Company Number",
+                "company_registration_number_BE": "BCE Number",
+                "company_registration_number_FR": "SIREN / SIRET Number",
+                "company_registration_number_CA": "Business Number",
+                "company_registration_number_NL": "KvK Number",
+                "company_registration_number_LU": "RCS Number",
+                "company_registration_number_DE": "HRB Number",
+                "company_registration_number_IT": "REA Number",
+                "company_registration_number_ES": "NIF Number",
+                "company_registration_number_US": "EIN Number",
+                "company_registration_number_GB": "Company Number",
+                "company_registration_number_IE": "CRO Number",
+                "company_registration_number_AT": "FN Number",
+                "company_registration_number_CH": "UID Number",
+                "company_registration_number_PL": "REGON Number",
+                "company_registration_number_PT": "NIF Number",
+                "company_registration_number_SE": "Org. Number",
+                "company_registration_number_DK": "CVR Number",
+                "company_registration_number_NO": "Org. Number",
+                "company_registration_number_FI": "Y-tunnus Number",
+                "company_registration_number_HU": "Cg. Number",
+                "company_registration_number_RO": "CUI Number",
+                "company_registration_number_BG": "BULSTAT Number",
+                "company_registration_number_GR": "ΑΦΜ Number",
+                "company_registration_number_CZ": "IČO Number",
+                "company_registration_number_SK": "IČO Number",
+                "company_registration_number_SI": "ID Number",
+                "company_registration_number_HR": "OIB Number",
+                "company_registration_number_RS": "PIB Number",
+                "company_registration_number_BA": "JIB Number",
+                "company_registration_number_ME": "PIB Number",
+                "company_registration_number_AL": "NIPT Number",
+                "company_registration_number_MK": "PIB Number",
+                "company_registration_number_XK": "NIPT Number",
+                "company_registration_number_TR": "Vergi No",
+                "company_registration_number_RU": "ИНН Number",
+                "company_registration_number_BY": "УНП Number",
+                "company_registration_number_UA": "ЄДРПОУ Number",
+                "company_registration_number_MD": "IDNO Number",
+                "company_registration_number_LV": "PVN Number",
+                "company_registration_number_LT": "Įmonės kodas",
+                "company_registration_number_EE": "Reg. Number",
+                "company_registration_number_CY": "ΑΦΜ Number",
+                "company_registration_number_MT": "VAT Number",
+                "company_registration_number_LI": "UID Number",
+                "company_registration_number_IS": "VSK Number",
+                "company_registration_number_FO": "VSK Number",
+                "company_registration_number_GL": "CVR Number",
+                "company_registration_number_SJ": "Org. Number",
+                "company_registration_number_AX": "Y-tunnus Number",
+                "company_registration_number_DZ": "NIF Number",
+                "company_registration_number_MA": "RC Number",
+                "company_registration_number_TN": "RC Number"
+            },
+            "forgotpassword" : {
+                "reset_your_password": "Reset your password",
+                "already_have_an_account": "sign in if you already have an account",
+                "or": "Or",
+                "no_account_yet": "sign up if don't already have an account",
+                "instructions": "Enter your email and we'll send you a link to reset your password",
+                "email": "Email",
+                "send_an_email": "Send me instructions by Email",
+                "email_content": {
+                    "email_subject": "Reset your password",
+                    "hi_name": "Hi {{name}},",
+                    "hello": "hello",
+                    "password_reset_request": "We received a request to reset the password for your account. If you made this request, please click the link below to set a new password.",
+                    "reset_password_link": "Click here to reset your password",
+                    "password_unchanged": "If you did not make this request, you can ignore this email and your password will remain unchanged.",
+                    "thanks": "Thanks"
+                }
+            },
+            "resetpassword" : {
+                "save_and_sign_in": "Save and Sign In",
+                "confirm_new_password": "Confirm New Password",
+                "new_password": "New Password"
             }
         },
         "controller": {
@@ -73,25 +161,850 @@
             "email_required": "Email field is required",
             "email_invalid_sub": "Your email should include an <em>@</em> symbol and a period. After the period, it should have a valid ending like <em>.com</em> or <em>.org</em>. For example, <em>example@email.com</em>.",
             "user_already_exists": "User with the same Email already exists",
-            "all_fields_required": "Email and Password are required",
+            "all_fields_required": "All fields are required",
             "name_required": "The Name of the company is required",
-            "user_does_not_exist": "We can't find a user with that email address",
+            "user_does_not_exist": "We can&rsquo;t find a user with that email address",
             "email_sent": "An email has been sent",
             "request_new_token": "Please try again",
-            "token_expired": "Your request expired",
-            "email_taken": "The Email '{{email}}' is already taken",
+            "token_expired": "Your link expired. It was valid for one hour, please request a new one",
+            "email_taken": "The Email <em>{{email}}</em> is already taken",
             "email_updated": "The Email has been updated",
             "email_or_password_invalid": "Email or Password invalid",
             "password_required": "Password field is required",
             "confirm_password_required": "Password Confirmation field is required",
-            "passwords_do_not_match": "Password and Password Confirmation do not match",
+            "passwords_do_not_match": "New Password and Confirm New Password do not match",
             "password_updated": "The Password has been updated",
             "please_sign_in": "Please sign in",
             "signin_with_google": "Seems you&rsquo;ve logged in using Google before. To access your account, please proceed with Google sign-in.",
             "signin_with_microsoft": "Seems you&rsquo;ve logged in using Microsoft before. To access your account, please proceed with Microsoft sign-in.",
             "signin_with_twitter": "Seems you&rsquo;ve logged in using X/Twitter before. To access your account, please proceed with X/Twitter sign-in.",
-            "name_is_required": "At least a name is required"
+            "name_is_required": "At least a name is required",
+            "link_invalid": "The link is invalid",
+            "request_new_one": "Please request a new one",
+            "current_password_invalid": "The current password is invalid",
+            "strong_password_help": "A strong password must meet the following criteria: Be at least {0} characters long, contain at least {1} lowercase letter(s), contain at least {2} uppercase letter(s), contain at least {3} number(s), contain at least {4} symbol(s)."
+
+
         }   
+    },
+    "buyers": {
+        "controller" :{
+            "default_company_name": "Choose a name"
+        },
+        "views": {
+            "frequently_selected_countries": [
+                {
+                    "value": "FR",
+                    "name": "France"
+                },
+                {
+                    "value": "BE",
+                    "name": "Belgium"
+                },
+                {
+                    "value": "LU",
+                    "name": "Luxembourg"
+                },
+                {
+                    "value": "DE",
+                    "name": "Germany"
+                },
+                {
+                    "value": "IT",
+                    "name": "Italy"
+                },
+                {
+                    "value": "NL",
+                    "name": "Netherlands"
+                },
+                {
+                    "value": "ES",
+                    "name": "Spain"
+                },
+                {
+                    "value": "GB",
+                    "name": "United Kingdom"
+                }
+            ],
+            "countries": [
+                {
+                    "value": "AF",
+                    "name": "Afghanistan"
+                },
+                {
+                    "value": "AL",
+                    "name": "Albania"
+                },
+                {
+                    "value": "DZ",
+                    "name": "Algeria"
+                },
+                {
+                    "value": "AD",
+                    "name": "Andorra"
+                },
+                {
+                    "value": "AO",
+                    "name": "Angola"
+                },
+                {
+                    "value": "AG",
+                    "name": "Antigua and Barbuda"
+                },
+                {
+                    "value": "AR",
+                    "name": "Argentina"
+                },
+                {
+                    "value": "AM",
+                    "name": "Armenia"
+                },
+                {
+                    "value": "AU",
+                    "name": "Australia"
+                },
+                {
+                    "value": "AT",
+                    "name": "Austria"
+                },
+                {
+                    "value": "AZ",
+                    "name": "Azerbaijan"
+                },
+                {
+                    "value": "BS",
+                    "name": "Bahamas"
+                },
+                {
+                    "value": "BH",
+                    "name": "Bahrain"
+                },
+                {
+                    "value": "BD",
+                    "name": "Bangladesh"
+                },
+                {
+                    "value": "BB",
+                    "name": "Barbados"
+                },
+                {
+                    "value": "BY",
+                    "name": "Belarus"
+                },
+                {
+                    "value": "BE",
+                    "name": "Belgium"
+                },
+                {
+                    "value": "BZ",
+                    "name": "Belize"
+                },
+                {
+                    "value": "BJ",
+                    "name": "Benin"
+                },
+                {
+                    "value": "BT",
+                    "name": "Bhutan"
+                },
+                {
+                    "value": "BO",
+                    "name": "Bolivia"
+                },
+                {
+                    "value": "BA",
+                    "name": "Bosnia and Herzegovina"
+                },
+                {
+                    "value": "BW",
+                    "name": "Botswana"
+                },
+                {
+                    "value": "BR",
+                    "name": "Brazil"
+                },
+                {
+                    "value": "BN",
+                    "name": "Brunei"
+                },
+                {
+                    "value": "BG",
+                    "name": "Bulgaria"
+                },
+                {
+                    "value": "BF",
+                    "name": "Burkina Faso"
+                },
+                {
+                    "value": "BI",
+                    "name": "Burundi"
+                },
+                {
+                    "value": "CV",
+                    "name": "Cabo Verde"
+                },
+                {
+                    "value": "KH",
+                    "name": "Cambodia"
+                },
+                {
+                    "value": "CM",
+                    "name": "Cameroon"
+                },
+                {
+                    "value": "CA",
+                    "name": "Canada"
+                },
+                {
+                    "value": "CF",
+                    "name": "Central African Republic"
+                },
+                {
+                    "value": "TD",
+                    "name": "Chad"
+                },
+                {
+                    "value": "CL",
+                    "name": "Chile"
+                },
+                {
+                    "value": "CN",
+                    "name": "China"
+                },
+                {
+                    "value": "CO",
+                    "name": "Colombia"
+                },
+                {
+                    "value": "KM",
+                    "name": "Comoros"
+                },
+                {
+                    "value": "CD",
+                    "name": "Congo (Congo-Brazzaville)"
+                },
+                {
+                    "value": "CR",
+                    "name": "Costa Rica"
+                },
+                {
+                    "value": "HR",
+                    "name": "Croatia"
+                },
+                {
+                    "value": "CU",
+                    "name": "Cuba"
+                },
+                {
+                    "value": "CY",
+                    "name": "Cyprus"
+                },
+                {
+                    "value": "CZ",
+                    "name": "Czechia (Czech Republic)"
+                },
+                {
+                    "value": "DK",
+                    "name": "Denmark"
+                },
+                {
+                    "value": "DJ",
+                    "name": "Djibouti"
+                },
+                {
+                    "value": "DM",
+                    "name": "Dominica"
+                },
+                {
+                    "value": "DO",
+                    "name": "Dominican Republic"
+                },
+                {
+                    "value": "EC",
+                    "name": "Ecuador"
+                },
+                {
+                    "value": "EG",
+                    "name": "Egypt"
+                },
+                {
+                    "value": "SV",
+                    "name": "El Salvador"
+                },
+                {
+                    "value": "GQ",
+                    "name": "Equatorial Guinea"
+                },
+                {
+                    "value": "ER",
+                    "name": "Eritrea"
+                },
+                {
+                    "value": "EE",
+                    "name": "Estonia"
+                },
+                {
+                    "value": "SZ",
+                    "name": "Eswatini (fmr. Swaziland)"
+                },
+                {
+                    "value": "ET",
+                    "name": "Ethiopia"
+                },
+                {
+                    "value": "FJ",
+                    "name": "Fiji"
+                },
+                {
+                    "value": "FI",
+                    "name": "Finland"
+                },
+                {
+                    "value": "FR",
+                    "name": "France"
+                },
+                {
+                    "value": "GA",
+                    "name": "Gabon"
+                },
+                {
+                    "value": "GM",
+                    "name": "Gambia"
+                },
+                {
+                    "value": "GE",
+                    "name": "Georgia"
+                },
+                {
+                    "value": "DE",
+                    "name": "Germany"
+                },
+                {
+                    "value": "GH",
+                    "name": "Ghana"
+                },
+                {
+                    "value": "GR",
+                    "name": "Greece"
+                },
+                {
+                    "value": "GD",
+                    "name": "Grenada"
+                },
+                {
+                    "value": "GT",
+                    "name": "Guatemala"
+                },
+                {
+                    "value": "GN",
+                    "name": "Guinea"
+                },
+                {
+                    "value": "GW",
+                    "name": "Guinea-Bissau"
+                },
+                {
+                    "value": "GY",
+                    "name": "Guyana"
+                },
+                {
+                    "value": "HT",
+                    "name": "Haiti"
+                },
+                {
+                    "value": "HN",
+                    "name": "Honduras"
+                },
+                {
+                    "value": "HU",
+                    "name": "Hungary"
+                },
+                {
+                    "value": "IS",
+                    "name": "Iceland"
+                },
+                {
+                    "value": "IN",
+                    "name": "India"
+                },
+                {
+                    "value": "ID",
+                    "name": "Indonesia"
+                },
+                {
+                    "value": "IR",
+                    "name": "Iran"
+                },
+                {
+                    "value": "IQ",
+                    "name": "Iraq"
+                },
+                {
+                    "value": "IE",
+                    "name": "Ireland"
+                },
+                {
+                    "value": "IL",
+                    "name": "Israel"
+                },
+                {
+                    "value": "IT",
+                    "name": "Italy"
+                },
+                {
+                    "value": "JM",
+                    "name": "Jamaica"
+                },
+                {
+                    "value": "JP",
+                    "name": "Japan"
+                },
+                {
+                    "value": "JO",
+                    "name": "Jordan"
+                },
+                {
+                    "value": "KZ",
+                    "name": "Kazakhstan"
+                },
+                {
+                    "value": "KE",
+                    "name": "Kenya"
+                },
+                {
+                    "value": "KI",
+                    "name": "Kiribati"
+                },
+                {
+                    "value": "KW",
+                    "name": "Kuwait"
+                },
+                {
+                    "value": "KG",
+                    "name": "Kyrgyzstan"
+                },
+                {
+                    "value": "LA",
+                    "name": "Laos"
+                },
+                {
+                    "value": "LV",
+                    "name": "Latvia"
+                },
+                {
+                    "value": "LB",
+                    "name": "Lebanon"
+                },
+                {
+                    "value": "LS",
+                    "name": "Lesotho"
+                },
+                {
+                    "value": "LR",
+                    "name": "Liberia"
+                },
+                {
+                    "value": "LY",
+                    "name": "Libya"
+                },
+                {
+                    "value": "LI",
+                    "name": "Liechtenstein"
+                },
+                {
+                    "value": "LT",
+                    "name": "Lithuania"
+                },
+                {
+                    "value": "LU",
+                    "name": "Luxembourg"
+                },
+                {
+                    "value": "MG",
+                    "name": "Madagascar"
+                },
+                {
+                    "value": "MW",
+                    "name": "Malawi"
+                },
+                {
+                    "value": "MY",
+                    "name": "Malaysia"
+                },
+                {
+                    "value": "MV",
+                    "name": "Maldives"
+                },
+                {
+                    "value": "ML",
+                    "name": "Mali"
+                },
+                {
+                    "value": "MT",
+                    "name": "Malta"
+                },
+                {
+                    "value": "MH",
+                    "name": "Marshall Islands"
+                },
+                {
+                    "value": "MR",
+                    "name": "Mauritania"
+                },
+                {
+                    "value": "MU",
+                    "name": "Mauritius"
+                },
+                {
+                    "value": "MX",
+                    "name": "Mexico"
+                },
+                {
+                    "value": "FM",
+                    "name": "Micronesia"
+                },
+                {
+                    "value": "MD",
+                    "name": "Moldova"
+                },
+                {
+                    "value": "MC",
+                    "name": "Monaco"
+                },
+                {
+                    "value": "MN",
+                    "name": "Mongolia"
+                },
+                {
+                    "value": "ME",
+                    "name": "Montenegro"
+                },
+                {
+                    "value": "MA",
+                    "name": "Morocco"
+                },
+                {
+                    "value": "MZ",
+                    "name": "Mozambique"
+                },
+                {
+                    "value": "MM",
+                    "name": "Myanmar (formerly Burma)"
+                },
+                {
+                    "value": "NA",
+                    "name": "Namibia"
+                },
+                {
+                    "value": "NR",
+                    "name": "Nauru"
+                },
+                {
+                    "value": "NP",
+                    "name": "Nepal"
+                },
+                {
+                    "value": "NL",
+                    "name": "Netherlands"
+                },
+                {
+                    "value": "NZ",
+                    "name": "New Zealand"
+                },
+                {
+                    "value": "NI",
+                    "name": "Nicaragua"
+                },
+                {
+                    "value": "NE",
+                    "name": "Niger"
+                },
+                {
+                    "value": "NG",
+                    "name": "Nigeria"
+                },
+                {
+                    "value": "KP",
+                    "name": "North Korea"
+                },
+                {
+                    "value": "MK",
+                    "name": "North Macedonia"
+                },
+                {
+                    "value": "NO",
+                    "name": "Norway"
+                },
+                {
+                    "value": "OM",
+                    "name": "Oman"
+                },
+                {
+                    "value": "PK",
+                    "name": "Pakistan"
+                },
+                {
+                    "value": "PW",
+                    "name": "Palau"
+                },
+                {
+                    "value": "PS",
+                    "name": "Palestine State"
+                },
+                {
+                    "value": "PA",
+                    "name": "Panama"
+                },
+                {
+                    "value": "PG",
+                    "name": "Papua New Guinea"
+                },
+                {
+                    "value": "PY",
+                    "name": "Paraguay"
+                },
+                {
+                    "value": "PE",
+                    "name": "Peru"
+                },
+                {
+                    "value": "PH",
+                    "name": "Philippines"
+                },
+                {
+                    "value": "PL",
+                    "name": "Poland"
+                },
+                {
+                    "value": "PT",
+                    "name": "Portugal"
+                },
+                {
+                    "value": "QA",
+                    "name": "Qatar"
+                },
+                {
+                    "value": "RO",
+                    "name": "Romania"
+                },
+                {
+                    "value": "RU",
+                    "name": "Russia"
+                },
+                {
+                    "value": "RW",
+                    "name": "Rwanda"
+                },
+                {
+                    "value": "KN",
+                    "name": "Saint Kitts and Nevis"
+                },
+                {
+                    "value": "LC",
+                    "name": "Saint Lucia"
+                },
+                {
+                    "value": "VC",
+                    "name": "Saint Vincent and the Grenadines"
+                },
+                {
+                    "value": "WS",
+                    "name": "Samoa"
+                },
+                {
+                    "value": "SM",
+                    "name": "San Marino"
+                },
+                {
+                    "value": "ST",
+                    "name": "Sao Tome and Principe"
+                },
+                {
+                    "value": "SA",
+                    "name": "Saudi Arabia"
+                },
+                {
+                    "value": "SN",
+                    "name": "Senegal"
+                },
+                {
+                    "value": "RS",
+                    "name": "Serbia"
+                },
+                {
+                    "value": "SC",
+                    "name": "Seychelles"
+                },
+                {
+                    "value": "SL",
+                    "name": "Sierra Leone"
+                },
+                {
+                    "value": "SG",
+                    "name": "Singapore"
+                },
+                {
+                    "value": "SK",
+                    "name": "Slovakia"
+                },
+                {
+                    "value": "SI",
+                    "name": "Slovenia"
+                },
+                {
+                    "value": "SB",
+                    "name": "Solomon Islands"
+                },
+                {
+                    "value": "SO",
+                    "name": "Somalia"
+                },
+                {
+                    "value": "ZA",
+                    "name": "South Africa"
+                },
+                {
+                    "value": "KR",
+                    "name": "South Korea"
+                },
+                {
+                    "value": "SS",
+                    "name": "South Sudan"
+                },
+                {
+                    "value": "ES",
+                    "name": "Spain"
+                },
+                {
+                    "value": "LK",
+                    "name": "Sri Lanka"
+                },
+                {
+                    "value": "SD",
+                    "name": "Sudan"
+                },
+                {
+                    "value": "SR",
+                    "name": "Suriname"
+                },
+                {
+                    "value": "SE",
+                    "name": "Sweden"
+                },
+                {
+                    "value": "CH",
+                    "name": "Switzerland"
+                },
+                {
+                    "value": "SY",
+                    "name": "Syria"
+                },
+                {
+                    "value": "TW",
+                    "name": "Taiwan"
+                },
+                {
+                    "value": "TJ",
+                    "name": "Tajikistan"
+                },
+                {
+                    "value": "TZ",
+                    "name": "Tanzania"
+                },
+                {
+                    "value": "TH",
+                    "name": "Thailand"
+                },
+                {
+                    "value": "TL",
+                    "name": "Timor-Leste"
+                },
+                {
+                    "value": "TG",
+                    "name": "Togo"
+                },
+                {
+                    "value": "TO",
+                    "name": "Tonga"
+                },
+                {
+                    "value": "TT",
+                    "name": "Trinidad and Tobago"
+                },
+                {
+                    "value": "TN",
+                    "name": "Tunisia"
+                },
+                {
+                    "value": "TR",
+                    "name": "Turkey"
+                },
+                {
+                    "value": "TM",
+                    "name": "Turkmenistan"
+                },
+                {
+                    "value": "TV",
+                    "name": "Tuvalu"
+                },
+                {
+                    "value": "UG",
+                    "name": "Uganda"
+                },
+                {
+                    "value": "UA",
+                    "name": "Ukraine"
+                },
+                {
+                    "value": "AE",
+                    "name": "United Arab Emirates"
+                },
+                {
+                    "value": "GB",
+                    "name": "United Kingdom"
+                },
+                {
+                    "value": "US",
+                    "name": "United States"
+                },
+                {
+                    "value": "UY",
+                    "name": "Uruguay"
+                },
+                {
+                    "value": "UZ",
+                    "name": "Uzbekistan"
+                },
+                {
+                    "value": "VU",
+                    "name": "Vanuatu"
+                },
+                {
+                    "value": "VA",
+                    "name": "Vatican City"
+                },
+                {
+                    "value": "VE",
+                    "name": "Venezuela"
+                },
+                {
+                    "value": "VN",
+                    "name": "Vietnam"
+                },
+                {
+                    "value": "YE",
+                    "name": "Yemen"
+                },
+                {
+                    "value": "ZM",
+                    "name": "Zambia"
+                },
+                {
+                    "value": "ZW",
+                    "name": "Zimbabwe"
+                }
+            ]
+        }
     },
     "signin": {
         "sign_in_to_your_account": "Sign in to your account",
@@ -107,31 +1020,37 @@
         "already_authenticated": "Already authenticated",
         "not_authenticated": "Please authenticate before proceeding"
     },
-    "companies": {
-        "create_new_company": "Create new company",
-        "company_name": "Name",
-        "the_new_company_name": "The new company name",
-        "next": "Next"
-    },
-    "forgot_password": {
-        "reset_your_password": "Reset your password",
-        "instructions": "Enter your email and we'll send you a link to reset your password",
-        "send_an_email": "Send me instructions by Email",
-        "email_subject": "Reset your password",
-        "email_invalid": "The Email '{{email}}' is invalid",
-        "email_content": {
-            "hi_name": "Hi {{name}},",
-            "password_reset_request": "We received a request to reset the password for your account. If you made this request, please click the link below to set a new password.",
-            "reset_password_link": "Click here to reset your password",
-            "password_unchanged": "If you did not make this request, you can ignore this email and your password will remain unchanged.",
-            "thanks": "Thanks"
-        }
-    },
     "reset_password_sent": {
         "title": "We’ve sent you a password reset link",
         "instructions": "You will receive an email shortly with a link to reset your password. You may now close this tab."
     },
     "settings": {
+        "views": {
+            "tabs": {
+                "myaccount": "My Account",
+                "sellers": "Sellers",
+                "invoices": "Invoices"
+            },
+            "myaccount" :{
+                "email": "Update Email",
+                "email_help": "Update email address associated with your account, next time you sign in you will use this email.",
+                "email_placeholder": "Email",
+                "email_update_button": "Update Email",
+                "change_password": "Update Password",
+                "current_password": "Current Password",
+                "change_password_help": "Update your password associated with your account. Enter your current password and then your new password twice.",
+                "new_password": "New Password",
+                "confirm_new_password": "Password Confirmation",
+                "change_password_button": "Update Password",
+                "oauth_registered": "You signed up using a third-party service (for example, Google).</br></br>Changes to your email or password directly on our platform is not allowed."
+            },
+            "sellers": {
+                "create_seller_button": "Create a new Seller",
+                "no_seller_found": "No sellers found.",
+                "no_seller_selected": "No seller selected. Details for the selected seller will display here."
+            }
+
+        },
         "current_invoice_sequence_updated": "The invoice sequence has been updated"
     },
     "do_not_translate": {

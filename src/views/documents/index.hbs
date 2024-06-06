@@ -67,6 +67,11 @@
             }
      }"
      x-init="
+        {{!-- window.addEventListener('popstate', () => { // catch back gesture and tap on back button on smartphones
+            if navState === 'back') {
+                showCol1();
+            } 
+         }); --}}
         $watch('selectedDocument', (value, oldValue) => {
               
             var document = { ...value };
@@ -115,7 +120,7 @@
                         const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
                         fetchUrl('/documents/search?q=' + encodeURIComponent(this.searchDocumentTerm.trim() || '*') + sortByParam, 'GET')
                             .then(data => {
-                            documents = JSON.parse(data);
+                                documents = data;
                             })
                             .catch(error => {
                             console.error('Error searching for documents', error);

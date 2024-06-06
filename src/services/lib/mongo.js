@@ -9,7 +9,8 @@ const mongoHosts = process.env.MONGO_HOSTS
 
 let mongoDbUrl;
 if (clusterUrl) {
-    mongoDbUrl = `mongodb+srv://${username}:${password}@${clusterUrl}/${database}?replicaSet=${replicaSet}`;
+    mongoDbUrl = `mongodb://${username}:${password}@${clusterUrl}/${database}?replicaSet=${replicaSet}`;
+    console.log(mongoDbUrl);
 } else {
 
     mongoDbUrl = `mongodb://${username}:${password}@${mongoHosts}/${database}`;

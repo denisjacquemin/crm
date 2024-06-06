@@ -10,6 +10,9 @@ const { sanitizeEmail } = require('../lib/sanitizer');
 const DateHelper = require('../lib/date-helpers');
 const mongo = require('../services/lib/mongo');
 const session = require('express-session');
+const geoip = require('geoip-lite');
+const mongoose = require('mongoose');
+
 
 
 async function signup1(req, res, next) {
@@ -78,18 +81,19 @@ async function signup1Post(req, res, next) {
         })) {
         // If the password is not strong enough, render the signup page again with an error message
         return res.render('users/signup1', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.password_not_strong_enough'), subcontent: req.i18n.t('users.controller.password_not_strong_enough_sub', {
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.password_not_strong_enough'), 
+            submessage: req.i18n.t('users.controller.password_not_strong_enough_sub', {
                 minLength: process.env.PASSWORD_MIN_LENGTH,
                 minLowercase: process.env.PASSWORD_MIN_LOWERCASE,
                 minUppercase: process.env.PASSWORD_MIN_UPPERCASE,
                 minNumbers: process.env.PASSWORD_MIN_NUMBERS,
                 minSymbols: process.env.PASSWORD_MIN_SYMBOLS
-              })}]
+            })}]
         })
     }
 
     // Check if a user already exists with the given email address
-    const userExist = await UserService.existsByEmail(trimmedEmail);
+    const userExist = await UserService.existsByEmail(sanitizeEmail(trimmedEmail));
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         return res.render('users/signup1', {
@@ -116,7 +120,10 @@ async function signup2(req, res, next) {
 
     try {
         // Render the signup page
-        res.render("users/signup2");
+        res.render("users/signup2", { 
+            ...getCountrySelect(req),
+            ...getCompanyRegistrationNumberLabels(req)
+        });
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
         console.error(`Error in userController.signupNewCompany `, err.message);
@@ -140,11 +147,13 @@ async function signup2Post(req, res, next) {
         city,
         country,
         vat_number,
+        company_registration_number, 
         contact_name,
         phone,
         email,
         website
     } = req.body;
+    const without_vat = req.body.without_vat === 'on';
 
     // Trim the whitespace from the company fields
     const trimmedName = name && name.trim();
@@ -154,6 +163,7 @@ async function signup2Post(req, res, next) {
     const trimmedCity = city && city.trim();
     const trimmedCountry = country && country.trim();
     const trimmedVatNumber = vat_number && vat_number.trim();
+    const trimmedCompanyRegistrationNumber = company_registration_number && company_registration_number.trim();
     const trimmedContactName = contact_name && contact_name.trim();
     const trimmedPhone = phone && phone.trim();
     const trimmedEmail = email && email.trim();
@@ -169,26 +179,36 @@ async function signup2Post(req, res, next) {
         city: trimmedCity,
         country: trimmedCountry,
         vat_number: trimmedVatNumber,
+        company_registration_number: trimmedCompanyRegistrationNumber,
+        without_vat: without_vat,
         contact_name: trimmedContactName,
         phone: trimmedPhone,
         email: trimmedEmail,
         website: trimmedWebsite,
     }
 
+    const locals = {
+        ...getCountrySelect(req),
+        ...getCompanyRegistrationNumberLabels(req),
+        without_vat: req.session.signup.company.without_vat || false
+    }
+
     if (!trimmedName) {
         return res.render('users/signup2', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.name_is_required')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.name_is_required')}],
+            ...locals
         });
     }
     
-    if (!validator.isEmail(trimmedEmail)) {
+    if (trimmedEmail && !validator.isEmail(trimmedEmail)) {
         return res.render('users/signup2', {
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: email}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: email}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}],
+            ...locals
         });
     }
 
     // Check if a user already exists with the given email address
-    const userExist = await UserService.existsByEmail(req.session.signup.user.email);
+    const userExist = await UserService.existsByEmail(sanitizeEmail(req.session.signup.user.email));
     if (userExist) {
         // If a user already exists, render the signup page again with an error message
         req.flash('error', {
@@ -202,12 +222,12 @@ async function signup2Post(req, res, next) {
         return res.redirect('/users/signup-1');
     }
 
-    // Start a transaction
-    // const session = await mongo.startTransaction();
-
+    
+    
     let userCreated = null;
     let companyCreated = null;
-
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         // Generate ObjectId for the user and the company
         const userId = new ObjectId();
@@ -220,7 +240,7 @@ async function signup2Post(req, res, next) {
         user.language = req.i18n.language;
         user.companies = [companyId];
         user.timezone = DateHelper.guess();
-
+        
         // Create the user
         userCreated = await UserService.create(user, {}); //await userService.create(user, { session });
 
@@ -232,18 +252,20 @@ async function signup2Post(req, res, next) {
         // Create the company
         companyCreated = await CompanyService.create(company, {}); //await companyService.create(company, { session });
 
-        // Commit the transaction
-        // await mongo.commitTransaction(session);
-
+        await session.commitTransaction();
+        session.endSession();
     } catch (err) {
         // If there's an error, abort the transaction and throw an error
         // await mongo.abortTransaction(session);
-        return next(err);
+        await session.abortTransaction();
+        session.endSession();
+        next(err);
     }
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
     const { password, ...saferUser } = userCreated.toObject();
+    console.log('signup2Post > saferUser', saferUser)
     req.session.user = saferUser
     req.session.current_company = companyCreated.toObject();
 
@@ -441,12 +463,12 @@ async function forgotPasswordPost(req, res, next) {
     const user = await UserService.getByEmail(emailSanitized);
     if (!user) {
         // If a user does not exist, render the forgot password page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('users.controllers.user_does_not_exist'),
-        });
-
         return res.render('users/forgot-password', {
-            notifications: req.flash()
+            email: emailSanitized,
+            notifications: [{
+                id: new Date().getTime(), type: 'error', 
+                content: req.i18n.t('users.controller.user_does_not_exist')
+            }]
         });
     }
 
@@ -461,7 +483,7 @@ async function forgotPasswordPost(req, res, next) {
 
     // Set a flash message and redirect to the signin page
     req.flash('info', {
-        'message': req.i18n.t('users.controller_password.email_sent')
+        'message': req.i18n.t('users.controller.email_sent')
     });
 
     res.redirect('/users/resetpasswordsent');
@@ -493,13 +515,16 @@ async function resetPassword(req, res, next) {
     // Destructure the token field from the request body
     const { token } = req.params;
 
+    console.log('token', token);
+
     // Check if the token field is empty
     if (!token) {
-        req.flash('error', {
-            message: req.i18n.t('users.controller.user_does_not_exist'),
-            submessage: req.i18n.t('users.controller.request_new_token')
+        return res.redirect('/users/forgotpassword', {
+            notifications: [{
+            id: new Date().getTime(), type: 'error', 
+            content: req.i18n.t('users.controller.link_invalid'), 
+            subcontent: req.i18n.t('users.controller.request_new_one')}]
         });
-        return res.redirect('/users/forgotpassword');
     }
 
     req.session.resetpassword = req.session.resetpassword || {};
@@ -512,13 +537,13 @@ async function resetPassword(req, res, next) {
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('users.controller.user_does_not_exist'),
-            submessage: req.i18n.t('users.controller.request_new_token')
+            message: req.i18n.t('users.controller.link_invalid'),
+            submessage: req.i18n.t('users.controller.request_new_one')
         });
         return res.redirect('/users/forgotpassword');
     }
 
-    // test if the token has expired
+    // test if the token has expired, the token is valid one hour
     if (user.resetPasswordExpires < Date.now()) {
         // If the reset password token has expired, render the reset password page again with an error message
         req.flash('error', {
@@ -546,44 +571,120 @@ async function resetPassword(req, res, next) {
 }
 
 async function resetEmail(req, res, next) {
-    // Destructure the email field from the request body
-    const email = req.body.value;
+    const email = req.body.email;
     try {
-        // Validate and sanitize email
         const emailSanitized = sanitizeEmail(email);
         if (!emailSanitized || !validator.isEmail(emailSanitized)) {
-            return res.status(400).json({ type: 'error', message: req.i18n.t('users.controller.email_invalid', { email: emailSanitized }) });
+            return res.status(400).json({ 
+                notification: {
+                    message: req.i18n.t('users.controller.email_invalid', { email: emailSanitized }),
+                    type: 'error'
+                }
+            });
         }
 
-        // Check if the email is already taken
         const user = await UserService.getByEmail(emailSanitized);
         if (user) {
-            return res.status(400).json({ type: 'error', message: req.i18n.t('users_controller.email_taken', { email: emailSanitized }) });
+            return res.status(400).json({ 
+                notification: {
+                    message: req.i18n.t('users.controller.email_taken', { email: emailSanitized }),
+                    type: 'error'
+                }
+            });
         }
 
-        // Update the user's email
-        await UserService.updateById(req.session.user.id, { email: emailSanitized });
-
-        // Update the email field on the user's session
+        const userUpdated = await UserService.updateById(req.session.user._id, { email: emailSanitized });
         req.session.user.email = emailSanitized;
 
-        // Send a success response
-        return res.status(200).json({ message: req.i18n.t('users.controller.email_updated') });
+        return res.status(200).json({ 
+            notification: {
+                message: req.i18n.t('users.controller.email_updated'),
+                type: 'success'
+            }
+        });
 
     } catch (err) {
-        // If an error occurs, log the error and pass it to the next middleware
         console.error(`Error in userController.resetEmail `, err.message);
         next(err);
     }
 }
 
+async function resetPasswordFromSettings(req, res, next) {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    const trimmedCurrentPassword = currentPassword.trim();
+    const trimmedNewPassword = newPassword.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    if (!trimmedCurrentPassword || !trimmedNewPassword || !trimmedConfirmPassword) {
+        return res.status(400).json({ 
+            notification: {
+                message: req.i18n.t('users.controller.all_fields_required'),
+                type: 'error'
+            }
+        });
+    }
+
+    if (trimmedNewPassword !== trimmedConfirmPassword) {
+        return res.status(400).json({ 
+            notification: {
+                message: req.i18n.t('users.controller.passwords_do_not_match'),
+                type: 'error'
+            }
+        });
+    }
+
+    if (!validator.isStrongPassword(trimmedNewPassword, {
+            minLength: process.env.PASSWORD_MIN_LENGTH,
+            minLowercase: process.env.PASSWORD_MIN_LOWERCASE,
+            minUppercase: process.env.PASSWORD_MIN_UPPERCASE,
+            minNumbers: process.env.PASSWORD_MIN_NUMBERS,
+            minSymbols: process.env.PASSWORD_MIN_SYMBOLS,
+            returnScore: false
+        })) {
+        return res.status(400).json({ 
+            notification: {
+                message: req.i18n.t('users.controller.password_not_strong_enough'),
+                submessage: req.i18n.t('users.controller.password_not_strong_enough_sub', {
+                    minLength: process.env.PASSWORD_MIN_LENGTH,
+                    minLowercase: process.env.PASSWORD_MIN_LOWERCASE,
+                    minUppercase: process.env.PASSWORD_MIN_UPPERCASE,
+                    minNumbers: process.env.PASSWORD_MIN_NUMBERS,
+                    minSymbols: process.env.PASSWORD_MIN_SYMBOLS
+                }),
+                type: 'error'
+            }
+        });
+    }
+
+    const user = await UserService.getById(req.session.user._id);
+    console.log('resetPasswordFromSettings > user', user, trimmedCurrentPassword);
+    const isMatch = await UserService.comparePassword(trimmedCurrentPassword, user.password);
+    if (!isMatch) {
+        return res.status(400).json({ 
+            notification: {
+                message: req.i18n.t('users.controller.current_password_invalid'),
+                type: 'error'
+            }
+        });
+    }
+
+    const hashedPassword = await UserService.hashPassword(trimmedNewPassword);
+    const userUpdated = await UserService.updateById(user._id, { password: hashedPassword });
+
+    return res.status(200).json({
+        notification: {
+            message: req.i18n.t('users.controller.password_updated'),
+            type: 'success'
+        }
+    }); 
+}
 
 async function resetPasswordPost(req, res, next) {
-    // Destructure the token field from the request body
 
     // Destructure the password and confirmPassword fields from the request body
     const { token, password, confirmPassword } = req.body;
-
+    
     // Trim the whitespace from the password and confirmPassword fields
     const trimmedPassword = password.trim();
     const trimmedConfirmPassword = confirmPassword.trim();
@@ -598,39 +699,27 @@ async function resetPasswordPost(req, res, next) {
     // Check if the password field is empty
     if (!trimmedPassword) {
         // If the password field is empty, render the reset password page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('users.controller.password_required'),
-        });
-
         return res.render('users/reset-password', {
             token,
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.password_required')}]
         })
     }
 
     // Check if the confirmPassword field is empty
     if (!trimmedConfirmPassword) {
         // If the confirmPassword field is empty, render the reset password page again with an error message    
-        req.flash('error', {
-            message: req.i18n.t('users.controller.confirm_password_required'),
-        });
-
         return res.render('users/reset-password', {
             token,
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.confirm_password_required')}]
         })
     }
 
     // Check if the password and confirmPassword fields match
     if (trimmedPassword !== trimmedConfirmPassword) {
         // If the password and confirmPassword fields do not match, render the reset password page again with an error message
-        req.flash('error', {
-            message: req.i18n.t('users.controller.passwords_do_not_match'),
-        });
-
         return res.render('users/reset-password', {
             token,
-            notifications: req.flash()
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.passwords_do_not_match')}]
         })
     }
 
@@ -639,8 +728,8 @@ async function resetPasswordPost(req, res, next) {
     if (!user) {
         // If a user does not exist, render the reset password page again with an error message
         req.flash('error', {
-            message: req.i18n.t('users.controller.user_does_not_exist'),
-            submessage: req.i18n.t('users.controller.request_new_token')
+            'message': req.i18n.t('users.controller.link_invalid'),
+            'submessage': req.i18n.t('users.controller.request_new_one')
         });
         return res.redirect('/users/forgotpassword');
     }
@@ -660,7 +749,7 @@ async function resetPasswordPost(req, res, next) {
     const hashedPassword = await UserService.hashPassword(trimmedPassword);
 
     // Update the user's password and reset password token
-    await UserService.updateBy('user_id', user._id, {
+    await UserService.updateById(user._id, {
         password: hashedPassword,
         resetPasswordToken: null,
         resetPasswordExpires: null
@@ -671,7 +760,7 @@ async function resetPasswordPost(req, res, next) {
         submessage: req.i18n.t('users.controller.please_sign_in')
     });
 
-    res.redirect("users/signin");
+    res.redirect("/users/signin");
 }
 
 function OAuthGoogleURL(req, res, next) {
@@ -685,6 +774,8 @@ async function OAuthGoogleCallback(req, res, next) {
     const googleUser = await handleGoogleCallback(code);
 
     const { email, firstname } = googleUser;
+
+    console.log('OAuthGoogleCallback googleUser', googleUser);
 
     emailSanitized = sanitizeEmail(email);
     const user = await UserService.getByEmail(emailSanitized);
@@ -702,6 +793,7 @@ async function OAuthGoogleCallback(req, res, next) {
             google_id: googleUser.id,
             picture: googleUser.picture
         }
+        console.log('OAuthGoogleCallback req.session.signup.user', req.session.signup.user)
         return res.disableBackButtonRedirect('/users/signup-2');
     } else {
         // add google_id and picture to user variable if not exist 
@@ -724,6 +816,29 @@ async function OAuthGoogleCallback(req, res, next) {
     res.disableBackButtonRedirect('/');
 }
 
+function getCountrySelect(req) {
+    //req.ip;
+    const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
+    return {
+        countries: req.i18n.t('buyers.views.countries',  { returnObjects: true }),
+        frequentlySelectedCountries: req.i18n.t('buyers.views.frequently_selected_countries',  { returnObjects: true }),
+        defaultCountry: geo && geo.country
+    };
+}
+
+function getCompanyRegistrationNumberLabels(req){
+    // get all translations that begin with users.views.signup2.company_registration_number_ + each country_code and put them in an object 
+    // and return the object
+    var country_codes = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
+    var company_registration_number_label_translations = []
+    country_codes.forEach(function(country_code){
+        company_registration_number_label_translations.push({country_code: country_code, label: req.i18n.t('users.views.signup2.company_registration_number_' + country_code )});
+    });
+    return {
+        company_registration_number_label_translations: company_registration_number_label_translations
+    }
+}
+
 module.exports = {
     signup1,
     signup1Post,
@@ -738,6 +853,7 @@ module.exports = {
     resetPasswordPost,
     resetPasswordSent,
     resetEmail,
+    resetPasswordFromSettings,
     OAuthGoogleURL,
     OAuthGoogleCallback
 };

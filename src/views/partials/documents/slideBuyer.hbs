@@ -37,7 +37,7 @@
                   this.searchAndUpdateChoices = (searchTerm) => {
                     fetchUrl('/buyers/search?q=' + encodeURIComponent(searchTerm.trim() || '*'), 'GET' )
                       .then(data => {
-                        this.searchResults = JSON.parse(data);
+                        this.searchResults = data;
 
                         // Clear previous choices
                         this.choices.clearChoices();

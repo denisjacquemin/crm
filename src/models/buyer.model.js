@@ -15,6 +15,10 @@ const buyerSchema = new mongoose.Schema({
     zip: { type: String, required: false },
     country: { type: String, required: false },
     vat_number: { type: String, required: false },
+    company_registration_number: { type: String, required: false },
+    default_vat: { type: String, required: false },
+    default_due_delay: { type: String, required: false },
+    without_vat: { type: Boolean, required: false },
     contact_name: { type: String, required: false },
     phone: { type: String, required: false },
     email: {

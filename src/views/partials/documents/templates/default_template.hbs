@@ -30,7 +30,6 @@
             overflow: hidden;
             position: relative;
             box-sizing: border-box;
-            padding: 10mm;
             border: none;
         }
         #template3 .page {
@@ -105,13 +104,12 @@
             font-style: normal;
             text-align: left;
             line-height: 1.25;
-            top: 5.5cm;
-            left: 11cm;
-            height: 3.3cm;
-            width: 8.0cm;
-            padding-left: 25px;
-            padding-right: 25px;
-            padding-top: 10px;
+            top: 5.5cm; {{!--  dimension standard 5.5cm --}}
+            left: 11cm; {{!-- dimension standard 11cm --}}
+            height: 3.0cm; {{!-- dimension standard 3.3cm --}}
+            width: 8.0cm;  {{!-- dimension standard 8.5cm --}}
+            padding-top: 3px;
+            padding-left: 3px;
             word-wrap: break-word;
                 {
                     {
@@ -210,6 +208,7 @@
             display: table;
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
         }
 
         #template3 footer {
@@ -292,7 +291,7 @@
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br/>
-                <br/><br/><br/><br/>
+                <br/><br/><br/><br/><br/>
                 <span style=""> TVA: <span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
@@ -401,7 +400,7 @@
                     </template>
                 </div>
                 <template x-if="numberOfPages == chunkIndex + 2">
-                    <table class="amounts" style="margin-top:15px;">
+                    <table class="amounts">
                         <tr>
                             <td width="50%"></td>
                             <td style="text-align: right;">Total excl. VAT</td>

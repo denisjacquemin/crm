@@ -1,7 +1,4 @@
 const Buyer = require('../models/buyer.model');
-const fetch = require('node-fetch');
-const { Parser, Generator } = require('sparqljs');
-
 
 class BuyersService {
 

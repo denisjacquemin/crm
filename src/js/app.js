@@ -56,4 +56,5 @@ window.flatpickr.localize(flatpickr.l10ns.nl) // set Dutch locale
 
 
 
+
 Alpine.start()

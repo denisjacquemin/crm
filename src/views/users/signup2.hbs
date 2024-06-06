@@ -1,4 +1,29 @@
-<div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8"
+     x-data="{
+      countries: {{ stringify countries }},
+      frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
+      defaultCountry: '{{ defaultCountry }}',
+      selectedCountry: null,
+      without_vat: {{#if session.signup.company.without_vat}}{{session.signup.company.without_vat}}{{else}}false{{/if}},
+      company_registration_number_label: '',
+      company_registration_number_label_translations: {{ stringify company_registration_number_label_translations }},
+      
+      updateCompanyRegistrationNumberLabel: function(country_code) {
+          var countries = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
+          if (countries.includes(country_code)) {
+              this.company_registration_number_label = this.company_registration_number_label_translations.find(function (element) {
+                  return element.country_code == country_code;
+              }).label 
+          } else {
+              this.company_registration_number_label = '{{t 'users.views.signup2.company_registration_number' }}';
+          }
+      }
+     }"
+     x-init="
+      selectedCountry = '{{ session.signup.company.country }}' || defaultCountry || frequentlySelectedCountries[0].value;
+      updateCompanyRegistrationNumberLabel(selectedCountry);
+     "
+>
   
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <h2 class="mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t 'users.views.signup2.create_company' }}</h2>
@@ -45,14 +70,41 @@
         <div>
           <label for="country">{{t 'users.views.signup2.country' }}</label>
           <div class="mt-1">
-            <input id="country" name="country" value="{{ session.signup.company.country }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <select x-on:change="updateCompanyRegistrationNumberLabel($event.target.value)"
+                id="country" name="country"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
+                <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
+                  <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
+                </template>
+              </optgroup>
+              <optgroup label="{{t 'users.views.signup2.all_countries' }}">
+                <template x-for="(country, index) in countries" :key="index">
+                  <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                </template>
+              </optgroup>
+            </select>
           </div>
         </div>
 
         <div>
           <label for="vat_number">{{t 'users.views.signup2.vat_number' }}</label>
           <div class="mt-1">
-            <input id="vat_number" name="vat_number" value="{{ session.signup.company.vat_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input x-bind:disabled="without_vat"
+              id="vat_number" name="vat_number" value="{{ session.signup.company.vat_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
+            <div class="mt-1">
+                {{!-- value="session.signup.company.without_vat" --}}
+                <input x-model="without_vat"
+                    type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.without_vat' }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label x-text="company_registration_number_label" for="company_registration_number"></label>
+          <div class="mt-1">
+            <input id="company_registration_number" name="company_registration_number" value="{{ session.signup.company.company_registration_number }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 
@@ -81,7 +133,7 @@
           <label for="website">{{t 'users.views.signup2.website' }}</label>
           <div class="mt-1 flex rounded-md shadow-sm">
             <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">https://</span>
-            <input id="website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            <input id="website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-r-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
           </div>
         </div>
 

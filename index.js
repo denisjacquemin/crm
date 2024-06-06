@@ -9,6 +9,7 @@ const compression = require('compression');
 const mongooseHelper = require('./src/services/lib/mongoose');
 
 
+
 // enable rate limiter
 // const rateLimit = require("express-rate-limit");
 // const limiter = rateLimit({
@@ -73,13 +74,10 @@ const hbs = create({
             return result;
         },
         concat: function() {
-            var outStr = '';
-            for (var arg in arguments) {
-               if (typeof arguments[arg] != 'object') {
-                    outStr += arguments[arg];
-                }
-            }
-            return outStr;
+            var args = Array.prototype.slice.call(arguments);
+            console.log(args);
+            args.pop(); // Handlebars options
+            return args.join('');
         },
         formatAddress: function(address, zip, city, country, options) {
             var formattedAddress = address ? address + ',' : '';
@@ -142,7 +140,8 @@ app.use(function(req, res, next) {
                 notifications.push({
                 id: new Date().getTime(),
                 type: type,
-                content: message.message
+                content: message.message,
+                subcontent: message.submessage,
                 });
             });
         }
@@ -180,7 +179,7 @@ app.use(function(err, req, res, next) {
     } else {
         console.error('Error catched', err);
         // Handle "normal" request
-        res.status(err.status || 500).send(err.message);
+        res.status(err.status || 500).render('500', { error: err });
     }
 });
 
