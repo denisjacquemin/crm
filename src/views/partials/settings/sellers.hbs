@@ -15,9 +15,21 @@
                 const data = await fetchUrl('/company/newAjax', 'POST');
                 this.selectedSeller = data;
                 this.sellers.push(this.selectedSeller);
+                setTimeout(() => $dispatch('loadcompanies'), 2000);
                 if (window.innerWidth < 640) this.showCompanyForm();
             } catch (error) { 
                 console.error('Error creating new seller', error); 
+            }
+        },
+        deleteSeller: async function(slug) {
+            try {
+                const data = await fetchUrl(`/companies/deleteAjax/${slug}`, 'DEL  ETE');
+                this.sellers = this.sellers.filter(seller => seller.slug !== slug);
+                this.selectedSeller = {};
+                setTimeout(() => $dispatch('loadcompanies'), 2000);
+                if (window.innerWidth < 640) this.showCompanyList();
+            } catch (error) { 
+                console.error('Error deleting seller', error); 
             }
         },
         showCompanyForm: function() {
@@ -54,7 +66,6 @@
         console.log('selectedCountry changed', value, oldValue);
       });
       $watch('selectedSeller', (value, oldValue) => {
-        console.log('selectedSeller changed', value, oldValue);
         var company = { ...value };
         if (company.slug) {
             company.autosave_updated_at = new Date();
@@ -158,7 +169,7 @@
                 <div class="w-1/2 text-right my-auto sm:w-full">
                     <a href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
-                            @click.prevent="deleteBuyer(selectedSeller.slug)">      
+                            @click.prevent="deleteSeller(selectedSeller.slug)">      
                         Delete
                     </a>
                 </div>
@@ -170,6 +181,7 @@
                     <div class="mt-1">
                         <input type="text" x-model="selectedSeller.name" autocomplete="off"
                             id="name"
+                            @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>

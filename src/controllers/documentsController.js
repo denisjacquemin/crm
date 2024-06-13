@@ -16,30 +16,29 @@ async function index(req, res) {
             'include_fields': 'slug, createdAt, updatedAt, config.invoice_number, config.invoice_date, config.amounts.total, config.buyer.name, config.template_name',
             'per_page': 30
         });
-        if (result.hits.length === 0) {
-            return res.render('documents/index', {
-                layout: 'app',
-                documents: [],
-                selectedDocumentIndex: -1,
-                selectedDocument: null
-            });
-        }
 
-        const documents = result.hits.map(hit => hit.document);
-        const selectedDocument = await DocumentService.getBySlugAndCompanyId(documents[0].slug, req.session.current_company._id);
+        let documents = [];
+        let selectedDocumentIndex = -1;
+        let selectedDocument = null;
+
+        if (result.hits.length !== 0) {
+            documents = result.hits.map(hit => hit.document);
+            selectedDocument = await DocumentService.getBySlugAndCompanyId(documents[0].slug, req.session.current_company._id);
+            selectedDocumentIndex = 0;
+            selectedDocument = selectedDocument.toObject();
+        }
 
         res.render('documents/index', {
             layout: 'app',
             documents: documents,
-            selectedDocumentIndex: documents.length > 0 ? 0 : -1,
-            selectedDocument: selectedDocument.toObject()
+            selectedDocumentIndex: selectedDocumentIndex,
+            selectedDocument: selectedDocument
         });
     } catch (err) {
         console.error(err);
         res.status(500).send(req.i18n.t('common.unknown_error'));
     }
 }
-
 async function newDocument(req, res) {
 
     try {
@@ -142,17 +141,10 @@ async function edit(req, res) {
         const selectedDocument = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
         if (!selectedDocument) {
-            req.flash('error', {
-                message: req.i18n.t('documents.document_not_found'),
-                submessage: req.i18n.t('documents.document_not_found_sub')
-
-            });
             return res.redirect('/documents');
         }
 
         const documents = result.hits.map(hit => hit.document);
-
-        console.log('documents:', documents);
 
         res.render("documents/index", {
             layout: 'app',

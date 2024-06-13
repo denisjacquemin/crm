@@ -115,6 +115,21 @@ class UserService  {
         }
     }
 
+    static async removeCompanyFromUser(userId, companyId) {
+        try {
+            return await User.findByIdAndUpdate(
+                userId,
+                { $pull: { companies: companyId } },
+                { new: true }
+            );
+            return result;
+        } catch (error) {
+            console.error(err.stack);
+            throw error;
+        }
+    }
+
+
 }
 
 module.exports = UserService;

@@ -39,7 +39,8 @@
     "document_not_found": "documents.document_not_found",
     "index": {
       "new_invoice": "documents.index.new_invoice"
-    }
+    },
+    "document_not_found_sub": "documents.document_not_found_sub"
   },
   "common": {
     "not_found": "common.not_found",
@@ -81,6 +82,11 @@
         "company_registration_number_undefined": "users.views.signup2.company_registration_number_undefined",
         "company_registration_number_": "users.views.signup2.company_registration_number_",
         "company_registration_number_BE": "users.views.signup2.company_registration_number_BE"
+      },
+      "index": {
+        "seller_modal": {
+          "modal_title": "users.views.index.seller_modal.modal_title"
+        }
       }
     },
     "controller_password": {
@@ -104,5 +110,17 @@
     "controller": {
       "default_company_name": "companies.controller.default_company_name"
     }
+  },
+  "taxrates": {
+    "test": "taxrates.test",
+    "rates": {
+      "test": "taxrates.rates.test"
+    }
+  },
+  "rates": {
+    "test": "rates.test"
+  },
+  "taxRates": {
+    "FR": "taxRates.FR"
   }
 }

@@ -15,7 +15,8 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/preferences/changelang", globalController.changeLang);
-router.get("/settings", auth, globalController.settings);
+router.get("/settings/:tabid?", auth, globalController.settings);
+router.post("/taxRates", globalController.getTaxRatesByCountryCodes);
 
 
 router.get("/users/signup-1", userController.signup1);
@@ -64,7 +65,9 @@ router.patch("/company/currentInvoiceSequence", auth, companiesController.update
 router.get("/companies/editAjax/:slug?", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);
 router.patch("/company/:slug?", auth, companiesController.update); // autosave for buyers
-
+router.get("/companies/currentusercompanies", auth, companiesController.getCurrentUserCompanies);
+router.delete("/companies/deleteAjax/:slug?", auth, companiesController.deleteAjax);
+router.post("/companies/changeCurrentCompany", auth, companiesController.changeCurrentCompany);
 
 // router.get("/companies/new", companiesController.newCompany);
 

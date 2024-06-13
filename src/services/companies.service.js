@@ -1,4 +1,5 @@
 const Company = require('../models/company.model');
+const { ObjectId } = require('mongoose').Types;
 
 class CompanyService {
  
@@ -29,6 +30,10 @@ class CompanyService {
         return await Company.findOneAndUpdate({ _id: id }, data, { new: true });
     }
 
+    static async delete(id) {
+        return await Company.findOneAndDelete({ _id: id });
+    }
+
     static async updateById(id, data) {
         return await Company.findOneAndUpdate({_id: id}, data, { new: true });
     }
@@ -36,6 +41,19 @@ class CompanyService {
     static async getNextInvoiceSequenceValue(id) {
         const company = await Company.findOneAndUpdate({_id: id}, {$inc: { "settings.current_invoice_sequence": 1}}, {new: true});
         return company.settings.current_invoice_sequence;
+    }
+
+    static async updateUsers(companyId, users) {
+        try {
+            console.log('companyId:', companyId);
+            console.log('users:', users);
+            console.log('users.map(id => new ObjectId(id)):', users.map(id => new ObjectId(id)));
+            return await
+                Company.findOneAndUpdate({ _id: companyId }, { users: users.map(id => new ObjectId(id)) }, { new: true });
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
+        }
     }
 
     // async findOrCreateById(currentCompanyId, id) {

@@ -26,6 +26,63 @@ async function updateInvoiceSequence(req, res, next) {
     }
 }
 
+async function deleteAjax(req, res, next) {
+    try {
+        const company = await CompanyService.getBySlug(req.params.slug);
+        if (!company) {
+            return next({ 
+                status: 404, 
+                message: 'Company not found', 
+                notification: { message: 'Company not found', type: 'error'}
+            });
+        }
+        
+        // Step 1: Delete the company
+        const companyDeleted = await CompanyService.delete(company._id);
+
+        // Step 2: for all company.users, remove the company from the user.companies array  
+        // by calling UserService.removeCompanyFromUser(userId, companyId)
+        console.log('!!!!! company.users 1:', company.users);
+        company.users.forEach(async (userId) => {
+            await UserService.removeCompanyFromUser(userId, company._id);
+        });
+        console.log('!!!!! company.users 2:', company.users);
+
+
+        res.status(200).json(companyDeleted.toObject());
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function changeCurrentCompany(req, res, next) {
+// this function update session with to the company id sent in the request body
+    try {
+        const company = await CompanyService.getBySlug(req.body.company_slug);
+        if (!company) {
+            return next({ 
+                status: 404, 
+                message: req.i18n.t('companies.controller.not_found'), 
+                notification: { message: req.i18n.t('companies.controller.not_found'), type: 'error'}
+            });
+        }
+        const userHasCompany = req.session.user.companies.includes(company._id.toHexString());
+        if (!userHasCompany) {
+            return next({
+                status: 403,
+                message: req.i18n.t('companies.controller.user_does_not_have_access'),
+                notification: { message: req.i18n.t('companies.controller.user_does_not_have_access'), type: 'error'}
+            });
+        }
+
+        req.session.current_company = company;
+        res.status(200).json({ message: 'OK' });
+    } catch (error) {
+        next(error);
+    }
+}        
+
 async function editAjax(req, res, next) {
 
     try {
@@ -51,11 +108,14 @@ async function newCompanyAjax(req, res, next) {
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('companies.controller.default_company_name'),
+            users: [req.session.user._id]
         });
-        // add the company id to the user's companies array
+        // add the company id to the user's companies array in Session and DB
         req.session.user.companies.push(companyCreated._id);
-        // also in db
         await UserService.updateCompanies(req.session.user._id, req.session.user.companies);        
+
+        // add the user id to the company.users array in Session and DB
+        req.session.current_company.users.push(req.session.user._id);
 
         res.status(200).json(companyCreated.toObject());
     } catch (error) {
@@ -82,9 +142,25 @@ async function update(req, res, next) {
     }
 }
 
+async function getCurrentUserCompanies(req, res, next) {
+    try {
+        const companies = await CompanyService.getByIds(req.session.user.companies);
+        const companiesWithSelected = companies.map(company => ({
+            ...company._doc,
+            selected: company._id.toString() === req.session.current_company._id.toString()
+        }));
+        res.status(200).json(companiesWithSelected);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     updateInvoiceSequence,
     editAjax,
+    deleteAjax,
     newCompanyAjax,
-    update
+    update,
+    getCurrentUserCompanies,
+    changeCurrentCompany
 }

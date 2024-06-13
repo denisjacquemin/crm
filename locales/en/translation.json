@@ -18,7 +18,10 @@
     },
     "companies": {
         "controller" : {
-            "default_company_name": "Choose a name"
+            "default_company_name": "Choose a name",
+            "not_found": "Company not found",
+            "user_does_not_have_access": "User does not have access to this company",
+            "current_company_changes_success": "The current company has been changed"
         },
         "create_new_company": "Create new company",
         "company_name": "Name",
@@ -29,7 +32,7 @@
         "views": {
             "index": {
                 "new_invoice": "Create a new Invoice",
-                "no_document_found": "No documents found.",
+                "no_document_found": "No document found.",
                 "no_document_selected": "No document selected. Details for the selected document will display here.",
                 "nothing_to_preview": "No document selected. Preview for the selected document will display here.",
                 "search_placeholder": "Filter by buyers's name, VAT number, address,...",
@@ -37,9 +40,33 @@
                 "search_latest_first": "Latest first",
                 "search_oldest_first": "Oldest first",
                 "search_last_updated_first": "Lastest updated first",
-                "search_oldest_updated_first": "Oldest updated first"
+                "search_oldest_updated_first": "Oldest updated first",
+                "seller_modal": {
+                    "modal_title": "Edit Seller",
+                    "modal_subtitle": "Update Seller's details.",
+                    "back_button": "I'm done"
+                },
+                "buyer_modal": {
+                    "modal_title": "Edit Buyer",
+                    "modal_subtitle": "Update Buyer's details.",
+                    "back_button": "I'm done"
 
-
+                },
+                "items_modal": {
+                    "modal_title": "Manage Items",
+                    "no_items": "No items yet.",
+                    "back_button": "I'm done",
+                    "new_item": "Create a new Item",
+                    "save_new_item": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"/></svg> Save and back<br class=\"sm:hidden\"> to the list",
+                    "cancel": "Cancel",
+                    "automatic_validation": "Automatic validations and computations",
+                    "item_description": "Item Description",
+                    "quantity": "Quantity",
+                    "unit_price": "Unit Price",
+                    "reduction": "Reduction",
+                    "vat_rate": "VAT Rate",
+                    "not_applicable": "Not Applicable"
+                }
             }
         }
     },

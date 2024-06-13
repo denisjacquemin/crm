@@ -39,6 +39,7 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
             } else if (contentType && contentType.includes("text/html")) {
                 data = await response.text();
             }
+            
             if (data && data.notification) {
                 dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
             }

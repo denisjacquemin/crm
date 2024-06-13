@@ -131,6 +131,12 @@ app.use((req, res, next) => {
     delete req.body._csrf; // remove _csrf from the request body
     next();
 });
+
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} `);
+    next();
+});
+
 app.use(function(req, res, next) {
     let notifications = [];
     let flash = { ...req.flash() };
@@ -164,6 +170,8 @@ app.use("/", require("./src/routes"));
 //     console.log(logMessage);
 //     next(); // Call the next middleware in the chain
 // });
+
+
 
 app.use(function(err, req, res, next) {
     // Check if the request is an AJAX request

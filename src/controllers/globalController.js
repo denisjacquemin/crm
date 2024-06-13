@@ -36,9 +36,20 @@ async function changeLang(req, res) {
 
 }
 
+async function getTaxRatesByCountryCodes(req, res) {
+    const { countries } = req.body;
+    // get tax rates froom translation files for each country code
+    const taxRates = {};
+    countries.forEach(code => {
+        taxRates[code] = req.i18n.t(`taxrates:${code}`,  { returnObjects: true });
+    });
+    res.status(200).send(taxRates);
+}
+
 
 async function settings(req, res) {
     try {
+        const tabid = req.params.tabid;
 
         // Get the user's companies ids and then build sellers array from companies ids
         const companiesIds = req.session.user.companies;
@@ -46,6 +57,7 @@ async function settings(req, res) {
         const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
 
         res.render('global/settings', {
+            currentTab: tabid || 1,
             // oauthRegistered should be true if the user has registered with oauth
             oauthRegistered: req.session.user.google_id ? true : false,
             accountEmail: req.session.user.email,
@@ -78,5 +90,6 @@ function getCompanyRegistrationNumberLabels(req){
 
 module.exports = {
     changeLang,
-    settings
+    settings,
+    getTaxRatesByCountryCodes
 };

@@ -2033,10 +2033,6 @@ select {
   --tw-text-opacity: 1;
   color: rgb(96 165 250 / var(--tw-text-opacity));
 }
-.text-gray-300 {
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity));
-}
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -2191,6 +2187,10 @@ select {
 }
 .ring-opacity-5 {
   --tw-ring-opacity: 0.05;
+}
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .blur-3xl {
   --tw-blur: blur(64px);
@@ -2844,6 +2844,9 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
 .disabled\:ring-gray-200:disabled {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(229 231 235 / var(--tw-ring-opacity));
+}
+.group:hover .group-hover\:flex {
+  display: flex;
 }
 .group:hover .group-hover\:text-gray-100 {
   --tw-text-opacity: 1;

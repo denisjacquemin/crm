@@ -90,7 +90,6 @@ class TypesenseService {
 
     async searchDocuments(searchParameters = {}) {
         try {
-            console.log('### searchDocuments', searchParameters, this.collectionName);
             return await this.client.collections(this.collectionName).documents().search(searchParameters);
         } catch (error) {
             console.error(`Failed to search documents: ${error.message}`);

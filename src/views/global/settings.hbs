@@ -1,10 +1,13 @@
 <div x-data="{
+        currentTab: {{currentTab}},
         selectedId: null,
         init() {
-            // Set the first available tab on the page on page load.
-            this.$nextTick(() => this.select(this.$id('tab', 1)))
+            // Set the currentTab tab on the page on page load.
+            this.$nextTick(() => this.select(this.$id('tab', this.currentTab)))
         },
         select(id) {
+            console.log('select', id);
+            console.trace();
             this.selectedId = id
         },
         isSelected(id) {

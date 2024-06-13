@@ -26,23 +26,18 @@
                             <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
                                 <div class="px-3">
                                   <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">
-                                    <template x-if="slideContentPartialName == 'slideSeller'">
-                                      <span>Edit Seller</span>
-                                    </template>
+          
                                     <template  x-if="slideContentPartialName == 'slideBuyer'">
-                                      <span>Edit Buyer</span>
+                                      <span>{{t 'documents.views.index.buyer_modal.modal_title' }}</span>
                                     </template>
                                     <template  x-if="slideContentPartialName == 'slideItems'">
-                                      <span>Manage Items</span>
+                                      <span>{{t 'documents.views.index.items_modal.modal_title' }}</span>
                                     </template>
                                     
                                   </h2>
                                   <p class="mt-2 text-sm text-gray-700">
-                                    <template x-if="slideContentPartialName == 'slideSeller'">
-                                      <span>Update Seller's details.</span>
-                                    </template>
                                     <template  x-if="slideContentPartialName == 'slideBuyer'">
-                                      <span>Update Buyer's details.</span>
+                                      <span>{{t 'documents.views.index.buyer_modal.modal_subtitle' }}</span>
                                     </template>
                                     {{!-- <template  x-if="slideContentPartialName == 'slideItems'">
                                       <span>Add, update, delete, and rearrange invoice items easily.</span>
@@ -50,9 +45,6 @@
                                   </p>
                                 </div>
                             </div>
-                            <template x-if="slideContentPartialName == 'slideSeller'">
-                                {{> documents/slideSeller }}
-                            </template>
 
                             <template  x-if="slideContentPartialName == 'slideBuyer'">
                                 {{> documents/slideBuyer }}

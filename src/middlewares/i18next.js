@@ -9,14 +9,14 @@ i18next.use(i18nBackend)
     .use(i18Middleware.LanguageDetector)
     .init({
         partialBundledLanguages: true,
-        // ns: ['translation', 'translated_by_hand'],
+        // ns: ['translation', 'tax_rates'],
         // defaultNS: 'translation',
         detection: {
             lookupCookie: 'lng',
             caches: ['cookie']
         },
         backend: {
-            loadPath: `${rootDir}/locales/{{lng}}/translation.json`,
+            loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
             addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`
         },
         fallbackLng: 'en',
@@ -27,5 +27,5 @@ i18next.use(i18nBackend)
         saveMissing: true,
         nonExplicitSupportedLngs: true
     });
-
+    
 module.exports = i18Middleware.handle(i18next);

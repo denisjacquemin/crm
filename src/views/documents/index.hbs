@@ -4,6 +4,30 @@
             documents: {{ stringify documents }},
             selectedDocumentIndex: {{ stringify selectedDocumentIndex }},
             selectedDocument: {{ stringify selectedDocument }},
+            getTaxRates: async function() {
+                console.log('getTaxRates buyer', this.selectedDocument.config.buyer.country);
+                console.log('getTaxRates seller', this.selectedDocument.config.seller.country);
+
+                let countries = [];
+                if (this.selectedDocument.config.buyer.country) {
+                    countries.push(this.selectedDocument.config.buyer.country);
+                }
+
+                if (this.selectedDocument.config.seller.country) {
+                    countries.push(this.selectedDocument.config.seller.country);
+                }
+                if (countries.length === 0) {
+                    countries.push({{session.user.country}});
+                }
+
+                try {
+                    const response = await fetchUrl('/taxRates', 'POST', { countries });
+                    this.taxRates = await response.json();
+                } catch (error) {
+                    console.error('Error getting tax rates', error);
+                }
+            },
+            taxRates: [],
             newDocumentButton: async function() {
                 try {
                     const csrfToken = document.querySelector('meta[name=csrf-token]').getAttribute('content');
@@ -72,8 +96,9 @@
                 showCol1();
             } 
          }); --}}
+        getTaxRates();
+        console.log('taxRates', taxRates);
         $watch('selectedDocument', (value, oldValue) => {
-              
             var document = { ...value };
             document.autosave_updated_at = new Date();
             localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));
@@ -109,7 +134,6 @@
                         <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
                     </svg>
                     {{t 'documents.views.index.new_invoice' }}
-                    {{!-- New Invoice / Quote / ... --}}
                 </button>
             </div>
             <div class="pl-3 sm:px-2 flex items-center shadow-md " 
@@ -205,12 +229,12 @@
                     editDocument: async function(index) {
                         try {
                             selectedDocumentIndex = index;
-                            const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`);
-                            const data = await response.json()
+                            const data = await fetchUrl(`/document/editAjax/${documents[selectedDocumentIndex].slug}`, 'GET');
                             documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
                             updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
                             selectedDocument = documents[selectedDocumentIndex];
-                            console.log('window.innerWidth', window.innerWidth);
+                            getTaxRates();
+                            console.log('taxRates', taxRates);
                             if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'}); 
                         } catch (error) { console.error('Error editing document', error); }
                     }

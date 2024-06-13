@@ -1,20 +1,23 @@
 onmessage = async function(event) {
-
-    const csrfToken = event.data.csrfToken;
     const value = event.data.value;
     const url = '/' + event.data.targetedObject + '/' + value.slug;
+    const csrfToken = event.data.csrfToken; // Get the CSRF token from the event data
+
+
+    const options = {
+        method: 'PATCH',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken // Use the CSRF token
+
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ value: value })
+    };
 
     try {
-        const response = await fetch(url, {
-            method: 'PATCH',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'CSRF-Token': csrfToken
-            },
-            body: JSON.stringify({ value: value })
-        });
+        const response = await fetch(url, options);
 
         let result;
 

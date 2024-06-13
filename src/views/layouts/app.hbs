@@ -15,20 +15,13 @@
           @updatenavbutton="navState = $event.detail.value"
           x-data="{ 
             navState: 'menu',
+            companies: [],
             openSettingsModal: false,
-            async loadModalContent(url, callback, anchor, focusInputId) {
+            async loadModalContent(url, callback, focusInputId) {
                 const text = await fetchUrl(url, 'GET');
                 if (!text) return;
                 this.$refs.modalContent.innerHTML = text;
                 this.openSettingsModal = true;
-                if (anchor) {
-                    this.$nextTick(() => {
-                        const targetElement = this.$refs.modalContent.querySelector(`#${anchor}`);
-                        if (targetElement) {
-                            targetElement.scrollIntoView();
-                        }
-                    });
-                }
                 if (focusInputId) {
                     this.$nextTick(() => {
                         const inputElement = this.$refs.modalContent.querySelector(`#${focusInputId}`);
@@ -38,8 +31,15 @@
                     });
                 }
                 if (callback) callback();
-            }
-          }">
+            },
+            async loadCompanies() {
+                fetchUrl('/companies/currentusercompanies')
+                    .then(data => { 
+                        this.companies = data })
+            },
+          }"
+          @loadcompanies="loadCompanies()"
+          >
         
         <div class="h-screen flex flex-col">
         {{!-- <div x-text="navState" class="absolute top-0 right-0 z-50 text-red-600"></div> --}}

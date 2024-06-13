@@ -16,6 +16,7 @@ const companySchema = new mongoose.Schema({
     contact_name: { type: String, required: false },
     phone: { type: String, required: false },
     email: { type: String, required: false},
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     settings: {
         default_template: { type: String, required: false, default: 'default_template' },

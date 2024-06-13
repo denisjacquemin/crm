@@ -18,7 +18,7 @@ const buyerSchema = new mongoose.Schema({
     company_registration_number: { type: String, required: false },
     default_vat: { type: String, required: false },
     default_due_delay: { type: String, required: false },
-    without_vat: { type: Boolean, required: false },
+    without_vat: { type: Boolean, required: true, default: false },
     contact_name: { type: String, required: false },
     phone: { type: String, required: false },
     email: {
