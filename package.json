@@ -52,7 +52,7 @@
         "mongoose": "^7.6.1",
         "nodemailer": "^6.8.0",
         "pinch-zoom-js": "^2.3.5",
-        "puppeteer": "^21.1.0",
+        "puppeteer": "^22.11.2",
         "redis": "^4.5.0",
         "redis-rate-limiter": "^1.2.0",
         "sanitize-html": "^2.10.0",
