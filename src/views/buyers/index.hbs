@@ -42,6 +42,18 @@
                 console.log('Error deleting document', error); 
             }
         },
+        company_registration_number_label: '',
+        company_registration_number_label_translations: {{ stringify company_registration_number_label_translations }},
+        updateCompanyRegistrationNumberLabel: function(country_code) {
+            var countries = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
+            if (countries.includes(country_code)) {
+                this.company_registration_number_label = this.company_registration_number_label_translations.find(function (element) {
+                    return element.country_code == country_code;
+                }).label 
+            } else {
+                this.company_registration_number_label = '{{t 'users.views.signup2.company_registration_number' }}';
+            }
+        },
         searchClientTerm: '',
         sortBy: 'createdAtdesc',
         searchClient: async function() {
@@ -57,15 +69,21 @@
         buyers: {{ stringify buyers }},
         selectedBuyer: {},
         countries: {{ stringify countries }},
+        frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
+        defaultCountry: '{{ defaultCountry }}',
+        selectedCountry: null,
      }"
      x-init="
-        $watch('selectedBuyer', (value, oldValue) => {
+       selectedCountry = defaultCountry || frequentlySelectedCountries[0].value;
+       $watch('selectedBuyer', (value, oldValue) => {
           console.log('selectedBuyer', value);
           var buyer = { ...value };
           if (buyer.slug) {
             buyer.autosave_updated_at = new Date();
             localStorage.setItem('autosave#buyer#' + value.slug, JSON.stringify(buyer));
           }
+          selectedCountry = buyer.country;
+          updateCompanyRegistrationNumberLabel(selectedCountry);
         });
      ">
     <div x-ref="clientsList"
@@ -78,7 +96,7 @@
                 <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
                 </svg>
-                Create New Client
+                {{t 'buyers.views.index.create_new_client' }}
             </button>
         </div>
         <div class="w-full px-2 sm:pr-2 flex items-center shadow-md sm:shadow-none" 
@@ -87,7 +105,7 @@
             ">
             <input x-model.debounce.200ms="searchClientTerm" x-on:keydown.enter.prevent="searchClient()" type="text"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
-                placeholder="Filter by name, address, zip... " autocomplete="off">
+                placeholder="{{t 'buyers.views.index.search_placeholder' }}Filter by name, address, zip... " autocomplete="off">
 
             <div x-data="Components.menu({ open: false })" 
                 x-init="init()"
@@ -120,11 +138,11 @@
                     @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false"
                     @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
                     <div class="px-4 py-3" role="none">
-                        <p class="text-sm" role="none">Sort by</p>
+                        <p class="text-sm" role="none">{{t 'buyers.views.index.sort_by' }}</p>
                     </div>
                     <ul class="py-1" role="none" x-data="{ menuItems: [
-                            { label: 'Creation date (latest first)', sortValue: 'createdAtdesc' },
-                            { label: 'Name (A-Z)', sortValue: 'nameasc' },
+                            { label: '{{t 'buyers.views.index.creation_date' }}', sortValue: 'createdAtdesc' },
+                            { label: '{{t 'buyers.views.index.name' }}', sortValue: 'nameasc' },
                         ] }">
                         <!-- Template for each menu item -->
                         <template x-for="(item, index) in menuItems" :key="index">
@@ -160,7 +178,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
-                        <span class="mt-2 block text-md font-semibold text-gray-500">No client found</span>
+                        <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'buyers.views.index.no_client_found' }}</span>
                     </div>
                 </div>
             </template>
@@ -215,13 +233,13 @@
         </div>
     </div>
     <div x-ref="clientForm"
-         class="w-[50%] h-full border-l border-gray-200 flex flex-col sm:flex-1 transition-transform duration-500 ease-in-out">
+         class="pb-5 w-[50%] h-full border-l border-gray-200 flex flex-col sm:flex-1 transition-transform duration-500 ease-in-out">
         <div x-cloak x-show="Object.keys(selectedBuyer).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
-                <span class="mt-2 block text-md font-semibold text-gray-500">No client selected yet</span>
+                <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'buyers.views.index.no_client_selected' }}</span>
             </div>
         </div>
         
@@ -238,108 +256,244 @@
                 <div class="w-1/2 text-right my-auto sm:w-full">
                     <a href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
-                            @click.prevent="deleteBuyer(selectedBuyer.slug)">      
-                        Delete
+                            @click.prevent="if (confirm('{{t 'buyers.views.index.delete_confirm' }}')) deleteBuyer(selectedBuyer.slug)">      
+                        {{t 'buyers.views.index.delete' }}
                     </a>
                 </div>
             </div>
             
             <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll">
                 <div>
-                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
+                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.country' }}</label>
                     <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.country" autocomplete="off"
-                            placeholder="Country" id="country"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <select x-on:change="selectedBuyer.country = $event.target.value;"  id="country" 
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
+                                <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
+                                <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
+                                </template>
+                            </optgroup>
+                            <optgroup label="{{t 'users.views.signup2.all_countries' }}">
+                                <template x-for="(country, index) in countries" :key="index">
+                                <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                                </template>
+                            </optgroup>
+                        </select>
                     </div>
-                    <select x-model="selectedBuyer.country" id="country" 
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <template x-for="(country, index) in countries" :key="index">
-                            <option :value="country.value" x-text="country.name"></option>
-                        </template>
-                    </select>
                 </div>
                 <div>
-                    <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">VAT Number</label>
+                    <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.vat_number' }}</label>
                     <div class="mt-2">
                         <input x-bind:disabled="selectedBuyer.without_vat"
                             type="text" x-model="selectedBuyer.vat_number" autocomplete="off"
-                            placeholder="VAT number" id="vat"
+                            placeholder="{{t 'buyers.views.index.vat_number' }}" id="vat"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
                         <div class="mt-1">
                             <input x-model="selectedBuyer.without_vat" 
                                 type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">Without VAT Number</label>
+                            <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.without_vat' }}</label>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900">Company Number</label>
+                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900" x-text="company_registration_number_label"></label>
                     <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.company_registration_number" autocomplete="off"
+                        <input id="company_registration_number" type="text" x-model="selectedBuyer.company_registration_number" autocomplete="off"
                             placeholder="Company number" id="bce"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
                 
                 <div>
-                    <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                    <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.name_label' }}</label>
                     <div class="mt-2">
                         <input type="text" x-model="selectedBuyer.name" autocomplete="off"
-                            placeholder="Buyer's name" id="name"
+                            placeholder="{{t 'buyers.views.index.name_placeholder' }}" id="name"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
-                <div>
-                    <label for="address1" class="block text-sm font-medium leading-6 text-gray-900">Address</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.address1" autocomplete="off"
-                            placeholder="Street and number" id="address1"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <input type="text" x-model="selectedBuyer.address2" autocomplete="off"
-                            id="address2"
-                            class="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <div class="bg-gray-100 p-2 grid gap-y-5">
+                    <div class="text-md font-semibold text-gray-900">{{t 'buyers.views.index.invoicing_address' }}</div>
+                    <div>
+                        <label for="attention" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.attention' }}</label>
+                        <div class="mt-2">
+                            <input type="text" x-model="selectedBuyer.attention" autocomplete="off"
+                                placeholder="{{t 'buyers.views.index.attention_placeholder' }}" id="attention"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="address1" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.address_label' }}</label>
+                        <div class="mt-2">
+                            <input type="text" x-model="selectedBuyer.address1" autocomplete="off"
+                                placeholder="{{t 'buyers.views.index.address_placeholder' }}" id="address1"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <input type="text" x-model="selectedBuyer.address2" autocomplete="off"
+                                id="address2"
+                                class="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 
+                        </div>
+                    </div>
+                    <div>
+                        <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.zip_label' }}</label>
+                        <div class="mt-2">
+                            <input type="text" x-model="selectedBuyer.zip" autocomplete="off"
+                                placeholder="{{t 'buyers.views.index.zip_placeholder' }}" id="zip"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="city" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.city_label' }}</label>
+                        <div class="mt-2">
+                            <input type="text" x-model="selectedBuyer.city" autocomplete="off"
+                                placeholder="{{t 'buyers.views.index.city_placeholder' }}" id="city"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="state" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.state_label' }}</label>
+                        <div class="mt-2">
+                            <input type="text" x-model="selectedBuyer.state" autocomplete="off"
+                                placeholder="{{t 'buyers.views.index.state_placeholder' }}" id="State"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">Zip</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.zip" autocomplete="off"
-                            placeholder="Zip number" id="zip"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <div class="bg-gray-100 p-2 grid gap-y-5"
+                     x-data="{ showDeliveryInfos: false }"
+                >
+                    <div class="text-md mb-2 font-semibold text-gray-900">{{t 'buyers.views.index.delivery_address' }}</div>
+                    <div class="flex items-center">
+                        <button id="showDeliveryInfos" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" role="switch" aria-checked="false"
+                                @click="showDeliveryInfos = !showDeliveryInfos" :aria-checked="showDeliveryInfos.toString()" x-state:showDeliveryInfos="Enabled" x-state:off="Not Enabled" :class="{ 'bg-indigo-600': !(showDeliveryInfos), 'bg-gray-200': showDeliveryInfos }"
+                        >
+                            <span class="sr-only">Use setting</span>
+                            <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+                            <span class="pointer-events-none relative inline-block h-5 w-5 translate-x-0 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  x-state:on="Enabled" x-state:off="Not Enabled" :class="{ 'translate-x-5': !(showDeliveryInfos), 'translate-x-0': showDeliveryInfos }"
+                            >
+                                <!-- Enabled: "opacity-0 duration-100 ease-out", Not Enabled: "opacity-100 duration-200 ease-in" -->
+                                <span class="absolute inset-0 flex h-full w-full items-center justify-center opacity-100 transition-opacity duration-200 ease-in" aria-hidden="true" 
+                                      x-state:on="Enabled" x-state:off="Not Enabled" :class="{ 'opacity-0 duration-100 ease-out': !(showDeliveryInfos), 'opacity-100 duration-200 ease-in': showDeliveryInfos }"
+                                >
+                                    <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <!-- Enabled: "opacity-100 duration-200 ease-in", Not Enabled: "opacity-0 duration-100 ease-out" -->
+                                <span class="absolute inset-0 flex h-full w-full items-center justify-center opacity-0 transition-opacity duration-100 ease-out" aria-hidden="true"
+                                      x-state:on="Enabled" x-state:off="Not Enabled" :class="{ 'opacity-100 duration-200 ease-in': !(showDeliveryInfos), 'opacity-0 duration-100 ease-out': showDeliveryInfos }"
+                                >
+                                    <svg class="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
+                                        <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </button>  
+                        <label for="showDeliveryInfos" class="ml-1 text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.same_as_invoicing_address' }}</label>
+                    </div>
+                    <div x-show="showDeliveryInfos" class="grid gap-y-5" x-transition>  
+                        <div>
+                            <label for="delivery_attention" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_attention' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_attention" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_attention_placeholder' }}" id="delivery_attention"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_name_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_name" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_name_placeholder' }}" id="delivery_name"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_address1" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_address_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_address1" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_address_placeholder' }}" id="delivery_address1"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <input type="text" x-model="selectedBuyer.delivery_address2" autocomplete="off"
+                                    class="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_zip" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_zip_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_zip" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_zip_placeholder' }}" id="delivery_zip"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_city" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_city_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_city" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_city_placeholder' }}" id="delivery_city"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_state" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_state_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_state" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_state_placeholder' }}" id="delivery_state"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_country" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_country_label' }}</label>
+                            <div class="mt-2">
+                                <select x-on:change="selectedBuyer.delivery_country = $event.target.value;"  id="delivery_country" 
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
+                                        <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
+                                        <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
+                                        </template>
+                                    </optgroup>
+                                    <optgroup label="{{t 'users.views.signup2.all_countries' }}">
+                                        <template x-for="(country, index) in countries" :key="index">
+                                        <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                                        </template>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="delivery_phone" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.delivery_phone_label' }}</label>
+                            <div class="mt-2">
+                                <input type="text" x-model="selectedBuyer.delivery_phone" autocomplete="off"
+                                    placeholder="{{t 'buyers.views.index.delivery_phone_placeholder' }}" id="delivery_phone"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div>
-                    <label for="city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedBuyer.city" autocomplete="off"
-                            placeholder="City" id="city"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Name</label>
+                    <label for="contact_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.contact_name_label' }}</label>
                     <div class="mt-2">
                         <input type="text" x-model="selectedBuyer.contact_name" autocomplete="off"
-                            placeholder="Contact Name" id="phone"
+                            placeholder="{{t 'buyers.views.index.contact_name_placeholder' }}" id="contact_name"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
                 <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Phone</label>
+                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.phone_label' }}</label>
                     <div class="mt-2">
                         <input type="text" x-model="selectedBuyer.phone" autocomplete="off"
-                            placeholder="Phone number" id="phone"
+                            placeholder="{{t 'buyers.views.index.phone_placeholder' }}" id="phone"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
                 <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Contact Email</label>
+                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.email_label' }}</label>
                     <div class="mt-2">
                         <input type="text" x-model="selectedBuyer.email" autocomplete="off"
-                            placeholder="email" id="email"
+                            placeholder="{{t 'buyers.views.index.email_placeholder' }}" id="email"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>

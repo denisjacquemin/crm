@@ -77,7 +77,6 @@ async function createNewDocumentInMongoAndTypesense(req) {
     invoice_date.setHours(0, 0, 0, 0);
 
     // get default_payment_terms from company 
-    console.log('req.session.current_company:', req.session.current_company);
     let default_invoice_due_date_terms_type = req.session.current_company.settings.default_invoice_due_date_terms_type;
     let invoice_due_date_value;
 

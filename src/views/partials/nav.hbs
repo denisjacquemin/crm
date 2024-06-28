@@ -9,11 +9,34 @@
         <div class="fixed inset-0 z-40 flex">
           
             <div x-show="open" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" x-description="Off-canvas menu, show/hide based on off-canvas menu state." class="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl" @click.away="open = false">
-              <div class="flex px-4 pb-2 pt-5">
-                <button type="button" class="rounded-md bg-gray-200  hover:text-gray-700 -m-2 inline-flex items-center justify-center p-2 text-gray-400" @click="open = false" spellcheck="false">
-                  <span class="sr-only ">Close menu</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 hover:text-gray-500 lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>               
-                 </button>
+              <div class="flex">
+                <div class="w-1/3 px-4 pb-2 pt-5">
+                  <button type="button" class="rounded-md bg-gray-200  hover:text-gray-700 -m-2 inline-flex items-center justify-center p-2 text-gray-400" @click="open = false" spellcheck="false">
+                    <span class="sr-only ">Close menu</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 hover:text-gray-500 lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>               
+                  </button>
+                </div>
+                <div class="w-2/3 px-6 pb-2 pt-5 text-right">
+                  <template x-if="companies.length > 1">
+                      <div x-data="{
+                          async changeCurrentCompany(company_slug) {
+                            await fetchUrl('/companies/changeCurrentCompany', 'POST', { company_slug: company_slug });
+                            open = false;
+                            window.location.reload();
+                          }
+                        }">
+                        <select @change="changeCurrentCompany(event.target.value)"
+                                id="desktop-sellers" name="currency" class="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <template x-for="company in companies">
+                                <option x-text="company.name" :value="company.slug" x-bind:selected="company.selected"></option>
+                            </template>
+                        </select>
+                      </div>
+                  </template>
+                  <template x-if="companies.length === 1">
+                      <div x-text="companies[0].name" class="text-sm font-medium"></div>
+                  </template>
+                </div>
               </div>
 
               <!-- Links -->
@@ -200,8 +223,11 @@
 
               <div class="space-y-6 border-t border-gray-200 px-4 py-6">
                 <div class="flow-root">
-                    <a href="#" @click.prevent="loadModalContent('/buyers')" class="-m-2 block p-2 font-medium text-gray-900">Clients</a>
-                  </div>
+                    <a href="#" @click.prevent="loadModalContent('/products')" class="-m-2 block p-2 font-medium text-gray-900" x-html="'{{t 'nav.products' }}'"></a>
+                </div>
+                <div class="flow-root">
+                    <a href="#" @click.prevent="loadModalContent('/buyers')" class="-m-2 block p-2 font-medium text-gray-900">{{t 'nav.clients' }}</a>
+                </div>
                 <div class="flow-root">
                     <a href="/documents" class="-m-2 block p-2 font-medium text-gray-900">{{t 'nav.documents' }}</a>
                 </div>
@@ -293,7 +319,7 @@
               </div>
             </form>
 
-            <p class="flex-1 text-center text-sm font-medium text-white lg:flex-none">Get free delivery on orders over $100</p>
+            <p class="flex-1 text-center text-sm font-medium text-white lg:flex-none">Try all features by quicky <button class="cursor-pointer border border-white p-1 rounded">loading sample data</button></p>
 
             <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
               <a href="#" class="text-sm font-medium text-white hover:text-gray-100">Create an account</a>
@@ -519,8 +545,8 @@
                           
                         </div>
                       
-
-                      <a href="#" @click.prevent="loadModalContent('/buyers')" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Clients</a>
+                      <a href="#" @click.prevent="loadModalContent('/products')" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800" x-html="'{{t 'nav.products' }}'"></a>
+                      <a href="#" @click.prevent="loadModalContent('/buyers')" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">{{t 'nav.clients' }}</a>
                       <a href="/documents" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800" style="background-color: #fff7ca; background-image: linear-gradient(to right, #fff2ac, #fff7ca)">{{t 'nav.documents' }}</a>
                       
                     </div>

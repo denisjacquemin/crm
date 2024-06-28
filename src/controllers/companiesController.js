@@ -28,26 +28,39 @@ async function updateInvoiceSequence(req, res, next) {
 
 async function deleteAjax(req, res, next) {
     try {
+        if (req.session.current_company.slug === req.params.slug) {
+            return next({ 
+                status: 403,
+                message: 'Cannot delete current company', 
+                notification: { message: req.i18n.t('companies.controller.cannot_delete_current_company'), type: 'error'}
+            });
+        }
+
+
         const company = await CompanyService.getBySlug(req.params.slug);
         if (!company) {
             return next({ 
                 status: 404, 
                 message: 'Company not found', 
-                notification: { message: 'Company not found', type: 'error'}
+                notification: { message: req.i18n.t('companies.controller.not_found'), type: 'error'}
             });
         }
-        
-        // Step 1: Delete the company
-        const companyDeleted = await CompanyService.delete(company._id);
 
+        
         // Step 2: for all company.users, remove the company from the user.companies array  
         // by calling UserService.removeCompanyFromUser(userId, companyId)
-        console.log('!!!!! company.users 1:', company.users);
         company.users.forEach(async (userId) => {
-            await UserService.removeCompanyFromUser(userId, company._id);
+            await UserService.removeCompanyFromUser(userId.toString(), company._id.toString());
         });
-        console.log('!!!!! company.users 2:', company.users);
 
+        // remove the company from the user.companies array in Session  
+        req.session.user.companies = req.session.user.companies.filter(companyId => {
+            const isDifferent = companyId.toString() !== company._id.toString();
+            return isDifferent;
+          });
+        const companyDeleted = await CompanyService.delete(company._id.toString());
+
+        console.log('deleteAjax', company._id.toString(), req.session.user.companies);
 
         res.status(200).json(companyDeleted.toObject());
         
@@ -108,14 +121,18 @@ async function newCompanyAjax(req, res, next) {
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('companies.controller.default_company_name'),
+            country: req.session.user.country,
+            vat_number: '',
             users: [req.session.user._id]
         });
         // add the company id to the user's companies array in Session and DB
-        req.session.user.companies.push(companyCreated._id);
+        if (req.session.user.companies.indexOf(companyCreated._id.toString()) === -1) {
+            req.session.user.companies.push(companyCreated._id.toString());
+        }
         await UserService.updateCompanies(req.session.user._id, req.session.user.companies);        
 
-        // add the user id to the company.users array in Session and DB
-        req.session.current_company.users.push(req.session.user._id);
+        console.log('newCompanyAjax', companyCreated._id.toString(), req.session.user.companies);
+
 
         res.status(200).json(companyCreated.toObject());
     } catch (error) {
@@ -130,7 +147,6 @@ async function update(req, res, next) {
         if (!company) {
             return next({ status: 404, message: 'Company not found' });
         }
-        console.log('updating company', req.body.value);
         let updatedCompany = await CompanyService.update(company._id, req.body.value);
         updatedCompany = updatedCompany.toObject();
 

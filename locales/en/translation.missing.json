@@ -40,7 +40,16 @@
     "index": {
       "new_invoice": "documents.index.new_invoice"
     },
-    "document_not_found_sub": "documents.document_not_found_sub"
+    "document_not_found_sub": "documents.document_not_found_sub",
+    "views": {
+      "index": {
+        "buyer_modal": {
+          "modal_title": "documents.views.index.buyer_modal.modal_title",
+          "modal_subtitle": "documents.views.index.buyer_modal.modal_subtitle",
+          "back_button": "documents.views.index.buyer_modal.back_button"
+        }
+      }
+    }
   },
   "common": {
     "not_found": "common.not_found",
@@ -94,7 +103,33 @@
     }
   },
   "buyers": {
-    "views_countries": "buyers.views_countries"
+    "views_countries": "buyers.views_countries",
+    "views": {
+      "countries": "buyers.views.countries",
+      "frequently_selected_countries": "buyers.views.frequently_selected_countries",
+      "index": {
+        "create_new_client": "buyers.views.index.create_new_client",
+        "sort_by": "buyers.views.index.sort_by",
+        "creation_date": "buyers.views.index.creation_date",
+        "name": "buyers.views.index.name",
+        "no_client_found": "buyers.views.index.no_client_found",
+        "no_client_selected": "buyers.views.index.no_client_selected",
+        "delete_confirm": "buyers.views.index.delete_confirm",
+        "delete": "buyers.views.index.delete",
+        "country": "buyers.views.index.country",
+        "vat_number": "buyers.views.index.vat_number",
+        "without_vat": "buyers.views.index.without_vat",
+        "address": "buyers.views.index.address",
+        "invoicing_address": "buyers.views.index.invoicing_address",
+        "delivery_attention": "buyers.views.index.delivery_attention",
+        "delivery_attention_placeholder": "buyers.views.index.delivery_attention_placeholder",
+        "delivery_country": "buyers.views.index.delivery_country",
+        "delivery_address_label": "buyers.views.index.delivery_address_label",
+        "delivery_address_placeholder": "buyers.views.index.delivery_address_placeholder",
+        "delivery_phone_label": "buyers.views.index.delivery_phone_label",
+        "delivery_phone_placeholder": "buyers.views.index.delivery_phone_placeholder"
+      }
+    }
   },
   "session": {
     "signup": {
@@ -122,5 +157,35 @@
   },
   "taxRates": {
     "FR": "taxRates.FR"
+  },
+  "buyerss": {
+    "views": {
+      "countries": "buyerss.views.countries",
+      "frequently_selected_countries": "buyerss.views.frequently_selected_countries"
+    }
+  },
+  "products": {
+    "views": {
+      "index": {
+        "create_new_client": "products.views.index.create_new_client",
+        "sort_by": "products.views.index.sort_by",
+        "creation_date": "products.views.index.creation_date",
+        "name": "products.views.index.name",
+        "no_client_found": "products.views.index.no_client_found",
+        "no_client_selected": "products.views.index.no_client_selected",
+        "delete_confirm": "products.views.index.delete_confirm",
+        "delete": "products.views.index.delete",
+        "country": "products.views.index.country",
+        "vat_number": "products.views.index.vat_number",
+        "without_vat": "products.views.index.without_vat",
+        "create_new_product": "products.views.index.create_new_product",
+        "no_product_found": "products.views.index.no_product_found",
+        "no_product_selected": "products.views.index.no_product_selected",
+        "vat_label": "products.views.index.vat_label"
+      }
+    },
+    "controller": {
+      "default_product_name": "products.controller.default_product_name"
+    }
   }
 }

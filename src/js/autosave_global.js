@@ -26,11 +26,16 @@ window.setupWorker = function (pathToWorker) {
 workerSettings = setupWorker("/public/js/workers/autosave_worker.js");
 
 workerSettings.onmessage = function(event) {
+    console.log('Message from worker:', event.data);
     // handle messages from worker when postMessage({ unauthorized: true }); is called
     if (event.data.hasOwnProperty('unauthorized')) {
         history.replaceState(null, '', window.location.href);
         location.reload();
-    } 
+    }
+
+    if (event.data.hasOwnProperty('notification')) {
+        dispatch('notify', { content: event.data.notification.message, subcontent: event.data.notification.submessage, type: event.data.notification.type ? event.data.notification.type : 'info' });
+    }
 
     // delete from localstorage only if event.data.updatedAt is > then the one in localstorage autosave_updated_at
     let key = 'autosave#' + event.data.targetedObject + '#' + event.data.slug;
@@ -39,7 +44,7 @@ workerSettings.onmessage = function(event) {
     // console.log('server side update:', event.data.autosave_updated_at);
     // console.log('dates:', new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at));
     // console.log('notfound:', event.data.hasOwnProperty('notfound'));
-    if (event.data.hasOwnProperty('notfound') || (new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at))) {
+    if (event.data.hasOwnProperty('error') || event.data.hasOwnProperty('notfound') || (new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at))) {
         console.log('deleting from localstorage:', key);
         localStorage.removeItem(key);
     }

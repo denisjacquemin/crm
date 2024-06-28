@@ -14,14 +14,47 @@
     "nav": {
         "documents": "Documents",
         "signout": "Sign out",
-        "signout_alt": "Click here to sign out "
+        "signout_alt": "Click here to sign out",
+        "clients": "Customers",
+        "products": "Products &amp; Services"
+    },
+    "products": {
+        "views": {
+            "index": {
+                "create_new_product": "Create a new Product or Service",
+                "search_placeholder": "Search by reference, name, description...",
+                "no_product_found": "No products found. Create a new one now.",
+                "sort_by": "Sort by",
+                "creation_date": "Creation date (latest first)",
+                "name": "Name (A-Z)",
+                "no_product_selected": "No product selected. Details for the selected product will display here.",
+                "delete": "Delete", 
+                "delete_confirm": "Are you sure you want to delete this product?",
+                "name_label": "Name",
+                "name_placeholder": "Product's name",
+                "description_label": "Description",
+                "description_placeholder": "Product's description",
+                "reference_label": "Reference",
+                "reference_placeholder": "Product's reference",
+                "unit_price_label": "Unit price",
+                "unit_price_placeholder": "Product's unit price",
+                "vat_label": "Default VAT Rate"
+            }
+        },
+        "controller": {
+            "default_product_name": "Choose a name",
+            "reference_must_be_unique": "The product's reference must be unique, but the selected reference is already in use.",
+            "reference_must_be_unique_sub": "Please use the search feature with the reference as a keyword to find which product already exists with this reference."
+        }
+
     },
     "companies": {
         "controller" : {
             "default_company_name": "Choose a name",
             "not_found": "Company not found",
             "user_does_not_have_access": "User does not have access to this company",
-            "current_company_changes_success": "The current company has been changed"
+            "current_company_changes_success": "The current company has been changed",
+            "cannot_delete_current_company": "You cannot delete the current company"
         },
         "create_new_company": "Create new company",
         "company_name": "Name",
@@ -35,20 +68,22 @@
                 "no_document_found": "No document found.",
                 "no_document_selected": "No document selected. Details for the selected document will display here.",
                 "nothing_to_preview": "No document selected. Preview for the selected document will display here.",
-                "search_placeholder": "Filter by buyers's name, VAT number, address,...",
+                "search_placeholder": "Filter by customers's name, VAT number, address,...",
                 "search_sort_by": "Sort by",
                 "search_latest_first": "Latest first",
                 "search_oldest_first": "Oldest first",
                 "search_last_updated_first": "Lastest updated first",
                 "search_oldest_updated_first": "Oldest updated first",
+                "form": "Form",
+                "preview": "Preview",
                 "seller_modal": {
                     "modal_title": "Edit Seller",
                     "modal_subtitle": "Update Seller's details.",
                     "back_button": "I'm done"
                 },
                 "buyer_modal": {
-                    "modal_title": "Edit Buyer",
-                    "modal_subtitle": "Update Buyer's details.",
+                    "modal_title": "Edit Customer",
+                    "modal_subtitle": "Update Customer's details.",
                     "back_button": "I'm done"
 
                 },
@@ -219,818 +254,60 @@
             "default_company_name": "Choose a name"
         },
         "views": {
-            "frequently_selected_countries": [
-                {
-                    "value": "FR",
-                    "name": "France"
-                },
-                {
-                    "value": "BE",
-                    "name": "Belgium"
-                },
-                {
-                    "value": "LU",
-                    "name": "Luxembourg"
-                },
-                {
-                    "value": "DE",
-                    "name": "Germany"
-                },
-                {
-                    "value": "IT",
-                    "name": "Italy"
-                },
-                {
-                    "value": "NL",
-                    "name": "Netherlands"
-                },
-                {
-                    "value": "ES",
-                    "name": "Spain"
-                },
-                {
-                    "value": "GB",
-                    "name": "United Kingdom"
-                }
-            ],
-            "countries": [
-                {
-                    "value": "AF",
-                    "name": "Afghanistan"
-                },
-                {
-                    "value": "AL",
-                    "name": "Albania"
-                },
-                {
-                    "value": "DZ",
-                    "name": "Algeria"
-                },
-                {
-                    "value": "AD",
-                    "name": "Andorra"
-                },
-                {
-                    "value": "AO",
-                    "name": "Angola"
-                },
-                {
-                    "value": "AG",
-                    "name": "Antigua and Barbuda"
-                },
-                {
-                    "value": "AR",
-                    "name": "Argentina"
-                },
-                {
-                    "value": "AM",
-                    "name": "Armenia"
-                },
-                {
-                    "value": "AU",
-                    "name": "Australia"
-                },
-                {
-                    "value": "AT",
-                    "name": "Austria"
-                },
-                {
-                    "value": "AZ",
-                    "name": "Azerbaijan"
-                },
-                {
-                    "value": "BS",
-                    "name": "Bahamas"
-                },
-                {
-                    "value": "BH",
-                    "name": "Bahrain"
-                },
-                {
-                    "value": "BD",
-                    "name": "Bangladesh"
-                },
-                {
-                    "value": "BB",
-                    "name": "Barbados"
-                },
-                {
-                    "value": "BY",
-                    "name": "Belarus"
-                },
-                {
-                    "value": "BE",
-                    "name": "Belgium"
-                },
-                {
-                    "value": "BZ",
-                    "name": "Belize"
-                },
-                {
-                    "value": "BJ",
-                    "name": "Benin"
-                },
-                {
-                    "value": "BT",
-                    "name": "Bhutan"
-                },
-                {
-                    "value": "BO",
-                    "name": "Bolivia"
-                },
-                {
-                    "value": "BA",
-                    "name": "Bosnia and Herzegovina"
-                },
-                {
-                    "value": "BW",
-                    "name": "Botswana"
-                },
-                {
-                    "value": "BR",
-                    "name": "Brazil"
-                },
-                {
-                    "value": "BN",
-                    "name": "Brunei"
-                },
-                {
-                    "value": "BG",
-                    "name": "Bulgaria"
-                },
-                {
-                    "value": "BF",
-                    "name": "Burkina Faso"
-                },
-                {
-                    "value": "BI",
-                    "name": "Burundi"
-                },
-                {
-                    "value": "CV",
-                    "name": "Cabo Verde"
-                },
-                {
-                    "value": "KH",
-                    "name": "Cambodia"
-                },
-                {
-                    "value": "CM",
-                    "name": "Cameroon"
-                },
-                {
-                    "value": "CA",
-                    "name": "Canada"
-                },
-                {
-                    "value": "CF",
-                    "name": "Central African Republic"
-                },
-                {
-                    "value": "TD",
-                    "name": "Chad"
-                },
-                {
-                    "value": "CL",
-                    "name": "Chile"
-                },
-                {
-                    "value": "CN",
-                    "name": "China"
-                },
-                {
-                    "value": "CO",
-                    "name": "Colombia"
-                },
-                {
-                    "value": "KM",
-                    "name": "Comoros"
-                },
-                {
-                    "value": "CD",
-                    "name": "Congo (Congo-Brazzaville)"
-                },
-                {
-                    "value": "CR",
-                    "name": "Costa Rica"
-                },
-                {
-                    "value": "HR",
-                    "name": "Croatia"
-                },
-                {
-                    "value": "CU",
-                    "name": "Cuba"
-                },
-                {
-                    "value": "CY",
-                    "name": "Cyprus"
-                },
-                {
-                    "value": "CZ",
-                    "name": "Czechia (Czech Republic)"
-                },
-                {
-                    "value": "DK",
-                    "name": "Denmark"
-                },
-                {
-                    "value": "DJ",
-                    "name": "Djibouti"
-                },
-                {
-                    "value": "DM",
-                    "name": "Dominica"
-                },
-                {
-                    "value": "DO",
-                    "name": "Dominican Republic"
-                },
-                {
-                    "value": "EC",
-                    "name": "Ecuador"
-                },
-                {
-                    "value": "EG",
-                    "name": "Egypt"
-                },
-                {
-                    "value": "SV",
-                    "name": "El Salvador"
-                },
-                {
-                    "value": "GQ",
-                    "name": "Equatorial Guinea"
-                },
-                {
-                    "value": "ER",
-                    "name": "Eritrea"
-                },
-                {
-                    "value": "EE",
-                    "name": "Estonia"
-                },
-                {
-                    "value": "SZ",
-                    "name": "Eswatini (fmr. Swaziland)"
-                },
-                {
-                    "value": "ET",
-                    "name": "Ethiopia"
-                },
-                {
-                    "value": "FJ",
-                    "name": "Fiji"
-                },
-                {
-                    "value": "FI",
-                    "name": "Finland"
-                },
-                {
-                    "value": "FR",
-                    "name": "France"
-                },
-                {
-                    "value": "GA",
-                    "name": "Gabon"
-                },
-                {
-                    "value": "GM",
-                    "name": "Gambia"
-                },
-                {
-                    "value": "GE",
-                    "name": "Georgia"
-                },
-                {
-                    "value": "DE",
-                    "name": "Germany"
-                },
-                {
-                    "value": "GH",
-                    "name": "Ghana"
-                },
-                {
-                    "value": "GR",
-                    "name": "Greece"
-                },
-                {
-                    "value": "GD",
-                    "name": "Grenada"
-                },
-                {
-                    "value": "GT",
-                    "name": "Guatemala"
-                },
-                {
-                    "value": "GN",
-                    "name": "Guinea"
-                },
-                {
-                    "value": "GW",
-                    "name": "Guinea-Bissau"
-                },
-                {
-                    "value": "GY",
-                    "name": "Guyana"
-                },
-                {
-                    "value": "HT",
-                    "name": "Haiti"
-                },
-                {
-                    "value": "HN",
-                    "name": "Honduras"
-                },
-                {
-                    "value": "HU",
-                    "name": "Hungary"
-                },
-                {
-                    "value": "IS",
-                    "name": "Iceland"
-                },
-                {
-                    "value": "IN",
-                    "name": "India"
-                },
-                {
-                    "value": "ID",
-                    "name": "Indonesia"
-                },
-                {
-                    "value": "IR",
-                    "name": "Iran"
-                },
-                {
-                    "value": "IQ",
-                    "name": "Iraq"
-                },
-                {
-                    "value": "IE",
-                    "name": "Ireland"
-                },
-                {
-                    "value": "IL",
-                    "name": "Israel"
-                },
-                {
-                    "value": "IT",
-                    "name": "Italy"
-                },
-                {
-                    "value": "JM",
-                    "name": "Jamaica"
-                },
-                {
-                    "value": "JP",
-                    "name": "Japan"
-                },
-                {
-                    "value": "JO",
-                    "name": "Jordan"
-                },
-                {
-                    "value": "KZ",
-                    "name": "Kazakhstan"
-                },
-                {
-                    "value": "KE",
-                    "name": "Kenya"
-                },
-                {
-                    "value": "KI",
-                    "name": "Kiribati"
-                },
-                {
-                    "value": "KW",
-                    "name": "Kuwait"
-                },
-                {
-                    "value": "KG",
-                    "name": "Kyrgyzstan"
-                },
-                {
-                    "value": "LA",
-                    "name": "Laos"
-                },
-                {
-                    "value": "LV",
-                    "name": "Latvia"
-                },
-                {
-                    "value": "LB",
-                    "name": "Lebanon"
-                },
-                {
-                    "value": "LS",
-                    "name": "Lesotho"
-                },
-                {
-                    "value": "LR",
-                    "name": "Liberia"
-                },
-                {
-                    "value": "LY",
-                    "name": "Libya"
-                },
-                {
-                    "value": "LI",
-                    "name": "Liechtenstein"
-                },
-                {
-                    "value": "LT",
-                    "name": "Lithuania"
-                },
-                {
-                    "value": "LU",
-                    "name": "Luxembourg"
-                },
-                {
-                    "value": "MG",
-                    "name": "Madagascar"
-                },
-                {
-                    "value": "MW",
-                    "name": "Malawi"
-                },
-                {
-                    "value": "MY",
-                    "name": "Malaysia"
-                },
-                {
-                    "value": "MV",
-                    "name": "Maldives"
-                },
-                {
-                    "value": "ML",
-                    "name": "Mali"
-                },
-                {
-                    "value": "MT",
-                    "name": "Malta"
-                },
-                {
-                    "value": "MH",
-                    "name": "Marshall Islands"
-                },
-                {
-                    "value": "MR",
-                    "name": "Mauritania"
-                },
-                {
-                    "value": "MU",
-                    "name": "Mauritius"
-                },
-                {
-                    "value": "MX",
-                    "name": "Mexico"
-                },
-                {
-                    "value": "FM",
-                    "name": "Micronesia"
-                },
-                {
-                    "value": "MD",
-                    "name": "Moldova"
-                },
-                {
-                    "value": "MC",
-                    "name": "Monaco"
-                },
-                {
-                    "value": "MN",
-                    "name": "Mongolia"
-                },
-                {
-                    "value": "ME",
-                    "name": "Montenegro"
-                },
-                {
-                    "value": "MA",
-                    "name": "Morocco"
-                },
-                {
-                    "value": "MZ",
-                    "name": "Mozambique"
-                },
-                {
-                    "value": "MM",
-                    "name": "Myanmar (formerly Burma)"
-                },
-                {
-                    "value": "NA",
-                    "name": "Namibia"
-                },
-                {
-                    "value": "NR",
-                    "name": "Nauru"
-                },
-                {
-                    "value": "NP",
-                    "name": "Nepal"
-                },
-                {
-                    "value": "NL",
-                    "name": "Netherlands"
-                },
-                {
-                    "value": "NZ",
-                    "name": "New Zealand"
-                },
-                {
-                    "value": "NI",
-                    "name": "Nicaragua"
-                },
-                {
-                    "value": "NE",
-                    "name": "Niger"
-                },
-                {
-                    "value": "NG",
-                    "name": "Nigeria"
-                },
-                {
-                    "value": "KP",
-                    "name": "North Korea"
-                },
-                {
-                    "value": "MK",
-                    "name": "North Macedonia"
-                },
-                {
-                    "value": "NO",
-                    "name": "Norway"
-                },
-                {
-                    "value": "OM",
-                    "name": "Oman"
-                },
-                {
-                    "value": "PK",
-                    "name": "Pakistan"
-                },
-                {
-                    "value": "PW",
-                    "name": "Palau"
-                },
-                {
-                    "value": "PS",
-                    "name": "Palestine State"
-                },
-                {
-                    "value": "PA",
-                    "name": "Panama"
-                },
-                {
-                    "value": "PG",
-                    "name": "Papua New Guinea"
-                },
-                {
-                    "value": "PY",
-                    "name": "Paraguay"
-                },
-                {
-                    "value": "PE",
-                    "name": "Peru"
-                },
-                {
-                    "value": "PH",
-                    "name": "Philippines"
-                },
-                {
-                    "value": "PL",
-                    "name": "Poland"
-                },
-                {
-                    "value": "PT",
-                    "name": "Portugal"
-                },
-                {
-                    "value": "QA",
-                    "name": "Qatar"
-                },
-                {
-                    "value": "RO",
-                    "name": "Romania"
-                },
-                {
-                    "value": "RU",
-                    "name": "Russia"
-                },
-                {
-                    "value": "RW",
-                    "name": "Rwanda"
-                },
-                {
-                    "value": "KN",
-                    "name": "Saint Kitts and Nevis"
-                },
-                {
-                    "value": "LC",
-                    "name": "Saint Lucia"
-                },
-                {
-                    "value": "VC",
-                    "name": "Saint Vincent and the Grenadines"
-                },
-                {
-                    "value": "WS",
-                    "name": "Samoa"
-                },
-                {
-                    "value": "SM",
-                    "name": "San Marino"
-                },
-                {
-                    "value": "ST",
-                    "name": "Sao Tome and Principe"
-                },
-                {
-                    "value": "SA",
-                    "name": "Saudi Arabia"
-                },
-                {
-                    "value": "SN",
-                    "name": "Senegal"
-                },
-                {
-                    "value": "RS",
-                    "name": "Serbia"
-                },
-                {
-                    "value": "SC",
-                    "name": "Seychelles"
-                },
-                {
-                    "value": "SL",
-                    "name": "Sierra Leone"
-                },
-                {
-                    "value": "SG",
-                    "name": "Singapore"
-                },
-                {
-                    "value": "SK",
-                    "name": "Slovakia"
-                },
-                {
-                    "value": "SI",
-                    "name": "Slovenia"
-                },
-                {
-                    "value": "SB",
-                    "name": "Solomon Islands"
-                },
-                {
-                    "value": "SO",
-                    "name": "Somalia"
-                },
-                {
-                    "value": "ZA",
-                    "name": "South Africa"
-                },
-                {
-                    "value": "KR",
-                    "name": "South Korea"
-                },
-                {
-                    "value": "SS",
-                    "name": "South Sudan"
-                },
-                {
-                    "value": "ES",
-                    "name": "Spain"
-                },
-                {
-                    "value": "LK",
-                    "name": "Sri Lanka"
-                },
-                {
-                    "value": "SD",
-                    "name": "Sudan"
-                },
-                {
-                    "value": "SR",
-                    "name": "Suriname"
-                },
-                {
-                    "value": "SE",
-                    "name": "Sweden"
-                },
-                {
-                    "value": "CH",
-                    "name": "Switzerland"
-                },
-                {
-                    "value": "SY",
-                    "name": "Syria"
-                },
-                {
-                    "value": "TW",
-                    "name": "Taiwan"
-                },
-                {
-                    "value": "TJ",
-                    "name": "Tajikistan"
-                },
-                {
-                    "value": "TZ",
-                    "name": "Tanzania"
-                },
-                {
-                    "value": "TH",
-                    "name": "Thailand"
-                },
-                {
-                    "value": "TL",
-                    "name": "Timor-Leste"
-                },
-                {
-                    "value": "TG",
-                    "name": "Togo"
-                },
-                {
-                    "value": "TO",
-                    "name": "Tonga"
-                },
-                {
-                    "value": "TT",
-                    "name": "Trinidad and Tobago"
-                },
-                {
-                    "value": "TN",
-                    "name": "Tunisia"
-                },
-                {
-                    "value": "TR",
-                    "name": "Turkey"
-                },
-                {
-                    "value": "TM",
-                    "name": "Turkmenistan"
-                },
-                {
-                    "value": "TV",
-                    "name": "Tuvalu"
-                },
-                {
-                    "value": "UG",
-                    "name": "Uganda"
-                },
-                {
-                    "value": "UA",
-                    "name": "Ukraine"
-                },
-                {
-                    "value": "AE",
-                    "name": "United Arab Emirates"
-                },
-                {
-                    "value": "GB",
-                    "name": "United Kingdom"
-                },
-                {
-                    "value": "US",
-                    "name": "United States"
-                },
-                {
-                    "value": "UY",
-                    "name": "Uruguay"
-                },
-                {
-                    "value": "UZ",
-                    "name": "Uzbekistan"
-                },
-                {
-                    "value": "VU",
-                    "name": "Vanuatu"
-                },
-                {
-                    "value": "VA",
-                    "name": "Vatican City"
-                },
-                {
-                    "value": "VE",
-                    "name": "Venezuela"
-                },
-                {
-                    "value": "VN",
-                    "name": "Vietnam"
-                },
-                {
-                    "value": "YE",
-                    "name": "Yemen"
-                },
-                {
-                    "value": "ZM",
-                    "name": "Zambia"
-                },
-                {
-                    "value": "ZW",
-                    "name": "Zimbabwe"
-                }
-            ]
+            "index": {
+                "create_new_client": "Create a new Customer",
+                "sort_by": "Sort by",
+                "creation_date": "Creation date (latest first)",
+                "name": "Name (A-Z)",
+                "no_client_found": "No customers found.", 
+                "no_client_selected": "No customer selected. Details for the selected customer will display here.",
+                "delete": "Delete",
+                "delete_confirm": "Are you sure you want to delete this customer?",
+                "country": "Country",
+                "vat_number": "VAT Number",
+                "without_vat": "Without VAT Number",
+                "invoicing_address": "Invoicing Address",
+                "delivery_address": "Delivery Address",
+                "same_as_invoicing_address": "Same as invoicing address",
+                "attention": "Attention",
+                "attention_placeholder": "Recipient's Name or Department",
+                "search_placeholder": "Search by name, address, city, zip,...",
+                "name_label": "Name",
+                "name_placeholder": "Customer's name",
+                "address_label": "Address",
+                "address_placeholder": "Customer's street and number",
+                "zip_label": "Zip",
+                "zip_placeholder": "Customer's zip code",
+                "city_label": "City",
+                "city_placeholder": "Customer's city",
+                "state_label": "State",
+                "state_placeholder": "Customer's state",
+                "delivery_attention": "Attention",
+                "delivery_attention_placeholder": "Recipient's Name or Department",
+                "delivery_name_label": "Name",
+                "delivery_name_placeholder": "Customer's delivery name",
+                "delivery_address_label": "Address",
+                "delivery_address_placeholder": "Customer's delivery street and number",
+                "delivery_zip_label": "Zip",
+                "delivery_zip_placeholder": "Customer's delivery zip",
+                "delivery_city_label": "City",
+                "delivery_city_placeholder": "Customer's delivery city",
+                "delivery_state_label": "State",
+                "delivery_state_placeholder": "Customer's delivery state",
+                "delivery_country_label": "Country",
+                "delivery_phone_label": "Phone",
+                "delivery_phone_placeholder": "Customer's delivery phone",
+                "contact_name_label": "Contact Name",
+                "contact_name_placeholder": "Customer's contact name",
+                "phone_label": "Phone",
+                "phone_placeholder": "Customer's phone",
+                "email_label": "Email",
+                "email_placeholder": "Customer's email"
+
+
+
+
+            }
         }
     },
     "signin": {
@@ -1074,7 +351,8 @@
             "sellers": {
                 "create_seller_button": "Create a new Seller",
                 "no_seller_found": "No sellers found.",
-                "no_seller_selected": "No seller selected. Details for the selected seller will display here."
+                "no_seller_selected": "No seller selected. Details for the selected seller will display here.",
+                "delete_confirm": "Are you sure you want to delete this seller?"
             }
 
         },

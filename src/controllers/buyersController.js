@@ -7,6 +7,9 @@ const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
 const { updateMany } = require('../models/document.model');
 const mongoose = require('mongoose');
+const geoip = require('geoip-lite');
+const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
+
 
 
 async function index(req, res, next) {
@@ -20,11 +23,16 @@ async function index(req, res, next) {
             query_by: 'name,address1,address2,city,vat_number,contact_name,email,phone'
         });
         const buyers = results.hits.map(hit => hit.document);
-        console.log('buyers', buyers);
+        const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
+
+        console.log('current company coutnry:', req.session.current_company.country);
         res.render('buyers/index', {
             layout: false,
             buyers: buyers,
-            countries: req.i18n.t('buyers.views.countries',  { returnObjects: true })
+            countries: req.i18n.t('countries:countries',  { returnObjects: true }),
+            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
+            defaultCountry: geo && geo.country,
+            ...getCompanyRegistrationNumberLabels(req)
         });
     } catch (err) {
         next(err);

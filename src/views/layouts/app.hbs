@@ -15,11 +15,19 @@
           @updatenavbutton="navState = $event.detail.value"
           x-data="{ 
             navState: 'menu',
+            modalSize: null,
             companies: [],
             openSettingsModal: false,
-            async loadModalContent(url, callback, focusInputId) {
+            async openConfirmModal(title, message, confirmCallback) {
+                this.$refs.confirmModal.open(title, message, confirmCallback);
+            },
+            async loadModalContent(url, callback, focusInputId, size = 'medium') {
+                
+                
                 const text = await fetchUrl(url, 'GET');
                 if (!text) return;
+                this.modalSize = size;
+
                 this.$refs.modalContent.innerHTML = text;
                 this.openSettingsModal = true;
                 if (focusInputId) {
@@ -48,7 +56,8 @@
 
         </div>
         {{> notifications2 }}
-        {{> settings_modal }}
+        {{> modal }}
+        {{!-- {{> confirm_modal }} --}}
     </body>
 
 </html>

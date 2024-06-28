@@ -1,6 +1,5 @@
 {
-  "rates": {
-    "test": "rates.test"
-  },
-  "GB": "GB"
+  "taxrates": {
+    "": "taxrates."
+  }
 }

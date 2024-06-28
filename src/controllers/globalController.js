@@ -2,6 +2,8 @@ const { get } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
 const geoip = require('geoip-lite');
+const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
+
 
 
 // Change current language with i18n.changeLanguage and store it session and db if logged in
@@ -38,12 +40,19 @@ async function changeLang(req, res) {
 
 async function getTaxRatesByCountryCodes(req, res) {
     const { countries } = req.body;
-    // get tax rates froom translation files for each country code
+    // get tax rates from translation files for each country code
     const taxRates = {};
     countries.forEach(code => {
-        taxRates[code] = req.i18n.t(`taxrates:${code}`,  { returnObjects: true });
+        taxRates[code] = req.i18n.t(`taxrates:taxrates.${code}`,  { returnObjects: true });
     });
-    res.status(200).send(taxRates);
+
+    const countriesAndCodes = {};
+    const allTaxRates = req.i18n.t('taxrates:taxrates', { returnObjects: true });
+    Object.keys(allTaxRates).forEach(code => {
+        countriesAndCodes[code] = allTaxRates[code].country;
+    });
+    
+    res.status(200).send({taxRates: taxRates, countries: countriesAndCodes});
 }
 
 
@@ -63,8 +72,8 @@ async function settings(req, res) {
             accountEmail: req.session.user.email,
             sellers: sellers,
             currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
-            countries: req.i18n.t('buyers.views.countries',  { returnObjects: true }),
-            frequentlySelectedCountries: req.i18n.t('buyers.views.frequently_selected_countries',  { returnObjects: true }),
+            countries: req.i18n.t('countries:countries',  { returnObjects: true }),
+            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
             defaultCountry: geo && geo.country,
             ...getCompanyRegistrationNumberLabels(req),
             layout: false
@@ -75,18 +84,6 @@ async function settings(req, res) {
     }
 }
 
-function getCompanyRegistrationNumberLabels(req){
-    // get all translations that begin with users.views.signup2.company_registration_number_ + each country_code and put them in an object 
-    // and return the object
-    var country_codes = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
-    var company_registration_number_label_translations = []
-    country_codes.forEach(function(country_code){
-        company_registration_number_label_translations.push({country_code: country_code, label: req.i18n.t('users.views.signup2.company_registration_number_' + country_code )});
-    });
-    return {
-        company_registration_number_label_translations: company_registration_number_label_translations
-    }
-}
 
 module.exports = {
     changeLang,

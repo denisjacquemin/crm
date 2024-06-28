@@ -23,12 +23,13 @@ module.exports = async function(req, res, next) {
     if (redirect) {
         if (req.xhr) {
             // Return a 401 error for AJAX requests
-            res.status(401).send("Unauthorized");
+            res.status(401).send("unauthorized");
         } else {
             console.log('No Auth for: ', req.originalUrl);
             res.redirect('/users/signin');
         }
     } else {
+        // console.log(`${req.method} ${req.path} ${req.session.user.companies}`);
         next();
     }
 };

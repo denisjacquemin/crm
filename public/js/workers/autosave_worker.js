@@ -28,8 +28,7 @@ onmessage = async function(event) {
                 break;
             case 400:
                 console.log('Autosave worker 400')
-                result = await response.json();
-                break;
+                result = { error: true, ...await response.json() };                break;
             case 404:
                 console.log('Autosave worker 404')
                 result = { notfound: true };

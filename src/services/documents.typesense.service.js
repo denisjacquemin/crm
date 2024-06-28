@@ -12,8 +12,8 @@ const schema = {
         { "name": "config.invoice_date", "type": "int64", "facet": false, "optional": false },
         { "name": "config.invoice_due_date", "type": "object", "facet": false, "optional": false },
         { "name": "config.invoice_due_date.value", "type": "string", "facet": false, "optional": false },
-        { "name": "createdAt", "type": "int64", "facet": false, "optional": false },
-        { "name": "updatedAt", "type": "int64", "facet": false, "optional": false },
+        { "name": "createdAt", "type": "int64", "facet": false, "optional": false, "sort": true },
+        { "name": "updatedAt", "type": "int64", "facet": false, "optional": false, "sort": true },
         { "name": "created_by_user_id", "type": "string", "facet": false, "optional": false },
         { "name": "slug", "type": "string", "facet": false, "optional": false }
     ]

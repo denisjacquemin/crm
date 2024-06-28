@@ -23,7 +23,7 @@
         },
         deleteSeller: async function(slug) {
             try {
-                const data = await fetchUrl(`/companies/deleteAjax/${slug}`, 'DEL  ETE');
+                const data = await fetchUrl(`/companies/deleteAjax/${slug}`, 'DELETE');
                 this.sellers = this.sellers.filter(seller => seller.slug !== slug);
                 this.selectedSeller = {};
                 setTimeout(() => $dispatch('loadcompanies'), 2000);
@@ -60,7 +60,7 @@
 
     }"
     x-init="
-      selectedCountry = '{{ session.signup.company.country }}' || defaultCountry || frequentlySelectedCountries[0].value;
+      selectedCountry = defaultCountry || frequentlySelectedCountries[0].value;
       updateCompanyRegistrationNumberLabel(selectedCountry);
       $watch('selectedCountry', (value, oldValue) => {
         console.log('selectedCountry changed', value, oldValue);
@@ -71,6 +71,9 @@
             company.autosave_updated_at = new Date();
             localStorage.setItem('autosave#company#' + value.slug, JSON.stringify(company));
         }
+        selectedCountry = company.country;
+        updateCompanyRegistrationNumberLabel(selectedCountry);
+
       });
     ">
     <div x-ref="companiesList" class="flex flex-col flex-1 w-[50%] transition-transform duration-500 ease-in-out">
@@ -169,7 +172,7 @@
                 <div class="w-1/2 text-right my-auto sm:w-full">
                     <a href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
-                            @click.prevent="deleteSeller(selectedSeller.slug)">      
+                            @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller.slug) ">      
                         Delete
                     </a>
                 </div>
@@ -214,7 +217,7 @@
                 <div>
                     <label for="country" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.country' }}</label>
                     <div class="mt-1">
-                        <select x-on:change="selectedSeller.country = $event.target.value; selectedSeller = {...selectedSeller}; updateCompanyRegistrationNumberLabel($event.target.value)"
+                        <select x-on:change="selectedSeller.country = $event.target.value; selectedSeller = {...selectedSeller};"
                                 id="country" name="country"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">

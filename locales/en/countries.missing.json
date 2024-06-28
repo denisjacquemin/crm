@@ -1,0 +1,9 @@
+{
+  "US": "US",
+  "test": "test",
+  "taxrates": {
+    "FR": {
+      "country": "taxrates.FR.country"
+    }
+  }
+}

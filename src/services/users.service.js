@@ -107,8 +107,11 @@ class UserService  {
 
     static async updateCompanies(userId, companies) {
         try {
-            return await
-                User.findOneAndUpdate({ _id: userId }, { companies }, { new: true });
+            return await User.findOneAndUpdate(
+                { _id: userId },
+                { $addToSet: { companies: { $each: companies } } },
+                { new: true }
+            );
         } catch (err) {
             console.error(err.stack);
             throw err;

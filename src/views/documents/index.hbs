@@ -5,9 +5,6 @@
             selectedDocumentIndex: {{ stringify selectedDocumentIndex }},
             selectedDocument: {{ stringify selectedDocument }},
             getTaxRates: async function() {
-                console.log('getTaxRates buyer', this.selectedDocument.config.buyer.country);
-                console.log('getTaxRates seller', this.selectedDocument.config.seller.country);
-
                 let countries = [];
                 if (this.selectedDocument.config.buyer.country) {
                     countries.push(this.selectedDocument.config.buyer.country);
@@ -21,8 +18,8 @@
                 }
 
                 try {
-                    const response = await fetchUrl('/taxRates', 'POST', { countries });
-                    this.taxRates = await response.json();
+                    const data = await fetchUrl('/taxRates', 'POST', { countries });
+                    this.taxRates = data;
                 } catch (error) {
                     console.error('Error getting tax rates', error);
                 }
@@ -301,10 +298,10 @@
                     <nav class="flex" aria-label="Tabs">
                         <!-- Current: "bg-gray-100 text-gray-700", Default: "text-gray-500 hover:text-gray-700" -->
                         <div x-ref="tabForm" @click="toggleTab('tabForm')"
-                            class="cursor-pointer text-indigo-700 bg-indigo-100 m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Form</div>
+                            class="cursor-pointer text-indigo-700 bg-indigo-100 m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">{{t 'documents.views.index.form' }}</div>
                         <div class="border border-gray-200 my-1"></div>
                         <div x-ref="tabPreview" @click="toggleTab('tabPreview');$dispatch('tabpreviewshown');"
-                            class="cursor-pointer m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">Preview</div>
+                            class="cursor-pointer m-2 flex-grow text-center rounded-md px-3 py-2 text-md font-medium">{{t 'documents.views.index.preview' }}</div>
                     </nav>
                 </div>
             </div>

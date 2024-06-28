@@ -8,6 +8,7 @@ const dashboardController = require('./controllers/dashboardController');
 const documentsController = require('./controllers/documentsController');
 const companiesController = require('./controllers/companiesController');
 const buyersController = require('./controllers/buyersController');
+const productsController = require('./controllers/productsController');
 
 // render views/test.hbs template
 router.get("/test", (req, res) => {
@@ -59,6 +60,14 @@ router.delete("/buyers/deleteAjax/:slug?", auth, buyersController.deleteAjax);
 router.get("/buyers/search:querystring?", auth, buyersController.search);
 router.post("/buyers/newAjax", auth, buyersController.newBuyerAjax);
 router.patch("/buyer/:slug?", auth, buyersController.update); // autosave for buyers
+
+router.get("/products", auth, productsController.index);
+router.get("/products/editAjax/:slug?", auth, productsController.editAjax);
+router.delete("/products/deleteAjax/:slug?", auth, productsController.deleteAjax);
+router.get("/products/search:querystring?", auth, productsController.search);
+router.post("/products/newAjax", auth, productsController.newProductAjax);
+router.patch("/product/:slug?", auth, productsController.update); // autosave for buyers
+
 
 
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);

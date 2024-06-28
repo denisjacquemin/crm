@@ -20,6 +20,15 @@ const mongooseHelper = require('./src/services/lib/mongoose');
 // creates expres app using csrf and ratelimit protection
 // file deepcode ignore UseCsurfForExpress: CSRF is used later in the file
 const app = express();
+
+app.get('/json/list', (req, res) => {
+    res.json({ message: 'This route does not create a session.' });
+});
+
+app.get('/json/version', (req, res) => {
+    res.json({ message: 'This route does not create a session.' });
+});
+
 app.use(compression());
 
 require("./src/lib/response-helpers")(app);
@@ -116,15 +125,15 @@ app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "/src/views"));
 
-app.use(function(req, res, next) {
-    // push value of req.originalUrl to req.session.originalUrl array
-    if (req.session.originalUrl) {
-        req.session.originalUrl.push(req.originalUrl);
-    } else {
-        req.session.originalUrl = [req.originalUrl];
-    }
-    next();
-});
+// app.use(function(req, res, next) {
+//     // push value of req.originalUrl to req.session.originalUrl array
+//     if (req.session.originalUrl) {
+//         req.session.originalUrl.push(req.originalUrl);
+//     } else {
+//         req.session.originalUrl = [req.originalUrl];
+//     }
+//     next();
+// });
 
 app.use(require('./src/middlewares/csrf'));
 app.use((req, res, next) => {
@@ -132,10 +141,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path} `);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log(`${req.method} ${req.path} `);
+//     next();
+// });
 
 app.use(function(req, res, next) {
     let notifications = [];

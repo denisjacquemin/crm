@@ -15,7 +15,7 @@ const itemSchema = new mongoose.Schema({
     unit_price: { type: String, required: false, default: 0 },
     reduction: { type: String, required: false, default: 0 },
     reduction_unit: { type: String, required: false, default: '%' },
-    vat: { type: String, required: false, default: 0 },
+    vat: { type: String, required: false, default: '0' },
     amountvat: { type: String, required: false, default: 0 },
     amountvatexcl: { type: String, required: false, default: 0 },
     amountvatincl: { type: String, required: false, default: 0 },

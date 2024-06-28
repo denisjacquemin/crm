@@ -36,11 +36,17 @@
           <div
               x-on:click.stop
               x-trap.noscroll.inert="openSettingsModal"
-              class="h-screen w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20"
+            class="h-screen w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20"
+
+              :class="{
+                'h-screen w-full flex sm:h-[90vh] md:h-[80vh] sm:max-w-4xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20': modalSize === 'large',
+                'h-screen w-full flex sm:h-[90vh] sm:max-w-4xl md:h-[80vh] flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20': modalSize === 'medium',
+                'h-[50vh] w-full flex sm:max-w-2xl flex-col sm:rounded-xl bg-white shadow-lg sm:p-8 xl:m-20': modalSize === 'small',
+               }"
           >
             <div class="flex border-b border-gray-200 p-4 pr-2 sm:px-0">
                 <div class="flex-1">
-                    <h2 class="text-xl font-semibold leading-6 text-gray-900" id="slide-over-title">Settings</h2>
+                    <h2 class="text-xl font-semibold leading-6 text-gray-900" id="slide-over-title" x-text="modalSize">Settings</h2>
                     <p class="mt-2 mb-2 inline sm:block sm:mb-4 text-sm text-gray-700">Update any settings.</p>
                 </div>
                 <div class="relative right-0 top-0 -ml-8 flex mb-2 sm:-ml-10">

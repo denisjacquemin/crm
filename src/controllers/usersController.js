@@ -12,6 +12,8 @@ const mongo = require('../services/lib/mongo');
 const session = require('express-session');
 const geoip = require('geoip-lite');
 const mongoose = require('mongoose');
+const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
+
 
 
 
@@ -820,23 +822,10 @@ function getCountrySelect(req) {
     //req.ip;
     const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
     return {
-        countries: req.i18n.t('buyers.views.countries',  { returnObjects: true }),
-        frequentlySelectedCountries: req.i18n.t('buyers.views.frequently_selected_countries',  { returnObjects: true }),
+        countries: req.i18n.t('countries:countries',  { returnObjects: true }),
+        frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
         defaultCountry: geo && geo.country
     };
-}
-
-function getCompanyRegistrationNumberLabels(req){
-    // get all translations that begin with users.views.signup2.company_registration_number_ + each country_code and put them in an object 
-    // and return the object
-    var country_codes = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
-    var company_registration_number_label_translations = []
-    country_codes.forEach(function(country_code){
-        company_registration_number_label_translations.push({country_code: country_code, label: req.i18n.t('users.views.signup2.company_registration_number_' + country_code )});
-    });
-    return {
-        company_registration_number_label_translations: company_registration_number_label_translations
-    }
 }
 
 module.exports = {
