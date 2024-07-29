@@ -1,4 +1,7 @@
+const session = require("express-session");
+
 module.exports = function(req, res, next) {
+
     res.locals.languages = req.i18n.t('do_not_translate.languages', { returnObjects: true })
     // if req.i18n.language is not found in the list of languages, then we fall back to the default language
 
@@ -31,5 +34,6 @@ module.exports = function(req, res, next) {
             res.locals.currentIndex = index;
         }
     });
+
     next();
 };

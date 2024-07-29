@@ -1,5 +1,6 @@
 {
   "taxrates": {
-    "": "taxrates."
+    "": "taxrates.",
+    "Belgique": "taxrates.Belgique"
   }
 }

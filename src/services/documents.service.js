@@ -3,7 +3,7 @@ const Document = require('../models/document.model');
 class DocumentsService {
 
     async getLatest(limit = 30, company_id = null) {
-        const query = company_id
+        const query = company_id ? { company_id } : {};
         const documents = await Document.find(query).sort({ createdAt: -1 }).limit(limit);
         return documents;
     }
@@ -25,25 +25,22 @@ class DocumentsService {
     }
 
     async update(id, data) {
-        try {
-            const updatedDocument = await Document.findOneAndUpdate({ _id: id }, data, { new: true });
-
-            if (!updatedDocument) {
-                const error = new Error('Document not found');
-                error.status = 404;
-                throw error;
-            }
-
-            return updatedDocument;
-        } catch (error) {
+        const updatedDocument = await Document.findOneAndUpdate({ _id: id }, data, { new: true });
+        if (!updatedDocument) {
+            const error = new Error('Document not found');
+            error.status = 404;
             throw error;
         }
+        return updatedDocument;
     }
 
-    async delete(id) {
-        const documentDeleted = await Document.deleteOne({ _id: id });
-        return documentDeleted;
-    }
+    async delete(id, company_id) {
+        const document = await Document.findOne({ _id: id, company_id });
+        if (!document) {
+            return null; // Or throw an error, depending on desired behavior
+        }
+        const documentDeleted = await document.deleteOne();
+        return documentDeleted;    }
 }
 
 module.exports = new DocumentsService;

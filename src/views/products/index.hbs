@@ -50,8 +50,7 @@
             try {
                 const data = await fetchUrl('/taxRates', 'POST', { countries });
                 this.taxRates = data;
-                console.log('taxRates', this.taxRates);
-            } catch (error) {
+                } catch (error) {
                 console.error('Error getting tax rates', error);
             }
         },

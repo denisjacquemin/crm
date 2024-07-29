@@ -8,14 +8,18 @@ const schema = {
         { "name": "_id", "type": "string", "facet": false, "optional": false },
         { "name": "company_id", "type": "string", "facet": false, "optional": false },
         { "name": "config", "type": "object", "facet": false, "optional": false },
+        { "name": "config.subject", "type": "string", "facet": false, "optional": false },
+        { "name": "config.reference", "type": "string", "facet": false, "optional": false },
         { "name": "config.payment", "type": "object[]", "facet": false, "optional": false },
         { "name": "config.invoice_date", "type": "int64", "facet": false, "optional": false },
         { "name": "config.invoice_due_date", "type": "object", "facet": false, "optional": false },
-        { "name": "config.invoice_due_date.value", "type": "string", "facet": false, "optional": false },
         { "name": "createdAt", "type": "int64", "facet": false, "optional": false, "sort": true },
         { "name": "updatedAt", "type": "int64", "facet": false, "optional": false, "sort": true },
         { "name": "created_by_user_id", "type": "string", "facet": false, "optional": false },
-        { "name": "slug", "type": "string", "facet": false, "optional": false }
+        { "name": "slug", "type": "string", "facet": false, "optional": false },
+        { "name": "config.notes_on_invoice", "type": "string", "facet": false, "optional": false },
+        { "name": "config.notes_internal", "type": "string", "facet": false, "optional": false }
+
     ]
 };
 
@@ -71,14 +75,16 @@ class DocumentsTypesenseService extends TypesenseService {
         if (document.config.invoice_date) {
             documentToReturn.config.invoice_date = Math.floor(new Date(document.config.invoice_date).getTime() / 1000);
         }
-        console.log('document.config.invoice_date', document.config.invoice_date, Math.floor(new Date(document.config.invoice_date).getTime() / 1000));
-
-        console.log('document.config.invoice_due_date.value', new Date(document.config.invoice_due_date.value).getTime(), Number(Math.floor(document.config.invoice_due_date.value)));
-
         if (!isNaN(new Date(document.config.invoice_due_date.value).getTime())) {
             documentToReturn.config.invoice_due_date.value = Math.floor(new Date(document.config.invoice_due_date.value).getTime() / 1000).toString();
         } else if (typeof document.config.invoice_due_date.value === 'string') {
             documentToReturn.config.invoice_due_date.value = document.config.invoice_due_date.value;
+        }
+
+        if (!isNaN(new Date(document.config.invoice_delivery_date.value).getTime())) {
+            documentToReturn.config.invoice_delivery_date.value = Math.floor(new Date(document.config.invoice_delivery_date.value).getTime() / 1000).toString();
+        } else if (typeof document.config.invoice_delivery_date.value === 'string') {
+            documentToReturn.config.invoice_delivery_date.value = document.config.invoice_delivery_date.value;
         }
 
         return documentToReturn;

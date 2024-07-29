@@ -35,6 +35,7 @@ router.post("/users/resetpassword", userController.resetPasswordPost);
 router.get("/oauth/google/url", userController.OAuthGoogleURL);
 router.get("/oauth/google/callback", userController.OAuthGoogleCallback);
 router.patch("/user/resetemail", auth, userController.resetEmail);
+// router.patch("/user/changelanguage", auth, userController.changeLanguage);
 router.patch("/user/resetpasswordfromsettings", auth, userController.resetPasswordFromSettings);
 
 // Needs authentication and ACL
@@ -43,7 +44,7 @@ router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 
 router.get("/documents", auth, documentsController.index);
 
-router.post("/document/new", auth, documentsController.newDocument);
+// router.post("/document/new", auth, documentsController.newDocument);
 router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
 
 router.get("/document/edit/:slug?", auth, documentsController.edit);
@@ -53,6 +54,9 @@ router.patch("/document/:slug?", auth, documentsController.update); // autosave 
 router.get("/document/preview/:slug", auth, documentsController.preview);
 router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
 router.get("/documents/search:querystring?", auth, documentsController.search);
+router.post("/document/duplicateAjax", auth, documentsController.duplicateAjax);
+router.delete("/document/deleteAjax/:slug", auth, documentsController.deleteAjax);
+
 
 router.get("/buyers", auth, buyersController.index);
 router.get("/buyers/editAjax/:slug?", auth, buyersController.editAjax);
@@ -70,6 +74,7 @@ router.patch("/product/:slug?", auth, productsController.update); // autosave fo
 
 
 
+router.patch("/company/defaultinvoiceduedatetermstype", auth, companiesController.setDefaultInvoiceDueDateTermsType);
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 router.get("/companies/editAjax/:slug?", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);

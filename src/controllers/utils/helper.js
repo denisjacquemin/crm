@@ -10,5 +10,5 @@ function getCompanyRegistrationNumberLabels(req) {
 }
 
 module.exports = {
-    getCompanyRegistrationNumberLabels
+    getCompanyRegistrationNumberLabels,
 }

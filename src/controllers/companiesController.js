@@ -171,6 +171,24 @@ async function getCurrentUserCompanies(req, res, next) {
     }
 }
 
+async function setDefaultInvoiceDueDateTermsType(req, res, next) {
+    try {
+        // Update company settings.default_invoice_due_date_terms_type
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.default_invoice_due_date_terms_type": req.body.default_invoice_due_date_terms_type } });
+
+        // Update the default_invoice_due_date_terms_type field on the user's session
+        req.session.current_company.settings.default_invoice_due_date_terms_type = req.body.default_invoice_due_date_terms_type;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('settings.invoices_default_invoice_due_date_terms_type_updated') }, type: 'success'});
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.setDefaultInvoiceDueDateTermsType `, err.message);
+        next(err);
+    }
+}
+
 module.exports = {
     updateInvoiceSequence,
     editAjax,
@@ -178,5 +196,6 @@ module.exports = {
     newCompanyAjax,
     update,
     getCurrentUserCompanies,
-    changeCurrentCompany
+    changeCurrentCompany,
+    setDefaultInvoiceDueDateTermsType
 }

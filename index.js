@@ -48,6 +48,13 @@ app.use(flash())
 
 app.use(cookieParser());
 app.use(require('./src/middlewares/i18next'));
+// app.use(require('./src/middlewares/checkAndUpdateUserLanguage'));
+
+// TODO only to debug the language detection
+app.use((req, res, next) => {
+    console.log(`Detected language: ${req.language}, Method: ${req.method}, URL: ${req.originalUrl}`);
+    next();
+});
 
 const { create } = require("express-handlebars");
 const hbs = create({
@@ -74,6 +81,9 @@ const hbs = create({
             } else {
               return options.inverse(this);
             }
+        },
+        formatDate: function(date, format = 'M/D/YYYY') {
+            return formatDate(date, format);
         },
         chunk: function(array, chunkSize, options) {
             var result = [];

@@ -1,40 +1,43 @@
-const { get } = require('../services/lib/mongo');
 const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
 const geoip = require('geoip-lite');
 const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
+const { French } = require("flatpickr/dist/l10n/fr.js").default.fr
+
 
 
 
 // Change current language with i18n.changeLanguage and store it session and db if logged in
-async function changeLang(req, res) {
-    // Get the lang parameter from the request body
-    const { lng } = req.body;
+async function changeLang(req, res, next) {
 
-    // Check if the lang parameter is valid
-    // if (!validator.isIn(lang, ['en', 'es', 'fr'])) {
-    //     // If the lang parameter is not valid, set a flash message and redirect to the home page
-    //     req.flash('messages', req.i18n.t('languages.invalid_language'));
+    try {
+        // Get the lang parameter from the request body
+        const lng= req.body.lng;
 
-    //     return res.status(200).send();
-    // }
+        // Check if the lang parameter is valid
+        // if (!validator.isIn(lang, ['en', 'es', 'fr'])) {
+        //     // If the lang parameter is not valid, set a flash message and redirect to the home page
+        //     req.flash('messages', req.i18n.t('languages.invalid_language'));
 
-    // update in db only if user is logged in
-    if (req.session.isAuth) {
+        //     return res.status(200).send();
+        // }
 
-        // Get the user by their id
-        const user = await UserService.getById(req.session
-            .userId);
+        // update in db only if user is logged in
+        if (req.session.isAuth) {
+            // Update the user's language in db
+            console.log('req.session.user._id', req.session.user._id);
+            await UserService.updateById(req.session
+                .user._id, {language: lng});
+            req.session.user.language = lng;
+        }
 
-        // Update the user's language in db
-        await UserService.updateLanguage(user._id, lang);
+        const referer = req.get('referer');
+        const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lng}`) : `${referer}?lng=${lng}`;
+        console.log(redirectUrl);
+        res.redirect(redirectUrl);
+    } catch (err) {
+        next(err);
     }
-
-    const referer = req.get('referer');
-    const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lng}`) : `${referer}?lng=${lng}`;
-
-    res.redirect(redirectUrl);
-
 
 }
 
@@ -43,7 +46,7 @@ async function getTaxRatesByCountryCodes(req, res) {
     // get tax rates from translation files for each country code
     const taxRates = {};
     countries.forEach(code => {
-        taxRates[code] = req.i18n.t(`taxrates:taxrates.${code}`,  { returnObjects: true });
+        taxRates[code] = req.i18n.t(`taxrates:taxrates.${code}`, { returnObjects: true });
     });
 
     const countriesAndCodes = {};
@@ -51,8 +54,8 @@ async function getTaxRatesByCountryCodes(req, res) {
     Object.keys(allTaxRates).forEach(code => {
         countriesAndCodes[code] = allTaxRates[code].country;
     });
-    
-    res.status(200).send({taxRates: taxRates, countries: countriesAndCodes});
+
+    res.status(200).send({ taxRates: taxRates, countries: countriesAndCodes });
 }
 
 
@@ -72,8 +75,8 @@ async function settings(req, res) {
             accountEmail: req.session.user.email,
             sellers: sellers,
             currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
-            countries: req.i18n.t('countries:countries',  { returnObjects: true }),
-            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
+            countries: req.i18n.t('countries:countries', { returnObjects: true }),
+            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }),
             defaultCountry: geo && geo.country,
             ...getCompanyRegistrationNumberLabels(req),
             layout: false

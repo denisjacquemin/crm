@@ -1,0 +1,16 @@
+<template x-if="Object.keys(taxRates.taxRates).length > 1">
+    <template x-for="(countryData, countryCode) in taxRates.taxRates" :key="countryCode">
+        <optgroup :label="countryData.country">
+            <template x-for="rate in countryData.rates" :key="rate.id">
+                <option :value="rate.id">{{ rate.name }}</option>
+            </template>
+        </optgroup>
+    </template>
+</template>
+<template x-if="Object.keys(taxRates.taxRates).length === 1">
+    <template x-for="(countryData, countryCode) in taxRates.taxRates" :key="countryCode">
+        <template x-for="rate in countryData.rates" :key="rate.id">
+            <option :value="rate.id" x-text="rate.name"></option>
+        </template>
+    </template>
+</template>

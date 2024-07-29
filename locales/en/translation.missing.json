@@ -47,7 +47,17 @@
           "modal_title": "documents.views.index.buyer_modal.modal_title",
           "modal_subtitle": "documents.views.index.buyer_modal.modal_subtitle",
           "back_button": "documents.views.index.buyer_modal.back_button"
+        },
+        "items_modal": {
+          "name_label": "documents.views.index.items_modal.name_label",
+          "name_placeholder": "documents.views.index.items_modal.name_placeholder"
         }
+      },
+      "edit_form": {
+        "delivery_date": "documents.views.edit_form.delivery_date",
+        "delete_document": "documents.views.edit_form.delete_document",
+        "notes_on_invoice_label": "documents.views.edit_form.notes_on_invoice_label",
+        "notes_on_invoice_placeholder": "documents.views.edit_form.notes_on_invoice_placeholder"
       }
     }
   },
@@ -60,8 +70,12 @@
     "views": {
       "tabs": {
         "": "settings.views.tabs."
+      },
+      "invoices": {
+        "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button"
       }
-    }
+    },
+    "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated"
   },
   "signup2": {
     "zip": "signup2.zip",
@@ -187,5 +201,12 @@
     "controller": {
       "default_product_name": "products.controller.default_product_name"
     }
+  },
+  "languages": {
+    "invalid_language": "languages.invalid_language",
+    "language_changed": "languages.language_changed"
+  },
+  "edit_form": {
+    "invoice_date": "edit_form.invoice_date"
   }
 }

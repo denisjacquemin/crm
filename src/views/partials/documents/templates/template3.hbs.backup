@@ -183,6 +183,10 @@
                             <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.due_date"></td>
                         </tr>
                         <tr>
+                            <td>Delivery Date:</td>
+                            <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.delivery_date"></td>
+                        </tr>
+                        <tr>
                             <td>Currency:</td>
                             <td style="text-align: right; font-weight: 700;" x-text="selectedDocument.config.currency"></td>
                         </tr>

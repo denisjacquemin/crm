@@ -73,3 +73,15 @@ page.legal.landscape  .sheet { width: 357mm; height: 215mm }
     transform-origin: top left;
   }
 }
+
+/* Targeting WebKit-based browsers like Chrome and Safari */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+/* General approach to try and remove browser-specific styling */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}

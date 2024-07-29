@@ -5,21 +5,67 @@ import focus from '@alpinejs/focus'
 import intersect from '@alpinejs/intersect'
 import dayjs, { locale } from 'dayjs' // import Day.js
 import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import localizedFormat from 'dayjs/plugin/localizedFormat'; // Import the localizedFormat plugin for formatting
 import PinchZoom from 'pinch-zoom-js';
+import 'dayjs/locale/es'
+import 'dayjs/locale/pt-br'
+import 'dayjs/locale/fr'
+import 'dayjs/locale/de'
+import 'dayjs/locale/it'
+import 'dayjs/locale/ru'
+import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/nl'
+
+// Expose the function globally
 
 dayjs.extend(utc);
-dayjs.extend(timezone);
+dayjs.extend(localizedFormat);
+dayjs.locale('en');
 
-import 'dayjs/locale/es' // load Spanish locale
-import 'dayjs/locale/pt-br' // load Portuguese locale
-import 'dayjs/locale/fr' // load French locale
-import 'dayjs/locale/de' // load German locale
-import 'dayjs/locale/it' // load Italian locale
-import 'dayjs/locale/ru' // load Russian locale
-import 'dayjs/locale/zh-cn' // load Chinese (Simplified) locale
-import 'dayjs/locale/nl' // load Dutch locale
-import flatpickr from "flatpickr"; 
+
+// { "id": 1, "name": "English", "code_dnt": "en" },
+// { "id": 2, "name": "Español / Spanish", "code_dnt": "es" },
+// { "id": 3, "name": "Français / French", "code_dnt": "fr" },
+// { "id": 4, "name": "Nederlands / Dutch", "code_dnt": "nl" },
+// { "id": 5, "name": "German / Deutsch", "code_dnt": "de" },
+// { "id": 6, "name": "Italian / Italiana", "code_dnt": "it" }
+
+import flatpickr from "flatpickr";
+import { English } from "flatpickr/dist/l10n/default.js";
+import { Spanish } from 'flatpickr/dist/l10n/es.js';
+import { French } from "flatpickr/dist/l10n/fr.js";
+import { Dutch } from 'flatpickr/dist/l10n/nl.js';
+import { German } from 'flatpickr/dist/l10n/de.js';
+import { Italian } from 'flatpickr/dist/l10n/it.js';
+
+// Object to map language codes to their respective Flatpickr locales
+window.locales = {
+    en: English,
+    es: Spanish,
+    fr: French,
+    nl: Dutch,
+    de: German,
+    it: Italian
+};
+
+window.dateFormatFlatpickrConfig = {
+    en: 'm/d/Y', // English (United States) - MM/DD/YYYY
+    es: 'j/n/Y', // Spanish - DD/MM/YYYY
+    fr: 'j/n/Y', // French - DD/MM/YYYY
+    nl: 'j-n-Y', // Dutch - DD-MM-YYYY
+    de: 'j.m.Y', // German - DD.MM.YYYY
+    it: 'j/n/Y'  // Italian - DD/MM/YYYY
+};
+
+window.dateFormatDaysJSConfig = {
+    en: 'M/D/YYYY', // English (United States) - MM/DD/YYYY
+    es: 'D/M/YYYY', // Spanish - DD/MM/YYYY
+    fr: 'D/M/YYYY', // French - DD/MM/YYYY
+    nl: 'D-M-YYYY', // Dutch - DD-MM-YYYY
+    de: 'D.M.YYYY', // German - DD.MM.YYYY
+    it: 'D/M/YYYY'  // Italian - DD/MM/YYYY
+};
+
 import Choices from 'choices.js';
 window.Choices = Choices;
 
@@ -34,26 +80,8 @@ window.dispatch = function(name, detail = {}) {
 }
 
 window.PinchZoom = PinchZoom;
-
-dayjs.locale('es') // set Spanish locale
-dayjs.locale('pt-br') // set Portuguese locale
-dayjs.locale('fr') // set French locale
-dayjs.locale('de') // set German locale
-dayjs.locale('it') // set Italian locale
-dayjs.locale('ru') // set Russian locale
-dayjs.locale('zh-cn') // set Chinese (Simplified) locale
-dayjs.locale('nl') // set Dutch locale
 window.dayjs = dayjs // make Day.js available globally
-window.flatpickr = flatpickr // make Flatpickr available globally
-window.flatpickr.localize(flatpickr.l10ns.es) // set Spanish locale
-window.flatpickr.localize(flatpickr.l10ns.pt) // set Portuguese locale
-window.flatpickr.localize(flatpickr.l10ns.fr) // set French locale
-window.flatpickr.localize(flatpickr.l10ns.de) // set German locale
-window.flatpickr.localize(flatpickr.l10ns.it) // set Italian locale
-window.flatpickr.localize(flatpickr.l10ns.ru) // set Russian locale
-window.flatpickr.localize(flatpickr.l10ns.zh) // set Chinese (Simplified) locale
-window.flatpickr.localize(flatpickr.l10ns.nl) // set Dutch locale
-
+dayjs.locale('en') // set English as default locale
 
 
 

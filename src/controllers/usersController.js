@@ -387,6 +387,7 @@ async function signinPost(req, res, next) {
     let saferUser = user.toObject();
     delete saferUser.password;
     req.session.user = saferUser;
+    console.log('###### In userController.signinPost', req.session.user.language);
     req.session.timestamps = []
 
     // Redirect the user to the app page
@@ -571,6 +572,38 @@ async function resetPassword(req, res, next) {
     // Render the reset password page
     res.render("users/reset-password");
 }
+
+// async function changeLanguage(req, res, next) {
+//     try {
+//         const language = req.body.language;
+//         console.log('changeLanguage > language', language);
+//         const codes = req.i18n.t('do_not_translate.languages', { returnObjects: true }).map(lang => lang.code_dnt);
+//         if (!validator.isIn(language, codes)) {
+//             return res.status(400).json({
+//                 notification: {
+//                     message: req.i18n.t('languages.invalid_language'),
+//                     type: 'error'
+//                 }
+//             });
+//         }
+        
+//         const user = await UserService.getById(req.session.user._id);
+//         await UserService.updateById(user._id, { language: language });        
+//         req.session.user.language = language;
+        
+//         return res.status(200).json({
+//             notification: {
+//                 message: req.i18n.t('languages.language_changed'),
+//                 type: 'success'
+//             }
+//         });
+//     } catch (err) {
+//         console.error(`Error in userController.changeLanguage `, err.message);
+//         next(err);
+//     }
+// }
+
+
 
 async function resetEmail(req, res, next) {
     const email = req.body.email;
@@ -842,6 +875,7 @@ module.exports = {
     resetPasswordPost,
     resetPasswordSent,
     resetEmail,
+    // changeLanguage,
     resetPasswordFromSettings,
     OAuthGoogleURL,
     OAuthGoogleCallback

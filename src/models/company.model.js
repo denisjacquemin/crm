@@ -26,7 +26,8 @@ const companySchema = new mongoose.Schema({
         default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
         default_payment_method: { type: String, required: false, default: 'bank_transfer' },
         default_bank_account: { type: String, required: false, default: '' },
-        current_invoice_sequence: { type: Number, required: false, default: 1 }
+        current_invoice_sequence: { type: Number, required: false, default: 1 },
+        default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' }
     },
 
 

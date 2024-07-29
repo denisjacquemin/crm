@@ -4,6 +4,7 @@
             documents: {{ stringify documents }},
             selectedDocumentIndex: {{ stringify selectedDocumentIndex }},
             selectedDocument: {{ stringify selectedDocument }},
+            user_language: '{{session.user.language}}'.split('-')[0],
             getTaxRates: async function() {
                 let countries = [];
                 if (this.selectedDocument.config.buyer.country) {
@@ -27,20 +28,11 @@
             taxRates: [],
             newDocumentButton: async function() {
                 try {
-                    const csrfToken = document.querySelector('meta[name=csrf-token]').getAttribute('content');
-                    const response = await fetch('/document/newAjax', { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken
-                    }
-                    });              
-                    const newDocument = await response.json();
-                    console.log('data from newAjax', newDocument);
-                    this.documents.unshift(newDocument);
+                    const data = await fetchUrl('/document/newAjax', 'POST');
+                    this.documents.unshift(data);
                     this.selectedDocumentIndex = 0;
-                    this.selectedDocument = newDocument;
-                    updateNewUrl(newDocument.slug);
+                    this.selectedDocument = data;
+                    updateNewUrl(data.slug);
                     if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'});
                 } catch (error) { 
                     console.error('Error creating new document', error); 
@@ -88,13 +80,13 @@
             }
      }"
      x-init="
+        console.log('AAAAA In init of index.hbs');
         {{!-- window.addEventListener('popstate', () => { // catch back gesture and tap on back button on smartphones
             if navState === 'back') {
                 showCol1();
             } 
          }); --}}
-        getTaxRates();
-        console.log('taxRates', taxRates);
+        if (selectedDocument) {getTaxRates();}        
         $watch('selectedDocument', (value, oldValue) => {
             var document = { ...value };
             document.autosave_updated_at = new Date();
@@ -108,13 +100,16 @@
                 showCol1();
             }
         });
-
         if (selectedDocumentIndex >= 0) { {{!-- Only if selectedDocumentIndex is not null --}}
           {{!-- documents[selectedDocumentIndex] = selectedDocument; --}}
           (async () => {
+
             {{!-- const response = await fetch(`/document/editAjax/${documents[selectedDocumentIndex].slug}`); Get the document from MongoDB --}}
             {{!-- const data = await response.json(); --}}
-            {{!-- documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  merge the document in documents with the on from MongoDB  --}}
+
+            documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], selectedDocument);
+            selectedDocument = documents[selectedDocumentIndex];
+
             updateNewUrl(selectedDocument.slug); {{!-- update the url with to document/edit + slug --}}
             {{!-- selectedDocument =  documents[selectedDocumentIndex]; set the selectedDocument --}}
             {{!-- documents = updateDocumentsWithLS(documents); override documents with not already saved updates from local storage, if any --}}
@@ -157,7 +152,7 @@
 
                 <div x-data="Components.menu({ open: false })" 
                     x-init="init()"
-                    @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)"
+                    @keydown.escape.stop="open = false;" @click.away="onClickAway($event)"
                     class="relative inline-block text-left pl-3 pr-3 pt-3 pb-2">
 
                     <div>
@@ -184,7 +179,7 @@
                         x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical"
                         aria-labelledby="menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()"
                         @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false"
-                        @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()">
+                        @keydown.enter.prevent="open = false;" @keyup.space.prevent="open = false;">
                         <div class="px-4 py-3" role="none">
                             <p class="text-sm" role="none">{{t 'documents.views.index.search_sort_by' }}</p>
                         </div>
@@ -203,7 +198,7 @@
                                         }" role="menuitem" tabindex="-1" :id="`menu-item-${index}`"
                                 @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, index)"
                                 @mouseleave="onMouseLeave($event)"
-                                @click.prevent="sortBy = item.sortValue; open = false; searchDocument(); focusButton()">
+                                @click.prevent="sortBy = item.sortValue; open = false; searchDocument();">
                                 </a>
                                 <span x-show="sortBy === item.sortValue"
                                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
@@ -222,14 +217,18 @@
                 </div>
             </div>
             <div x-ref="documentsList" class="flex-1 overflow-y-scroll"
-            x-data="{ 
+            x-data="{
                     editDocument: async function(index) {
                         try {
+                            console.log('$$$$ In editDocument');
                             selectedDocumentIndex = index;
                             const data = await fetchUrl(`/document/editAjax/${documents[selectedDocumentIndex].slug}`, 'GET');
                             documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
                             updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
                             selectedDocument = documents[selectedDocumentIndex];
+                            console.log('selectedDocument.config.invoice_due_date.value', selectedDocument.config.invoice_due_date.value);
+                            console.log('data.config.invoice_due_date.value', data.config.invoice_due_date.value);    
+
                             getTaxRates();
                             console.log('taxRates', taxRates);
                             if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'}); 
@@ -248,12 +247,11 @@
                 </template>
 
                 <template x-if="documents.length > 0">
-                    <ul role="list" class="divide-y divide-gray-100">
+                    <ul role="list" class="divide-y divide-gray-100" >
                         <template x-for="(document  , index) in documents" :key="index">
                             <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
                                 @click.prevent="editDocument(index);"
-                                :data-slug="document.slug"
-                                
+                                :data-slug="document.slug"                                
                             >
                             <div class="px-4">
                                 <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
@@ -268,7 +266,7 @@
                                             </div>
                                             <div class="mt-1 flex text-xs leading-5 text-gray-500">
                                                 <div x-text="document?.config?.invoice_number" class="relative truncate w-1/3 text-left"></div>
-                                                <div x-text="formatUnixTimestamp(document?.config?.invoice_date, 'MM/DD/YYYY')" class="relative truncate w-1/3 text-center"></div>
+                                                <div x-text="formatDate(document?.config?.invoice_date, dateFormatDaysJSConfig[user_language])" class="relative truncate w-1/3 text-center"></div>
                                                 <div x-text="document?.config?.amounts?.total" class="relative truncate w-1/3 text-right"></div>
                                             </div>
                                             <div x-text="document?.config?.items && document?.config?.items[0]?.description" class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"></div>

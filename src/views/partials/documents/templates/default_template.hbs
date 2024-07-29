@@ -220,10 +220,20 @@
             text-align: center;
             padding: 20px 0;
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
         }
 
-        /* Footer column styles (no changes) */
+        #template3 footer .notes {
+            width:100%;
+            color: #000;
+            text-align: left;
+            margin: 0 10mm 5mm 10mm;
+        }
+        #template3 footer .row-container {
+            display: flex;
+            width: 100%;
+        }
         #template3 footer .left,
         #template3 footer .right {
             flex: 1;
@@ -266,6 +276,11 @@
                 <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
                 <table style="border-spacing: 0;">
                     <tr>
+                        <td>Subject:</td>
+                        <td style="text-align: right; font-weight: 700;"
+                            x-text="orEmpty(selectedDocument.config.subject)"></td>
+                    </tr>
+                    <tr>
                         <td>Invoice Number:</td>
                         <td style="text-align: right; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
@@ -304,6 +319,11 @@
                                 x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
                         </tr>
                         <tr>
+                            <td>Ref:</td>
+                            <td style="text-align: right; font-weight: 700;"
+                                x-text="orEmpty(selectedDocument.config.reference)"></td>
+                        </tr>
+                        <tr>
                             <td>Invoice Date:</td>
                             <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
                             </td>
@@ -311,6 +331,10 @@
                         <tr>
                             <td>Due Date:</td>
                             <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Date:</td>
+                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_delivery_date.value)"></td>
                         </tr>
                         <tr>
                             <td>Currency:</td>
@@ -361,9 +385,14 @@
             </div>
             
         </main>
+         
+
         <footer>
-            <div class="left">Eventuellement un logo</div>
-            <div class="right">Numero de compte etc</div>
+            <div class="notes" x-text="selectedDocument.config.notes_on_invoice">test</div>
+             <div class="row-container">
+                <div class="left" >Eventuellement un logo</div>
+                <div class="right">Numero de compte etc</div>
+            </div>
         </footer>
     </div> 
 {{!-- PAGE 1 - END --}}
@@ -420,8 +449,9 @@
                 </template>
             </div>
         </main>
+        
         <footer>
-            <div class="left">Eventuellement un logo</div>
+            <div x-text="selectedDocument.config.notes_on_invoice class="left">Eventuellement un logo</div>
             <div class="right">Numero de compte etc</div>
         </footer>
       </div> 

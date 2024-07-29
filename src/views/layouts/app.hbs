@@ -47,7 +47,8 @@
             },
           }"
           @loadcompanies="loadCompanies()"
-          >
+          x-init="dayjs.locale('{{session.user.language}}');"
+        >
         
         <div class="h-screen flex flex-col">
         {{!-- <div x-text="navState" class="absolute top-0 right-0 z-50 text-red-600"></div> --}}

@@ -4,17 +4,37 @@ const i18nBackend = require('i18next-fs-backend');
 const path = require('path');
 const rootDir = path.resolve(__dirname, '..', '..');
 
+const sessionLanguageDetector = {
+    name: 'sessionLanguageDetector',
+    lookup(req, res, options) {
+      if (req.session && req.session.user && req.session.user.language) {
+        if (req.session.user.language.trim() !== '') {
+          return req.session.user.language;
+        }
+      }
+      return null;
+    }
+  };
+
+// Create a new instance of LanguageDetector
+var lngDetector = new i18Middleware.LanguageDetector();
+// Add your custom detector
+lngDetector.addDetector(sessionLanguageDetector);
+
 
 i18next.use(i18nBackend)
-    .use(i18Middleware.LanguageDetector)
+    .use(lngDetector)
     .init({
-        partialBundledLanguages: true,
-        ns: ['translation', 'taxrates', 'countries'],
-        defaultNS: 'translation',
         detection: {
+            order: ['sessionLanguageDetector', 'querystring', 'cookie', 'header'],
+            // Register the custom detector
+            detectors: [sessionLanguageDetector],
             lookupCookie: 'lng',
             caches: ['cookie']
         },
+        partialBundledLanguages: true,
+        ns: ['translation', 'taxrates', 'countries'],
+        defaultNS: 'translation',
         backend: {
             loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
             addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`
@@ -27,10 +47,5 @@ i18next.use(i18nBackend)
         saveMissing: true,
         nonExplicitSupportedLngs: true
     });
-
-// i18next.on('initialized', function(options) {
-//     // Once i18next is initialized, try fetching a translation
-//     console.log('@@@@@@@@@@@@@@@@@@@@: ' + i18next.t('countries:test')); // Should log "United States" if the setup is correct
-// });
     
 module.exports = i18Middleware.handle(i18next);

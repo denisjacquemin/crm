@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const {validateEmail} = require('./_helper.model');
 const { DocumentsTypesenseService } = require('../services/documents.typesense.service');
 
+const dayjs = require('dayjs');
+
 const paymentSchema = new mongoose.Schema({
     bank: { type: String, required: false },
     iban: { type: String, required: false },
@@ -10,6 +12,8 @@ const paymentSchema = new mongoose.Schema({
 
 
 const itemSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    reference: { type: String, required: false, default: '' },
     description: { type: String, required: false, default: '' },
     quantity: { type: String, required: false, default: 1 },
     unit_price: { type: String, required: false, default: 0 },
@@ -76,7 +80,7 @@ const documentSchema = new mongoose.Schema({
             type: [paymentSchema],
         },
         invoice_number: { type: String, required: false, default: '' }, // invoice number
-        invoice_date: { type: Date, required: false, default: Date.now() },
+        invoice_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
         invoice_due_date: { 
             type: {
                 value: { type: String, required: false, default: '' },
@@ -85,9 +89,13 @@ const documentSchema = new mongoose.Schema({
             required: false, 
             default: {} 
         },
+        invoice_delivery_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
         currency: { type: String, required: false, default: 'eur' },
         language: { type: String, required: false, default: 'en' },
-        notes: { type: String, required: false, default: '' },
+        subject: { type: String, required: false, default: '' },
+        reference: { type: String, required: false, default: '' },
+        notes_internal: { type: String, required: false, default: '' },
+        notes_on_invoice: { type: String, required: false, default: '' },
         footer: { type: String, required: false, default: '' },
         items: {
             type: [itemSchema],
@@ -103,9 +111,37 @@ const documentSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
-    const documentsTypesenseService = new DocumentsTypesenseService();
-    await documentsTypesenseService.upsertDocument(doc);
-    console.log('Document.post(save) ' + '%s has been saved in Typesense', doc._id);
+    try {
+
+        const documentsTypesenseService = new DocumentsTypesenseService();
+        await documentsTypesenseService.upsertDocument(doc);
+    } catch (error) {
+        console.error('Error saving/updating product in Typesense:', error.message);
+        // Handle error - For simplicity, removing the document from MongoDB
+        try {
+            const document = await Document.findOne({ _id: doc._id.toString(), company_id: doc.company_id.toString() });
+            if (!document) {
+                return null; // Or throw an error, depending on desired behavior
+            }
+            await document.deleteOne();            
+            console.log('Document removed from MongoDB due to Typesense error:', doc._id);
+        } catch (deleteError) {
+            console.error('Error deleting document from MongoDB:', deleteError.message);
+        }
+        next(error); // Abort the save/update operation in MongoDB
+    }
+});
+
+
+documentSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async function(next) {
+    try {
+      const deletedDocumentId = this._id;
+      const documentsTypesenseService = new DocumentsTypesenseService();
+      await documentsTypesenseService.deleteDocument(deletedDocumentId);  
+    } catch (error) {
+      console.error(`Failed to delete product from Typesense: ${error.message}`);
+      next(error); // Abort the remove operation in MongoDB
+    }
 });
 
 

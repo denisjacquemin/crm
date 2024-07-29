@@ -2,8 +2,6 @@ const UserService = require('../services/users.service');
 
 module.exports = async function(req, res, next) {
 
-    
-
     let redirect = false;
 
     if (!req.session.isAuth || !req.session.user) { 

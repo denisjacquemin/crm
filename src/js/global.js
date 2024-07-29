@@ -16,6 +16,15 @@ submitButtons.forEach(button => {
     });
 });
 
+window.formatDate = function(date, format = 'M/D/YYYY') {
+    if (typeof date === 'number') {
+        // Convert Unix timestamp (in seconds) to milliseconds and create a Date object
+        date = new Date(date * 1000);
+    }
+    // Use dayjs to format the date, now handling both original and Unix timestamp inputs
+    return dayjs(date).format(format);
+}
+
 window.fetchUrl = function(url, method = 'GET', body = null) {
     const options = {
         method: method,
