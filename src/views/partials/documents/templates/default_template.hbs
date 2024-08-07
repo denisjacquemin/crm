@@ -261,101 +261,78 @@
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black sheet transform-origin-top-left xl:mx-auto">
       <span class="top-left">top left - currentPage: </span>
-      <span class="bottom-right">Invoice - <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - page 1/<span x-text="orEmpty(numberOfPages)"></span></span>
+      <span class="bottom-right">{{ t 'default_template.invoice_number_footer' }} <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ t 'default_template.page' }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
 
 
-        <header>        
-            <h1>Invoice</h1>
+        <header> 
+            <template x-if="selectedDocument.config.document_type === 'invoice'"><h1>{{ t 'default_template.invoice' }}</h1></template>       
+            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ t 'default_template.credit_note' }}</h1></template>       
+
             <div id="seller_address">
                 <span style="font-size: 150%; font-weight: 700;" x-text="orEmpty(selectedDocument.config.seller.name)"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br/>
                 <span x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br/>
                 <span x-text="orEmpty(selectedDocument.config.seller.country)"></span><br/><br/>
-                <span> TVA: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br/>
+                <span> {{t 'default_template.vat_number'}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br/>
                 <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/>
                 <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
                 <table style="border-spacing: 0;">
                     <tr>
-                        <td>Subject:</td>
+                        <td>{{ t 'default_template.purpose' }}:</td>
                         <td style="text-align: right; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.subject)"></td>
                     </tr>
                     <tr>
-                        <td>Invoice Number:</td>
+                        <td>{{ t 'default_template.invoice_number' }}:</td>
                         <td style="text-align: right; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
                     </tr>
                     <tr>
-                        <td>Invoice Date:</td>
+                        <td>{{ t 'default_template.invoice_date' }}:</td>
                         <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
                         </td>
                     </tr>
                     <tr>
-                        <td>Due Date:</td>
+                        <td>{{ t 'default_template.due_date' }}:</td>
                         <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
                     </tr>
+                    <tr x-show="selectedDocument.config.document_type === 'invoice' && selectedDocument.config.show_delivery_date === true">
+                        <td>{{ t 'default_template.delivery_date' }}:</td>
+                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></td>
                     <tr>
-                        <td>Currency:</td>
+                        <td>{{ t 'default_template.currency' }}:</td>
                         <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.currency)"></td>
                     </tr>
                 </table>
             </div>
-            <div id="billed_to"style="font-weight: 400;">Billed To</div>
+            <div id="billed_to"style="font-weight: 400;">{{ t 'default_template.billed_to' }}</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br/>
                 <br/><br/><br/><br/><br/>
-                <span style=""> TVA: <span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
+                <span style=""> {{ t 'default_template.vat' }}: <span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
-            </div>
-            {{!-- <div id="invoice_details" style="clear:both">
-                    <table style="border-spacing: 0;">
-                        <tr>
-                            <td>Invoice Number:</td>
-                            <td style="text-align: right; font-weight: 700;"
-                                x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
-                        </tr>
-                        <tr>
-                            <td>Ref:</td>
-                            <td style="text-align: right; font-weight: 700;"
-                                x-text="orEmpty(selectedDocument.config.reference)"></td>
-                        </tr>
-                        <tr>
-                            <td>Invoice Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Due Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
-                        </tr>
-                        <tr>
-                            <td>Delivery Date:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_delivery_date.value)"></td>
-                        </tr>
-                        <tr>
-                            <td>Currency:</td>
-                            <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.currency)"></td>
-                        </tr>
-                    </table>
-                </div> --}}
+            </div>   
         </header> 
         <main>
             <div id="products" class="page1">
                 <div class="table">
                     <div class="thead">
-                        <div class="th" style="text-align:left;width:300px">Description</div>
-                        <div class="th" style="text-align:right;width:30px">Q.</div>
-                        <div class="th" style="text-align:right">UP</div>
-                        <div class="th" style="text-align:right;width:30px">VAT</div>
-                        <div class="th" style="text-align:right">Total</div>
+                        <div class="th" style="text-align:left;width:300px">{{t 'default_template.description'}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.quantity_short'}}</div>
+                        <div class="th" style="text-align:right">{{t 'default_template.unit_price_short'}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.vat'}}</div>
+                        <div class="th" style="text-align:right">{{t 'default_template.total'}}</div>
                     </div>
                     <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
-                            <div class="td" style="text-align:left;width:300px" x-text="orEmpty(item.description)"></div>
+                            <div class="td" style="text-align:left;width:300px">
+                                <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
+                                <span x-text="orEmpty(item.description)"></span>
+                            </div>
                             <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
                             <div class="td" style="text-align:right" x-text="orEmpty(item.unit_price)"></div>
                             <div class="td" style="text-align:right" x-text="orEmpty(item.vat)"></div>
@@ -367,17 +344,17 @@
                     <table class="amounts">
                         <tr>
                             <td width="50%"></td>
-                            <td style="text-align: right;">Total excl. VAT</td>
+                            <td style="text-align: right;">{{t 'default_template.total_vat_excl'}}</td>
                             <td style="text-align: right;" x-text="selectedDocument.config.amounts.subtotal"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">VAT</td>
+                            <td style="text-align: right;">{{t 'default_template.vat_total'}}</td>
                             <td style="text-align: right;" x-text="selectedDocument.config.amounts.totalvat"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">Total incl. VAT</td>
+                            <td style="text-align: right;">{{t 'default_template.total_vat_incl'}}</td>
                             <td style="text-align: right;" x-text="selectedDocument.config.amounts.total"></td>
                         </tr>
                     </table>
@@ -407,7 +384,7 @@
             box-sizing: border-box;"
         class="page sheet text-black transform-origin-top-left xl:mx-auto">
         <span class="top-left">top left - currentPage:</span>
-        <span class="bottom-right">Invoice - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
+        <span class="bottom-right">{{ t 'default_template.invoice_number_footer'}} - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
         <main>
             <div id="products" class="page2plus">
                 <div class="table">

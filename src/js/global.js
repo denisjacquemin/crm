@@ -56,7 +56,7 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
             if (response.status === 401) {
                 history.replaceState(null, '', window.location.href);
                 location.reload();
-            } else if (response.status !== 200) {
+            } else if (!response.status.toString().startsWith('2')) {
                 throw new Error('Looks like there was a problem. Status Code: ' + response.status);
             } else {
                 return data;

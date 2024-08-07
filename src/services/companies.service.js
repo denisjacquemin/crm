@@ -43,6 +43,11 @@ class CompanyService {
         return company.settings.current_invoice_sequence;
     }
 
+    static async getNextCreditNoteSequenceValue(id) {
+        const company = await Company.findOneAndUpdate({_id: id}, {$inc: { "settings.current_credit_note_sequence": 1}}, {new: true});
+        return company.settings.current_credit_note_sequence;
+    }
+
     static async updateUsers(companyId, users) {
         try {
             console.log('companyId:', companyId);

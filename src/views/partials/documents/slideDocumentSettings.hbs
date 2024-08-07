@@ -1,0 +1,50 @@
+<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">   
+    <div class="col-span-full"
+         x-data="{
+            frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
+            currencies: {{ stringify currencies }},
+        }"
+    >
+      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.currency'}}</label>
+      <div class="mt-2">
+        <select x-model="selectedDocument.config.currency"
+                id="default_currency"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
+                        <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+                            <option x-bind:selected="currency.label === selectedDocument.config.currency" :value="currency.label" x-text="`${currency.name} (${currency.symbol})`"></option>
+                        </template>
+                    </optgroup>
+                    <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
+                        <template x-for="(currency, index) in currencies" :key="index">
+                            <option x-bind:selected="currency.label === selectedDocument.config.currency && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency)" :value="currency.label" x-text="`${currency.name} (${currency.symbol})`"></option>
+                        </template>
+                    </optgroup>
+                </select>
+            </select>      
+        </div>
+    </div>
+
+    <div x-show="selectedDocument.config.document_type === 'invoice'" class="col-span-full"
+        x-data="{            
+            show_delivery_date: null,
+        }"
+        x-init="
+            {{!-- require to keep show_delivery_date as a boolean --}}
+            $watch('show_delivery_date', value => {
+                console.log(value);
+                selectedDocument.config.show_delivery_date = (value === true || value === 'true');
+            });
+        "
+        x-intersect="show_delivery_date = selectedDocument.config.show_delivery_date === true"  
+    >
+      <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_deliverry_date'}}</label>
+      <div class="mt-2">
+        <select x-model="show_delivery_date"
+                id="show-delivery-date"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <option value="true">{{t 'settings.views.invoices.yes_show_delivery_date' }}</option>
+                    <option value="false">{{t 'settings.views.invoices.no_show_delivery_date' }}</option>
+        </select>
+    </div>
+</div>

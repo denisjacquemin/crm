@@ -6,7 +6,6 @@
             x-init="
             $watch('openSlide', value => { {{!-- not fired the first time the partial is called, but fired after when openSlide change   --}}
                 if (value && slideContentPartialName == 'slideBuyer') {
-                    console.log('openSlide in SlideBuyer');
                     init();
                 }
             });"
@@ -17,7 +16,6 @@
               init() {
                 searchResults = [];
                 if (!this.choices) {
-                  console.log('init this.choices');
                   this.choices = new Choices(this.$refs.buyerSelect, {
                     choices: [],
                     allowHTML: false,

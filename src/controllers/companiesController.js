@@ -129,10 +129,7 @@ async function newCompanyAjax(req, res, next) {
         if (req.session.user.companies.indexOf(companyCreated._id.toString()) === -1) {
             req.session.user.companies.push(companyCreated._id.toString());
         }
-        await UserService.updateCompanies(req.session.user._id, req.session.user.companies);        
-
-        console.log('newCompanyAjax', companyCreated._id.toString(), req.session.user.companies);
-
+        await UserService.updateCompanies(req.session.user._id, req.session.user.companies);
 
         res.status(200).json(companyCreated.toObject());
     } catch (error) {
@@ -181,10 +178,51 @@ async function setDefaultInvoiceDueDateTermsType(req, res, next) {
         req.session.current_company.settings.default_invoice_due_date_terms_type = req.body.default_invoice_due_date_terms_type;
 
         // Send a success response
-        return res.status(200).json({ notification: { message: req.i18n.t('settings.invoices_default_invoice_due_date_terms_type_updated') }, type: 'success'});
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_invoice_due_date_terms_type_updated'), type: 'success'}});
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
         console.error(`Error in userController.setDefaultInvoiceDueDateTermsType `, err.message);
+        next(err);
+    }
+}
+
+async function setDefaultCurrency(req, res, next) {
+    try {
+        // Update company settings.default_currency
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.default_currency": req.body.default_currency } });
+
+        // Update the default_currency field on the user's session
+        req.session.current_company.settings.default_currency = req.body.default_currency;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_currency_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.setDefaultCurrency `, err.message);
+        next(err);
+    }
+}
+
+async function showdeliverydate(req, res, next) {
+    try {
+        // Update company settings.show_delivery_date
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.show_delivery_date": req.body.show_delivery_date } });
+
+        // Update the show_delivery_date field on the user's session
+        console.log('1111 req.session.current_company.settings.show_delivery_date', req.session.current_company.settings.show_delivery_date);
+        req.session.current_company.settings.show_delivery_date = req.body.show_delivery_date === 'true';
+        console.log('2222 req.session.current_company.settings.show_delivery_date', req.session.current_company.settings.show_delivery_date);
+
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.show_delivery_date_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.showdeliverydate `, err.message);
         next(err);
     }
 }
@@ -197,5 +235,7 @@ module.exports = {
     update,
     getCurrentUserCompanies,
     changeCurrentCompany,
-    setDefaultInvoiceDueDateTermsType
+    setDefaultInvoiceDueDateTermsType,
+    setDefaultCurrency,
+    showdeliverydate
 }

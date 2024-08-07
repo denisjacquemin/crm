@@ -716,5 +716,8 @@
       "WET": "МОКРЫЙ (+00:00)",
       "Zulu": "Зулу (+00:00)"
     }
+  },
+  "currencies": {
+    "frequently_selected_currencies": ""
   }
 }

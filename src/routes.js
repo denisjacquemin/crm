@@ -55,6 +55,7 @@ router.get("/document/preview/:slug", auth, documentsController.preview);
 router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
 router.get("/documents/search:querystring?", auth, documentsController.search);
 router.post("/document/duplicateAjax", auth, documentsController.duplicateAjax);
+router.post("/document/createCreditNoteAjax", auth, documentsController.createCreditNoteAjax);
 router.delete("/document/deleteAjax/:slug", auth, documentsController.deleteAjax);
 
 
@@ -75,6 +76,9 @@ router.patch("/product/:slug?", auth, productsController.update); // autosave fo
 
 
 router.patch("/company/defaultinvoiceduedatetermstype", auth, companiesController.setDefaultInvoiceDueDateTermsType);
+router.patch("/company/defaultcurrency", auth, companiesController.setDefaultCurrency);
+router.patch("/company/showdeliverydate", auth, companiesController.showdeliverydate);
+
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 router.get("/companies/editAjax/:slug?", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);

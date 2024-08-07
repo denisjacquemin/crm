@@ -103,10 +103,7 @@
                     :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
                     :aria-selected="isSelected($el.id)"
                     class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                    </svg>
-
+                    <svg class="h-6 w-6 shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>
                     {{t 'settings.views.tabs.sellers' }}
                 </a>
                 </li>
@@ -151,9 +148,7 @@
                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
                 class="overflow-y-scroll"
         >
-            <div class="h-full">
-                {{> settings/myaccount }}
-            </div>
+            <div class="h-full">{{> settings/myaccount }}</div>
         </section>
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
                  :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
@@ -163,7 +158,7 @@
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
                  :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
                  role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-
-        >{{> settings/invoices }}</section>
+                 class="overflow-y-scroll"
+        ><div class="h-full">{{> settings/invoices }}</div></section>
     </div>
 </div>

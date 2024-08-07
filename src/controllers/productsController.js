@@ -16,7 +16,6 @@ async function index(req, res, next) {
         const products = results.hits.map(hit => hit.document);
         // const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
 
-        console.log('current company coutnry:', req.session.current_company.country);
         res.render('products/index', {
             layout: false,
             products: products,

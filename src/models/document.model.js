@@ -32,6 +32,7 @@ const documentSchema = new mongoose.Schema({
     created_by_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     slug: { type: String, required: true, unique: true },
     config: {
+        document_type: { type: String, required: true, default: 'invoice' },
         template_name: { type: String, required: true, default: 'default_template' },
         buyer: {
             name: { type: String, required: false, default: '' },
@@ -80,6 +81,7 @@ const documentSchema = new mongoose.Schema({
             type: [paymentSchema],
         },
         invoice_number: { type: String, required: false, default: '' }, // invoice number
+        credit_note_number: { type: String, required: false, default: '' }, // credit note number
         invoice_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
         invoice_due_date: { 
             type: {
@@ -90,7 +92,8 @@ const documentSchema = new mongoose.Schema({
             default: {} 
         },
         invoice_delivery_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
-        currency: { type: String, required: false, default: 'eur' },
+        currency: { type: String, required: false },
+        show_delivery_date: { type: Boolean, required: false },
         language: { type: String, required: false, default: 'en' },
         subject: { type: String, required: false, default: '' },
         reference: { type: String, required: false, default: '' },

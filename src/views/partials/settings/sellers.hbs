@@ -111,8 +111,7 @@
                             <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
                                 <div class="flex flex-1 min-w-0 gap-x-4">
                                     <div class="min-w-0 flex-auto">
-                                        <div x-text="seller?.name" 
-                                                class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                                        <div x-text="seller?.internal_name?.trim() ? `${seller.name} (${seller.internal_name})` : seller?.name"                                                class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
                                                 :class="{
                                                 'text-indigo-700': selectedSeller.slug === seller.slug,
                                                 'text-gray-900': selectedSeller.slug !== seller.slug
@@ -184,6 +183,16 @@
                     <div class="mt-1">
                         <input type="text" x-model="selectedSeller.name" autocomplete="off"
                             id="name"
+                            @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.sellers.internal_name' }}</label>
+                    <div class="mt-1">
+                        <input type="text" x-model="selectedSeller.internal_name" autocomplete="off"
+                            placeholder="{{t 'settings.views.sellers.internal_name_placeholder' }}"
+                            id="internal_name"
                             @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>

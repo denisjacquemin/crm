@@ -51,13 +51,20 @@
         "items_modal": {
           "name_label": "documents.views.index.items_modal.name_label",
           "name_placeholder": "documents.views.index.items_modal.name_placeholder"
+        },
+        "invoice_settings": {
+          "show_deliverry_date": "documents.views.index.invoice_settings.show_deliverry_date"
         }
       },
       "edit_form": {
         "delivery_date": "documents.views.edit_form.delivery_date",
         "delete_document": "documents.views.edit_form.delete_document",
         "notes_on_invoice_label": "documents.views.edit_form.notes_on_invoice_label",
-        "notes_on_invoice_placeholder": "documents.views.edit_form.notes_on_invoice_placeholder"
+        "notes_on_invoice_placeholder": "documents.views.edit_form.notes_on_invoice_placeholder",
+        "credit_note_date": "documents.views.edit_form.credit_note_date",
+        "manage_items": "documents.views.edit_form.manage_items",
+        "no_items_yet": "documents.views.edit_form.no_items_yet",
+        "create_first_item": "documents.views.edit_form.create_first_item"
       }
     }
   },
@@ -69,13 +76,19 @@
     "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated",
     "views": {
       "tabs": {
-        "": "settings.views.tabs."
+        "": "settings.views.tabs.",
+        "invoices": {
+          "frequently_selected_currencies": "settings.views.tabs.invoices.frequently_selected_currencies",
+          "all_currencies": "settings.views.tabs.invoices.all_currencies"
+        }
       },
       "invoices": {
-        "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button"
+        "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button",
+        "warning_title": "settings.views.invoices.warning_title"
       }
     },
-    "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated"
+    "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",
+    "default_currency_updated": "settings.default_currency_updated"
   },
   "signup2": {
     "zip": "signup2.zip",
@@ -104,7 +117,11 @@
         "company_registration_number": "users.views.signup2.company_registration_number",
         "company_registration_number_undefined": "users.views.signup2.company_registration_number_undefined",
         "company_registration_number_": "users.views.signup2.company_registration_number_",
-        "company_registration_number_BE": "users.views.signup2.company_registration_number_BE"
+        "company_registration_number_BE": "users.views.signup2.company_registration_number_BE",
+        "internal_name": "users.views.signup2.internal_name",
+        "internal_name_placeholder": "users.views.signup2.internal_name_placeholder",
+        "frequently_selected_currencies": "users.views.signup2.frequently_selected_currencies",
+        "all_currencies": "users.views.signup2.all_currencies"
       },
       "index": {
         "seller_modal": {
@@ -157,7 +174,8 @@
   },
   "companies": {
     "controller": {
-      "default_company_name": "companies.controller.default_company_name"
+      "default_company_name": "companies.controller.default_company_name",
+      "show_delivery_date_updated": "companies.controller.show_delivery_date_updated"
     }
   },
   "taxrates": {
@@ -208,5 +226,10 @@
   },
   "edit_form": {
     "invoice_date": "edit_form.invoice_date"
+  },
+  "default_template": {
+    "purpose": "default_template.purpose",
+    "vat": "default_template.vat",
+    "delivery_date": "default_template.delivery_date"
   }
 }

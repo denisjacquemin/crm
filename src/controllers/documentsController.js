@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer');
 const dayjs = require('dayjs');
 
 const DEFAULT_SORT_BY = 'createdAt:desc';
-const DEFAULT_INCLUDE_FIELDS = 'slug, createdAt, updatedAt, config.subject, config.reference, config.invoice_number, config.amounts.total, config.buyer.name, config.template_name, config.invoice_date';
+const DEFAULT_INCLUDE_FIELDS = 'slug, createdAt, updatedAt, config.subject, config.reference, config.invoice_number, config.credit_note_number, config.document_type, config.amounts.total, config.buyer.name, config.template_name, config.invoice_date';
 const DEFAULT_PER_PAGE = 30;
 
 async function index(req, res) {
@@ -50,7 +50,9 @@ async function index(req, res) {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: selectedDocumentIndex,
-            selectedDocument: selectedDocument
+            selectedDocument: selectedDocument,
+            currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
+            frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
         });
     } catch (err) {
         console.error(err);
@@ -126,9 +128,8 @@ async function duplicateAjax(req, res) {
             delete dataToCopy.config.invoice_date;
             delete dataToCopy.config.invoice_due_date;
             delete dataToCopy.config.invoice_delivery_date;
+            delete dataToCopy.config.invoice_number;
         }
-
-        dataToCopy.config.invoice_number = newDocument.config.invoice_number;
 
         // Merge the modified document into newDocument
         // Object.assign(newDocument, dataToCopy);
@@ -142,6 +143,59 @@ async function duplicateAjax(req, res) {
         res.status(500).send(req.i18n.t('common.unknown_error'));
     }
 }
+
+async function createCreditNoteAjax(req, res) {
+    try {
+        // Fetch Original Document
+        const originalDocument = await DocumentService.getBySlugAndCompanyId(req.body.slug, req.session.current_company._id);
+
+        // Validate Document Existence
+        if (!originalDocument) {
+            return res.status(404).json({ 
+                notification: { message: 'Document not found', type: 'error'}
+            });
+        }
+
+        const newDocument = await createNewDocumentInMongoAndTypesense(req);
+
+        let dataToCopy = JSON.parse(JSON.stringify(originalDocument.toObject()));
+
+        // Exclude fields that should not be copied
+        delete dataToCopy._id;
+        delete dataToCopy.created_by_user_id;
+        delete dataToCopy.slug;
+        delete dataToCopy.createdAt;
+        delete dataToCopy.updatedAt;
+        delete dataToCopy.company_id;
+        delete dataToCopy.__v;
+
+        // Exclude fields from the nested config object
+        if (dataToCopy.config) {
+            delete dataToCopy.config.document_type;
+            delete dataToCopy.config.invoice_date;
+            delete dataToCopy.config.invoice_due_date;
+
+            delete dataToCopy.config.credit_note_number;
+        }
+
+
+        const creditNoteSequenceValue = await CompanyService.getNextCreditNoteSequenceValue(req.session.current_company._id);
+        req.session.current_company.settings.current_creadit_note_sequence = creditNoteSequenceValue;
+        dataToCopy.config.credit_note_number = `${dayjs().year()}#${String(req.session.current_company.settings.current_credit_note_sequence).padStart(5, '0')}`;
+        dataToCopy.config.document_type = 'credit_note';
+        dataToCopy.config.invoice_delivery_date = '';
+        // Update the document in the database
+        const updatedDocument = await DocumentService.update(newDocument._id, dataToCopy);
+        console.log('+++', updatedDocument);
+
+        res.json(updatedDocument.toObject());
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(req.i18n.t('common.unknown_error'));
+    }
+}
+
 async function deleteAjax(req, res) {
     try {
         const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
@@ -159,8 +213,6 @@ async function deleteAjax(req, res) {
         res.status(500).send(req.i18n.t('common.unknown_error'));
     }
 }
-
-
 
 
 async function createNewDocumentInMongoAndTypesense(req) {
@@ -207,9 +259,11 @@ async function createNewDocumentInMongoAndTypesense(req) {
                     email: req.session.user.email
                 },
                 buyer: {
-                    name: 'Choose a buyer',
+                    name: req.i18n.t('documents.controller.choose_a_customer'),
                 },
                 invoice_number: `${dayjs().year()}#${String(req.session.current_company.settings.current_invoice_sequence).padStart(5, '0')}`,
+                currency: req.session.current_company.settings.default_currency,
+                show_delivery_date: req.session.current_company.settings.show_delivery_date,
             }
         });
 
@@ -250,7 +304,10 @@ async function edit(req, res) {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: selectedDocumentIndex,
-            selectedDocument: selectedDocument.toObject()
+            selectedDocument: selectedDocument.toObject(),
+            currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
+            frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
+
         });
     } catch (err) {
         console.error(err);
@@ -266,7 +323,7 @@ async function editAjax(req, res) {
         if (!document) {
             return res.status(404).send();
         }
-
+        console.log('@@@  document', document.toObject());
         res.json(document.toObject());
         
     } catch (err) {
@@ -405,10 +462,11 @@ module.exports = {
     // newDocument,
     newDocumentAjax,
     duplicateAjax,
+    createCreditNoteAjax,
     deleteAjax,
     update,
     search,
     preview,
     toPDF,
-    toPDFWithPuppeteer
+    toPDFWithPuppeteer,
 };

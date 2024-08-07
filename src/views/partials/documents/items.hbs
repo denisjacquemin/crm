@@ -1,31 +1,46 @@
-<table class="min-w-full divide-y divide-gray-300 max-w-full">
-    <thead>
-        <tr >
-            <th class="w-2/3 text-left text-sm font-semibold text-gray-900" width="auto">Description</th>
-            <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Quantity</th>
-            <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">UP</th>
-            <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Reduction</th>
-            <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Reduction Unit</th>
-            <th class="hidden sm:block md:hidden text-sm font-semibold text-gray-900 text-right" width="150px">VAT</th>
-            <th class="hidden text-sm font-semibold text-gray-900 text-right" width="150px">Amount VAT Excl.</th>
-            <th class="w-1/3 text-sm text-right font-semibold text-gray-900" width="150px">Amount VAT Incl.</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(item, index) in selectedDocument.config.items" :key="index">
-        <tr class="hover:bg-gray-200">
-            <input type="hidden" x-model="item.name" name="config.items[].name" />
-            <td x-text="item.description" class="pl-1 py-2 pr-2 text-sm font-light text-gray-700 line-clamp-3"></td>
-            <td x-text="item.quantity" class="hidden py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="item.unit_price" class="hidden py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="item.reduction" class="hidden py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="item.reduction_unit" class="hidden py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="`${item.vat} %`" class="hidden sm:block md:hidden text-right py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="item.amountvatexcl" class="hidden py-2 text-sm font-medium text-gray-500"></td>
-            <td x-text="`${item.amountvatincl} €`" class="text-right pr-1 py-2 text-sm text-gray-500 truncate"></td>
-        </tr>
-        </template>
-    </tbody>
-</table>
-
+<div x-show="selectedDocument.config.items.length === 0">
+    <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+            <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-12 w-12 text-gray-400 lucide lucide-list-minus"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M21 12h-6"/></svg>
+            <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'documents.views.edit_form.no_items_yet' }}</span>
+            <button type="button"
+                class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
+                @click.prevent="openSlide = true; slideContentPartialName='slideItems'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 lucide lucide-list-plus"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg>
+                {{ t 'documents.views.edit_form.create_first_item' }}
+            </button>
+        </div>
+    </div>
+</div>
+<div x-show="selectedDocument.config.items.length > 0">
+    <button type="button"
+              class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
+              @click.prevent="openSlide = true; slideContentPartialName='slideItems'">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 lucide lucide-list-plus"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg>
+            {{ t 'documents.views.edit_form.manage_items' }}
+    </button>
+    <div class="w-full divide-y divide-gray-300">
+        <div class="flex">
+            <div class="w-2/3 text-left text-sm font-semibold text-gray-900">Description</div>
+            <div class="w-1/3 text-sm text-right font-semibold text-gray-900" style="width: 150px;">Amount VAT Incl.</div>
+        </div>
+        <div>
+            <template x-for="(item, index) in selectedDocument.config.items" :key="index">
+                <div class="flex hover:bg-gray-200">
+                    <input type="hidden" x-model="item.name" name="config.items[].name" />
+                    <div x-text="item.name" class="py-2 pr-2 text-sm font-light text-gray-700 truncate w-2/3"></div>
+                    <div x-text="`${item.amountvatincl} €`" class="text-right pr-1 py-2 text-sm text-gray-500 truncate w-1/3" style="width: 150px;"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div class="mt-4 pt-4 col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">Total Base Amount</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.subtotal"></div>
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Vat Amount</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.totalvat"></div>
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Amount</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal" x-text="selectedDocument.config.amounts.total"></div>
+    </div>
+</div>

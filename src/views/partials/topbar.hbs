@@ -9,12 +9,12 @@
                 }
             }">
     <template x-if="companies.length > 1">
-        <div class="relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
+        <div class="lg:max-w-[200px] xl:max-w-[300px] relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
             <select @change="changeCurrentCompany(event.target.value)" id="desktop-sellers"
                     name="currency"
                     class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium text-white border-none group-hover:text-gray-100">
                 <template x-for="company in companies">
-                    <option x-text="company.name" :value="company.slug"
+                    <option x-text="company?.internal_name?.trim() ? company.internal_name : company.name" :value="company.slug"
                             x-bind:selected="company.selected"></option>
                 </template>
             </select>

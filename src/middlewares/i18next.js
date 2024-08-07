@@ -33,7 +33,7 @@ i18next.use(i18nBackend)
             caches: ['cookie']
         },
         partialBundledLanguages: true,
-        ns: ['translation', 'taxrates', 'countries'],
+        ns: ['translation', 'taxrates', 'countries', 'currencies'],
         defaultNS: 'translation',
         backend: {
             loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
