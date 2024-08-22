@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 // const csrfProtection = require('./middlewares/csrf');
 const auth = require('./middlewares/auth');
+const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddleware');
 const globalController = require('./controllers/globalController');
 const userController = require('./controllers/usersController');
 const dashboardController = require('./controllers/dashboardController');
@@ -9,11 +10,13 @@ const documentsController = require('./controllers/documentsController');
 const companiesController = require('./controllers/companiesController');
 const buyersController = require('./controllers/buyersController');
 const productsController = require('./controllers/productsController');
+const filesController = require('./controllers/filesController');
 
 // render views/test.hbs template
 router.get("/test", (req, res) => {
     res.render("test");
 });
+
 
 router.post("/preferences/changelang", globalController.changeLang);
 router.get("/settings/:tabid?", auth, globalController.settings);
@@ -80,12 +83,25 @@ router.patch("/company/defaultcurrency", auth, companiesController.setDefaultCur
 router.patch("/company/showdeliverydate", auth, companiesController.showdeliverydate);
 
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
-router.get("/companies/editAjax/:slug?", auth, companiesController.editAjax);
+router.get("/companies/editAjax/:slug", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);
-router.patch("/company/:slug?", auth, companiesController.update); // autosave for buyers
+router.patch("/company/:slug?", auth, companiesController.update); // autosave for sellers/companies
 router.get("/companies/currentusercompanies", auth, companiesController.getCurrentUserCompanies);
 router.delete("/companies/deleteAjax/:slug?", auth, companiesController.deleteAjax);
 router.post("/companies/changeCurrentCompany", auth, companiesController.changeCurrentCompany);
+
+router.post("/file/newAjax", auth, filesController.newFileAjax);
+router.post("/file/newAjaxForADocument", auth, filesController.newFileAjaxForADocument)
+router.get("/files/editAjax/:slug", auth, filesController.editAjax);
+router.post('/file/upload', auth, uploadMiddleware, handleFileUpload, filesController.upload);
+router.post('/file/uploadForDocument', auth, uploadMiddleware, handleFileUpload, filesController.upload);
+router.patch("/file/:slug?", auth, filesController.update); // autosave for files
+router.get('/file/download/:slug', filesController.downloadFile);
+router.delete("/files/deleteAjax/:slug", auth, filesController.deleteAjax);
+router.get("/files/company", auth, filesController.getCurrentCompanyFiles);
+
+
+
 
 // router.get("/companies/new", companiesController.newCompany);
 

@@ -14,7 +14,10 @@ class DocumentsService {
     }
 
     async getBySlugAndCompanyId(slug, company_id, projection = '') {
-        const document = await Document.findOne({ slug, company_id }, projection).exec();
+        const document = await Document.findOne({ slug, company_id }, projection)
+        .populate('config.files')
+        .populate('config.documentFiles')
+        .exec();
         return document;
     }
 

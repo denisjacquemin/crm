@@ -5,6 +5,7 @@
             selectedDocumentIndex: {{ stringify selectedDocumentIndex }},
             selectedDocument: {{ stringify selectedDocument }},
             user_language: '{{session.user.language}}'.split('-')[0],
+            sizes: {{ stringify sizes}},
             getTaxRates: async function() {
                 let countries = [];
                 if (this.selectedDocument.config.buyer.country) {
@@ -85,6 +86,7 @@
          }); --}}
         if (selectedDocument) {getTaxRates();}        
         $watch('selectedDocument', (value, oldValue) => {
+            console.log('selectedDocument changed', value);
             var document = { ...value };
             document.autosave_updated_at = new Date();
             localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));
@@ -261,11 +263,16 @@
                 </template>
 
                 <template x-if="documents.length > 0">
-                    <ul role="list" class="divide-y  divide-gray-100 first:divide-y-0 pt-2" >
+                    {{!-- <ul role="list" class="divide-y  divide-gray-100 first:divide-y-0 pt-2" > --}}
+                    <ul role="list">    
                         <template x-for="(document  , index) in documents" :key="index">
-                            <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
+                            <li class="relative py-5 hover:border-y border-gray-900/10 hover:bg-gray-100 cursor-pointer" role="listitem"
                                 @click.prevent="editDocument(index);"
-                                :data-slug="document.slug"                                
+                                :data-slug="document.slug"
+                                :class="{
+                                        'border-y border-gray-900/10 bg-gray-500/5': selectedDocumentIndex === index,
+                                        'border-y border-white': selectedDocumentIndex !== index    
+                                }"                                 
                             >
                             <div class="px-4">
                                 <div class="mx-auto flex max-w-4xl justify-between gap-x-6">

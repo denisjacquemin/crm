@@ -5,16 +5,16 @@ const path = require('path');
 const rootDir = path.resolve(__dirname, '..', '..');
 
 const sessionLanguageDetector = {
-    name: 'sessionLanguageDetector',
-    lookup(req, res, options) {
-      if (req.session && req.session.user && req.session.user.language) {
-        if (req.session.user.language.trim() !== '') {
-          return req.session.user.language;
-        }
+  name: 'sessionLanguageDetector',
+  lookup(req, res, options) {
+    if (req.session && req.session.user && req.session.user.language) {
+      if (req.session.user.language.trim() !== '') {
+        return req.session.user.language;
       }
-      return null;
     }
-  };
+    return null;
+  }
+};
 
 // Create a new instance of LanguageDetector
 var lngDetector = new i18Middleware.LanguageDetector();
@@ -23,29 +23,47 @@ lngDetector.addDetector(sessionLanguageDetector);
 
 
 i18next.use(i18nBackend)
-    .use(lngDetector)
-    .init({
-        detection: {
-            order: ['sessionLanguageDetector', 'querystring', 'cookie', 'header'],
-            // Register the custom detector
-            detectors: [sessionLanguageDetector],
-            lookupCookie: 'lng',
-            caches: ['cookie']
-        },
-        partialBundledLanguages: true,
-        ns: ['translation', 'taxrates', 'countries', 'currencies'],
-        defaultNS: 'translation',
-        backend: {
-            loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
-            addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`
-        },
-        fallbackLng: 'en',
-        // nonExplicitSupportedLngs: true,
-        // supportedLngs: ['en', 'de'],
+  .use(lngDetector)
+  .init({
+    detection: {
+      order: ['sessionLanguageDetector', 'querystring', 'cookie', 'header'],
+      // Register the custom detector
+      detectors: [sessionLanguageDetector],
+      lookupCookie: 'lng',
+      caches: ['cookie']
+    },
+    partialBundledLanguages: true,
+    ns: ['translation', 'taxrates', 'countries', 'currencies'],
+    defaultNS: 'translation',
+    backend: {
+      loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
+      addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`
+    },
+    fallbackLng: 'en',
+    // nonExplicitSupportedLngs: true,
+    // supportedLngs: ['en', 'de'],
 
-        load: 'languageOnly',
-        saveMissing: true,
-        nonExplicitSupportedLngs: true
-    });
-    
+    load: 'languageOnly',
+    saveMissing: true,
+    nonExplicitSupportedLngs: true
+  });
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 Bytes';
+
+  // Fetch the translated size units
+  const sizes = i18next.t('sizes', { returnObjects: true });
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+  // Calculate the formatted size
+  const formattedSize = parseFloat((bytes / Math.pow(1024, i)).toFixed(2));
+
+  return `${formattedSize} ${sizes[i]}`;
+}
 module.exports = i18Middleware.handle(i18next);
+
+module.exports = {
+  i18nMiddleware: i18Middleware.handle(i18next),
+  formatBytes
+};

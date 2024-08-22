@@ -14,9 +14,10 @@
     <body class="" 
           @updatenavbutton="navState = $event.detail.value"
           x-data="{ 
-            navState: 'menu',
+            navState: 'menu',   
             modalSize: null,
             companies: [],
+            companyFiles: [],
             openSettingsModal: false,
             async openConfirmModal(title, message, confirmCallback) {
                 this.$refs.confirmModal.open(title, message, confirmCallback);
@@ -41,12 +42,16 @@
                 if (callback) callback();
             },
             async loadCompanies() {
-                fetchUrl('/companies/currentusercompanies')
-                    .then(data => { 
-                        this.companies = data })
+                const data = await fetchUrl('/companies/currentusercompanies')
+                this.companies = data;
             },
+            async loadCompanyFiles() {
+                const data = await fetchUrl('/files/company')
+                this.companyFiles = data;
+            }
           }"
           @loadcompanies="loadCompanies()"
+          @loadcompanyfiles="loadCompanyFiles()"
           x-init="dayjs.locale('{{session.user.language}}');"
         >
         
@@ -54,10 +59,9 @@
         {{!-- <div x-text="navState" class="absolute top-0 right-0 z-50 text-red-600"></div> --}}
             {{> nav }}
             {{{body}}}
-
         </div>
-        {{> notifications2 }}
         {{> modal }}
+        {{> notifications2 }}
         {{!-- {{> confirm_modal }} --}}
     </body>
 

@@ -37,7 +37,7 @@ onmessage = async function(event) {
                 if (response.ok) {
                     result = await response.json();
                 } else {
-                    console.log('Autosave worker response not ok')
+                    console.log('Autosave worker response not ok', response);
                     throw new Error('Network response was not ok');
                 }
         }

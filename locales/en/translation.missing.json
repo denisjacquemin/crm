@@ -54,6 +54,13 @@
         },
         "invoice_settings": {
           "show_deliverry_date": "documents.views.index.invoice_settings.show_deliverry_date"
+        },
+        "files_modal": {
+          "document_files": "documents.views.index.files_modal.document_files",
+          "edit": "documents.views.index.files_modal.edit",
+          "delete_confirm": "documents.views.index.files_modal.delete_confirm",
+          "delete": "documents.views.index.files_modal.delete",
+          "companyfiles_no_file_uploaded_yet": "documents.views.index.files_modal.companyfiles_no_file_uploaded_yet"
         }
       },
       "edit_form": {
@@ -64,7 +71,8 @@
         "credit_note_date": "documents.views.edit_form.credit_note_date",
         "manage_items": "documents.views.edit_form.manage_items",
         "no_items_yet": "documents.views.edit_form.no_items_yet",
-        "create_first_item": "documents.views.edit_form.create_first_item"
+        "create_first_item": "documents.views.edit_form.create_first_item",
+        "no_files_yet": "documents.views.edit_form.no_files_yet"
       }
     }
   },
@@ -231,5 +239,6 @@
     "purpose": "default_template.purpose",
     "vat": "default_template.vat",
     "delivery_date": "default_template.delivery_date"
-  }
+  },
+  "sizes": "sizes"
 }

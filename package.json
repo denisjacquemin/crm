@@ -4,8 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && node ./index.js -f --no-daemon\"",
-        "build": "webpack --mode production",
+        "start": "webpack --watch --mode development & nodemon -e hbs,js,mjs,json --ignore typesense-data --exec \"postcss ./public/css/main.css -o ./public/css/styles.css && node ./index.js -f --no-daemon\"",        "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
         "eslint": "eslint src"
     },
@@ -15,6 +14,7 @@
         "@alpinejs/focus": "^3.13.3",
         "@alpinejs/intersect": "^3.13.5",
         "@alpinejs/mask": "^3.13.3",
+        "@aws-sdk/client-s3": "^3.627.0",
         "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@babel/plugin-syntax-dynamic-import": "^7.8.3",
         "@babel/plugin-transform-async-to-generator": "^7.20.7",
@@ -50,6 +50,7 @@
         "moment": "^2.29.4",
         "moment-timezone": "^0.5.40",
         "mongoose": "^7.6.1",
+        "multer": "^1.4.5-lts.1",
         "nodemailer": "^6.8.0",
         "pinch-zoom-js": "^2.3.5",
         "puppeteer": "^21.1.0",

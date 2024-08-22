@@ -1,5 +1,6 @@
 const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
+const FileService = require('../services/files.service');
 const geoip = require('geoip-lite');
 const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
 const { French } = require("flatpickr/dist/l10n/fr.js").default.fr
@@ -67,7 +68,7 @@ async function settings(req, res) {
         const companiesIds = req.session.user.companies;
         const sellers = await CompanyService.getByIds(companiesIds);
         const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
-
+        const files = await FileService.getLinkedToACompanyId(req.session.current_company._id);
 
         res.render('global/settings', {
             currentTab: tabid || 1,
@@ -75,6 +76,8 @@ async function settings(req, res) {
             oauthRegistered: req.session.user.google_id ? true : false,
             accountEmail: req.session.user.email,
             sellers: sellers,
+            files: files,
+            sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
             currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
             currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),

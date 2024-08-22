@@ -98,4 +98,24 @@
                 {{t 'settings.views.invoices.show_delivery_date_button' }}
         </button>
     </div>
+
+    <div x-data="{
+        submitUploadForm(event) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const fileInput = form.querySelector('#file');
+            const file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+            
+            const data = await fetchUrl('http://localhost:3000/upload', 'POST', formData);
+        }
+    }">
+        <h1>Upload a File</h1>
+        <form id="uploadForm" name="uploadForm" @submit.prevent="submitUploadForm">
+            <label for="file">Choose file to upload:</label>
+            <input type="file" id="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
 </div>

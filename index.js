@@ -7,6 +7,8 @@ const path = require("path");
 const Typesense = require('./src/services/lib/typesense');
 const compression = require('compression');
 const mongooseHelper = require('./src/services/lib/mongoose');
+const { i18nMiddleware } = require('./src/middlewares/i18next');
+const { formatBytes } = require('./src/lib/formatBytes');
 
 
 
@@ -47,7 +49,8 @@ app.use(flash())
 
 
 app.use(cookieParser());
-app.use(require('./src/middlewares/i18next'));
+app.use(i18nMiddleware);
+// app.use(formatBytes);
 // app.use(require('./src/middlewares/checkAndUpdateUserLanguage'));
 
 // TODO only to debug the language detection
@@ -128,6 +131,9 @@ const hbs = create({
                 this.switch_break = true;
                 return options.fn(this);
             }
+        },
+        formatBytes: function(bytes) {
+            return formatBytes(bytes);
         }
     },
 });

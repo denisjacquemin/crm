@@ -15,8 +15,11 @@ import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 import 'dayjs/locale/zh-cn'
 import 'dayjs/locale/nl'
+import i18next from 'i18next';
 
-// Expose the function globally
+import { formatBytes } from '../lib/formatBytes';
+
+window.formatBytes = formatBytes;// Expose the function globally
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);

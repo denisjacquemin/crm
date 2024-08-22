@@ -1,6 +1,6 @@
 <div x-show="openSlide" class="min-h-[64rem] bg-gray-100">
     
-    <div @keydown.window.escape="openSlide = false" x-show="openSlide" class="relative z-50" x-ref="dialog" aria-modal="true">
+    <div @keydown.window.escape="openSlide = false" x-show="openSlide" class="relative z-40" x-ref="dialog" aria-modal="true">
       
     <div x-show="openSlide" x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-description="Background backdrop, show/hide based on slide-over state." class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
@@ -21,8 +21,8 @@
               
               <div class="h-full overflow-y-auto bg-white" x-description="Slide-over panel, show/hide based on slide-over state.">
                 <div class="h-full overflow-hidden">
-                  <div class="col-span-full p-4 pl-0 mb-2 border-b border-gray-200">
-                      <div class="px-3">
+                  <div class="col-span-full px-4 py-2 sm:px-6 sm:py-6 border-b border-gray-200">
+                      <div>
                         <h2 class="text-base font-semibold leading-6 text-gray-900 flex justify-between items-center" id="slide-over-title">
 
                           <template  x-if="slideContentPartialName == 'slideBuyer'">
@@ -34,12 +34,15 @@
                           <template x-if="slideContentPartialName == 'slideInvoiceSettings'">
                             <span>{{t 'documents.views.index.invoice_settings.modal_title' }}</span>
                           </template>
-                          <button @click.prevent="openSlide = false" class="inline-flex items-center gap-x-2 my-2 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                          <template x-if="slideContentPartialName == 'slideFiles'">
+                            <span>{{t 'documents.views.index.files_modal.modal_title' }}</span>
+                          </template>
+                          <button @click.prevent="openSlide = false" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
                               {{t 'documents.views.index.buyer_modal.back_button' }}
                           </button>
                         </h2>
-                        <p class="mt-2 text-sm text-gray-700">
+                        <p class="text-sm text-gray-700">
                           <template  x-if="slideContentPartialName == 'slideBuyer'">
                             <span>{{t 'documents.views.index.buyer_modal.modal_subtitle' }}</span>
                           </template>
@@ -60,6 +63,10 @@
 
                     <template x-if="slideContentPartialName == 'slideInvoiceSettings'">
                         {{> documents/slideDocumentSettings }}
+                    </template>
+
+                    <template  x-if="slideContentPartialName == 'slideFiles'">
+                        {{> documents/slideFiles }}
                     </template>
 
                 </div>

@@ -1,0 +1,223 @@
+<div class="w-[200%] flex-1 h-full overflow-hidden flex"
+     x-data="{
+        {{!-- files: {{ stringify files }}, --}}
+        sizes: {{ stringify sizes}},
+        selectedFile: {},
+        editFile: async function(index) {
+            try {
+                const data = await fetchUrl(`/files/editAjax/${this.companyFiles[index].slug}`, 'GET');
+                this.selectedFile = data;
+                this.companyFiles[index] = this.selectedFile;
+                this.showFileForm();
+            } catch (error) { console.error('Error editing file', error); }
+        },
+        newFile: async function(){
+            try {
+                const data = await fetchUrl('/file/newAjax', 'POST');
+                this.selectedFile = data;
+                this.companyFiles.push(this.selectedFile);
+                this.showFileForm();
+            } catch (error) { 
+                console.error('Error creating new file', error); 
+            }
+        },
+        deleteFile: async function(slug) {
+            try {
+                const data = await fetchUrl(`/files/deleteAjax/${slug}`, 'DELETE');
+                this.companyFiles = this.companyFiles.filter(file => file.slug !== slug);
+                this.selectedFile = {};
+                this.showFileList();
+            } catch (error) { 
+                console.log('Error deleting document', error); 
+            }
+        },
+        submitUploadForm: async function(event) {
+            event.preventDefault();
+            const fileInput = event.target;
+            let file;
+            if (event.type === 'drop') {
+                file = event.dataTransfer.files[0];
+            } else {
+                file = event.target.files[0];
+            }            
+            var formData = new FormData();
+            formData.append('file', file);
+            
+            const data = await fetchUrl('/file/upload', 'POST', formData);
+            this.selectedFile.filename = file.name;
+            this.selectedFile.size = file.size;
+            this.selectedFile.type = file.type;
+
+            document.getElementById('file-name').focus();
+        },
+        showFileForm: function() {
+            this.$refs.filesList.style.transform = 'translateX(-100%)'; 
+            this.$refs.fileForm.style.transform = 'translateX(-100%)';
+        },
+        showFileList: function() {
+            this.$refs.filesList.style.transform = 'translateX(0)';
+            this.$refs.fileForm.style.transform = 'translateX(0)';
+        },
+     }"
+     x-init="
+        $dispatch('loadcompanyfiles');
+        $watch('selectedFile', (value, oldValue) => {
+            var file = { ...value };
+            if (file.slug) {
+                file.autosave_updated_at = new Date();
+                localStorage.setItem('autosave#file#' + value.slug, JSON.stringify(file));
+            }
+            console.log('dispatching updateCompanyFiles', value);
+        });
+     "
+>
+    <div x-ref="filesList" class="flex flex-col flex-1 w-[50%] transition-transform duration-500 ease-in-out">
+        <div class="flex-none w-full flex items-center p-2">
+            <button type="button" id="newFileButton"
+                class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                @click.prevent="newFile">      
+                <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
+                </svg>
+                {{t 'settings.views.files.create_file_button' }}
+            </button>
+        </div>
+        <div class="flex-grow overflow-y-scroll flex flex-1 w-full">
+            <template x-if="companyFiles.length === 0">
+                <div class="relative block w-full h-full p-2 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'settings.views.files.no_file_found' }}</span>
+                    </div>
+                </div>
+            </template>
+            <template x-if="companyFiles.length > 0">
+                <ul role="list" class="w-full divide-y divide-gray-100">
+                    <template x-for="(file, index) in companyFiles" :key="index">
+                        <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
+                            @click.prevent="editFile(index);"
+                            :data-slug="file.slug"
+                            
+                        >
+                        <div class="px-4">
+                            <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
+                                <div class="flex flex-1 min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <div x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"                                                
+                                             class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                                                :class="{
+                                                'text-indigo-700': selectedFile.slug === file.slug,
+                                                'text-gray-900': selectedFile.slug !== file.slug
+                                                }">
+                                        </div>
+                                        <div class="mt-1 flex text-xs leading-5 text-gray-500">
+                                            <span x-show="!file.filename" @click.prevent="editFile(index);" class="relative truncate w-full text-left h-5" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                            <span x-show="file.filename" x-text="file.filename" class="relative truncate font-medium text-left h-5"></span>
+                                            <span x-show="file.filename" class="ml-2 flex-shrink-0" x-text="formatBytes(file.size, sizes)"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex shrink-0 items-center gap-x-4">
+                                    <svg :class="{
+                                                'text-indigo-700 font-medium': selectedFile.slug === file.slug,
+                                                'text-gray-400 font-normal': selectedFile.slug !== file.slug
+                                                }"
+                                            class="h-5 w-5 flex-none " viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        </li>
+                    </template>
+                </ul> 
+            </template>
+        </div>
+    </div>
+    <div x-ref="fileForm" class="w-[50%] h-full border-l border-gray-200 flex flex-col transition-transform duration-500 ease-in-out">
+        <div x-cloak x-show="Object.keys(selectedFile).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'settings.views.files.no_file_selected' }}</span>
+            </div>
+        </div>
+
+        <div x-cloak x-show="Object.keys(selectedFile).length !== 0" class="flex flex-col h-full pb-5">
+            <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
+                <div class="w-1/2 text-left">
+                    <button @click.prevent="showFileList();"
+                        href="#" class="px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="w-1/2 text-right my-auto sm:w-full">
+                    <a href="#"
+                        class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
+                            @click.prevent="if (confirm('{{t 'settings.views.files.delete_confirm' }}')) deleteFile(selectedFile.slug) ">      
+                        {{t 'settings.views.files.delete' }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-scroll">
+                    <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
+                        x-on:drop.prevent="handleDrop" 
+                        x-on:dragover.prevent 
+                        x-on:dragenter="isDragging = true" 
+                        x-on:dragleave="isDragging = false"
+                        class="flex items-center justify-center w-full">
+                        <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
+                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Pdf, Doc(x), Xls(x) (MAX. 10Mb)</p>
+                            </div>
+                            <input x-on:change="submitUploadForm"
+                                id="dropzone-file" type="file" class="hidden"/>
+                        </label>
+                    </div> 
+                
+                <div>
+                    <label for="file-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.files.name' }}</label>
+                    <div class="mt-1">
+                        <input type="text" x-model="selectedFile.name" autocomplete="off"
+                            id="file-name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.files.internal_name' }}</label>
+                    <div class="mt-1">
+                        <input type="text" x-model="selectedFile.internal_name" autocomplete="off"
+                            placeholder="{{t 'settings.views.files.internal_name_placeholder' }}"
+                            id="internal_name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                        <li x-show="selectedFile.filename" class="flex gap-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                            <span x-text="selectedFile.filename"></span>
+                        </li>
+                        <li x-show="selectedFile.size" class="flex gap-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
+                            <span x-text="formatBytes(selectedFile.size, sizes)"></span>
+                        </li>
+                        <li x-show="selectedFile.type" class="flex gap-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 13v-1h6v1"/><path d="M12 12v6"/><path d="M11 18h2"/></svg>
+                            <span x-text="selectedFile.type"></span>
+                        </li>
+                    </ul> 
+                </div>
+
+            </div>
+        </div> 
+    </div>
+</div>

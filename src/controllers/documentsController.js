@@ -1,5 +1,6 @@
 const DocumentService = require('../services/documents.service');
 const CompanyService = require('../services/companies.service');
+const FileService = require('../services/files.service');
 const { DocumentsTypesenseService } = require('../services/documents.typesense.service');
 const mergeObjects = require('../lib/object-helper').mergeObjects;
 const _ = require('lodash');
@@ -46,11 +47,15 @@ async function index(req, res) {
             }
         }
 
+        const companyFiles = await FileService.getLinkedToACompanyId(req.session.current_company._id) || [];
+
         res.render('documents/index', {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: selectedDocumentIndex,
             selectedDocument: selectedDocument,
+            companyFiles: companyFiles,
+            sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
             frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
         });
@@ -294,15 +299,18 @@ async function edit(req, res) {
 
         const documents = result.hits.map(hit => hit.document);
 
-        console.log('req.params.slug', req.params.slug)
         const selectedDocumentIndex = documents.findIndex(document => {
-            console.log('document.slug', document.slug); // Log the slug of each document
             return document.slug === req.params.slug;
         });
-        console.log('selectedDocumentIndex', selectedDocumentIndex);
+
+        const companyFiles = await FileService.getLinkedToACompanyId(req.session.current_company._id) || [];
+        console.log('@@@@@ companyFiles', companyFiles);
+               
         res.render("documents/index", {
             layout: 'app',
             documents: documents,
+            companyFiles: companyFiles,
+            sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             selectedDocumentIndex: selectedDocumentIndex,
             selectedDocument: selectedDocument.toObject(),
             currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
@@ -321,9 +329,10 @@ async function editAjax(req, res) {
         const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
 
         if (!document) {
-            return res.status(404).send();
+            return res.status(404).json({ 
+                notification: { message: 'Document not found', type: 'error'}
+            });
         }
-        console.log('@@@  document', document.toObject());
         res.json(document.toObject());
         
     } catch (err) {

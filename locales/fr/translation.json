@@ -11,7 +11,7 @@
         "quote_long": "Quote",
         "invoice_long": "Invoice",
         "credit_note_long": "Credit Note",
-        "sizes": ["Bytes", "KB", "MB", "GB", "TB"]
+        "sizes": ["Octets", "Ko", "Mo", "Go", "To"]
     },
     "global": {
         "settings": {
@@ -130,18 +130,14 @@
                     "help_message2": "You can also add new files to all current company documents through the settings, or just for this document on this screen.",
                     "company_files": "Files available for all documents",
                     "company_files_manage_them": "Manage them in the settings",
-                    "document_files": "Files only for this document",
+                    "document_files": "Files for this document",
                     "document_files_help": "Manage them on this screen",
                     "empty_documents_files": "There are no files yet. You can add some specifically for this document.",
-                    "create_new_file": "Add a new File",
+                    "create_new_file": "Create a new File",
                     "empty_company_files": "Files can be managed at the seller level, making them available for use in all documents.",
                     "manage_files_in_settings": "Manage files in the settings",
-                    "save_new_file": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"/></svg> Save & Return",
-                    "edit": "Edit",
-                    "delete": "Delete",
-                    "delete_confirm": "Are you sure you want to delete this file?",
-                    "no_file_uploaded_yet": "No file uploaded yet, click to add one",
-                    "companyfiles_no_file_uploaded_yet": "No files uploaded yet, go to the settings to add some"
+                    "save_new_file": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"/></svg> Save & Return"
+
                 },
                 "invoice_settings": {
                     "modal_title": "Invoice Settings",
@@ -179,7 +175,7 @@
                 "create_first_item": "Add the first items",
                 "files": "Files",
                 "no_files_yet": "No files yet",
-                "add_files": "Manage Files / Attachments",
+                "add_files": "Add files",
                 "items": "Items"
 
             }
@@ -335,8 +331,7 @@
     "files": {
         "controller": {
             "default_file_name": "Choose a name",
-            "file_not_found": "File not found",
-            "file_deleted": "The file has been deleted"
+            "file_not_found": "File not found"
         }
     },
     "buyers": {

@@ -35,8 +35,13 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
     };
 
     if (body) {
-        options.body = JSON.stringify(body);
-        options.headers['Content-Type'] = 'application/json';
+        if (body instanceof FormData) {
+            options.body = body;
+            // Do not set Content-Type header for FormData
+        } else {
+            options.body = JSON.stringify(body);
+            options.headers['Content-Type'] = 'application/json';
+        }
     }
 
     return fetch(url, options)
@@ -57,6 +62,7 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
                 history.replaceState(null, '', window.location.href);
                 location.reload();
             } else if (!response.status.toString().startsWith('2')) {
+                console.log('Error fetching URL', response);
                 throw new Error('Looks like there was a problem. Status Code: ' + response.status);
             } else {
                 return data;

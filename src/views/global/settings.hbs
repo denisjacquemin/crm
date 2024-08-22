@@ -27,6 +27,8 @@
             <option :value="$id('tab', 1)">{{t 'settings.views.tabs.myaccount' }}</option>
             <option :value="$id('tab', 2)">{{t 'settings.views.tabs.sellers' }}</option>
             <option :value="$id('tab', 3)">{{t 'settings.views.tabs.invoices' }}</option>
+            <option :value="$id('tab', 4)">{{t 'settings.views.tabs.files' }}</option>
+
         </select>
     </div>
     <div class="hidden">
@@ -130,11 +132,9 @@
                     :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
                     :aria-selected="isSelected($el.id)"
                     class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 7.756a4.5 4.5 0 1 0 0 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
+                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
 
-                    Calendar
+                    {{t 'settings.views.tabs.files' }}
                 </a>
                 </li>
                 
@@ -160,5 +160,11 @@
                  role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
                  class="overflow-y-scroll"
         ><div class="h-full">{{> settings/invoices }}</div></section>
+        <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
+                 :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
+                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
+                 class="flex flex-col h-full"
+        ><div class="h-full">{{> settings/files }}</div></section>
+
     </div>
 </div>

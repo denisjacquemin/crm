@@ -110,6 +110,8 @@ const documentSchema = new mongoose.Schema({
                 message: props => `At least one field besides 'order' is required for each item!`
             }
         },
+        files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }], default: [],
+        documentFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }], default: [],
     },
 }, { timestamps: true });
 
@@ -118,16 +120,15 @@ documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], asy
 
         const documentsTypesenseService = new DocumentsTypesenseService();
         await documentsTypesenseService.upsertDocument(doc);
+        next();
     } catch (error) {
         console.error('Error saving/updating product in Typesense:', error.message);
         // Handle error - For simplicity, removing the document from MongoDB
         try {
             const document = await Document.findOne({ _id: doc._id.toString(), company_id: doc.company_id.toString() });
-            if (!document) {
-                return null; // Or throw an error, depending on desired behavior
-            }
-            await document.deleteOne();            
-            console.log('Document removed from MongoDB due to Typesense error:', doc._id);
+            if (document) {
+                await document.deleteOne();
+            }            
         } catch (deleteError) {
             console.error('Error deleting document from MongoDB:', deleteError.message);
         }
@@ -138,9 +139,18 @@ documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], asy
 
 documentSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async function(next) {
     try {
-      const deletedDocumentId = this._id;
-      const documentsTypesenseService = new DocumentsTypesenseService();
-      await documentsTypesenseService.deleteDocument(deletedDocumentId);  
+        const deletedDocumentId = this._id;
+        const documentsTypesenseService = new DocumentsTypesenseService();
+        
+        // Delete the document from Typesense
+        await documentsTypesenseService.deleteDocument(deletedDocumentId);
+        
+        // Delete related files from MongoDB
+        console.log('this', this);
+        console.log('this.config.documentFiles', this.config.documentFiles);
+        await mongoose.model('File').deleteMany({ _id: { $in: this.config.documentFiles } });
+        
+        next();
     } catch (error) {
       console.error(`Failed to delete product from Typesense: ${error.message}`);
       next(error); // Abort the remove operation in MongoDB

@@ -1,4 +1,4 @@
-<div class="w-[200%] flex-1 h-full overflow-hidden flex sm:w-full"
+<div class="w-[200%] flex-1 h-full overflow-hidden flex"
     x-data="{
         sellers: {{ stringify sellers }},
         selectedSeller: {},
@@ -7,7 +7,7 @@
                 const data = await fetchUrl(`/companies/editAjax/${this.sellers[index].slug}`, 'GET');
                 this.selectedSeller = data;
                 this.sellers[index] = this.selectedSeller;
-                if (window.innerWidth < 640) this.showCompanyForm();
+                this.showCompanyForm();
             } catch (error) { console.error('Error editing company', error); }
         },
         newSeller: async function(){
@@ -16,7 +16,7 @@
                 this.selectedSeller = data;
                 this.sellers.push(this.selectedSeller);
                 setTimeout(() => $dispatch('loadcompanies'), 2000);
-                if (window.innerWidth < 640) this.showCompanyForm();
+                this.showCompanyForm();
             } catch (error) { 
                 console.error('Error creating new seller', error); 
             }
@@ -27,12 +27,13 @@
                 this.sellers = this.sellers.filter(seller => seller.slug !== slug);
                 this.selectedSeller = {};
                 setTimeout(() => $dispatch('loadcompanies'), 2000);
-                if (window.innerWidth < 640) this.showCompanyList();
+                this.showCompanyList();
             } catch (error) { 
                 console.error('Error deleting seller', error); 
             }
         },
         showCompanyForm: function() {
+            console.log('showCompanyForm');
             this.$refs.companiesList.style.transform = 'translateX(-100%)'; 
             this.$refs.companyForm.style.transform = 'translateX(-100%)';
         },
@@ -148,7 +149,7 @@
         </div>
     </div>
     <div x-ref="companyForm"
-         class="w-[50%] h-full border-l border-gray-200 flex flex-col sm:flex-1 transition-transform duration-500 ease-in-out">
+         class="w-[50%] h-full border-l border-gray-200 flex flex-col transition-transform duration-500 ease-in-out">
          <div x-cloak x-show="Object.keys(selectedSeller).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
@@ -160,8 +161,8 @@
 
         <div x-cloak x-show="Object.keys(selectedSeller).length !== 0" class="flex flex-col h-full pb-5">
             <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
-                <div class="w-1/2 text-left sm:hidden">
-                    <button @click.prevent="if (window.innerWidth < 640) showCompanyList();"
+                <div class="w-1/2 text-left">
+                    <button @click.prevent="showCompanyList();"
                         href="#" class="px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -172,7 +173,7 @@
                     <a href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
                             @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller.slug) ">      
-                        Delete
+                        {{t 'settings.views.sellers.delete' }}
                     </a>
                 </div>
             </div>
