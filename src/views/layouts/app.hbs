@@ -46,6 +46,7 @@
                 this.companies = data;
             },
             async loadCompanyFiles() {
+                console.log('loading company files');
                 const data = await fetchUrl('/files/company')
                 this.companyFiles = data;
             }

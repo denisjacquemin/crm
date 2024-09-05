@@ -3,6 +3,23 @@ const {validateEmail} = require('./_helper.model');
 const {BuyersTypesenseService} = require('../services/buyers.typesense.service');
 const BuyerService = require('../services/buyers.service');
 
+const schemaOptions = {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    }
+};
 
 const buyerSchema = new mongoose.Schema({
     company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
@@ -40,7 +57,7 @@ const buyerSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid email address!`
         }
     },
-}, { timestamps: true });
+}, schemaOptions);
 
 buyerSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
     try {

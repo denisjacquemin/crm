@@ -1,4 +1,4 @@
-<div class="flex w-[200%] h-full overflow-auto" 
+<div class="flex h-full w-[200%]" 
       x-data="{
         {{!-- companyFiles: {{ stringify companyFiles }}, --}}
         isUploading: false,
@@ -70,9 +70,37 @@
             this.selectedFile.filename = file.name;
             this.selectedFile.size = file.size;
             this.selectedFile.type = file.type;
+            this.selectedFile.key = data.data.key;
 
             document.getElementById(`input-${this.selectedFile.slug}`).checked = true;
             document.getElementById(`input-${this.selectedFile.slug}`).dispatchEvent(new Event('change'))
+        },
+        downloadFile: async function(slug) {
+            try {
+                const response = await fetch(`/file/download/${slug}`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    dispatch('notify', { content: errorData.notification.message, subcontent: errorData.notification.submessage, type: errorData.notification.type ? errorData.notification.type : 'info' });
+                    return;
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = slug; // You can set the filename here if needed
+                document.body.appendChild(a);
+                a.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                });
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while downloading the file.');
+            }
         },
         cancelUpload: function() {
             this.isUploading = false;
@@ -105,6 +133,7 @@
         },
      }"
      x-init="
+        console.log('Before loadcompanyfiles');
         $dispatch('loadcompanyfiles');
         $watch('selectedFile', (value, oldValue) => {
             var file = { ...value };
@@ -115,7 +144,7 @@
         });
      ">
     <div x-ref="filesList"
-        class="w-[50%] px-4 sm:px-6 mt-5 gap-x-6 gap-y-2 h-full transition-transform duration-500 ease-in-out">
+        class="w-[50%] px-4 sm:px-6 pt-5 gap-x-6 gap-y-2 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="border-l-4 border-blue-400 bg-blue-50 p-4">
             <div class="flex">
                 <div class="flex-shrink-0">
@@ -189,18 +218,32 @@
                         
                     <label aria-label="Public access" aria-description="This project would be available to anyone who has the link" 
                         x-data="{selected: isFileSelected(file.slug)}"
-                        class="relative flex cursor-pointer border p-4 focus:outline-none"
+                        class="flex flex-1 items-center border-y sm:border border-gray-900/10 bg-gray-500/5 p-4 -mx-4 focus:outline-none"
                         :class="{
-                                'rounded-tl-md rounded-tr-md': index === 0,
-                                'rounded-bl-md rounded-br-md': index === selectedDocument.config.documentFiles.length - 1,
+                                'cursor-pointer': file.filename,
+                                'sm:rounded-tl-md sm:rounded-tr-md': index === 0,
+                                'sm:rounded-bl-md sm:rounded-br-md': index === selectedDocument.config.documentFiles.length - 1,
                                 'z-10 border-indigo-200 bg-indigo-50' : selected,
                                 'border-gray-200' : !selected
                         }"
                     >
                         <input @change="toggleFileSelection(file, selected)" :id="`input-${file.slug}`"
                                :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"/>
-                        <span class="ml-3 flex flex-1 flex-col">
-                            <span>
+                        <div class="ml-4 flex flex-col min-w-0 flex-1">
+                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="flex-1 truncate text-sm font-semibold text-gray-900"
+                                x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
+                            </div>
+                            <div class="flex-1 flex min-w-0 gap-2">
+                                <span x-show="!file.filename" @click="editFile(file.slug);" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
+                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+                            </div>
+                            <div class="mt-2 flex text-sm ">
+                                <a @click.prevent="editFile(file.slug);" href="#" class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.edit' }}</a>
+                                <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
+                                <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" target="_blank" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
+                            </div>
+                            {{!-- <span>
                                 <span :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="block text-sm font-medium" x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"></span>
                                 <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
                                 <span :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="block text-sm">
@@ -213,9 +256,9 @@
                                     <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
                                     <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" target="_blank" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
                                 </div>
-                            </span>
-                        </span>
-                        <a x-show="file.filename" :href="`/file/download/${file.slug}`" target="_blank" class="cursor-pointer">
+                            </span> --}}
+                        </div>
+                        <a x-show="file.filename" @click.prevent="downloadFile(file.slug)" class="cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
@@ -261,30 +304,39 @@
                 </div>
             </div>
 
-            <div x-show="companyFiles.length > 0" class="-space-y-px rounded-md bg-white">
-                <template x-for="(file, index) in companyFiles" :key="file.slug">
-                    <label x-data="{selected: isFileSelected(file.slug)}" 
+            <div x-show="companyFiles.length > 0" class="-space-y-px rounded-md bg-white sm:px-4">
+                <template x-for="(file, index) in companyFiles" :key="index">
+                    <label x-data="{
+                                selected: false,
+                                updateSelected: function() {
+                                    this.selected = selectedDocument.config.files.some(f => f.slug === file.slug);
+                                }
+                        }"
+                        x-init="updateSelected()"
+                        x-effect="updateSelected()"
                         :x-ref="'file#' + file.slug"
                         aria-label="Public access" aria-description="This project would be available to anyone who has the link" 
-                        class="relative flex cursor-pointer border p-4 focus:outline-none"
+                        class="flex flex-1 items-center cursor-pointer border-y sm:border border-gray-900/10 bg-gray-500/5 p-4 -mx-4 focus:outline-none"
                             :class="{
-                                'rounded-tl-md rounded-tr-md': index === 0,
-                                'rounded-bl-md rounded-br-md': index === companyFiles.length - 1,
+                                'cursor-pointer': file.filename,
+                                'sm:rounded-tl-md sm:rounded-tr-md': index === 0,
+                                'sm:rounded-bl-md sm:rounded-br-md': index === companyFiles.length - 1,
                                 'z-10 border-indigo-200 bg-indigo-50' : selected,
                                 'border-gray-200' : !selected
                         }"
                     >
-                        <input @change="toggleFileSelection(file, selected)" :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox" name="privacy-setting" value="Public access" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        <span class="ml-3 flex flex-1 flex-col">
-                            <span :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="block text-sm font-medium" x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"></span>
-                            <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
-                            <span :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="block text-sm">
-                                <span x-show="!file.filename" @click="loadModalContent('/settings/4')" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate font-medium text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.companyfiles_no_file_uploaded_yet' }}'"></span>
-                                <span x-show="file.filename" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate font-medium " x-text="file.filename"></span>
-                                <span x-show="file.filename" :class="selected ? 'text-indigo-600' : 'text-gray-400'" class="flex-shrink-0" x-text="formatBytes(file.size, sizes)"></span>
-                            </span>
-                        </span>
-                        <a :href="`/file/download/${file.slug}`" target="_blank">
+                        <input @change="toggleFileSelection(file, selected)" :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox"  class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        <div class="ml-4 flex flex-col min-w-0 flex-1">
+                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="flex-1 truncate text-sm font-semibold text-gray-900"
+                                x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
+                            </div>
+                            <div class="flex-1 flex min-w-0 gap-2">
+                                <span x-show="!file.filename" @click="loadModalContent('/settings/4')" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
+                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+                            </div>
+                        </div>
+                        <a x-show="file.filename" @click.stop.prevent="downloadFile(file.slug)" class="cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
@@ -293,13 +345,13 @@
                                 <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" />
                             </svg>
                         </a>
-                    </label>
+                    </label>                    
                 </template>
             </div>
         </div>
     </div>
 
-    <div x-ref="fileForm" class="w-[50%] px-4 sm:px-6 h-full transition-transform duration-500 ease-in-out">
+    <div x-ref="fileForm" class="w-[50%] px-4 sm:px-6 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="py-2 px-4 -mx-4 mb-3 text-right flex shadow-md sm:shadow-none">
             <div class="w-1/2 text-left">
                 <button @click.prevent="showFilesList"
@@ -316,12 +368,15 @@
         </div>
 
 
-        <div class="flex-1 flex flex-col gap-y-5 overflow-y-scroll">
+        <div class="flex-1 flex flex-col gap-y-5 mb-5">
             <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }"
-                x-on:drop.prevent="handleDrop" x-on:dragover.prevent x-on:dragenter="isDragging = true"
-                x-on:dragleave="isDragging = false" class="flex items-center justify-center w-full">
+                x-on:drop.prevent="handleDrop" 
+                x-on:dragover.prevent 
+                x-on:dragenter="isDragging = true"
+                x-on:dragleave="isDragging = false" 
+                class="flex items-center justify-center w-full">
                 <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file"
-                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg x-show="!isUploading" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -330,10 +385,10 @@
                             <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
                             <path d="m8 17 4-4 4 4" />
                         </svg>
-                        <span x-show="isUploading" class="leading-[24px] my-4">Uploading</span>
-                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to
-                                upload</span> or drag and drop</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Pdf, Doc(x), Xls(x) (MAX. 10Mb)</p>
+                        <p x-show="!selectedFile.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
+                        <p x-show="selectedFile.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="selectedFile.filename"></span> (<span x-text="formatBytes(selectedFile.size, sizes)"></span> - <span x-text="selectedFile.type"></span>)</p>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
+                        <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
                     </div>
                     <input x-on:change="submitUploadForm" id="dropzone-file" type="file" class="hidden" />
                 </label>
@@ -356,24 +411,6 @@
                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
             </div>
-            <div>
-                <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
-                    <li x-show="selectedFile.filename" class="flex gap-x-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
-                        <span x-text="selectedFile.filename"></span>
-                    </li>
-                    <li x-show="selectedFile.size" class="flex gap-x-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
-                        <span x-text="formatBytes(selectedFile.size, sizes)"></span>
-                    </li>
-                    <li x-show="selectedFile.type" class="flex gap-x-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 13v-1h6v1"/><path d="M12 12v6"/><path d="M11 18h2"/></svg>
-                        <span x-text="selectedFile.type"></span>
-                    </li>
-                </ul>
-            </div>
-
         </div>
-
     </div>
 </div>

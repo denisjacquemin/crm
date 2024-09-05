@@ -93,6 +93,9 @@
       "invoices": {
         "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button",
         "warning_title": "settings.views.invoices.warning_title"
+      },
+      "files": {
+        "no_file_uploaded_yet": "settings.views.files.no_file_uploaded_yet"
       }
     },
     "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",
@@ -238,7 +241,17 @@
   "default_template": {
     "purpose": "default_template.purpose",
     "vat": "default_template.vat",
-    "delivery_date": "default_template.delivery_date"
+    "delivery_date": "default_template.delivery_date",
+    "credit_note_number": "default_template.credit_note_number",
+    "target_invoice_number": "default_template.target_invoice_number",
+    "credit_note_date": "default_template.credit_note_date",
+    "refernce": "default_template.refernce",
+    "reference": "default_template.reference"
   },
-  "sizes": "sizes"
+  "sizes": "sizes",
+  "files": {
+    "controller": {
+      "error_serving_file": "files.controller.error_serving_file"
+    }
+  }
 }

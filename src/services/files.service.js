@@ -1,6 +1,7 @@
 const File = require('../models/file.model');
 const { ObjectId } = require('mongoose').Types;
 
+
 class FileService {
 
     static async getById(id) {
@@ -56,5 +57,11 @@ class FileService {
         return await File.deleteOne({ _id: id });
     }
 
+    static async getFileIdsByCompanyIdAndDocumentType(companyId, documentType) {
+        return await File.find({
+            company_id: companyId,
+            default_attached_document_types: { $elemMatch: { $eq: documentType } }
+        }).select('_id');
+    }
 }
 module.exports = FileService

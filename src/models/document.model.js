@@ -4,6 +4,24 @@ const { DocumentsTypesenseService } = require('../services/documents.typesense.s
 
 const dayjs = require('dayjs');
 
+const schemaOptions = {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    }
+};
+
 const paymentSchema = new mongoose.Schema({
     bank: { type: String, required: false },
     iban: { type: String, required: false },
@@ -12,7 +30,7 @@ const paymentSchema = new mongoose.Schema({
 
 
 const itemSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: false, default: '' },
     reference: { type: String, required: false, default: '' },
     description: { type: String, required: false, default: '' },
     quantity: { type: String, required: false, default: 1 },
@@ -62,6 +80,7 @@ const documentSchema = new mongoose.Schema({
             country: { type: String, required: false, default: '' },
             vat_number: { type: String, required: false, default: '' },
             phone: { type: String, required: false, default: '' },
+            logo: { type: mongoose.Schema.Types.ObjectId, ref: 'File', required: false },
             email: {
                 type: String,
                 required: false,
@@ -113,7 +132,7 @@ const documentSchema = new mongoose.Schema({
         files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }], default: [],
         documentFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }], default: [],
     },
-}, { timestamps: true });
+}, schemaOptions);
 
 documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
     try {

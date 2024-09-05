@@ -19,9 +19,9 @@
                   </button>
               </div> --}}
               
-              <div class="h-full overflow-y-auto bg-white" x-description="Slide-over panel, show/hide based on slide-over state.">
-                <div class="h-full overflow-hidden">
-                  <div class="col-span-full px-4 py-2 sm:px-6 sm:py-6 border-b border-gray-200">
+              <div class="h-full bg-white" x-description="Slide-over panel, show/hide based on slide-over state.">
+                <div class="flex flex-col h-full">
+                  <div class="flex-none col-span-full px-4 py-2 sm:px-6 sm:py-6 border-b border-gray-200">
                       <div>
                         <h2 class="text-base font-semibold leading-6 text-gray-900 flex justify-between items-center" id="slide-over-title">
 
@@ -52,7 +52,7 @@
                         </p>
                       </div>
                   </div>
-
+                  <div class="flex-grow overflow-hidden">
                     <template  x-if="slideContentPartialName == 'slideBuyer'">
                         {{> documents/slideBuyer }}
                     </template>
@@ -68,7 +68,7 @@
                     <template  x-if="slideContentPartialName == 'slideFiles'">
                         {{> documents/slideFiles }}
                     </template>
-
+                  </div>
                 </div>
           
               </div>

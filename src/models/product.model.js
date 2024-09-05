@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const {ProductsTypesenseService} = require('../services/products.typesense.service');
 
+const schemaOptions = {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    }
+};
 
 const productSchema = new mongoose.Schema({
     company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
@@ -13,7 +30,7 @@ const productSchema = new mongoose.Schema({
     vat: { type: String, required: false, default: '0' },
     custom_vat_rate: { type: Boolean, required: false, default: false },
     unit: { type: String, required: false },
-}, { timestamps: true });
+}, schemaOptions);
 
 
 productSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {

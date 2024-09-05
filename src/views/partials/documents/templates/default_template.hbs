@@ -18,7 +18,7 @@
         }
 
         #template3 {
-            background-color: #f0f0f0;
+            background-color: #f3f4f6;
             font-family: Arial, sans-serif;
             font-size: 14px;
             color: #000;
@@ -76,7 +76,27 @@
             text-align: right;
             text-transform: uppercase;
             padding: 5px 0 5px 0;
-            margin-bottom: 20px;
+        }
+
+        #template3 header h1::after {
+            content: '';
+            margin-left: -0.3em; /* Adjust this value to match the letter-spacing */
+        }
+
+        #template3 header #document_number_dates {
+            position: absolute;
+            top: 75px;
+            left: 10mm;
+            width: calc(100% - 20mm);
+            font-size: 90%;
+            font-style: normal;
+            line-height: 1.25;
+            text-align: right;
+        }
+
+        #template3 header #document_number_dates .spacing {
+            display: block;
+            margin-bottom: 2px;
         }
 
         #template3 header #seller_address {
@@ -94,7 +114,7 @@
 
         #template3 header #billed_to {
             position: absolute;
-            top: 4cm;
+            top: 4.5cm;
             left: 11cm;
         }
 
@@ -225,7 +245,7 @@
         }
 
         #template3 footer .notes {
-            width:100%;
+            font-size: 90%;
             color: #000;
             text-align: left;
             margin: 0 10mm 5mm 10mm;
@@ -260,13 +280,36 @@
       <div id="pageone"
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black sheet transform-origin-top-left xl:mx-auto">
-      <span class="top-left">top left - currentPage: </span>
+      <span class="top-left">
+        <template x-if="selectedDocument.config.seller.logo.slug">
+            <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
+        </template> 
+      </span>
       <span class="bottom-right">{{ t 'default_template.invoice_number_footer' }} <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ t 'default_template.page' }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
 
 
         <header> 
             <template x-if="selectedDocument.config.document_type === 'invoice'"><h1>{{ t 'default_template.invoice' }}</h1></template>       
-            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ t 'default_template.credit_note' }}</h1></template>       
+            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ t 'default_template.credit_note' }}</h1></template>
+
+            <div id="document_number_dates">
+                <template x-if="selectedDocument.config.document_type === 'invoice'">
+                    <div>
+                        <span class="spacing">{{ t 'default_template.invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                        <span class="spacing">{{ t 'default_template.invoice_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                        <span class="spacing">{{ t 'default_template.due_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                        <span x-show="selectedDocument.config.show_delivery_date" class="spacing">{{ t 'default_template.delivery_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></span></span>
+                    </div>
+                </template>
+                <template x-if="selectedDocument.config.document_type === 'credit_note'">
+                    <div>
+                        <span class="spacing">{{ t 'default_template.credit_note_number' }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
+                        <span class="spacing">{{ t 'default_template.target_invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                        <span class="spacing">{{ t 'default_template.credit_note_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                        <span class="spacing">{{ t 'default_template.due_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                    </div>
+                </template>
+            </div>  
 
             <div id="seller_address">
                 <span style="font-size: 150%; font-weight: 700;" x-text="orEmpty(selectedDocument.config.seller.name)"></span><br/>
@@ -278,30 +321,14 @@
                 <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
                 <table style="border-spacing: 0;">
                     <tr>
+                        <td>{{ t 'default_template.reference' }}:</td>
+                        <td style="text-align: right; font-weight: 700;"
+                            x-text="orEmpty(selectedDocument.config.reference)"></td>
+                    </tr>
+                    <tr>
                         <td>{{ t 'default_template.purpose' }}:</td>
                         <td style="text-align: right; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.subject)"></td>
-                    </tr>
-                    <tr>
-                        <td>{{ t 'default_template.invoice_number' }}:</td>
-                        <td style="text-align: right; font-weight: 700;"
-                            x-text="orEmpty(selectedDocument.config.invoice_number)"></td>
-                    </tr>
-                    <tr>
-                        <td>{{ t 'default_template.invoice_date' }}:</td>
-                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_date)">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ t 'default_template.due_date' }}:</td>
-                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_due_date.value)"></td>
-                    </tr>
-                    <tr x-show="selectedDocument.config.document_type === 'invoice' && selectedDocument.config.show_delivery_date === true">
-                        <td>{{ t 'default_template.delivery_date' }}:</td>
-                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></td>
-                    <tr>
-                        <td>{{ t 'default_template.currency' }}:</td>
-                        <td style="text-align: right; font-weight: 700;" x-text="orEmpty(selectedDocument.config.currency)"></td>
                     </tr>
                 </table>
             </div>
@@ -311,8 +338,8 @@
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br/>
-                <br/><br/><br/><br/><br/>
-                <span style=""> {{ t 'default_template.vat' }}: <span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
+                <br/><br/>
+                <span style=""><span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br/>
                 <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
             </div>   
@@ -365,7 +392,7 @@
          
 
         <footer>
-            <div class="notes" x-text="selectedDocument.config.notes_on_invoice">test</div>
+            <div class="notes" x-text="selectedDocument.config.notes_on_invoice"></div>
              <div class="row-container">
                 <div class="left" >Eventuellement un logo</div>
                 <div class="right">Numero de compte etc</div>

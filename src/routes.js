@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 // const csrfProtection = require('./middlewares/csrf');
 const auth = require('./middlewares/auth');
-const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddleware');
+// const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddlewareS3');
+const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddlewareS3');
+
 const globalController = require('./controllers/globalController');
 const userController = require('./controllers/usersController');
 const dashboardController = require('./controllers/dashboardController');
@@ -48,7 +50,7 @@ router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
 router.get("/documents", auth, documentsController.index);
 
 // router.post("/document/new", auth, documentsController.newDocument);
-router.post("/document/newAjax", auth, documentsController.newDocumentAjax);
+router.post("/document/newInvoiceAjax", auth, documentsController.createInvoiceAjax);
 
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
@@ -81,6 +83,7 @@ router.patch("/product/:slug?", auth, productsController.update); // autosave fo
 router.patch("/company/defaultinvoiceduedatetermstype", auth, companiesController.setDefaultInvoiceDueDateTermsType);
 router.patch("/company/defaultcurrency", auth, companiesController.setDefaultCurrency);
 router.patch("/company/showdeliverydate", auth, companiesController.showdeliverydate);
+router.patch("/company/defaultnotesoninvoice", auth, companiesController.defaultnotesoninvoice);
 
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 router.get("/companies/editAjax/:slug", auth, companiesController.editAjax);
@@ -96,7 +99,8 @@ router.get("/files/editAjax/:slug", auth, filesController.editAjax);
 router.post('/file/upload', auth, uploadMiddleware, handleFileUpload, filesController.upload);
 router.post('/file/uploadForDocument', auth, uploadMiddleware, handleFileUpload, filesController.upload);
 router.patch("/file/:slug?", auth, filesController.update); // autosave for files
-router.get('/file/download/:slug', filesController.downloadFile);
+router.get('/file/download/:slug', auth, filesController.downloadFile);
+router.get('/file/serve/:slug', auth, filesController.serveFile);
 router.delete("/files/deleteAjax/:slug", auth, filesController.deleteAjax);
 router.get("/files/company", auth, filesController.getCurrentCompanyFiles);
 

@@ -346,7 +346,7 @@
                 get city() { return selectedDocument.config.buyer.city },
                 get country() { return selectedDocument.config.buyer.country },
                 get zip() { return selectedDocument.config.buyer.zip },
-            })">
+            })" class="cursor-pointer">
         <p x-text="selectedDocument.config.buyer.name" class="text-indigo-500 text-sm leading-4 text-right"></p>
         <p x-text="window.formatAddress(address1, address2, zip, city, country)"
           class="text-indigo-500 text-sm leading-4 text-right"></p>

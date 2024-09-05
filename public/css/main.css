@@ -85,3 +85,8 @@ input[type="date"] {
   -moz-appearance: none;
   appearance: none;
 }
+
+.highlight {
+  background-color: #fff7ca; 
+  background-image: linear-gradient(to right, #fff2ac, #fff7ca);
+}

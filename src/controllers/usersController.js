@@ -268,7 +268,7 @@ async function signup2Post(req, res, next) {
     req.session.isAuth = true
     const { password, ...saferUser } = userCreated.toObject();
     console.log('signup2Post > saferUser', saferUser)
-    req.session.user = saferUser
+    req.session.user = saferUser 
     req.session.current_company = companyCreated.toObject();
 
     delete req.session.signup

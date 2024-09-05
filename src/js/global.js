@@ -63,6 +63,9 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
                 location.reload();
             } else if (!response.status.toString().startsWith('2')) {
                 console.log('Error fetching URL', response);
+                if (data && data.notification) {
+                    dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
+                }
                 throw new Error('Looks like there was a problem. Status Code: ' + response.status);
             } else {
                 return data;

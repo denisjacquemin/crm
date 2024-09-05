@@ -12,7 +12,9 @@ class CompanyService {
     }
 
     static async getBySlug(slug, projection = '') {
-        const company = await Company.findOne({ slug}, projection).exec();
+        const company = await Company.findOne({ slug}, projection)
+            .populate('logo')
+            .exec();
         return company ? company : null;
     }
 

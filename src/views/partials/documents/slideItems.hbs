@@ -1,5 +1,5 @@
 
-<div class="flex w-[200%] h-full overflow-hidden"
+<div class="flex h-full w-[200%]"
     x-data="{ 
         itemIndexEdited: -1,  
         formItem: {
@@ -268,7 +268,8 @@
         });
     "
 >
-    <div x-ref="itemsList" class="px-4 sm:px-6 w-[50%] h-full transition-transform duration-500 ease-in-out">
+    <div x-ref="itemsList" 
+        class="px-4 sm:px-6 w-[50%] h-full overflow-auto transition-transform duration-500 ease-in-out overflow-y-auto">
         
         <div class="grid gap-x-6 gap-y-2">
             <div class="text-right">
@@ -343,12 +344,19 @@
                             </template>
                         </tbody>
                     </table>
-                    {{> documents/amounts }}
+                    <div class="mt-4 mb-5 pt-4 col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
+                        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">Total Base Amount</div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.subtotal"></div>
+                        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Vat Amount</div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.totalvat"></div>
+                        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Amount</div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal" x-text="selectedDocument.config.amounts.total"></div>
+                    </div>
                 </div>
             </template>
         </div>
     </div>
-    <div x-ref="itemForm" class="relative px-4 sm:px-6 w-[50%] h-full transition-transform duration-500 ease-in-out">
+    <div x-ref="itemForm" class="relative px-4 sm:px-6 w-[50%] h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="flex justify-between items-center">
             <div class="text-left">
                 <button @click.prevent="showItemsList" class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

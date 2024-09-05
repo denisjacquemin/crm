@@ -6,8 +6,6 @@
             this.$nextTick(() => this.select(this.$id('tab', this.currentTab)))
         },
         select(id) {
-            console.log('select', id);
-            console.trace();
             this.selectedId = id
         },
         isSelected(id) {
@@ -146,7 +144,7 @@
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
                 :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                class="overflow-y-scroll"
+                class="overflow-y-auto"
         >
             <div class="h-full">{{> settings/myaccount }}</div>
         </section>
@@ -158,7 +156,7 @@
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
                  :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
                  role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 class="overflow-y-scroll"
+                 class="overflow-y-auto"
         ><div class="h-full">{{> settings/invoices }}</div></section>
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
                  :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"

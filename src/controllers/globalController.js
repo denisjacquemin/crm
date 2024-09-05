@@ -68,7 +68,6 @@ async function settings(req, res) {
         const companiesIds = req.session.user.companies;
         const sellers = await CompanyService.getByIds(companiesIds);
         const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
-        const files = await FileService.getLinkedToACompanyId(req.session.current_company._id);
 
         res.render('global/settings', {
             currentTab: tabid || 1,
@@ -76,14 +75,13 @@ async function settings(req, res) {
             oauthRegistered: req.session.user.google_id ? true : false,
             accountEmail: req.session.user.email,
             sellers: sellers,
-            files: files,
+            document_types: req.i18n.t('common.document_types', { returnObjects: true }),
             sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
             currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
             currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
             defaultCurrency: req.session.current_company.settings.default_currency,
             frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
-            showDeliveryDate: req.session.current_company.settings.show_delivery_date,
             countries: req.i18n.t('countries:countries', { returnObjects: true }),
             frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }),
             defaultCountry: geo && geo.country,

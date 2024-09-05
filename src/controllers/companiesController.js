@@ -147,7 +147,12 @@ async function update(req, res, next) {
         let updatedCompany = await CompanyService.update(company._id, req.body.value);
         updatedCompany = updatedCompany.toObject();
 
+        if (req.session.current_company.slug === updatedCompany.slug) {
+            req.session.current_company = updatedCompany;
+        }
+
         updatedCompany.autosave_updated_at = req.body.value.autosave_updated_at;
+
         res.status(200).json(updatedCompany);
 
     } catch (error) {
@@ -159,8 +164,8 @@ async function getCurrentUserCompanies(req, res, next) {
     try {
         const companies = await CompanyService.getByIds(req.session.user.companies);
         const companiesWithSelected = companies.map(company => ({
-            ...company._doc,
-            selected: company._id.toString() === req.session.current_company._id.toString()
+            ...company.toJSON(),
+            selected: company._id.toString() === req.session.current_company.id.toString()
         }));
         res.status(200).json(companiesWithSelected);
     } catch (error) {
@@ -212,10 +217,7 @@ async function showdeliverydate(req, res, next) {
             .current_company._id, { $set: { "settings.show_delivery_date": req.body.show_delivery_date } });
 
         // Update the show_delivery_date field on the user's session
-        console.log('1111 req.session.current_company.settings.show_delivery_date', req.session.current_company.settings.show_delivery_date);
         req.session.current_company.settings.show_delivery_date = req.body.show_delivery_date === 'true';
-        console.log('2222 req.session.current_company.settings.show_delivery_date', req.session.current_company.settings.show_delivery_date);
-
 
         // Send a success response
         return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.show_delivery_date_updated'), type: 'success' }});
@@ -227,6 +229,25 @@ async function showdeliverydate(req, res, next) {
     }
 }
 
+async function defaultnotesoninvoice(req, res, next) {
+    try {
+        // Update company settings.default_notes_on_invoice
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.default_notes_on_invoice": req.body.default_notes_on_invoice } });
+
+        // Update the default_notes_on_invoice field on the user's session
+        req.session.current_company.settings.default_notes_on_invoice = req.body.default_notes_on_invoice;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_notes_on_invoice_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.defaultnotesoninvoice `, err.message);
+        next(err);
+    }
+}
+
 module.exports = {
     updateInvoiceSequence,
     editAjax,
@@ -234,6 +255,7 @@ module.exports = {
     newCompanyAjax,
     update,
     getCurrentUserCompanies,
+    defaultnotesoninvoice,
     changeCurrentCompany,
     setDefaultInvoiceDueDateTermsType,
     setDefaultCurrency,

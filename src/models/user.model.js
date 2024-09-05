@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const {validateEmail} = require('./_helper.model');
 
+const schemaOptions = {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            return ret;
+        }
+    }
+};
 
 const userSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true, default: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}` },
@@ -18,7 +35,7 @@ const userSchema = new mongoose.Schema({
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     created_at: { type: Date, required: true, default: new Date() },
     updated_at: { type: Date, required: true, default: new Date() },
-});
+}, schemaOptions);
 
 const User = mongoose.model('User', userSchema);
 

@@ -55,7 +55,7 @@ app.use(i18nMiddleware);
 
 // TODO only to debug the language detection
 app.use((req, res, next) => {
-    console.log(`Detected language: ${req.language}, Method: ${req.method}, URL: ${req.originalUrl}`);
+    console.log(`[${new Date().toISOString()}] - ${req.language} - ${req.method} - ${req.originalUrl}`);
     next();
 });
 

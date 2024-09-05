@@ -1,4 +1,6 @@
 const Document = require('../models/document.model');
+const _ = require('lodash');
+
 
 class DocumentsService {
 
@@ -17,6 +19,7 @@ class DocumentsService {
         const document = await Document.findOne({ slug, company_id }, projection)
         .populate('config.files')
         .populate('config.documentFiles')
+        .populate('config.seller.logo')
         .exec();
         return document;
     }
@@ -24,17 +27,39 @@ class DocumentsService {
     async create(data) {
         const document = new Document(data);
         const documentCreated = await document.save();
-        return documentCreated;
+        const populatedDocument = await Document.findById(documentCreated._id)
+            .populate('config.files')
+            .populate('config.documentFiles')
+            .populate('config.seller.logo')
+            .exec();
+        return populatedDocument;
     }
 
     async update(id, data) {
-        const updatedDocument = await Document.findOneAndUpdate({ _id: id }, data, { new: true });
-        if (!updatedDocument) {
+        const dbDocument = await Document.findById(id)
+        
+        if (!dbDocument) {
             const error = new Error('Document not found');
             error.status = 404;
             throw error;
         }
-        return updatedDocument;
+
+        function customMerge(objValue, srcValue) {
+            if (_.isArray(objValue)) {
+                return srcValue;
+            }
+        }
+    
+        _.mergeWith(dbDocument, data, customMerge);
+
+        const updatedDocument = await dbDocument.save();
+
+        const populatedDocument = await Document.findById(updatedDocument._id)
+        .populate('config.files')
+        .populate('config.documentFiles')
+        .exec();
+
+        return populatedDocument;
     }
 
     async delete(id, company_id) {

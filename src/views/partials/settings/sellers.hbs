@@ -1,11 +1,13 @@
 <div class="w-[200%] flex-1 h-full overflow-hidden flex"
     x-data="{
+        sizes: {{ stringify sizes}},
         sellers: {{ stringify sellers }},
         selectedSeller: {},
         editSeller: async function(index) {
             try {
                 const data = await fetchUrl(`/companies/editAjax/${this.sellers[index].slug}`, 'GET');
                 this.selectedSeller = data;
+                this.logoFile = this.selectedSeller.logo;
                 this.sellers[index] = this.selectedSeller;
                 this.showCompanyForm();
             } catch (error) { console.error('Error editing company', error); }
@@ -15,6 +17,7 @@
                 const data = await fetchUrl('/company/newAjax', 'POST');
                 this.selectedSeller = data;
                 this.sellers.push(this.selectedSeller);
+                this.logoFile = this.selectedSeller.logo;
                 setTimeout(() => $dispatch('loadcompanies'), 2000);
                 this.showCompanyForm();
             } catch (error) { 
@@ -57,8 +60,29 @@
             }
         },
         without_vat: {{#if selectedSeller.without_vat}}{{selectedSeller.without_vat}}{{else}}false{{/if}},
+        logoFile: {},
+        submitUploadForm: async function(event) {
+            event.preventDefault();
 
+            const fileInput = event.target;
+            let file;
 
+            const newFileData = await fetchUrl('/file/newAjax', 'POST');
+            
+            if (event.type === 'drop') {
+                file = event.dataTransfer.files[0];
+            } else {
+                file = event.target.files[0];
+            }            
+            
+            var formData = new FormData();
+            formData.append('file', file);
+            
+            const uploadData = await fetchUrl('/file/upload', 'POST', formData);
+
+            this.logoFile = { ...newFileData, is_logo: true, url: uploadData.data.url, key: uploadData.data.key, filename: file.name, size: file.size, type: file.type };
+            this.selectedSeller.logo = this.logoFile;
+        },
     }"
     x-init="
       selectedCountry = defaultCountry || frequentlySelectedCountries[0].value;
@@ -76,6 +100,13 @@
         updateCompanyRegistrationNumberLabel(selectedCountry);
 
       });
+      $watch('logoFile', (value, oldValue) => {
+            var file = { ...value };
+            if (file.slug) {
+                file.autosave_updated_at = new Date();
+                localStorage.setItem('autosave#file#' + value.slug, JSON.stringify(file));
+            }
+      });
     ">
     <div x-ref="companiesList" class="flex flex-col flex-1 w-[50%] transition-transform duration-500 ease-in-out">
         <div class="flex-none w-full flex items-center p-2">
@@ -88,7 +119,7 @@
                 {{t 'settings.views.sellers.create_seller_button' }}
             </button>
         </div>
-        <div class="flex-grow overflow-y-scroll flex flex-1 w-full">
+        <div class="flex-grow overflow-y-auto flex flex-1 w-full">
             <template x-if="sellers.length === 0">
                 <div class="relative block w-full h-full p-2 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
@@ -170,15 +201,18 @@
                     </button>
                 </div>
                 <div class="w-1/2 text-right my-auto sm:w-full">
-                    <a href="#"
+                    <a x-show="selectedSeller.slug !== '{{session.current_company.slug}}'" href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
                             @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller.slug) ">      
                         {{t 'settings.views.sellers.delete' }}
                     </a>
+                    <span x-show="selectedSeller.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600">
+                        You cannot delete current company
+                    </span>
                 </div>
             </div>
 
-            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-scroll">
+            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-auto">
                 <div>
                     <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.name' }}</label>
                     <div class="mt-1">
@@ -189,11 +223,11 @@
                     </div>
                 </div>
                 <div>
-                    <label for="internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.sellers.internal_name' }}</label>
+                    <label for="seller_internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.sellers.internal_name' }}</label>
                     <div class="mt-1">
                         <input type="text" x-model="selectedSeller.internal_name" autocomplete="off"
                             placeholder="{{t 'settings.views.sellers.internal_name_placeholder' }}"
-                            id="internal_name"
+                            id="seller_internal_name"
                             @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
@@ -298,6 +332,30 @@
                             <input id="website" x-model="selectedSeller.website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-r-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                         </div>
                     </div>
+                </div>
+                <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
+                    x-on:drop.prevent="handleDrop" 
+                    x-on:dragover.prevent 
+                    x-on:dragenter="isDragging = true" 
+                    x-on:dragleave="isDragging = false"
+                    class="flex items-center justify-center w-full">
+                    <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" 
+                            class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
+                            <p x-show="!logoFile.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
+                            <p x-show="logoFile.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="logoFile.filename"></span> (<span x-text="formatBytes(logoFile.size, sizes)"></span> - <span x-text="logoFile.type"></span>)</p>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
+                            <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
+                        </div>
+                        <input x-on:change="submitUploadForm"
+                            id="dropzone-file" type="file" class="hidden"/> 
+                    </label>
+
+                </div>
+                <span x-text="selectedSeller.logo.key"></span>
+                <div x-show="selectedSeller.logo.key" class="mt-4">
+                    <img :src="`/file/serve/${selectedSeller.logo.slug}`" :alt="selectedSeller.logo.filename" class="image-class">
                 </div>
             </div>
         </div>

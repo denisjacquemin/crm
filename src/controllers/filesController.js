@@ -4,6 +4,21 @@ const mongo = require('../services/lib/mongo');
 const FileService = require('../services/files.service');
 const fetch = require('node-fetch');
 
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { pipeline } = require('stream');
+const { promisify } = require('util');
+const streamPipeline = promisify(pipeline);
+
+const fieldsToExclude = ['key'];
+
+const excludeFields = (obj, fields) => {
+    fields.forEach(field => delete obj[field]);
+    return obj;
+};
+
+const excludeFieldsFromArray = (arr, fields) => {
+    return arr.map(item => excludeFields(item.toObject(), fields));
+};
 
 async function newFileAjax(req, res, next) {
     try {
@@ -17,8 +32,11 @@ async function newFileAjax(req, res, next) {
             type: '',
             filename: ''
         });
+
+        const fileObject = fileCreated.toObject();
+        const sanitizedFileObject = excludeFields(fileObject, fieldsToExclude);
         
-        res.status(200).json(fileCreated.toObject());
+        res.status(200).json(sanitizedFileObject);
     } catch (error) {
         next(error);
     }
@@ -38,7 +56,10 @@ async function newFileAjaxForADocument(req, res, next) {
             filename: ''
         });
         
-        res.status(200).json(fileCreated.toObject());
+        const fileObject = fileCreated.toObject();
+        const sanitizedFileObject = excludeFields(fileObject, fieldsToExclude);
+
+        res.status(200).json(sanitizedFileObject);
     } catch (error) {
         next(error);
     }
@@ -55,7 +76,10 @@ async function editAjax(req, res, next) {
             });
         }
 
-        res.status(200).json(file.toObject());
+        const fileObject = file.toObject();
+        const sanitizedFileObject = excludeFields(fileObject, fieldsToExclude);
+
+        res.status(200).json(sanitizedFileObject);
 
     } catch (error) {
         next(error);
@@ -83,16 +107,18 @@ async function deleteAjax(req, res, next) {
 async function getCurrentCompanyFiles(req, res) {
     try {
         const files = await FileService.getLinkedToACompanyId(req.session.current_company._id);
-        res.status(200).json(files);
+        const sanitizedFiles = excludeFieldsFromArray(files, fieldsToExclude);
+        res.status(200).json(sanitizedFiles);
     } catch(error) {
         next(error);
     }
 }
 
 async function upload(req, res) {
-    res.status(200).send({
-        message: 'File uploaded successfully',
-        data: req.uploadResult
+    const sanitizedUploadResult = excludeFields(req.uploadResult, fieldsToExclude);
+    res.status(200).json({
+        notification: { message: req.i18n.t('files.controller.file_uploaded_successfuly'), type: 'success' },
+        data: sanitizedUploadResult
     });
 };
 
@@ -142,44 +168,109 @@ async function update(req, res, next) {
         if (!file) {
             return next({ status: 404, message: 'File not found' });
         }
-        
-        let updatedFile = await FileService.update(file._id, req.session.current_company._id, req.body.value);
-        updatedFile = updatedFile.toObject();
 
+        const { default_attached_document_types, ...otherValues } = req.body.value;
+
+
+        let updatedFile = await FileService.update(file._id, req.session.current_company._id, {
+            ...otherValues,
+            default_attached_document_types: default_attached_document_types
+        });
+        
+        updatedFile = updatedFile.toObject();
         updatedFile.autosave_updated_at = req.body.value.autosave_updated_at;
-        res.status(200).json(updatedFile);
+
+        const sanitizedFile = excludeFields(updatedFile, fieldsToExclude);
+
+        res.status(200).json(sanitizedFile);
 
     } catch (error) {
         next(error);
     }
 }
 
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+  });
 
 async function downloadFile(req, res, next) {
+    let slug;
     try {
-        const fileSlug = req.params.slug;
-        const file = await FileService.getBySlug(fileSlug);
-
-        if (!file) {
-            return res.status(404).json({ message: 'File not found' });
-        }
-
-        const filePath = file.url; // full S3 URL
-
-        // Fetch the file from the URL
-        const response = await fetch(filePath);
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch file: ${response.statusText}`);
-        }
-
-        // Set the headers and send the file to the client
-        res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
-        response.body.pipe(res);
+      slug = req.params.slug; // Assuming the filename is passed as a query parameter
+    // get filename
+      const file = await FileService.getBySlug(slug);
+      if (!file) {
+        console.error(`downloadFile: file not found (${slug}):`);
+        return next({ 
+            status: 404, 
+            notification: { message: req.i18n.t('files.controller.file_not_found'), type: 'error'}
+        });
+      }
+      const filename = file.filename;
+      const key = file.key;
+      const bucketName = process.env.AWS_S3_BUCKET; // Bucket name from environment variables
+  
+      const params = {
+        Bucket: bucketName,
+        Key: key
+      };
+  
+      console.log('params', params);
+      const command = new GetObjectCommand(params);
+      const data = await s3Client.send(command);
+  
+      res.setHeader('Content-Type', data.ContentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  
+      await streamPipeline(data.Body, res);
     } catch (error) {
-        next(error);
+      console.error(`downloadFile: Error downloading file (${slug}):`, error);
+      res.status(500).json({ notification: { message: req.i18n.t('files.controller.error_downloading_file'), type: 'error' } });
+    }
+  };
+
+  async function serveFile(req, res, next) {
+    let slug;
+    try {
+        slug = req.params.slug; 
+        console.log('slug', slug);
+        const file = await FileService.getBySlug(slug);
+        console.log('file', file);
+        if (!file) {
+            console.error(`serveFile: file not found (${slug}):`);
+            return next({ 
+                status: 404, 
+                notification: { message: req.i18n.t('files.controller.file_not_found'), type: 'error'}
+            });
+        }
+        const key = file.key;
+        const bucketName = process.env.AWS_S3_BUCKET; // Bucket name from environment variables
+
+        const params = {
+            Bucket: bucketName,
+            Key: key
+        };
+
+        console.log('params', params);
+        const command = new GetObjectCommand(params);
+        const data = await s3Client.send(command);
+
+        // Set caching headers
+        res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+        res.setHeader('ETag', data.ETag);
+        res.setHeader('Content-Type', data.ContentType);
+
+        await streamPipeline(data.Body, res);
+    } catch (error) {
+        console.error(`serveFile: Error serving file (${slug}):`, error);
+        res.status(500).json({ notification: { message: req.i18n.t('files.controller.error_serving_file'), type: 'error' } });
     }
 }
+
 
 module.exports = {
     newFileAjax,
@@ -189,5 +280,6 @@ module.exports = {
     upload,
     update,
     downloadFile,
+    serveFile,
     getCurrentCompanyFiles
 };
