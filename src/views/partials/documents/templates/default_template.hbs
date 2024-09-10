@@ -112,6 +112,16 @@
             line-height: 1.25; --}}
         }
 
+        #template3 #ref-purpose {
+            position: absolute;
+            top: 10cm;
+            left: 10mm;
+            width: 75%;
+            word-wrap: break-word;
+            line-height: initial;
+            text-align: left;
+        }
+
         #template3 header #billed_to {
             position: absolute;
             top: 4.5cm;
@@ -183,7 +193,7 @@
         }
 
         #template3 main #products.page1 {
-            top: 14cm;
+            top: 12cm;
         }
 
         #template3 main #products.page2plus {
@@ -304,7 +314,7 @@
                 <template x-if="selectedDocument.config.document_type === 'credit_note'">
                     <div>
                         <span class="spacing">{{ t 'default_template.credit_note_number' }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
-                        <span class="spacing">{{ t 'default_template.target_invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                        <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ t 'default_template.target_invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
                         <span class="spacing">{{ t 'default_template.credit_note_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
                         <span class="spacing">{{ t 'default_template.due_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
                     </div>
@@ -319,19 +329,22 @@
                 <span> {{t 'default_template.vat_number'}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br/>
                 <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/>
                 <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
+            </div>
+            <div id="ref-purpose">
                 <table style="border-spacing: 0;">
-                    <tr>
+                    <tr x-show="selectedDocument.config.reference">
                         <td>{{ t 'default_template.reference' }}:</td>
-                        <td style="text-align: right; font-weight: 700;"
+                        <td style="padding-left: 10px; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.reference)"></td>
                     </tr>
-                    <tr>
+                    <tr x-show="selectedDocument.config.subject">
                         <td>{{ t 'default_template.purpose' }}:</td>
-                        <td style="text-align: right; font-weight: 700;"
+                        <td style="padding-left: 10px;font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.subject)"></td>
                     </tr>
                 </table>
             </div>
+            
             <div id="billed_to"style="font-weight: 400;">{{ t 'default_template.billed_to' }}</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>

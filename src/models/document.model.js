@@ -113,6 +113,7 @@ const documentSchema = new mongoose.Schema({
         invoice_delivery_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
         currency: { type: String, required: false },
         show_delivery_date: { type: Boolean, required: false },
+        show_target_invoice: { type: Boolean, required: false },
         language: { type: String, required: false, default: 'en' },
         subject: { type: String, required: false, default: '' },
         reference: { type: String, required: false, default: '' },

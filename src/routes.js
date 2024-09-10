@@ -51,7 +51,7 @@ router.get("/documents", auth, documentsController.index);
 
 // router.post("/document/new", auth, documentsController.newDocument);
 router.post("/document/newInvoiceAjax", auth, documentsController.createInvoiceAjax);
-
+router.post("/document/newCreditNoteAjax", auth, documentsController.createCreditNoteAjax);
 router.get("/document/edit/:slug?", auth, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
 router.patch("/document/:slug?", auth, documentsController.update); // autosave for documents
@@ -60,7 +60,7 @@ router.get("/document/preview/:slug", auth, documentsController.preview);
 router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
 router.get("/documents/search:querystring?", auth, documentsController.search);
 router.post("/document/duplicateAjax", auth, documentsController.duplicateAjax);
-router.post("/document/createCreditNoteAjax", auth, documentsController.createCreditNoteAjax);
+router.post("/document/createCreditNoteAjax", auth, documentsController.createCreditNoteFromAlreadyExistingDocumentAjax);
 router.delete("/document/deleteAjax/:slug", auth, documentsController.deleteAjax);
 
 
@@ -83,7 +83,9 @@ router.patch("/product/:slug?", auth, productsController.update); // autosave fo
 router.patch("/company/defaultinvoiceduedatetermstype", auth, companiesController.setDefaultInvoiceDueDateTermsType);
 router.patch("/company/defaultcurrency", auth, companiesController.setDefaultCurrency);
 router.patch("/company/showdeliverydate", auth, companiesController.showdeliverydate);
+router.patch("/company/showtargetinvoice", auth, companiesController.showtargetinvoice);
 router.patch("/company/defaultnotesoninvoice", auth, companiesController.defaultnotesoninvoice);
+router.patch("/company/defaultnotesoncreditnotes", auth, companiesController.defaultnotesoncreditnotes);
 
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 router.get("/companies/editAjax/:slug", auth, companiesController.editAjax);

@@ -27,7 +27,7 @@
                 }
             },
             taxRates: [],
-            newDocumentButton: async function() {
+            newInvoiceButton: async function() {
                 try {
                     const data = await fetchUrl('/document/newInvoiceAjax', 'POST');
                     this.documents.unshift(data);
@@ -36,7 +36,19 @@
                     updateNewUrl(data.slug);
                     if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'});
                 } catch (error) { 
-                    console.error('Error creating new document', error); 
+                    console.error('Error creating new Invoice', error); 
+                }
+            },
+            createNewCreditNote: async function() {
+                try {
+                    const data = await fetchUrl('/document/newCreditNoteAjax', 'POST');
+                    this.documents.unshift(data);
+                    this.selectedDocumentIndex = 0;
+                    this.selectedDocument = data;
+                    updateNewUrl(data.slug);
+                    if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'});
+                } catch (error) { 
+                    console.error('Error creating new Credit Note', error); 
                 }
             },
             showCol2: function() {
@@ -119,7 +131,7 @@
             <div x-ref="actionBar" class="mx-3 sm:mx-2 rounded-md shadow-sm flex" cclass="flex items-center justify-center">
                 <button type="button" id="newDocumentButton"
                     class="flex-grow my-2 relative inline-flex items-center rounded-l-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
-                    @click.prevent="newDocumentButton">      
+                    @click.prevent="newInvoiceButton">      
                     <svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M9 9V6a1 1 0 012 0v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0V11H6a1 1 0 010-2h3z" clip-rule="evenodd" />
                     </svg>
@@ -139,8 +151,8 @@
                         class="absolute right-0 z-10 -mr-1 mt-2 w-[290px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="option-menu-button" tabindex="-1">
                         <div class="py-1" role="none">
                             <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                            <a x-state:on="Active" x-state:off="Not Active" :class="{ 'bg-gray-100 text-gray-900': activeIndex === 0, 'text-gray-700': !(activeIndex === 0) }" role="menuitem" tabindex="-1" id="option-menu-item-0" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, 0)" @mouseleave="onMouseLeave($event)" @click="open = false; focusButton()" href="#" class="text-right block px-4 py-2 text-sm text-gray-700"><span class="mr-1 inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10" title="{{t 'common.quote_long' }}">{{t 'common.quote_short' }}</span>{{t 'documents.views.index.new_quote' }}</a>
-                            <a :class="{ 'bg-gray-100 text-gray-900': activeIndex === 1, 'text-gray-700': !(activeIndex === 1) }" role="menuitem" tabindex="-1" id="option-menu-item-1" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, 1)" @mouseleave="onMouseLeave($event)" @click="open = false; focusButton()" href="#" class="text-right block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="option-menu-item-1"><span class="mr-1 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10" title="{{t 'common.credit_note_long' }}">{{t 'common.credit_note_short' }}</span>{{t 'documents.views.index.new_credit_note' }}</a>
+                            <a :class="{ 'bg-gray-100 text-gray-900': activeIndex === 0, 'text-gray-700': !(activeIndex === 0) }" role="menuitem" tabindex="-1" id="option-menu-item-0" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, 0)" @mouseleave="onMouseLeave($event)" @click="open = false; focusButton()" href="#" class="text-right block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"><span class="mr-1 inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10" title="{{t 'common.quote_long' }}">{{t 'common.quote_short' }}</span>{{t 'documents.views.index.new_quote' }}</a>
+                            <a @click.prevent.stop="createNewCreditNote" :class="{ 'bg-gray-100 text-gray-900': activeIndex === 1, 'text-gray-700': !(activeIndex === 1) }" role="menuitem" tabindex="-1" id="option-menu-item-1" @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event, 1)" @mouseleave="onMouseLeave($event)" @click="open = false; focusButton()" href="#" class="text-right block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="option-menu-item-1"><span class="mr-1 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10" title="{{t 'common.credit_note_long' }}">{{t 'common.credit_note_short' }}</span>{{t 'documents.views.index.new_credit_note' }}</a>
                         </div>
                     </div>
                 </div>

@@ -200,13 +200,13 @@
                         </svg>
                     </button>
                 </div>
-                <div class="w-1/2 text-right my-auto sm:w-full">
+                <div class="w-1/2 text-right my-auto flex items-center justify-center">
                     <a x-show="selectedSeller.slug !== '{{session.current_company.slug}}'" href="#"
                         class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
                             @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller.slug) ">      
                         {{t 'settings.views.sellers.delete' }}
                     </a>
-                    <span x-show="selectedSeller.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600">
+                    <span x-show="selectedSeller.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600 text-right pr-4 sm:pr-0">
                         You cannot delete current company
                     </span>
                 </div>

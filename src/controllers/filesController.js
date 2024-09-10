@@ -9,7 +9,7 @@ const { pipeline } = require('stream');
 const { promisify } = require('util');
 const streamPipeline = promisify(pipeline);
 
-const fieldsToExclude = ['key'];
+const fieldsToExclude = ['key', 'url'];
 
 const excludeFields = (obj, fields) => {
     fields.forEach(field => delete obj[field]);
@@ -115,10 +115,9 @@ async function getCurrentCompanyFiles(req, res) {
 }
 
 async function upload(req, res) {
-    const sanitizedUploadResult = excludeFields(req.uploadResult, fieldsToExclude);
     res.status(200).json({
         notification: { message: req.i18n.t('files.controller.file_uploaded_successfuly'), type: 'success' },
-        data: sanitizedUploadResult
+        data: req.uploadResult
     });
 };
 

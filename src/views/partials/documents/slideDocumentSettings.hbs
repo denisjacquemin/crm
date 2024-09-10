@@ -1,4 +1,17 @@
-<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">   
+<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6"
+    x-data="{
+        show_delivery_date_option: true,
+        show_target_invoice_option: true, 
+        show_delivery_date: null,     
+        show_target_invoice: null,
+    }"
+    x-intersect="
+        show_delivery_date = selectedDocument.config.show_delivery_date;
+        show_delivery_date_option = selectedDocument.config.document_type === 'invoice';
+        show_target_invoice = selectedDocument.config.show_target_invoice;
+        show_target_invoice_option = selectedDocument.config.document_type === 'credit_note';
+    "
+>   
     <div class="col-span-full"
          x-data="{
             frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
@@ -25,20 +38,17 @@
         </div>
     </div>
 
-    <div x-show="selectedDocument.config.document_type === 'invoice'" class="col-span-full"
-        x-data="{            
-            show_delivery_date: null,
-        }"
+    <div x-show="show_delivery_date_option" class="col-span-full"
         x-init="
+            console.log('selectedDocument.config.show_delivery_date', selectedDocument.config.show_delivery_date);
             {{!-- require to keep show_delivery_date as a boolean --}}
             $watch('show_delivery_date', value => {
                 console.log(value);
                 selectedDocument.config.show_delivery_date = (value === true || value === 'true');
             });
-        "
-        x-intersect="show_delivery_date = selectedDocument.config.show_delivery_date === true"  
+        " 
     >
-      <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_deliverry_date'}}</label>
+      <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_delivery_date'}}</label>
       <div class="mt-2">
         <select x-model="show_delivery_date"
                 id="show-delivery-date"
@@ -46,5 +56,24 @@
                     <option value="true">{{t 'settings.views.invoices.yes_show_delivery_date' }}</option>
                     <option value="false">{{t 'settings.views.invoices.no_show_delivery_date' }}</option>
         </select>
+      </div>
+    </div>
+
+    <div x-show="show_target_invoice_option" class="col-span-full"
+        x-init="
+            $watch('show_target_invoice', value => {
+                selectedDocument.config.show_target_invoice = (value === true || value === 'true');
+            });
+        "  
+    >
+      <label for="show-target-invoice" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_target_invoice'}}</label>
+      <div class="mt-2">
+        <select x-model="show_target_invoice"
+                id="show-target-invoice"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <option value="true">{{t 'settings.views.invoices.yes_show_target_invoice' }}</option>
+                    <option value="false">{{t 'settings.views.invoices.no_show_target_invoice' }}</option>
+        </select>
+      </div>
     </div>
 </div>

@@ -76,7 +76,9 @@
             "default_invoice_due_date_terms_type_updated": "Default Due Date Terms Type has been updated",
             "default_currency_updated": "Default Currency has been updated",
             "default_notes_on_invoice_updated": "Default Comments (on document) has been updated",
-            "show_delivery_date_updated": "Show delivery date has been updated"
+            "default_notes_on_credit_notes_updated": "Default Comments (on document) has been updated",
+            "show_delivery_date_updated": "Show delivery date has been updated",
+            "show_target_invoice_updated": "Show target invoice number has been updated"
         },
         "create_new_company": "Create new company",
         "company_name": "Name",
@@ -153,7 +155,8 @@
                 "invoice_settings": {
                     "modal_title": "Invoice Settings",
                     "currency": "Currency",
-                    "show_deliverry_date": "Show Delivery Date"
+                    "show_delivery_date": "Show Delivery Date",
+                    "show_target_invoice": "Show Target Invoice Number"
                 }
             },
             "edit_form": {
@@ -345,7 +348,8 @@
             "file_not_found": "File not found",
             "file_deleted": "The file has been deleted",
             "file_uploaded_successfuly": "The file has been uploaded",
-            "error_downloading_file": "An error occurred while downloading the file"
+            "error_downloading_file": "An error occurred while downloading the file",
+            "error_serving_file": "An error occurred while serving the file"
         }
     },
     "buyers": {
@@ -433,6 +437,7 @@
                 "myaccount": "My Account",
                 "sellers": "Sellers",
                 "invoices": "Invoices",
+                "credit_notes": "Credit Notes",
                 "files": "Files / Attachments"
             },
             "myaccount" :{
@@ -476,10 +481,23 @@
                "show_delivery_date_help": "Choose whether to show the delivery date on your invoices. You can change this setting for each invoice.",
                "yes_show_delivery_date": "Yes, show delivery date",
                "no_show_delivery_date": "No, do not show delivery date",
+               "yes_show_target_invoice": "Yes, show target invoice number",
+               "no_show_target_invoice": "No, do not show target invoice numbe",
                "show_delivery_date_button": "Update Show Delivery Date",
                "default_notes_on_invoice": "Default Comments (on document)",
                "default_notes_on_invoice_help": "Choose the default comments for your invoices. You can change this setting for each invoice.",
                "update_default_notes_on_invoice_button": "Update Default Comments"
+            },
+            "credit_notes": {
+                "show_target_invoice": "Show Target Invoice Number",
+                "show_target_invoice_help": "Choose whether to show the target invoice number on your credit notes. You can change this setting for each credit note.",
+                "yes_show_target_invoice":"Yes, show target invoice number",
+                "no_show_target_invoice":"No, do not show target invoice number",
+                "show_target_invoice_button": "Update Show Target Invoice Number",
+                "default_notes_on_credit_notes": "Default Comments (on document)",
+                "default_notes_on_credit_notes_help": "Choose the default comments for your credit notes. You can change this setting for each credit note.",
+                "update_default_notes_on_credit_notes_button": "Update Default Comments"
+
             },
             "files": {
                 "create_file_button": "Create a new File",
@@ -494,7 +512,9 @@
                 "allowed_file_types": "Pdf, Doc(x), Xls(x) (MAX. 10Mb)",
                 "no_file_uploaded_yet": "No file uploaded yet",
                 "selected_by_default": "Attached by default for following documents types",
-                "upload_before_selecting": "Please upload a file before selecting the document types"
+                "upload_before_selecting": "Please upload a file before selecting the document types",
+                "files_for_all_docs": "Files available for all documents",
+                "files_for_all_docs_help": "These files will be available for all documents. No need to upload them for each document. You can also add files specifically for a document on the document screen."
             }
 
         },
@@ -523,7 +543,8 @@
         "total_vat_incl": "Total (Incl. VAT)",
         "credit_note_number": "Credit Note Number",
         "target_invoice_number": "Target Invoice Number",
-        "credit_note_date": "Credit Note Date"
+        "credit_note_date": "Credit Note Date",
+        "reference": "Reference"
 
         
         

@@ -232,6 +232,22 @@ async function createInvoiceAjax(req, res) {
 
 async function createCreditNoteAjax(req, res) {
     try {
+        const document = await createCommonDocument(req, 'credit_note');
+        res.json(document);
+    } catch (err) {
+        console.error('catching:', err);
+        res.status(500).json({
+            notification: {
+                message: req.i18n.t('common.unknown_error'),
+                submessage: req.i18n.t('common.try_again'),
+                type: 'error'
+            }
+        });
+    }
+}
+
+async function createCreditNoteFromAlreadyExistingDocumentAjax(req, res) {
+    try {
         // Fetch Original Document
         const originalDocument = await DocumentService.getBySlugAndCompanyId(req.body.slug, req.session.current_company._id);
 
@@ -262,6 +278,7 @@ async function createCreditNoteAjax(req, res) {
             delete dataToCopy.config.invoice_due_date;
             delete dataToCopy.config.credit_note_number;
             delete dataToCopy.config.files;
+            delete dataToCopy.config.notes_on_invoice;
         }
 
         const creditNoteSequenceValue = await CompanyService.getNextCreditNoteSequenceValue(req.session.current_company._id);
@@ -305,10 +322,19 @@ async function createCommonDocument(req, document_type) {
             req.session.current_company.settings.current_invoice_sequence = sequenceValue;
         }
 
+        const notes_on_invoice = document_type === 'invoice' 
+            ? req.session.current_company.settings.default_notes_on_invoice 
+            : req.session.current_company.settings.default_notes_on_credit_notes;
+                                                    
         const files_ids = await FileService.getFileIdsByCompanyIdAndDocumentType(
             req.session.current_company._id,
             document_type
         );
+
+        const number = `${dayjs().year()}#${String(document_type === 'credit_note' 
+            ? req.session.current_company.settings.current_credit_note_sequence 
+            : req.session.current_company.settings.current_invoice_sequence).padStart(5, '0')}`;
+        
 
         const documentCreated = await DocumentService.create({
             company_id: req.session.current_company._id,
@@ -340,12 +366,12 @@ async function createCommonDocument(req, document_type) {
                 buyer: {
                     name: req.i18n.t('documents.controller.choose_a_customer'),
                 },
-                invoice_number: document_type === 'credit_note' 
-                    ? `${dayjs().year()}#${String(req.session.current_company.settings.current_credit_note_sequence).padStart(5, '0')}`
-                    : `${dayjs().year()}#${String(req.session.current_company.settings.current_invoice_sequence).padStart(5, '0')}`,
+                invoice_number: document_type === 'credit_note' ? undefined : number,
+                credit_note_number: document_type === 'credit_note' ? number : undefined,
                 currency: req.session.current_company.settings.default_currency,
                 show_delivery_date: req.session.current_company.settings.show_delivery_date,
-                notes_on_invoice: req.session.current_company.settings.default_notes_on_invoice,
+                show_target_invoice: req.session.current_company.settings.show_target_invoice,
+                notes_on_invoice: notes_on_invoice,
 
                 document_type: document_type,
                 files: files_ids
@@ -534,7 +560,6 @@ async function search(req, res) {
 
 async function preview(req, res) {
     const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
-    console.log('document seller', document.config.seller);
     if (!document) {
         return res.status(404).send();
     }
@@ -607,8 +632,9 @@ module.exports = {
     editAjax,
     // newDocument,
     createInvoiceAjax,
-    duplicateAjax,
     createCreditNoteAjax,
+    duplicateAjax,
+    createCreditNoteFromAlreadyExistingDocumentAjax,
     deleteAjax,
     update,
     search,

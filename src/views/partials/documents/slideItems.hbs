@@ -1,6 +1,4 @@
-
-<div class="flex h-full w-[200%]"
-    x-data="{ 
+<div class="flex h-full w-[200%]" x-data="{ 
         itemIndexEdited: -1,  
         formItem: {
             form_automatic_computation: true,
@@ -198,6 +196,7 @@
         },
         select() {
             if (this.selectedIndex >= 0 && this.selectedIndex < this.products.length) {
+                console.log('selected product', this.selectedIndex, this.products[this.selectedIndex]);
                 const selectedProduct = this.products[this.selectedIndex];
                 this.description = selectedProduct.description;
                 this.formItem.name = selectedProduct.name;
@@ -223,7 +222,6 @@
             }
         },
         handleKeydown: function(event) {
-
             if (this.products.length === 0) return;
             switch (event.key) {
                 case 'ArrowDown':
@@ -249,8 +247,7 @@
                     break;
             }
         },
-    }"
-    x-init="
+    }" x-init="
         $watch('formItem', value => computeAmounts());
 
         handleKeydown = handleKeydown.bind($data);
@@ -266,149 +263,225 @@
                 eventListenersAdded = false;
             }
         });
-    "
->
-    <div x-ref="itemsList" 
+    ">
+    <div x-ref="itemsList"
         class="px-4 sm:px-6 w-[50%] h-full overflow-auto transition-transform duration-500 ease-in-out overflow-y-auto">
-        
+
         <div class="grid gap-x-6 gap-y-2">
             <div class="text-right">
-                <button @click.prevent="createNewItem" class="inline-flex items-center gap-x-2 my-2 w-full sm:w-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                <button @click.prevent="createNewItem"
+                    class="inline-flex items-center gap-x-2 my-2 w-full sm:w-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-plus">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
+                    </svg>
                     {{t 'documents.views.index.items_modal.new_item' }}
                 </button>
             </div>
             <template x-if="selectedDocument.config.items.length === 0">
-                <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <div
+                    class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
-                        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-12 w-12 text-gray-400 lucide lucide-list-minus"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M21 12h-6"/></svg>
-                        <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'documents.views.index.items_modal.no_items' }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="mx-auto h-12 w-12 text-gray-400 lucide lucide-list-minus">
+                            <path d="M11 12H3" />
+                            <path d="M16 6H3" />
+                            <path d="M16 18H3" />
+                            <path d="M21 12h-6" />
+                        </svg>
+                        <span class="mt-2 block text-md font-semibold text-gray-500">{{t
+                            'documents.views.index.items_modal.no_items' }}</span>
                     </div>
                 </div>
             </template>
             <template x-if="selectedDocument.config.items.length > 0">
                 <div>
                     <table class="divide-y divide-gray-300">
-                        <thead >
+                        <thead>
                             <tr>
                                 <th></th>
                                 <th></th>
-                                <th scope="col" class="py-3.5 pl-4 pr-3 w-2/3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide" width="auto">
+                                <th scope="col"
+                                    class="py-3.5 pl-4 pr-3 w-2/3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide"
+                                    width="auto">
                                     <div>Description</div>
                                     <div>Amount VAT Incl.</div>
                                 </th>
-                                <th scope="col" class="hidden sm:block py-3.5 pl-4 pr-3 w-1/3 text-xs font-medium text-right text-gray-500 uppercase tracking-wide w-auto">Amount VAT Incl.</th>
+                                <th scope="col"
+                                    class="hidden sm:block py-3.5 pl-4 pr-3 w-1/3 text-xs font-medium text-right text-gray-500 uppercase tracking-wide w-auto">
+                                    Amount VAT Incl.</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-300">
                             <template x-for="(item, index) in selectedDocument.config.items" :key="index">
-                            <tr class="even:bg-gray-50 cursor-pointer">
-                                <td class="align-middle" width="24px">
-                                    <template x-if="index !== 0">
-                                        <button @click="moveUp(index)" type="button" class="inline-block hover:bg-gray-200 ">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
-                                            </svg>
-                                        </button>
-                                    </template>
-                                </td>
-                                <td class="align-middle" width="24px">
-                                    <template x-if="index !== selectedDocument.config.items.length -1 && selectedDocument.config.items.length > 1">
-                                        <button @click="moveDown(index)" type="button" class="inline-block sm:mr-2 hover:bg-gray-200 ">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-                                            </svg>
-                                        </button>
-                                    </template>
-                                </td>
-                                <td @click.prevent="startEdit(index);" class="pl-1 pr-1 py-3     sm:pl-4 sm:pr-3 sm:hover:underline sm:hover:cursor-pointer text-sm font-light text-gray-700 align-top" width="100%">
-                                    <span class="text-sm font-semibold leading-6 text-gray-900" x-text="item.name"></span>
-                                    <span class="text-xs text-indigo-600" x-text="item.reference"></span>
-                                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                                <tr class="even:bg-gray-50 cursor-pointer">
+                                    <td class="align-middle" width="24px">
+                                        <template x-if="index !== 0">
+                                            <button @click="moveUp(index)" type="button"
+                                                class="inline-block hover:bg-gray-200 ">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor"
+                                                    class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+                                                </svg>
+                                            </button>
+                                        </template>
+                                    </td>
+                                    <td class="align-middle" width="24px">
+                                        <template
+                                            x-if="index !== selectedDocument.config.items.length -1 && selectedDocument.config.items.length > 1">
+                                            <button @click="moveDown(index)" type="button"
+                                                class="inline-block sm:mr-2 hover:bg-gray-200 ">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor"
+                                                    class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                                                </svg>
+                                            </button>
+                                        </template>
+                                    </td>
+                                    <td @click.prevent="startEdit(index);"
+                                        class="pl-1 pr-1 py-3     sm:pl-4 sm:pr-3 sm:hover:underline sm:hover:cursor-pointer text-sm font-light text-gray-700 align-top"
+                                        width="100%">
+                                        <span class="text-sm font-semibold leading-6 text-gray-900"
+                                            x-text="item.name"></span>
+                                        <span class="text-xs text-indigo-600" x-text="item.reference"></span>
+                                        <p class="text-sm font-semibold leading-6 text-gray-900">
                                         <div x-text="item.description" class="line-clamp-2"></div>
-                                    </p>
-                                    <p x-text="`${item.amountvatincl} €`" class="sm:hidden mt-1 flex text-xs leading-5 truncate text-gray-500"></p>
-                                    
-                                    <div class="hidden line-clamp-3" x-text="item.description"></div>
-                                </td>
-                                <td x-text="`${item.amountvatincl} €`" class="hidden sm:block text-right text-sm text-gray-500 truncate align-top"></td>
-                                <td class="align-middle" width="24px">
-                                    <button @click="deleteItem(index)" type="button" class="inline-block hover:bg-gray-200 sm:mr-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                        </svg>
-                                    </button>
-                                </td>
-                            </tr>
+                                        </p>
+                                        <p x-text="`${item.amountvatincl} €`"
+                                            class="sm:hidden mt-1 flex text-xs leading-5 truncate text-gray-500"></p>
+
+                                        <div class="hidden line-clamp-3" x-text="item.description"></div>
+                                    </td>
+                                    <td x-text="`${item.amountvatincl} €`"
+                                        class="hidden sm:block text-right text-sm text-gray-500 truncate align-top">
+                                    </td>
+                                    <td class="align-middle" width="24px">
+                                        <button @click="deleteItem(index)" type="button"
+                                            class="inline-block hover:bg-gray-200 sm:mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor"
+                                                class="h-6 w-6 p-1 text-gray-500 hover:text-gray-700 cursor-pointer">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
                             </template>
                         </tbody>
                     </table>
-                    <div class="mt-4 mb-5 pt-4 col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
-                        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">Total Base Amount</div>
-                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.subtotal"></div>
-                        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Vat Amount</div>
-                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.totalvat"></div>
+                    <div
+                        class="mt-4 mb-5 pt-4 col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
+                        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">Total Base Amount
+                        </div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right"
+                            x-text="selectedDocument.config.amounts.subtotal"></div>
+                        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Vat Amount
+                        </div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right"
+                            x-text="selectedDocument.config.amounts.totalvat"></div>
                         <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Amount</div>
-                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal" x-text="selectedDocument.config.amounts.total"></div>
+                        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal"
+                            x-text="selectedDocument.config.amounts.total"></div>
                     </div>
                 </div>
             </template>
         </div>
     </div>
-    <div x-ref="itemForm" class="relative px-4 sm:px-6 w-[50%] h-full transition-transform duration-500 ease-in-out overflow-y-auto">
+    <div x-ref="itemForm"
+        class="relative px-4 sm:px-6 w-[50%] h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="flex justify-between items-center">
             <div class="text-left">
-                <button @click.prevent="showItemsList" class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                     {{t 'documents.views.index.items_modal.cancel' }}
+                <button @click.prevent="showItemsList"
+                    class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-arrow-left">
+                        <path d="m12 19-7-7 7-7" />
+                        <path d="M19 12H5" />
+                    </svg>
+                    {{t 'documents.views.index.items_modal.cancel' }}
                 </button>
             </div>
             <div class="text-right">
-                <button x-html="'{{t 'documents.views.index.items_modal.save_new_item' }}'" @click.prevent="saveItem" class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                <button x-html="'{{t 'documents.views.index.items_modal.save_new_item' }}'" @click.prevent="saveItem"
+                    class="inline-flex items-center gap-x-2 my-2 w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-check">
+                        <path d="M20 6 9 17l-5-5" />
+                    </svg>
                 </button>
             </div>
         </div>
         <div class=" grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="flex items-center py-2 sm:col-span-6">
-                <input type="checkbox" id="automatic-computation" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" 
-                    x-model="formItem.form_automatic_computation"
-                />&nbsp;<label for="automatic-computation" class="text-sm font-light text-gray-500">{{t 'documents.views.index.items_modal.automatic_validation' }}</label>
+                <input type="checkbox" id="automatic-computation"
+                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    x-model="formItem.form_automatic_computation" />&nbsp;<label for="automatic-computation"
+                    class="text-sm font-light text-gray-500">{{t
+                    'documents.views.index.items_modal.automatic_validation' }}</label>
 
             </div>
 
             <div class="grid grid-cols-5 gap-x-2 sm:col-span-6 sm:gap-x-5">
                 <div class="col-span-3">
-                    <label for="item-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.name_label' }}</label>
-                    <input type="text" id="item-name" autocomplete="off"
-                            x-model="formItem.name"
-                            placeholder="{{t 'documents.views.index.items_modal.name_placeholder' }}"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            @input.debounce.200ms="searchProductTerm = $event.target.value"
-                            @blur="products = []; clearSelection();"
-                            @keydown.arrow-down.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
-                            @keydown.enter.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
-                            >
+                    <label for="item-name" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                        'documents.views.index.items_modal.name_label' }}</label>
+                    <input type="text" id="item-name" autocomplete="off" x-model="formItem.name"
+                        placeholder="{{t 'documents.views.index.items_modal.name_placeholder' }}"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        @input.debounce.200ms="searchProductTerm = $event.target.value"
+                        @blur="products = []; clearSelection();"
+                        @keydown.arrow-down.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
+                        @keydown.enter.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}">
 
                 </div>
                 <div class="col-span-2">
-                    <label for="item-reference" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.reference_label' }}</label>
-                    <input  type="text" id="item-reference" autocomplete="off"
-                            x-model="formItem.reference"
-                            placeholder="{{t 'documents.views.index.items_modal.reference_placeholder' }}"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            @input.debounce.200ms="searchProductTerm = $event.target.value"
-                            @blur="products = []; clearSelection();"
-                            @keydown.arrow-down.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
-                            @keydown.enter.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
-                            >
-                </div> 
-                
+                    <label for="item-reference" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                        'documents.views.index.items_modal.reference_label' }}</label>
+                    <input type="text" id="item-reference" autocomplete="off" x-model="formItem.reference"
+                        placeholder="{{t 'documents.views.index.items_modal.reference_placeholder' }}"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        @input.debounce.200ms="searchProductTerm = $event.target.value"
+                        @blur="products = []; clearSelection();"
+                        @keydown.arrow-down.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
+                        @keydown.enter.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}">
+                </div>
+                <div x-show="products.length > 0" x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="transform -translate-y-full"
+                        x-transition:enter-end="transform translate-y-0"
+                        x-transition:leave="transition ease-in duration-300"
+                        x-transition:leave-start="transform translate-y-0"
+                        x-transition:leave-end="transform -translate-y-full"
+                    style="box-shadow: 0 -6px 10px -1px rgba(0, 0, 0, 0.1), 0 -4px 8px -1px rgba(0, 0, 0, 0.06)"
+                    class="col-span-2 z-50 bg-white divide-y divide-gray-200 overflow-y-auto">
+                    <template x-for="(product, index) in products" :key="index">
+                        <div class="p-2 cursor-pointer hover:bg-gray-100">
+                            <a href="google.com">google</a>
+                            <span class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                                x-text="product.name"></span>
+                            <span class="text-xs text-indigo-600" x-text="product.reference"></span>
+                            <div class="mt-1 flex text-xs leading-5 text-gray-500">
+                                <div x-text="product?.description" class="relative truncate w-full text-left h-5"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
-            
+
             <div class="sm:col-span-6">
-                <label for="item-description" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.description_label' }}</label>
+                <label for="item-description" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                    'documents.views.index.items_modal.description_label' }}</label>
                 <input type="text" x-model="description" id="item-description" autocomplete="off"
                     placeholder="{{t 'documents.views.index.items_modal.description_placeholder' }}"
                     @input.debounce.200ms="searchProductTerm = $event.target.value"
@@ -416,8 +489,7 @@
                     @keydown.arrow-down.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
                     @keydown.enter.prevent="if (products.length === 0) {searchProducts(); selectNextProduct();}"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                {{!-- <div x-show="products.length > 0" 
-                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                {{!-- <div x-show="products.length > 0" x-transition:enter-start="opacity-0 transform -translate-y-2"
                     x-transition:enter-end="opacity-100 transform translate-y-0"
                     x-transition:leave="transition ease-in duration-300"
                     x-transition:leave-start="opacity-100 transform translate-y-0"
@@ -425,10 +497,9 @@
                     class="absolute w-full bg-white shadow-xl shadow-left shadow-right z-10 mt-1 divide-y divide-gray-200">
                     <template x-for="(product, index) in products" :key="index">
                         <div :class="{'bg-gray-100 text-indigo-700': selectedIndex === index}"
-                            @click="selectedIndex = index; select()"
-                            class="p-2 cursor-pointer hover:bg-gray-100"
-                        >
-                            <span class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2" x-text="product.name"></span>
+                            @click="selectedIndex = index; select()" class="p-2 cursor-pointer hover:bg-gray-100">
+                            <span class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                                x-text="product.name"></span>
                             <span class="text-xs text-indigo-600" x-text="product.reference"></span>
                             <div class="mt-1 flex text-xs leading-5 text-gray-500">
                                 <div x-text="product?.description" class="relative truncate w-full text-left h-5"></div>
@@ -439,34 +510,37 @@
             </div>
             <div class="grid grid-cols-2 gap-x-2 sm:col-span-6 sm:gap-x-5">
                 <div class="col-span-1">
-                    <label for="item-quantity" class="text-right block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.quantity' }}</label>
+                    <label for="item-quantity" class="text-right block text-sm font-medium leading-6 text-gray-900">{{t
+                        'documents.views.index.items_modal.quantity' }}</label>
                     <input type="text" id="item-quantity" autocomplete="off"
-                            x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
-                            x-on:input="formItem.quantity = $event.target.value"
-                            x-bind:placeholder="formItem.form_automatic_computation ? '0' : ''"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                        x-on:input="formItem.quantity = $event.target.value"
+                        x-bind:placeholder="formItem.form_automatic_computation ? '0' : ''"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
                 <div class="col-span-1">
-                    <label for="item-unit-price" class="text-right block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.unit_price' }}</label>
-                    <input  type="text" id="item-unit-price" autocomplete="off"
-                            x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
-                            x-on:input="formItem.unit_price = $event.target.value"
-                            x-bind:placeholder="formItem.form_automatic_computation ? '0.00' : ''"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                </div> 
-                
+                    <label for="item-unit-price"
+                        class="text-right block text-sm font-medium leading-6 text-gray-900">{{t
+                        'documents.views.index.items_modal.unit_price' }}</label>
+                    <input type="text" id="item-unit-price" autocomplete="off"
+                        x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                        x-on:input="formItem.unit_price = $event.target.value"
+                        x-bind:placeholder="formItem.form_automatic_computation ? '0.00' : ''"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 text-right shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+
             </div>
 
             <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:col-span-6 sm:gap-x-5">
                 <div>
-                    <label for="item-reduction"
-                        class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.reduction' }}</label>
+                    <label for="item-reduction" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                        'documents.views.index.items_modal.reduction' }}</label>
                     <div class="flex items-center">
-                        <input  type="text" id="item-reduction" autocomplete="off"
-                                x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
-                                x-on:input="formItem.reduction = $event.target.value"
-                                x-bind:placeholder="formItem.form_automatic_computation ? (formItem.reduction_unit === '%' ? '0' : `0.00`) : ''"     
-                                class="block w-full rounded-md border-0 py-1.5 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <input type="text" id="item-reduction" autocomplete="off"
+                            x-mask:dynamic="formItem.form_automatic_computation ? $money($input.replace(',', '.'), '.', ' ', 2) : $input"
+                            x-on:input="formItem.reduction = $event.target.value"
+                            x-bind:placeholder="formItem.form_automatic_computation ? (formItem.reduction_unit === '%' ? '0' : `0.00`) : ''"
+                            class="block w-full rounded-md border-0 py-1.5 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <select x-model="formItem.reduction_unit"
                             class="block ml-2 w-24 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option value="%">%</option>
@@ -476,7 +550,9 @@
                 </div>
                 <div>
                     <div class="col-span-1 md:col-span-2">
-                        <label for="item-vat" class="text-right block w-full text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.vat_rate' }}</label>
+                        <label for="item-vat"
+                            class="text-right block w-full text-sm font-medium leading-6 text-gray-900">{{t
+                            'documents.views.index.items_modal.vat_rate' }}</label>
                         <select x-model="formItem.vat" id="item-vat"
                             class="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option value="-1">{{t 'documents.views.index.items_modal.not_applicable' }}</option>
@@ -491,74 +567,49 @@
 
             <div class="grid grid-cols-1 gap-y-4 sm:col-span-3 sm:col-start-4">
                 <div>
-                    <label for="item-amount-vatexcl" class="text-right block text-sm font-medium leading-6 text-gray-900">Base Amount</label>
+                    <label for="item-amount-vatexcl"
+                        class="text-right block text-sm font-medium leading-6 text-gray-900">Base Amount</label>
                     <input type="text" autocomplete="off" id="item-amount-vatexcl"
                         x-model="selectedDocument.config.amountvatexcl"
-                        x-bind:readonly="formItem.form_automatic_computation"
-                        placeholder="0.00" class="placeholder:text-gray-300"
-                        x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
+                        x-bind:readonly="formItem.form_automatic_computation" placeholder="0.00"
+                        class="placeholder:text-gray-300"
+                        x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">
                 </div>
                 <div>
-                    <label for="item-amount-vat" class="text-right block text-sm font-medium leading-6 text-gray-900">VAT Amount</label>
-                    <input type="text" autocomplete="off" id="item-amount-vat"
-                           placeholder="0.00" class="placeholder:text-gray-300"
-                           x-model="selectedDocument.config.amountvat"
-                           x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
+                    <label for="item-amount-vat"
+                        class="text-right block text-sm font-medium leading-6 text-gray-900">VAT Amount</label>
+                    <input type="text" autocomplete="off" id="item-amount-vat" placeholder="0.00"
+                        class="placeholder:text-gray-300" x-model="selectedDocument.config.amountvat"
+                        x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">
                 </div>
                 <div>
-                    <label for="item-amountvatincl" class="text-right block text-sm font-medium leading-6 text-gray-900">Total Amount</label>
-                    <input type="text" autocomplete="off" id="item-amountvatincl"
-                        placeholder="0.00" class="placeholder:text-gray-300"
-                        x-model="selectedDocument.config.amountvatincl"
+                    <label for="item-amountvatincl"
+                        class="text-right block text-sm font-medium leading-6 text-gray-900">Total Amount</label>
+                    <input type="text" autocomplete="off" id="item-amountvatincl" placeholder="0.00"
+                        class="placeholder:text-gray-300" x-model="selectedDocument.config.amountvatincl"
                         x-bind:readonly="formItem.form_automatic_computation"
                         x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">
                 </div>
-            </div>            
-            {{!-- <div class="col-span-1 grid grid-cols-3 gap-x-2 md:grid-cols-5">
-                <div class="col-span-1 md:col-span-2">
-                    <label for="item-vat" class="block w-full text-sm font-medium leading-6 text-gray-900">VAT Rate</label>
-                    <select x-model="formItem.vat" id="item-vat"
-                        class="block  w-full rounded-md border-0 py-1.5 mt-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="-1">Not applicable</option>
-                        <option value="0">0%</option>
-                        <option value="6">6%</option>
-                        <option value="20">20%</option>
-                        <option value="21">21%</option>
-                    </select>
-                </div>
-                <div class="col-span-2 md:col-span-3 grid grid-cols-2 md:grid-cols-3">
-                    <div class="col-span-2 md:col-span-1 md:flex md:items-center">
-                        <label for="item-amount-vat" class="text-right block w-full text-sm font-medium leading-6 text-gray-900">VAT Amount</label>
-                    </div>
-                    <div class="col-span-2 md:col-span-2 md:flex md:items-center">
-                        <input type="text" autocomplete="off" id="item-amount-vat"
-                            x-model="formItem.form_automatic_computation ? itemAmountvat : formItem.amountvat"
-                            x-bind:class="!formItem.form_automatic_computation ? 'block w-full rounded-md py-1.5 mt-2 border-0 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' : 'block w-full text-right text-gray-900 truncate pl-2 sm:text-sm sm:leading-6 md:text-lg bg-transparent border-0 focus:ring-0'">                           
-                    </div>
-                </div>
-            </div> --}}
+            </div>
+
         </div>
-        <div x-show="products.length > 0" 
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="transform translate-y-full"
-            x-transition:enter-end="transform translate-y-0"
-            x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="transform translate-y-0"
+        {{!-- <div x-show="products.length > 0" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="transform translate-y-full" x-transition:enter-end="transform translate-y-0"
+            x-transition:leave="transition ease-in duration-300" x-transition:leave-start="transform translate-y-0"
             x-transition:leave-end="transform translate-y-full"
             style="box-shadow: 0 -6px 10px -1px rgba(0, 0, 0, 0.1), 0 -4px 8px -1px rgba(0, 0, 0, 0.06)"
-            class="absolute bottom-0 left-0 right-0 w-full  h-[50%] bg-white z-10 divide-y divide-gray-200 overflow-y-auto">
+            class="absolute bottom-0 left-0 right-0 w-full h-[50%] z-50 bg-white divide-y divide-gray-200 overflow-y-auto">
             <template x-for="(product, index) in products" :key="index">
-                <div :class="{'bg-gray-100 text-indigo-700': selectedIndex === index}"
-                    @click="selectedIndex = index; select()"
-                    class="p-2 cursor-pointer hover:bg-gray-100"
-                >
-                    <span class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2" x-text="product.name"></span>
+                <div class="p-2 cursor-pointer hover:bg-gray-100">
+                    <a href="google.com">google</a>
+                    <span class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
+                        x-text="product.name"></span>
                     <span class="text-xs text-indigo-600" x-text="product.reference"></span>
                     <div class="mt-1 flex text-xs leading-5 text-gray-500">
                         <div x-text="product?.description" class="relative truncate w-full text-left h-5"></div>
                     </div>
                 </div>
             </template>
-        </div>
+        </div> --}}
     </div>
 </div>

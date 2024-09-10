@@ -213,7 +213,7 @@
                 </div>
             </div>
 
-            <div x-show="selectedDocument.config.documentFiles.length > 0" class="-space-y-px rounded-md bg-white">
+            <div x-show="selectedDocument.config.documentFiles.length > 0" class="-space-y-px rounded-md bg-white sm:px-4">
                 <template x-for="(file, index) in selectedDocument.config.documentFiles" :key="index">
                         
                     <label aria-label="Public access" aria-description="This project would be available to anyone who has the link" 

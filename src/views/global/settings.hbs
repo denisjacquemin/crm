@@ -14,155 +14,171 @@
         whichChild(el, parent) {
             return Array.from(parent.children).indexOf(el) + 1
         }
-     }"
-     x-id="['tab']"
-    class="h-full w-full flex flex-1 flex-col pt-2 sm:flex-row sm:gap-x-4 md:gap-x-8">
+     }" x-id="['tab']" class="h-full w-full flex flex-1 flex-col pt-2 sm:flex-row sm:gap-x-4 md:gap-x-8">
     <div class="px-2 pb-2 flex-none shadow-md z-10 sm:hidden">
         <label for="tabs" class="sr-only">Select a tab</label>
         <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-        <select @change="select($event.target.value)" x-model="selectedId"
-            id="tabs" name="tabs" class=" block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+        <select @change="select($event.target.value)" x-model="selectedId" id="tabs" name="tabs"
+            class=" block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
             <option :value="$id('tab', 1)">{{t 'settings.views.tabs.myaccount' }}</option>
             <option :value="$id('tab', 2)">{{t 'settings.views.tabs.sellers' }}</option>
             <option :value="$id('tab', 3)">{{t 'settings.views.tabs.invoices' }}</option>
-            <option :value="$id('tab', 4)">{{t 'settings.views.tabs.files' }}</option>
+            <option :value="$id('tab', 4)">{{t 'settings.views.tabs.credit_notes' }}</option>
+            <option :value="$id('tab', 5)">{{t 'settings.views.tabs.files' }}</option>
 
         </select>
     </div>
     <div class="hidden">
-        <ul x-ref="tablist"
-                @keydown.right.prevent.stop="$focus.wrap().next()"
-                @keydown.home.prevent.stop="$focus.first()"
-                @keydown.page-up.prevent.stop="$focus.first()"
-                @keydown.left.prevent.stop="$focus.wrap().prev()"
-                @keydown.end.prevent.stop="$focus.last()"
-                @keydown.page-down.prevent.stop="$focus.last()"  
-                role="tablist" 
-                class="flex space-x-4 py-2 px-2" aria-label="Tabs">
+        <ul x-ref="tablist" @keydown.right.prevent.stop="$focus.wrap().next()"
+            @keydown.home.prevent.stop="$focus.first()" @keydown.page-up.prevent.stop="$focus.first()"
+            @keydown.left.prevent.stop="$focus.wrap().prev()" @keydown.end.prevent.stop="$focus.last()"
+            @keydown.page-down.prevent.stop="$focus.last()" role="tablist" class="flex space-x-4 py-2 px-2"
+            aria-label="Tabs">
             <li>
-                <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                @click.prevent="select($el.id)"
-                @focus.prevent="select($el.id)"
-                :tabindex="isSelected($el.id)? 0: -1"
-                :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
-                :aria-selected="isSelected($el.id)"
-                href="#" class="rounded-md px-3 py-2 text-sm font-medium">{{t 'settings.views.tabs.myaccount' }}</a>
+                <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                    @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                    :tabindex="isSelected($el.id)? 0: -1"
+                    :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
+                    :aria-selected="isSelected($el.id)" href="#" class="rounded-md px-3 py-2 text-sm font-medium">{{t
+                    'settings.views.tabs.myaccount' }}</a>
             </li>
             <li>
-            <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-            @click.prevent="select($el.id)"
-            @focus.prevent="select($el.id)"
-            :tabindex="isSelected($el.id)? 0: -1"
-            :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
-            :aria-selected="isSelected($el.id)"
-            href="#" class="rounded-md px-3 py-2 text-sm font-medium">{{t 'settings.views.tabs.sellers' }}</a>
+                <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                    @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                    :tabindex="isSelected($el.id)? 0: -1"
+                    :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
+                    :aria-selected="isSelected($el.id)" href="#" class="rounded-md px-3 py-2 text-sm font-medium">{{t
+                    'settings.views.tabs.sellers' }}</a>
             </li>
             <li>
-                <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                @click.prevent="select($el.id)"
-                @focus.prevent="select($el.id)"
-                :tabindex="isSelected($el.id)? 0: -1"
-                :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
-                :aria-selected="isSelected($el.id)"
-                href="#" class="rounded-md px-3 py-2 text-sm font-medium" aria-current="page">{{t 'settings.views.tabs.invoices' }}</a>
+                <a role="tab" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                    @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                    :tabindex="isSelected($el.id)? 0: -1"
+                    :class="isSelected($el.id)? 'bg-indigo-100 text-indigo-700': 'text-gray-500 hover:text-gray-700'"
+                    :aria-selected="isSelected($el.id)" href="#" class="rounded-md px-3 py-2 text-sm font-medium"
+                    aria-current="page">{{t 'settings.views.tabs.invoices' }}</a>
             </li>
         </ul>
     </div>
     <div class="hidden sm:block sm:w-1/3">
         <nav class="flex flex-1 flex-col" aria-label="Sidebar">
-            <ul x-ref="tablist"
-                @keydown.right.prevent.stop="$focus.wrap().next()"
-                @keydown.down.prevent.stop="$focus.wrap().next()"
-                @keydown.home.prevent.stop="$focus.first()"
-                @keydown.page-up.prevent.stop="$focus.first()"
-                @keydown.left.prevent.stop="$focus.wrap().prev()"
-                @keydown.up.prevent.stop="$focus.wrap().prev()"
-                @keydown.end.prevent.stop="$focus.last()"
-                @keydown.page-down.prevent.stop="$focus.last()"  
-                role="tablist" class="-mx-2 space-y-1">
+            <ul x-ref="tablist" @keydown.right.prevent.stop="$focus.wrap().next()"
+                @keydown.down.prevent.stop="$focus.wrap().next()" @keydown.home.prevent.stop="$focus.first()"
+                @keydown.page-up.prevent.stop="$focus.first()" @keydown.left.prevent.stop="$focus.wrap().prev()"
+                @keydown.up.prevent.stop="$focus.wrap().prev()" @keydown.end.prevent.stop="$focus.last()"
+                @keydown.page-down.prevent.stop="$focus.last()" role="tablist" class="-mx-2 space-y-1">
                 <li class="pl-2">
-                <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-                <a  role="tab" href="#" 
-                    :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                    @click.prevent="select($el.id)"
-                    @focus.prevent="select($el.id)"
-                    :tabindex="isSelected($el.id)? 0: -1"
-                    :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
-                    :aria-selected="isSelected($el.id)"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
-                    {{t 'settings.views.tabs.myaccount' }}
-                </a>
+                    <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-circle-user">
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="10" r="3" />
+                            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
+                        </svg>
+                        {{t 'settings.views.tabs.myaccount' }}
+                    </a>
                 </li>
                 <li class="pl-2">
-                <a role="tab" href="#" 
-                    :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                    @click.prevent="select($el.id)"
-                    @focus.prevent="select($el.id)"
-                    :tabindex="isSelected($el.id)? 0: -1"
-                    :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
-                    :aria-selected="isSelected($el.id)"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                    <svg class="h-6 w-6 shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>
-                    {{t 'settings.views.tabs.sellers' }}
-                </a>
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <svg class="h-6 w-6 shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                            <path d="M17 18h1" />
+                            <path d="M12 18h1" />
+                            <path d="M7 18h1" />
+                        </svg>
+                        {{t 'settings.views.tabs.sellers' }}
+                    </a>
                 </li>
                 <li class="pl-2">
-                <a role="tab" href="#" 
-                    :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                    @click.prevent="select($el.id)"
-                    @focus.prevent="select($el.id)"
-                    :tabindex="isSelected($el.id)? 0: -1"
-                    :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
-                    :aria-selected="isSelected($el.id)"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">                    
-                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-spreadsheet"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <span
+                            class="inline-flex items-center rounded-md bg-yellow-50 px-2 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20"
+                            title="{{t 'common.invoice_long' }}">{{t 'common.invoice_short' }}</span>
 
-                    {{t 'settings.views.tabs.invoices' }}
-                </a>
+                        {{t 'settings.views.tabs.invoices' }}
+                    </a>
                 </li>
                 <li class="pl-2">
-                <a role="tab" href="#" 
-                    :id="$id('tab', whichChild($el.parentElement, $refs.tablist))" 
-                    @click.prevent="select($el.id)"
-                    @focus.prevent="select($el.id)"
-                    :tabindex="isSelected($el.id)? 0: -1"
-                    :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
-                    :aria-selected="isSelected($el.id)"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                    <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <span
+                            class="inline-flex items-center rounded-md bg-blue-50 px-2 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                            title="{{t 'common.credit_note_long' }}">{{t 'common.credit_note_short' }}</span>
 
-                    {{t 'settings.views.tabs.files' }}
-                </a>
+                        {{t 'settings.views.tabs.credit_notes' }}
+                    </a>
                 </li>
-                
+                <li class="pl-2">
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                        </svg>
+
+                        {{t 'settings.views.tabs.files' }}
+                    </a>
+                </li>
+
             </ul>
-            </nav>
+        </nav>
 
     </div>
     <div role="tabpanels" class="flex-grow flex flex-col overflow-hidden sm:py-0 sm:pr-0 sm:flex-auto sm:w-2/3 ">
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
-                :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                class="overflow-y-auto"
-        >
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="overflow-y-auto">
             <div class="h-full">{{> settings/myaccount }}</div>
         </section>
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
-                 :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 class="flex flex-col h-full"                 
-        >{{> settings/sellers }}</section>
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="flex flex-col h-full">{{>
+            settings/sellers }}</section>
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
-                 :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 class="overflow-y-auto"
-        ><div class="h-full">{{> settings/invoices }}</div></section>
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="overflow-y-auto">
+            <div class="h-full">{{> settings/invoices }}</div>
+        </section>
         <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
-                 :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 role="tabpanel" aria-labelledby="$id('tab', whichChild($el, $el.parentElement))"
-                 class="flex flex-col h-full"
-        ><div class="h-full">{{> settings/files }}</div></section>
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="overflow-y-auto">
+            <div class="h-full">{{> settings/credit_notes }}</div>
+        </section>
+        <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="flex flex-col h-full">
+            <div class="h-full">{{> settings/files }}</div>
+        </section>
 
     </div>
 </div>

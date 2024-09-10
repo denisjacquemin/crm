@@ -229,6 +229,25 @@ async function showdeliverydate(req, res, next) {
     }
 }
 
+async function showtargetinvoice(req, res, next) {
+    try {
+        // Update company settings.show_target_invoice
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.show_target_invoice": req.body.show_target_invoice } });
+
+        // Update the show_target_invoice field on the user's session
+        req.session.current_company.settings.show_target_invoice = req.body.show_target_invoice === 'true';
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.show_target_invoice_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.showtargetinvoice `, err.message);
+        next(err);
+    }
+}
+
 async function defaultnotesoninvoice(req, res, next) {
     try {
         // Update company settings.default_notes_on_invoice
@@ -248,6 +267,25 @@ async function defaultnotesoninvoice(req, res, next) {
     }
 }
 
+async function defaultnotesoncreditnotes(req, res, next) {
+    try {
+        // Update company settings.default_notes_on_credit_notes
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.default_notes_on_credit_notes": req.body.default_notes_on_credit_notes } });
+
+        // Update the default_notes_on_credit_notes field on the user's session
+        req.session.current_company.settings.default_notes_on_credit_notes = req.body.default_notes_on_credit_notes;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_notes_on_credit_notes_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.defaultnotesoncreditnotes `, err.message);
+        next(err);
+    }
+}
+
 module.exports = {
     updateInvoiceSequence,
     editAjax,
@@ -256,8 +294,10 @@ module.exports = {
     update,
     getCurrentUserCompanies,
     defaultnotesoninvoice,
+    defaultnotesoncreditnotes,
     changeCurrentCompany,
     setDefaultInvoiceDueDateTermsType,
     setDefaultCurrency,
-    showdeliverydate
+    showdeliverydate,
+    showtargetinvoice
 }

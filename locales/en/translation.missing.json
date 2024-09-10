@@ -92,10 +92,20 @@
       },
       "invoices": {
         "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button",
-        "warning_title": "settings.views.invoices.warning_title"
+        "warning_title": "settings.views.invoices.warning_title",
+        "show_target_invoice": "settings.views.invoices.show_target_invoice",
+        "yes_show_target_invoice": "settings.views.invoices.yes_show_target_invoice",
+        "no_show_target_invoice": "settings.views.invoices.no_show_target_invoice",
+        "show_target_invoice_button": "settings.views.invoices.show_target_invoice_button"
       },
       "files": {
         "no_file_uploaded_yet": "settings.views.files.no_file_uploaded_yet"
+      },
+      "credit_notes": {
+        "show_target_invoice_help": "settings.views.credit_notes.show_target_invoice_help",
+        "yes_show_target_invoice": "settings.views.credit_notes.yes_show_target_invoice",
+        "no_show_target_invoice": "settings.views.credit_notes.no_show_target_invoice",
+        "update_default_notes_on_credit_notes_button": "settings.views.credit_notes.update_default_notes_on_credit_notes_button"
       }
     },
     "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",
