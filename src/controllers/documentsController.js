@@ -495,6 +495,7 @@ async function editAjax(req, res) {
                 notification: { message: 'Document not found', type: 'error'}
             });
         }
+        
         res.json(document.toObject());
         
     } catch (err) {

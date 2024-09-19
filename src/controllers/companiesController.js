@@ -193,19 +193,21 @@ async function setDefaultInvoiceDueDateTermsType(req, res, next) {
 
 async function setDefaultCurrency(req, res, next) {
     try {
+        const companyId = req.session.current_company._id;
+        const defaultCurrency = req.body.default_currency;
+
         // Update company settings.default_currency
-        await CompanyService.update(req.session
-            .current_company._id, { $set: { "settings.default_currency": req.body.default_currency } });
+        await updateCompanyDefaultCurrency(companyId, defaultCurrency);
 
         // Update the default_currency field on the user's session
-        req.session.current_company.settings.default_currency = req.body.default_currency;
+        updateSessionDefaultCurrency(req, defaultCurrency);
 
         // Send a success response
-        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_currency_updated'), type: 'success' }});
+        return sendSuccessResponse(res, req);
 
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
-        console.error(`Error in userController.setDefaultCurrency `, err.message);
+        console.error(`Error in companiesController.setDefaultCurrency: `, err.message);
         next(err);
     }
 }

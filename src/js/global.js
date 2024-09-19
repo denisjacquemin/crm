@@ -25,7 +25,7 @@ window.formatDate = function(date, format = 'M/D/YYYY') {
     return dayjs(date).format(format);
 }
 
-window.fetchUrl = function(url, method = 'GET', body = null) {
+window.fetchUrl = async function(url, method = 'GET', body = null) {
     const options = {
         method: method,
         headers: {
@@ -44,37 +44,34 @@ window.fetchUrl = function(url, method = 'GET', body = null) {
         }
     }
 
-    return fetch(url, options)
-        .then(async response => {
-            const contentType = response.headers.get("content-type");
-            let data;
-            if (contentType && contentType.includes("application/json")) {
-                data = JSON.parse(await response.text());
-            } else if (contentType && contentType.includes("text/html")) {
-                data = await response.text();
-            }
-            
-            if (data && data.notification) {
-                dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
-            }
+    try {
+        const response = await fetch(url, options);
+        const contentType = response.headers.get("content-type");
+        let data;
 
-            if (response.status === 401) {
-                history.replaceState(null, '', window.location.href);
-                location.reload();
-            } else if (!response.status.toString().startsWith('2')) {
-                console.log('Error fetching URL', response);
-                if (data && data.notification) {
-                    dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
-                }
-                throw new Error('Looks like there was a problem. Status Code: ' + response.status);
-            } else {
-                return data;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching URL', error);
-            throw error;
-        });
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else if (contentType && contentType.includes("text/html")) {
+            data = await response.text();
+        }
+
+        if (data && data.notification) {
+            dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
+        }
+
+        if (response.status === 401) {
+            history.replaceState(null, '', window.location.href);
+            location.reload();
+        } else if (!response.ok) {
+            console.log('Error fetching URL', response);
+            throw new Error('Looks like there was a problem. Status Code: ' + response.status);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching URL', error);
+        throw error;
+    }
 };
 
 

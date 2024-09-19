@@ -26,7 +26,6 @@ window.setupWorker = function (pathToWorker) {
 workerSettings = setupWorker("/public/js/workers/autosave_worker.js");
 
 workerSettings.onmessage = function(event) {
-    console.log('Message from worker:', event.data);
     // handle messages from worker when postMessage({ unauthorized: true }); is called
     if (event.data.hasOwnProperty('unauthorized')) {
         history.replaceState(null, '', window.location.href);
@@ -45,7 +44,6 @@ workerSettings.onmessage = function(event) {
     // console.log('dates:', new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at));
     // console.log('notfound:', event.data.hasOwnProperty('notfound'));
     if (event.data.hasOwnProperty('error') || event.data.hasOwnProperty('notfound') || (new Date(LSObj.autosave_updated_at) <= new Date(event.data.autosave_updated_at))) {
-        console.log('deleting from localstorage:', key);
         localStorage.removeItem(key);
     }
 

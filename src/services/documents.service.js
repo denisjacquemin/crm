@@ -1,4 +1,4 @@
-const Document = require('../models/document.model');
+const {Document} = require('../models/document.model');
 const _ = require('lodash');
 
 

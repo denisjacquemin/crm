@@ -98,7 +98,7 @@
          }); --}}
         if (selectedDocument) {getTaxRates();}        
         $watch('selectedDocument', (value, oldValue) => {
-            console.log('selectedDocument changed', value);
+            console.log('selectedDocument changed');
             var document = { ...value };
             document.autosave_updated_at = new Date();
             localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));

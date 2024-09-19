@@ -131,7 +131,15 @@
                     "name_label": "Name",
                     "name_placeholder": "Short item description",
                     "reference_label": "Reference",
-                    "reference_placeholder": "Item's reference"
+                    "reference_placeholder": "Item's reference",
+                    "search_products": "Search products",
+                    "manage_products": "Manage products & services",
+                    "search_placeholder": "Search by reference, name, description",
+                    "choose_and_back": "Choose and Return",
+                    "no_product_selected":"No product selected.",
+                    "no_product_selected_sub": "Please select a product from the list, or click cancel to return to the previous page.",
+                    "confirm_item_delete": "Are you sure you want to delete this item?",
+                    "item_deleted": "The item has been deleted"
                 },
                 "files_modal": {
                     "modal_title": "Manage files",
@@ -150,7 +158,11 @@
                     "delete": "Delete",
                     "delete_confirm": "Are you sure you want to delete this file?",
                     "no_file_uploaded_yet": "No file uploaded yet, click to add one",
-                    "companyfiles_no_file_uploaded_yet": "No files uploaded yet, go to the settings to add some"
+                    "companyfiles_no_file_uploaded_yet": "No files uploaded yet, go to the settings to add some",
+                    "total_base_amount": "Total Base Amount",
+                    "total_vat_amount": "Total VAT Amount",
+                    "total_amount": "Total Amount"
+
                 },
                 "invoice_settings": {
                     "modal_title": "Invoice Settings",
@@ -190,7 +202,10 @@
                 "files": "Files",
                 "no_files_yet": "No files yet",
                 "add_files": "Manage Files / Attachments",
-                "items": "Items"
+                "items": "Items",
+                "total_base_amount": "Total Base Amount",
+                "total_vat_amount": "Total VAT Amount",
+                "total_amount": "Total Amount"
 
             }
         },

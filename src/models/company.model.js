@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { currencySchema } = require('./document.model');
+
 
 const schemaOptions = {
     timestamps: true,
@@ -38,7 +40,11 @@ const companySchema = new mongoose.Schema({
     logo: { type: mongoose.Schema.Types.ObjectId, ref: 'File', required: false },
     settings: {
         default_template: { type: String, required: false, default: 'default_template' },
-        default_currency: { type: String, required: false, default: 'EUR' },
+        default_currency: { type: currencySchema, required: false, default: {
+            name: process.env.DEFAULT_CURRENCY_NAME,
+            label: process.env.DEFAULT_CURRENCY_LABEL,
+            symbol: process.env.DEFAULT_CURRENCY_SYMBOL
+        } },
         show_delivery_date: { type: Boolean, required: false, default: true },
         show_target_invoice: { type: Boolean, required: false, default: true },
         default_language: { type: String, required: false, default: 'en' },

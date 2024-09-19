@@ -45,6 +45,12 @@ const itemSchema = new mongoose.Schema({
     form_automatic_computation: { type: Boolean, required: true, default: true },
 });
 
+const currencySchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    label: { type: String, required: true },
+    symbol: { type: String, required: true }
+});
+
 const documentSchema = new mongoose.Schema({
     company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
     created_by_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -111,7 +117,7 @@ const documentSchema = new mongoose.Schema({
             default: {} 
         },
         invoice_delivery_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
-        currency: { type: String, required: false },
+        currency: { type: currencySchema, required: false },
         show_delivery_date: { type: Boolean, required: false },
         show_target_invoice: { type: Boolean, required: false },
         language: { type: String, required: false, default: 'en' },
@@ -180,4 +186,7 @@ documentSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async 
 
 const Document = mongoose.model('Document', documentSchema);
 
-module.exports = Document;
+module.exports = {
+    Document: mongoose.model('Document', documentSchema),
+    currencySchema
+};

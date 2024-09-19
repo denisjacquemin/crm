@@ -142,7 +142,15 @@
                 localStorage.setItem('autosave#file#' + value.slug, JSON.stringify(file));
             }
         });
-     ">
+     "
+     x-intersect="
+       {{!-- Ensure the initial button is configured to close the slide when clicked --}}
+       updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
+       updateClickHandler(() => {
+          openSlide = false;
+       });
+     "
+     >
     <div x-ref="filesList"
         class="w-[50%] px-4 sm:px-6 pt-5 gap-x-6 gap-y-2 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="border-l-4 border-blue-400 bg-blue-50 p-4">
@@ -216,9 +224,8 @@
             <div x-show="selectedDocument.config.documentFiles.length > 0" class="-space-y-px rounded-md bg-white sm:px-4">
                 <template x-for="(file, index) in selectedDocument.config.documentFiles" :key="index">
                         
-                    <label aria-label="Public access" aria-description="This project would be available to anyone who has the link" 
-                        x-data="{selected: isFileSelected(file.slug)}"
-                        class="flex flex-1 items-center border-y sm:border border-gray-900/10 bg-gray-500/5 p-4 -mx-4 focus:outline-none"
+                    <label  x-data="{selected: isFileSelected(file.slug)}"
+                        class="flex flex-1 items-center cursor-pointer border-y sm:border border-gray-900/10 bg-gray-500/5 p-2 px-4 -mx-4 focus:outline-none"
                         :class="{
                                 'cursor-pointer': file.filename,
                                 'sm:rounded-tl-md sm:rounded-tr-md': index === 0,
@@ -234,14 +241,14 @@
                                 x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
                             </div>
                             <div class="flex-1 flex min-w-0 gap-2">
-                                <span x-show="!file.filename" @click="editFile(file.slug);" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="!file.filename" @click="editFile(file.slug);" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline cursor-pointer" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
                                 <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
                                 <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
                             </div>
-                            <div class="mt-2 flex text-sm ">
+                            <div class="mt-2 flex text-sm">
                                 <a @click.prevent="editFile(file.slug);" href="#" class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.edit' }}</a>
                                 <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
-                                <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" target="_blank" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
+                                <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
                             </div>
                             {{!-- <span>
                                 <span :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="block text-sm font-medium" x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"></span>
@@ -273,7 +280,7 @@
 
 
             <label class="mt-6 block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/4')" class="cursor-pointer font-normal text-indigo-600">{{t
+                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/5')" class="cursor-pointer font-normal text-indigo-600">{{t
                     'documents.views.index.files_modal.company_files_manage_them'}}</span></label>
             <div x-show="companyFiles.length === 0"
                 class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 sm:-mx-6 py-4">
@@ -315,7 +322,6 @@
                         x-init="updateSelected()"
                         x-effect="updateSelected()"
                         :x-ref="'file#' + file.slug"
-                        aria-label="Public access" aria-description="This project would be available to anyone who has the link" 
                         class="flex flex-1 items-center cursor-pointer border-y sm:border border-gray-900/10 bg-gray-500/5 p-4 -mx-4 focus:outline-none"
                             :class="{
                                 'cursor-pointer': file.filename,

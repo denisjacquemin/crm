@@ -374,9 +374,9 @@
                                 <span x-text="orEmpty(item.description)"></span>
                             </div>
                             <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
-                            <div class="td" style="text-align:right" x-text="orEmpty(item.unit_price)"></div>
-                            <div class="td" style="text-align:right" x-text="orEmpty(item.vat)"></div>
-                            <div class="td" style="text-align:right" x-text="orEmpty(item.amountvatincl)"></div>
+                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`"></div>
+                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat)}%`"></div>
+                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`"></div>
                         </div>
                     </template>
                 </div>
@@ -385,17 +385,17 @@
                         <tr>
                             <td width="50%"></td>
                             <td style="text-align: right;">{{t 'default_template.total_vat_excl'}}</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.subtotal"></td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td style="text-align: right;">{{t 'default_template.vat_total'}}</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.totalvat"></td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td style="text-align: right;">{{t 'default_template.total_vat_incl'}}</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.total"></td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
                         </tr>
                     </table>
                 </template>
@@ -427,40 +427,47 @@
         <span class="bottom-right">{{ t 'default_template.invoice_number_footer'}} - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
         <main>
             <div id="products" class="page2plus">
+
+                
                 <div class="table">
                     <div class="thead">
-                        <div class="th" style="width:350px">Description</div>
-                        <div class="th" style="text-align:right">Q.</div>
-                        <div class="th" style="text-align:right">UP</div>
-                        <div class="th" style="text-align:right">VAT</div>
-                        <div class="th" style="text-align:right">Total</div>
+                        <div class="th" style="text-align:left;width:300px">{{t 'default_template.description'}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.quantity_short'}}</div>
+                        <div class="th" style="text-align:right">{{t 'default_template.unit_price_short'}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.vat'}}</div>
+                        <div class="th" style="text-align:right">{{t 'default_template.total'}}</div>
                     </div>
                     <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
                         <div class="tr">
-                            <div class="td" style="width:350px" x-text="item.description"></div>
-                            <div class="td" style="" x-text="item.quantity"></div>
-                            <div class="td" style="" x-text="item.unit_price"></div>
-                            <div class="td" style="" x-text="item.vat"></div>
-                            <div class="td" style="" x-text="item.amountvatincl"></div>
+                            <div class="td" style="text-align:left;width:300px">
+                                <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
+                                <span x-text="orEmpty(item.description)"></span>
+                            </div>
+                            <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
+                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`"></div>
+                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat)}%`"></div>
+                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`"></div>
                         </div>
                     </template>
                 </div>
+
+
                 <template x-if="numberOfPages == chunkIndex + 2">
                     <table class="amounts">
                         <tr>
                             <td width="50%"></td>
-                            <td style="text-align: right;">Total excl. VAT</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.subtotal"></td>
+                            <td style="text-align: right;">{{t 'default_template.total_vat_excl'}}</td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">VAT</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.totalvat"></td>
+                            <td style="text-align: right;">{{t 'default_template.vat_total'}}</td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">Total incl. VAT</td>
-                            <td style="text-align: right;" x-text="selectedDocument.config.amounts.total"></td>
+                            <td style="text-align: right;">{{t 'default_template.total_vat_incl'}}</td>
+                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
                         </tr>
                     </table>
                 </template>
@@ -468,7 +475,7 @@
         </main>
         
         <footer>
-            <div x-text="selectedDocument.config.notes_on_invoice class="left">Eventuellement un logo</div>
+            <div x-text="selectedDocument.config.notes_on_invoice" class="left">Eventuellement un logo</div>
             <div class="right">Numero de compte etc</div>
         </footer>
       </div> 

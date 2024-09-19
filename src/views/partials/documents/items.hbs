@@ -1,6 +1,6 @@
 
 <div x-show="selectedDocument.config.items.length === 0"
-    class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 sm:-mx-6 py-4">
+    class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 py-4">
     <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
             <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-12 w-12 text-gray-300 lucide lucide-list-minus"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M21 12h-6"/></svg>
@@ -14,7 +14,8 @@
         </div>
     </div>
 </div>
-<div x-show="selectedDocument.config.items.length > 0">
+<div x-show="selectedDocument.config.items.length > 0"
+     class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 py-4">
     <button type="button"
               class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
               @click.prevent="openSlide = true; slideContentPartialName='slideItems'">
@@ -31,17 +32,17 @@
                 <div class="flex hover:bg-gray-200">
                     <input type="hidden" x-model="item.name" name="config.items[].name" />
                     <div x-text="item.name" class="py-2 pr-2 text-sm font-light text-gray-700 truncate w-2/3"></div>
-                    <div x-text="`${item.amountvatincl} €`" class="text-right pr-1 py-2 text-sm text-gray-500 truncate w-1/3" style="width: 150px;"></div>
+                    <div x-text="`${selectedDocument.config.currency.symbol} ${item.amountvatincl}`" class="text-right pr-1 py-2 text-sm text-gray-500 truncate w-1/3" style="width: 150px;"></div>
                 </div>
             </template>
         </div>
     </div>
     <div class="mt-4 pt-4 col-span-full grid grid-cols-4 text-sm font-light text-gray-700 gap-y-2 border-t border-gray-200">
-        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">Total Base Amount</div>
-        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.subtotal"></div>
-        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Vat Amount</div>
-        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="selectedDocument.config.amounts.totalvat"></div>
-        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">Total Amount</div>
-        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal" x-text="selectedDocument.config.amounts.total"></div>
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2 text-right">{{ t 'documents.views.edit_form.total_base_amount' }}</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></div>
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">{{ t 'documents.views.edit_form.total_vat_amount' }}</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></div>
+        <div class="font-semibold text-gray-900 col-start-1 col-span-2  text-right">{{ t 'documents.views.edit_form.total_amount' }}</div>
+        <div class="col-span-2 sm:col-start-4 sm:col-span-1 text-right font-normal" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></div>
     </div>
 </div>

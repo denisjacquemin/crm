@@ -97,6 +97,7 @@
             });
 
             flatpickr.localize(locales[user_language]);
+
             invoiceDatePicker = flatpickr($refs.invoiceDate, {
                 defaultDate: new Date(selectedDocument.config.invoice_date),
                 dateFormat: dateFormatFlatpickrConfig[user_language],
@@ -107,13 +108,15 @@
                     handleTermsTypeChange(selectedDocument.config.invoice_due_date.terms_type, selectedDate);
                 },
             });
-            deliveryDatePicker = flatpickr($refs.deliveryDate, {
-                defaultDate: new Date(selectedDocument.config.invoice_delivery_date),
-                dateFormat: dateFormatFlatpickrConfig[user_language],
-                onChange: (selectedDates, dateStr, instance) => {
-                    selectedDocument.config.invoice_delivery_date = dayjs(selectedDates[0]).format('YYYY-MM-DD');
-                }
-            });
+            if (selectedDocument.config.invoice_delivery_date) {
+              deliveryDatePicker = flatpickr($refs.deliveryDate, {
+                  defaultDate: new Date(selectedDocument.config.invoice_delivery_date),
+                  dateFormat: dateFormatFlatpickrConfig[user_language],
+                  onChange: ( selectedDates, dateStr, instance) => {
+                      selectedDocument.config.invoice_delivery_date = dayjs(selectedDates[0]).format('YYYY-MM-DD');
+                  }
+              });
+            }
 
             if (selectedDocument.config.invoice_due_date.terms_type.startsWith('+')) {
                 if (!dueDatePicker) {
@@ -432,11 +435,12 @@
       </div>
     </div>
 
+
     <div class="col-span-full flex flex-col">
       <label for="files" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
         'documents.views.edit_form.files' }}</label>
       <div x-show="selectedDocument.config.files.length === 0" 
-          class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 sm:-mx-6 py-4">
+          class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 py-4">
         <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
           <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -462,34 +466,34 @@
         </div>
       </div>
 
-      <div x-show="selectedDocument.config.files.length > 0" class="flex flex-col gap-y-4">
-        <div class="text-center relative block w-full h-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          <button type="button"
-            class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
-            @click.prevent="openSlide = true; slideContentPartialName='slideFiles'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="mr-2 lucide lucide-paperclip">
-              <path
-                d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-            </svg>
-            {{ t 'documents.views.edit_form.add_files' }}
-          </button>
+      <div x-show="selectedDocument.config.files.length > 0" class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6  py-4">
+        <div class="text-center mt-2 mb-4 relative block w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <button type="button"
+                    class="w-full  relative inline-flex items-center rounded-md px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
+                    @click.prevent="openSlide = true; slideContentPartialName='slideFiles'"
+                    aria-label="{{ t 'documents.views.edit_form.add_files' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="mr-2 lucide lucide-paperclip">
+                    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+                {{ t 'documents.views.edit_form.add_files' }}
+            </button>
         </div>
-        <template x-for="(file, index) in selectedDocument.config.files" :key="index">
-          <div class="flex flex-1 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 lucide lucide-paperclip"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-            <div class="ml-4 flex flex-col min-w-0 flex-1">
-              <div class="flex-1 truncate text-sm font-semibold text-gray-900"
-                x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
-              </div>
-              <div class="flex-1 flex min-w-0 gap-2">
-                <span class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
-                <span class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+        <div class="flex flex-col gap-y-4">
+          <template x-for="(file, index) in selectedDocument.config.files" :key="index">
+            <div class="flex flex-1 items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 lucide lucide-paperclip"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              <div class="ml-4 flex flex-col min-w-0 flex-1">
+                <div class="flex-1 truncate text-sm font-semibold text-gray-900" x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"></div>
+                <div class="flex-1 flex min-w-0 gap-2">
+                  <span class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
+                  <span class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+                </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
   </div>

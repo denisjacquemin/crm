@@ -1123,14 +1123,14 @@ select {
 .h-\[40px\] {
   height: 40px;
 }
-.h-\[50\%\] {
-  height: 50%;
-}
 .h-\[500px\] {
   height: 500px;
 }
 .h-\[50vh\] {
   height: 50vh;
+}
+.h-auto {
+  height: auto;
 }
 .h-full {
   height: 100%;
@@ -1140,6 +1140,9 @@ select {
 }
 .max-h-60 {
   max-height: 15rem;
+}
+.max-h-\[400px\] {
+  max-height: 400px;
 }
 .max-h-\[80vh\] {
   max-height: 80vh;
@@ -1216,6 +1219,9 @@ select {
 .w-\[290px\] {
   width: 290px;
 }
+.w-\[300\%\] {
+  width: 300%;
+}
 .w-\[36\.125rem\] {
   width: 36.125rem;
 }
@@ -1264,6 +1270,9 @@ select {
 .max-w-7xl {
   max-width: 80rem;
 }
+.max-w-\[100px\] {
+  max-width: 100px;
+}
 .max-w-full {
   max-width: 100%;
 }
@@ -1284,6 +1293,9 @@ select {
 }
 .flex-auto {
   flex: 1 1 auto;
+}
+.flex-initial {
+  flex: 0 1 auto;
 }
 .flex-none {
   flex: none;
@@ -1312,14 +1324,6 @@ select {
 }
 .-translate-x-full {
   --tw-translate-x: -100%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-.-translate-y-2 {
-  --tw-translate-y: -0.5rem;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-.-translate-y-full {
-  --tw-translate-y: -100%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .translate-x-0 {
@@ -1408,6 +1412,9 @@ select {
 }
 .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.grid-cols-\[auto\2c 1fr\2c auto\] {
+  grid-template-columns: auto 1fr auto;
 }
 .flex-row {
   flex-direction: row;
@@ -1528,6 +1535,11 @@ select {
   --tw-space-y-reverse: 0;
   margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(4rem * var(--tw-space-y-reverse));
+}
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 .space-y-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
@@ -1857,6 +1869,9 @@ select {
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
+.bg-gradient-to-t {
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
+}
 .bg-gradient-to-tr {
   background-image: linear-gradient(to top right, var(--tw-gradient-stops));
 }
@@ -1868,8 +1883,16 @@ select {
   --tw-gradient-to: rgb(255 128 181 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
+.from-gray-200 {
+  --tw-gradient-from: #e5e7eb var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(229 231 235 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
 .to-\[\#9089fc\] {
   --tw-gradient-to: #9089fc var(--tw-gradient-to-position);
+}
+.to-transparent {
+  --tw-gradient-to: transparent var(--tw-gradient-to-position);
 }
 .p-0 {
   padding: 0px;
@@ -2194,6 +2217,9 @@ select {
 }
 .leading-7 {
   line-height: 1.75rem;
+}
+.leading-9 {
+  line-height: 2.25rem;
 }
 .tracking-tight {
   letter-spacing: -0.025em;
@@ -2989,6 +3015,10 @@ input[type="date"] {
   --tw-text-opacity: 1;
   color: rgb(79 70 229 / var(--tw-text-opacity));
 }
+.hover\:text-indigo-900:hover {
+  --tw-text-opacity: 1;
+  color: rgb(49 46 129 / var(--tw-text-opacity));
+}
 .hover\:text-red-400:hover {
   --tw-text-opacity: 1;
   color: rgb(248 113 113 / var(--tw-text-opacity));
@@ -3106,8 +3136,11 @@ input[type="date"] {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(229 231 235 / var(--tw-ring-opacity));
 }
-.group:hover .group-hover\:flex {
-  display: flex;
+.group:hover .group-hover\:inline-flex {
+  display: inline-flex;
+}
+.group:hover .group-hover\:items-center {
+  align-items: center;
 }
 .group:hover .group-hover\:text-gray-100 {
   --tw-text-opacity: 1;
@@ -3213,6 +3246,10 @@ input[type="date"] {
 
   .sm\:mr-2 {
     margin-right: 0.5rem;
+  }
+
+  .sm\:mr-4 {
+    margin-right: 1rem;
   }
 
   .sm\:mt-0 {
@@ -3488,6 +3525,11 @@ input[type="date"] {
     border-width: 1px;
   }
 
+  .sm\:border-x {
+    border-left-width: 1px;
+    border-right-width: 1px;
+  }
+
   .sm\:border-l {
     border-left-width: 1px;
   }
@@ -3593,6 +3635,10 @@ input[type="date"] {
 
   .sm\:pr-4 {
     padding-right: 1rem;
+  }
+
+  .sm\:pr-5 {
+    padding-right: 1.25rem;
   }
 
   .sm\:pr-6 {

@@ -107,7 +107,7 @@
                 {{t 'settings.views.files.create_file_button' }}
             </button>
         </div>
-        <div class="flex-grow overflow-y-scroll flex flex-1 w-full">
+        <div class="flex-grow overflow-y-auto flex flex-1 w-full">
             <template x-if="companyFiles.length === 0">
                 <div class="relative block w-full h-full p-2 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
@@ -190,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-scroll">
+            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-auto">
                     <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
                         x-on:drop.prevent="handleDrop" 
                         x-on:dragover.prevent 
