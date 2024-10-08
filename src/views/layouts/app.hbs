@@ -12,13 +12,24 @@
     </head>
 
     <body class="" 
-          @updatenavbutton="navState = $event.detail.value"
+          @updatenavbutton="navState = $event.detail.value" `
           x-data="{ 
             navState: 'menu',   
             modalSize: null,
             companies: [],
             companyFiles: [],
+            default_taxrate: '{{ default_taxrate}}',
+            countries: {{ stringify countries }},
+            custom_taxrates: {{ stringify session.current_company.taxrates }},
+            frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
+            current_company_country: '{{ session.current_company.country }}',
+            defaultCurrency: {{ stringify defaultCurrency }},
+            frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
+            currencies: {{ stringify currencies }},
             openSettingsModal: false,
+            closeModal: function() {
+                this.openSettingsModal = false;
+            },
             async openConfirmModal(title, message, confirmCallback) {
                 this.$refs.confirmModal.open(title, message, confirmCallback);
             },
@@ -46,7 +57,6 @@
                 this.companies = data;
             },
             async loadCompanyFiles() {
-                console.log('loading company files');
                 const data = await fetchUrl('/files/company')
                 this.companyFiles = data;
             }

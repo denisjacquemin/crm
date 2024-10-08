@@ -1,4 +1,4 @@
-const Company = require('../models/company.model');
+const {Company} = require('../models/company.model');
 const { ObjectId } = require('mongoose').Types;
 
 class CompanyService {
@@ -63,25 +63,15 @@ class CompanyService {
         }
     }
 
-    // async findOrCreateById(currentCompanyId, id) {
-        
-    //     try {
-    //         // if id is not undefined or null or invalid skip the findOne query
-    //         if (id) {
-    //             // Try to find a company
-    //             const result = await this.db.collection('companies').findOne({ _id: ObjectId(id) });
-    //             // If a company was found, return it
-    //             if (result) {
-    //                 return result;
-    //             }
-    //         }
-    //         // If no company was found, create a new one
-    //         return this.create();
-    //     } catch (error) {
-    //         console.error(error.stack);
-    //         throw error;
-    //     }
-    // }
+    static async findOneAndUpdate(query, update, options) {
+        try {
+            const result = await Company.findOneAndUpdate(query, update, options);
+            return result; // Return the updated document
+        } catch (error) {
+            console.error('Error in CompanyService.findOneAndUpdate:', error.stack);
+            throw error;
+        }
+    }
 
 
 }

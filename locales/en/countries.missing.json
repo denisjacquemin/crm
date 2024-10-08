@@ -5,5 +5,11 @@
     "FR": {
       "country": "taxrates.FR.country"
     }
-  }
+  },
+  "countries": "countries",
+  "frequently_selected_countries": "frequently_selected_countries",
+  "countries[BE]": {
+    "taxrates": "countries[BE].taxrates"
+  },
+  "countries['BE']": "countries['BE']"
 }

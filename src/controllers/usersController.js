@@ -251,6 +251,10 @@ async function signup2Post(req, res, next) {
         company._id = companyId;
         company.users = [userId];
 
+        console.log('company', company);
+
+        company.taxrates = [];
+
         // Create the company
         companyCreated = await CompanyService.create(company, {}); //await companyService.create(company, { session });
 
@@ -267,7 +271,6 @@ async function signup2Post(req, res, next) {
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
     const { password, ...saferUser } = userCreated.toObject();
-    console.log('signup2Post > saferUser', saferUser)
     req.session.user = saferUser 
     req.session.current_company = companyCreated.toObject();
 
@@ -380,6 +383,7 @@ async function signinPost(req, res, next) {
     }
 
     const current_company = await CompanyService.getById(user.companies[0]);
+    
 
     // Set the isAuth, email, and timestamps fields on the user's session
     req.session.isAuth = true
@@ -387,7 +391,6 @@ async function signinPost(req, res, next) {
     let saferUser = user.toObject();
     delete saferUser.password;
     req.session.user = saferUser;
-    console.log('###### In userController.signinPost', req.session.user.language);
     req.session.timestamps = []
 
     // Redirect the user to the app page
@@ -851,15 +854,15 @@ async function OAuthGoogleCallback(req, res, next) {
     res.disableBackButtonRedirect('/');
 }
 
-function getCountrySelect(req) {
-    //req.ip;
-    const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
-    return {
-        countries: req.i18n.t('countries:countries',  { returnObjects: true }),
-        frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
-        defaultCountry: geo && geo.country
-    };
-}
+// function getCountrySelect(req) {
+//     //req.ip;
+//     const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
+//     return {
+//         countries: req.i18n.t('countries:countries',  { returnObjects: true }),
+//         frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
+//         defaultCountry: geo && geo.country
+//     };
+// }
 
 module.exports = {
     signup1,

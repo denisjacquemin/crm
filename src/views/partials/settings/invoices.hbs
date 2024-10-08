@@ -1,12 +1,16 @@
 <div class="flex flex-1 w-full flex-col gap-y-8 sm:gap-y-14 p-4"
      x-data="{
-        frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
-        defaultCurrency: '{{ defaultCurrency }}',
-        selectedCurrency: null,
-        currencies: {{ stringify currencies }},
+        selectedCurrencyValue: {},
+        get selectedCurrency() {
+            return JSON.stringify(this.selectedCurrencyValue);
+        },
+        set selectedCurrency(value) {
+            this.selectedCurrencyValue = JSON.parse(value);
+        }
      }"
      x-init="
-        selectedCurrency = defaultCurrency || frequentlySelectedCurrencies[0].value;
+        selectedCurrencyValue = defaultCurrency || frequentlySelectedCurrencies[0];
+        $watch('selectedCurrency', value => console.log('watcher: ', selectedCurrency))
      "
 >
     <div class="sm:flex sm:items-start">
@@ -49,36 +53,7 @@
         </button>
     </div>
 
-    <div class="flex flex-col gap-y-4"> 
-        <label for="default_currency" class="text-base font-semibold leading-7 text-gray-900">{{t 'settings.views.invoices.default_currency' }}</label>
-        <div class="">
-            <p class="m-0 mb-2 text-sm">{{t 'settings.views.invoices.default_currency_help' }}</p>
-            <label for="default_currency" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.invoices.default_currency' }}</label>
-            <select x-model="default_currency"
-                id="default_currency"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
-                        <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
-                            <option x-bind:selected="currency.label === selectedCurrency" :value="currency" x-text="`${currency.name} (${currency.symbol})`"></option>
-                        </template>
-                    </optgroup>
-                    <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
-                        <template x-for="(currency, index) in currencies" :key="index">
-                            <option x-bind:selected="currency.label === selectedCurrency && !frequentlySelectedCurrencies.some(c => c.label === selectedCurrency)" :value="currency" x-text="`${currency.name} (${currency.symbol})`"></option>
-                        </template>
-                    </optgroup>
-                </select>
-            </select>
-        </div>
-        
-        <button type="button" id="newDocumentButton"
-                class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                @click="fetchUrl('/company/defaultcurrency', 'PATCH', { default_currency: default_currency })">      
-                {{t 'settings.views.invoices.update_default_currency' }}
-        </button>
-    </div>
-
-    <div x-data="{show_delivery_date: '{{ session.current_company.settings.show_delivery_date }}' }" class="flex flex-col gap-y-4"> 
+     <div x-data="{show_delivery_date: '{{ session.current_company.settings.show_delivery_date }}' }" class="flex flex-col gap-y-4"> 
         <label for="show_delivery_date" class="text-base font-semibold leading-7 text-gray-900">{{t 'settings.views.invoices.show_delivery_date' }}</label>
         <div class="">
             <p class="m-0 mb-2 text-sm">{{t 'settings.views.invoices.show_delivery_date_help' }}</p>

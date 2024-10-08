@@ -46,14 +46,13 @@ async function index(req, res) {
             }
         }
 
+
         res.render('documents/index', {
             layout: 'app',
             documents: documents,
             selectedDocumentIndex: selectedDocumentIndex,
             selectedDocument: selectedDocument,
             sizes: req.i18n.t('common.sizes', { returnObjects: true }),
-            currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
-            frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
         });
     } catch (err) {
         console.error(err);
@@ -468,6 +467,7 @@ async function edit(req, res) {
         const selectedDocumentIndex = documents.findIndex(document => {
             return document.slug === req.params.slug;
         });
+
                
         res.render("documents/index", {
             layout: 'app',
@@ -475,9 +475,6 @@ async function edit(req, res) {
             sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             selectedDocumentIndex: selectedDocumentIndex,
             selectedDocument: selectedDocument.toObject(),
-            currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
-            frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
-
         });
     } catch (err) {
         console.error(err);
@@ -513,6 +510,16 @@ async function update(req, res, next) {
             const error = new Error('Document not found');
             error.status = 404;
             throw error;
+        }
+
+        // Ensure vat fields in config.items are embedded documents if they exist
+        if (req.body.value.config && Array.isArray(req.body.value.config.items)) {
+            req.body.value.config.items = req.body.value.config.items.map(item => {
+                if (item.vat && typeof item.vat === 'string') {
+                    item.vat = JSON.parse(item.vat);
+                }
+                return item;
+            });
         }
 
         let updatedDocument = await DocumentService.update(document._id, req.body.value);

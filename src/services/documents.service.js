@@ -19,7 +19,10 @@ class DocumentsService {
         const document = await Document.findOne({ slug, company_id }, projection)
         .populate('config.files')
         .populate('config.documentFiles')
-        .populate('config.seller.logo')
+        .populate({
+            path: 'config.seller.logo',
+            select: '-key -url'
+        })
         .exec();
         return document;
     }
@@ -30,7 +33,10 @@ class DocumentsService {
         const populatedDocument = await Document.findById(documentCreated._id)
             .populate('config.files')
             .populate('config.documentFiles')
-            .populate('config.seller.logo')
+            .populate({
+                path: 'config.seller.logo',
+                select: '-key -url'
+            })
             .exec();
         return populatedDocument;
     }

@@ -1,6 +1,6 @@
 {
   "taxrates": {
-    "": "taxrates.",
-    "Belgique": "taxrates.Belgique"
+    "BE": "taxrates.BE",
+    "FR": "taxrates.FR"
   }
 }

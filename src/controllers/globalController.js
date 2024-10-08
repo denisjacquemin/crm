@@ -42,23 +42,6 @@ async function changeLang(req, res, next) {
 
 }
 
-async function getTaxRatesByCountryCodes(req, res) {
-    const { countries } = req.body;
-    // get tax rates from translation files for each country code
-    const taxRates = {};
-    countries.forEach(code => {
-        taxRates[code] = req.i18n.t(`taxrates:taxrates.${code}`, { returnObjects: true });
-    });
-
-    const countriesAndCodes = {};
-    const allTaxRates = req.i18n.t('taxrates:taxrates', { returnObjects: true });
-    Object.keys(allTaxRates).forEach(code => {
-        countriesAndCodes[code] = allTaxRates[code].country;
-    });
-
-    res.status(200).send({ taxRates: taxRates, countries: countriesAndCodes });
-}
-
 
 async function settings(req, res) {
     try {
@@ -68,6 +51,8 @@ async function settings(req, res) {
         const companiesIds = req.session.user.companies;
         const sellers = await CompanyService.getByIds(companiesIds);
         const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
+
+        const frequentlySelectedCountries =  req.i18n.t('countries:frequently_selected_countries', { returnObjects: true });
 
         res.render('global/settings', {
             currentTab: tabid || 1,
@@ -79,12 +64,8 @@ async function settings(req, res) {
             sizes: req.i18n.t('common.sizes', { returnObjects: true }),
             currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
             currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
-            currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
-            defaultCurrency: req.session.current_company.settings.default_currency,
-            frequentlySelectedCurrencies: req.i18n.t('currencies:frequently_selected_currencies', { returnObjects: true }),
-            countries: req.i18n.t('countries:countries', { returnObjects: true }),
-            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }),
-            defaultCountry: geo && geo.country,
+            defaultCountry: (geo && geo.country) || Object.keys(frequentlySelectedCountries)[0],
+            taxRates: req.i18n.t('taxrates:taxrates', { returnObjects: true }),
             ...getCompanyRegistrationNumberLabels(req),
             layout: false
         });
@@ -97,6 +78,5 @@ async function settings(req, res) {
 
 module.exports = {
     changeLang,
-    settings,
-    getTaxRatesByCountryCodes
+    settings
 };

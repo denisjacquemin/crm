@@ -12,7 +12,7 @@ const schema = {
         { "name": "description", "type": "string", "facet": false, "optional": false },
         { "name": "unit_price", "type": "int64", "facet": false, "optional": true },
         { "name": "vat", "type": "string", "facet": false, "optional": true },
-        { "name": "custom_vat_rate", "type": "bool", "facet": false, "optional": true },
+        { "name": "custom_vat_rate", "type": "object", "facet": false, "optional": true },
         { "name": "unit", "type": "string", "facet": false, "optional": true },
         { "name": "createdAt", "type": "int64", "facet": false, "optional": false, "sort": true },
         { "name": "updatedAt", "type": "int64", "facet": false, "optional": false },

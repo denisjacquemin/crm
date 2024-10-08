@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {ProductsTypesenseService} = require('../services/products.typesense.service');
+const { Schema } = require('mongoose');
 
 const schemaOptions = {
     timestamps: true,
@@ -19,6 +20,12 @@ const schemaOptions = {
     }
 };
 
+const taxrateSchema = new mongoose.Schema({
+    is_custom: { type: Boolean, required: false, default: false },
+    value: { type: String, required: false },
+    label: { type: String, required: false },
+}, { _id: false });
+
 const productSchema = new mongoose.Schema({
     company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
     created_by_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -27,8 +34,8 @@ const productSchema = new mongoose.Schema({
     reference: { type: String, required: false, unique: true, sparse: true }, // sparse: true  This allows multiple documents with null values
     description: { type: String, required: false, default: '' },
     unit_price: { type: Number, required: false, default: 0 },
-    vat: { type: String, required: false, default: '0' },
-    custom_vat_rate: { type: Boolean, required: false, default: false },
+    vat: { type: Schema.Types.ObjectId, required: false },
+    custom_vat_rate: { type: taxrateSchema, required: false, default: { is_custom: false, value: '', label: '' } },
     unit: { type: String, required: false },
 }, schemaOptions);
 

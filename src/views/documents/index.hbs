@@ -6,27 +6,6 @@
             selectedDocument: {{ stringify selectedDocument }},
             user_language: '{{session.user.language}}'.split('-')[0],
             sizes: {{ stringify sizes}},
-            getTaxRates: async function() {
-                let countries = [];
-                if (this.selectedDocument.config.buyer.country) {
-                    countries.push(this.selectedDocument.config.buyer.country);
-                }
-
-                if (this.selectedDocument.config.seller.country) {
-                    countries.push(this.selectedDocument.config.seller.country);
-                }
-                if (countries.length === 0) {
-                    countries.push({{session.user.country}});
-                }
-
-                try {
-                    const data = await fetchUrl('/taxRates', 'POST', { countries });
-                    this.taxRates = data;
-                } catch (error) {
-                    console.error('Error getting tax rates', error);
-                }
-            },
-            taxRates: [],
             newInvoiceButton: async function() {
                 try {
                     const data = await fetchUrl('/document/newInvoiceAjax', 'POST');
@@ -96,7 +75,6 @@
                 showCol1();
             } 
          }); --}}
-        if (selectedDocument) {getTaxRates();}        
         $watch('selectedDocument', (value, oldValue) => {
             console.log('selectedDocument changed');
             var document = { ...value };
@@ -254,11 +232,6 @@
                             documents[selectedDocumentIndex] = deepMergeObjects(documents[selectedDocumentIndex], data);  
                             updateNewUrl(documents[selectedDocumentIndex].slug);  {{!-- update the url with to document/edit + slug --}}
                             selectedDocument = documents[selectedDocumentIndex];
-                            console.log('selectedDocument.config.invoice_due_date.value', selectedDocument.config.invoice_due_date.value);
-                            console.log('data.config.invoice_due_date.value', data.config.invoice_due_date.value);    
-
-                            getTaxRates();
-                            console.log('taxRates', taxRates);
                             if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'}); 
                         } catch (error) { console.error('Error editing document', error); }
                     }

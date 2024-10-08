@@ -3,6 +3,8 @@ const session = require('express-session');
 const mongo = require('../services/lib/mongo');
 const CompanyService = require('../services/companies.service');
 const UserService = require('../services/users.service');
+const geoip = require('geoip-lite');
+const mongoose = require('mongoose');
 
 
 async function updateInvoiceSequence(req, res, next) {
@@ -117,13 +119,25 @@ async function editAjax(req, res, next) {
 
 async function newCompanyAjax(req, res, next) {
     try {
+        
+        const geo = geoip.lookup(req.ip);
+        const frequentlySelectedCountries = req.i18n.t('countries:frequently_selected_countries', { returnObjects: true });
+        const country = (geo && geo.country) || Object.keys(frequentlySelectedCountries)[0];
         const companyCreated = await CompanyService.create({
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('companies.controller.default_company_name'),
-            country: req.session.user.country,
+            country: country,
             vat_number: '',
-            users: [req.session.user._id]
+            users: [req.session.user._id],
+            tax_rates: [],
+            settings: {
+                default_currency: {
+                    name: process.env.DEFAULT_CURRENCY_NAME,
+                    label: process.env.DEFAULT_CURRENCY_LABEL,
+                    symbol: process.env.DEFAULT_CURRENCY_SYMBOL
+                },
+            }
         });
         // add the company id to the user's companies array in Session and DB
         if (req.session.user.companies.indexOf(companyCreated._id.toString()) === -1) {
@@ -144,8 +158,18 @@ async function update(req, res, next) {
         if (!company) {
             return next({ status: 404, message: 'Company not found' });
         }
+
+        if (req.body.value.settings) {
+            if (req.body.value.settings.default_currency && typeof req.body.value.settings.default_currency === 'string') {
+                req.body.value.settings.default_currency = JSON.parse(req.body.value.settings.default_currency);
+            }    
+        }
+
+
         let updatedCompany = await CompanyService.update(company._id, req.body.value);
         updatedCompany = updatedCompany.toObject();
+
+
 
         if (req.session.current_company.slug === updatedCompany.slug) {
             req.session.current_company = updatedCompany;
@@ -191,26 +215,98 @@ async function setDefaultInvoiceDueDateTermsType(req, res, next) {
     }
 }
 
-async function setDefaultCurrency(req, res, next) {
+async function saveOrUpdateTaxRate(req, res, next) {
     try {
-        const companyId = req.session.current_company._id;
-        const defaultCurrency = req.body.default_currency;
+        const taxrate = JSON.parse(req.body.taxrate);
 
-        // Update company settings.default_currency
-        await updateCompanyDefaultCurrency(companyId, defaultCurrency);
+        // Validate the taxrate object
+        if (!taxrate || taxrate.value == null || !taxrate.label) {
+            return res.status(400).json({ notification: { message: 'Invalid tax rate data', type: 'error' } });
+        }
 
-        // Update the default_currency field on the user's session
-        updateSessionDefaultCurrency(req, defaultCurrency);
+        // If the taxrate does not have an _id, generate a new one
+        if (!taxrate._id) {
+            taxrate._id = new mongoose.Types.ObjectId();
+        }
+
+        // Find the company and update the taxrate if it exists, otherwise push a new taxrate
+        const updateResult = await CompanyService.findOneAndUpdate(
+            { _id: req.session.current_company._id, "taxrates._id": taxrate._id },
+            {
+                $set: { "taxrates.$": taxrate }
+            },
+            { new: true }
+        );
+        
+        // If the taxrate was not found and updated, push the new taxrate
+        if (!updateResult) {
+            await CompanyService.update(
+                req.session.current_company._id,
+                {
+                    $push: { "taxrates": taxrate }
+                }
+            );
+        }
+
+        // Optionally, update the taxrates field on the user's session if needed
+        console.log('req.session.current_company.taxrates', req.session.current_company.taxrates);
+        console.log('taxrate._id.toString()', taxrate._id);
+        const existingTaxrateIndex = req.session.current_company.taxrates.findIndex(tr => tr._id.toString() === taxrate._id.toString());
+        if (existingTaxrateIndex !== -1) {
+            req.session.current_company.taxrates[existingTaxrateIndex] = taxrate;
+        } else {
+            req.session.current_company.taxrates.push({ ...taxrate, _id: taxrate._id.toString() });
+        }
+        console.log('req.session.current_company.taxrates', req.session.current_company.taxrates);
+
 
         // Send a success response
-        return sendSuccessResponse(res, req);
-
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.taxrate_saved'), type: 'success' }, taxrate: taxrate });
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
-        console.error(`Error in companiesController.setDefaultCurrency: `, err.message);
+        console.error(`Error in companiesController.saveOrUpdateTaxRate`, err.message);
         next(err);
     }
 }
+
+async function deleteTaxRate(req, res, next) {
+    try {
+        const taxrate = JSON.parse(req.body.taxrate);
+
+        // Validate the taxrate object
+        if (!taxrate || !taxrate._id) {
+            return res.status(400).json({ notification: { message: 'Invalid tax rate data', type: 'error' } });
+        }
+
+        // Find the company and remove the taxrate
+        const updateResult = await CompanyService.findOneAndUpdate(
+            { _id: req.session.current_company._id },
+            {
+                $pull: { "taxrates": { _id: taxrate._id } }
+            },
+            { new: true }
+        );
+
+        // If the taxrate was not found and removed, return an error
+        if (!updateResult) {
+            return res.status(404).json({ notification: { message: 'Tax rate not found', type: 'error' } });
+        }
+
+        // Optionally, update the taxrates field on the user's session if needed
+        const existingTaxrateIndex = req.session.current_company.taxrates.findIndex(tr => tr._id.toString() === taxrate._id.toString());
+        if (existingTaxrateIndex !== -1) {
+            req.session.current_company.taxrates.splice(existingTaxrateIndex, 1);
+        }
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.taxrate_deleted'), type: 'success' } });
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in companiesController.deleteTaxRate`, err.message);
+        next(err);
+    }
+}
+
 
 async function showdeliverydate(req, res, next) {
     try {
@@ -283,7 +379,28 @@ async function defaultnotesoncreditnotes(req, res, next) {
 
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
-        console.error(`Error in userController.defaultnotesoncreditnotes `, err.message);
+        console.error(`Error in companiesController.defaultnotesoncreditnotes `, err.message);
+        next(err);
+    }
+}
+
+async function defaulttaxrate(req, res, next) {
+    try {
+        console.log('test0', req.body.default_taxrate);
+        const defaultTaxrateObjectId = new mongoose.Types.ObjectId(req.body.default_taxrate);
+
+        // Update company settings.default_vat_rate
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "default_taxrate": defaultTaxrateObjectId } });
+
+        // Update the default_vat_rate field on the user's session
+        req.session.current_company.default_taxrate = req.body.default_taxrate;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.default_vat_rate_updated'), type: 'success' }});
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in companiesController.defaultaxtrate `, err.message);
         next(err);
     }
 }
@@ -299,7 +416,9 @@ module.exports = {
     defaultnotesoncreditnotes,
     changeCurrentCompany,
     setDefaultInvoiceDueDateTermsType,
-    setDefaultCurrency,
     showdeliverydate,
-    showtargetinvoice
+    showtargetinvoice,
+    saveOrUpdateTaxRate,
+    defaulttaxrate,
+    deleteTaxRate
 }

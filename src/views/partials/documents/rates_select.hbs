@@ -1,0 +1,60 @@
+<div x-data="{
+        showCustomTaxRate: false,
+
+        initializeCustomVatRate() {
+            const vat = JSON.parse(this.formItem.vat);
+            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            this.formItem.custom_vat_rate = !taxrates.some(rate => rate.label === vat.label && rate.value === vat.value) && !(vat.label === '' && vat.value === '');
+            this.showCustomTaxRate = this.formItem.custom_vat_rate;
+        },
+
+        updateVatValue(event) {
+            this.formItem.vat = JSON.stringify({ ...JSON.parse(this.formItem.vat), value: event.target.value });
+            this.computeAmounts();
+        },
+
+        updateVatLabel(event) {
+            this.formItem.vat = JSON.stringify({ ...JSON.parse(this.formItem.vat), label: event.target.value });
+        }
+    }" 
+    x-intersect="initializeCustomVatRate()">
+    <label for="item-vat" class="text-right block w-full text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.items_modal.vat_rate' }}</label>
+    <select x-cloak x-show="!showCustomTaxRate" 
+            x-model="formItem.vat" id="item-vat"
+            @change="computeAmounts()"
+            class="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    >
+        <option value="0" :selected="JSON.parse(formItem.vat).label === '' && JSON.parse(formItem.vat).value === ''"></option> 
+        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company_country].name + ')'">
+            <template x-for="(rate, index) in countries[current_company_country].taxrates" :key="index">
+                <option :value="JSON.stringify(rate)" 
+                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company_country].default_taxrate === rate._id)"
+                        x-text="`${rate.label}`"></option>
+            </template>
+        </optgroup>
+        <optgroup x-show="custom_taxrates.length > 0" label="{{ t 'documents.views.index.items_modal.custom_taxrates' }}">
+            <template x-for="(rate, index) in custom_taxrates" :key="index">
+                <option :value="JSON.stringify(rate)" 
+                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company_country].default_taxrate === rate._id)"
+                        x-text="`${rate.label} (${rate.value}%)`"></option>
+            </template>
+        </optgroup>
+    </select>
+    <div x-cloak x-show="showCustomTaxRate" class="relative flex rounded-md shadow-sm gap-x-2">
+        <div class="w-20 relative rounded-md shadow-sm">
+            <input type="text" :value="JSON.parse(formItem.vat).value" @input="updateVatValue($event)"
+                   class="text-right block w-full rounded-md border-0 py-1.5 pr-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  >
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <span class="text-gray-500 sm:text-sm">%</span>
+            </div>
+        </div>
+        
+        <input type="text" :value="JSON.parse(formItem.vat).label" @input="updateVatLabel($event)" placeholder="{{t 'documents.views.index.items_modal.vat_rate_label' }}"
+               class="flex-1 block rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" >
+    </div>
+    <div class="mt-1 flex justify-end align-middle">
+        <input x-model="formItem.custom_vat_rate" @change="formItem.vat = JSON.stringify({value: '', label: ''}); showCustomTaxRate = formItem.custom_vat_rate; computeAmounts();"
+            type="checkbox" id="custom_vat_rate" name="custom_vat_rate" class="h-4 w-4 mt-1 mr-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+        <label for="custom_vat_rate" class="text-sm font-medium leading-6 text-gray-900">Custom VAT Rate</label>
+    </div>
+</div>

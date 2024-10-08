@@ -33,8 +33,6 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: { type: String, required: false },
     resetPasswordExpires: { type: Date, required: false },
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
-    created_at: { type: Date, required: true, default: new Date() },
-    updated_at: { type: Date, required: true, default: new Date() },
 }, schemaOptions);
 
 const User = mongoose.model('User', userSchema);

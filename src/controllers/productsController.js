@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const ProductsService = require('../services/products.service');
 const { ProductsTypesenseService } = require('../services/products.typesense.service');
 const { MongoServerError } = require('mongodb');
@@ -19,8 +20,6 @@ async function index(req, res, next) {
         res.render('products/index', {
             layout: false,
             products: products,
-            // countries: req.i18n.t('countries:countries',  { returnObjects: true }),
-            // frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
             defaultCountry: req.session.current_company.country,
             // ...getCompanyRegistrationNumberLabels(req)
         });
@@ -67,8 +66,9 @@ async function editAjax(req, res, next) {
             });
         }
 
-        res.status(200).json(product.toObject());
-
+        res.status(200).json({
+            product: product.toObject()
+        });
     } catch (error) {
         next(error);
     }
@@ -129,6 +129,11 @@ async function update(req, res, next) {
         if (!product) {
             return next({ status: 404, message: 'Product not found' });
         }
+
+        if (req.body.value.vat) {
+            req.body.value.vat = new mongoose.Types.ObjectId(req.body.value.vat);
+        }
+
         let updatedProduct = await ProductsService.update(product._id, req.body.value);
         updatedProduct = updatedProduct.toObject();
 

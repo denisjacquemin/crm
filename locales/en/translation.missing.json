@@ -50,7 +50,9 @@
         },
         "items_modal": {
           "name_label": "documents.views.index.items_modal.name_label",
-          "name_placeholder": "documents.views.index.items_modal.name_placeholder"
+          "name_placeholder": "documents.views.index.items_modal.name_placeholder",
+          "custom_taxrates": "documents.views.index.items_modal.custom_taxrates",
+          "vat_rate_label": "documents.views.index.items_modal.vat_rate_label"
         },
         "invoice_settings": {
           "show_deliverry_date": "documents.views.index.invoice_settings.show_deliverry_date"
@@ -106,6 +108,19 @@
         "yes_show_target_invoice": "settings.views.credit_notes.yes_show_target_invoice",
         "no_show_target_invoice": "settings.views.credit_notes.no_show_target_invoice",
         "update_default_notes_on_credit_notes_button": "settings.views.credit_notes.update_default_notes_on_credit_notes_button"
+      },
+      "vatrates": {
+        "custom_vatrates": "settings.views.vatrates.custom_vatrates",
+        "custom_vatrates_help": "settings.views.vatrates.custom_vatrates_help",
+        "create_vatrate_button": "settings.views.vatrates.create_vatrate_button",
+        "value": "settings.views.vatrates.value",
+        "label": "settings.views.vatrates.label",
+        "save_button": "settings.views.vatrates.save_button"
+      },
+      "myaccount": {
+        "value": "settings.views.myaccount.value",
+        "label": "settings.views.myaccount.label",
+        "code": "settings.views.myaccount.code"
       }
     },
     "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",
@@ -142,7 +157,8 @@
         "internal_name": "users.views.signup2.internal_name",
         "internal_name_placeholder": "users.views.signup2.internal_name_placeholder",
         "frequently_selected_currencies": "users.views.signup2.frequently_selected_currencies",
-        "all_currencies": "users.views.signup2.all_currencies"
+        "all_currencies": "users.views.signup2.all_currencies",
+        "currency": "users.views.signup2.currency"
       },
       "index": {
         "seller_modal": {
@@ -196,7 +212,9 @@
   "companies": {
     "controller": {
       "default_company_name": "companies.controller.default_company_name",
-      "show_delivery_date_updated": "companies.controller.show_delivery_date_updated"
+      "show_delivery_date_updated": "companies.controller.show_delivery_date_updated",
+      "taxrate_saved": "companies.controller.taxrate_saved",
+      "taxrate_deleted": "companies.controller.taxrate_deleted"
     }
   },
   "taxrates": {
@@ -263,5 +281,6 @@
     "controller": {
       "error_serving_file": "files.controller.error_serving_file"
     }
-  }
+  },
+  "country_selected_is": "country_selected_is"
 }

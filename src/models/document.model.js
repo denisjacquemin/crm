@@ -26,8 +26,12 @@ const paymentSchema = new mongoose.Schema({
     bank: { type: String, required: false },
     iban: { type: String, required: false },
     bic: { type: String, required: false },
-});
+}, { _id: false });
 
+const taxrateSchema = new mongoose.Schema({
+    value: { type: String, required: false },
+    label: { type: String, required: false },
+});
 
 const itemSchema = new mongoose.Schema({
     name: { type: String, required: false, default: '' },
@@ -37,19 +41,20 @@ const itemSchema = new mongoose.Schema({
     unit_price: { type: String, required: false, default: 0 },
     reduction: { type: String, required: false, default: 0 },
     reduction_unit: { type: String, required: false, default: '%' },
-    vat: { type: String, required: false, default: '0' },
+    vat: { type: taxrateSchema, required: false },
+    custom_vat_rate: { type: Boolean, required: false, default: false },
     amountvat: { type: String, required: false, default: 0 },
     amountvatexcl: { type: String, required: false, default: 0 },
     amountvatincl: { type: String, required: false, default: 0 },
     order: { type: Number, required: true, default: 0 },
     form_automatic_computation: { type: Boolean, required: true, default: true },
-});
+}, { _id: false });
 
 const currencySchema = new mongoose.Schema({
     name: { type: String, required: true },
     label: { type: String, required: true },
     symbol: { type: String, required: true }
-});
+}, { _id: false });
 
 const documentSchema = new mongoose.Schema({
     company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
@@ -183,8 +188,6 @@ documentSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async 
     }
 });
 
-
-const Document = mongoose.model('Document', documentSchema);
 
 module.exports = {
     Document: mongoose.model('Document', documentSchema),

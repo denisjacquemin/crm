@@ -2,11 +2,13 @@
     x-data="{
         sizes: {{ stringify sizes}},
         sellers: {{ stringify sellers }},
-        selectedSeller: {},
+        selectedSeller: null,
         editSeller: async function(index) {
             try {
                 const data = await fetchUrl(`/companies/editAjax/${this.sellers[index].slug}`, 'GET');
                 this.selectedSeller = data;
+                this.selectedCountry = this.selectedSeller.country;
+                console.log('this.selectedCountry', this.selectedCountry, this.selectedSeller.country, this.selectedSeller)
                 this.logoFile = this.selectedSeller.logo;
                 this.sellers[index] = this.selectedSeller;
                 this.showCompanyForm();
@@ -44,10 +46,8 @@
             this.$refs.companiesList.style.transform = 'translateX(0)';
             this.$refs.companyForm.style.transform = 'translateX(0)';
         },
-        frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
         defaultCountry: '{{ defaultCountry }}',
         selectedCountry: null,
-        countries: {{ stringify countries }},
         company_registration_number_label_translations: {{ stringify company_registration_number_label_translations }},
         updateCompanyRegistrationNumberLabel: function(country_code) {
             var countries = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
@@ -85,11 +85,9 @@
         },
     }"
     x-init="
-      selectedCountry = defaultCountry || frequentlySelectedCountries[0].value;
+      selectedCountry = defaultCountry || Object.keys(frequentlySelectedCountries)[0];
       updateCompanyRegistrationNumberLabel(selectedCountry);
-      $watch('selectedCountry', (value, oldValue) => {
-        console.log('selectedCountry changed', value, oldValue);
-      });
+      
       $watch('selectedSeller', (value, oldValue) => {
         var company = { ...value };
         if (company.slug) {
@@ -97,6 +95,7 @@
             localStorage.setItem('autosave#company#' + value.slug, JSON.stringify(company));
         }
         selectedCountry = company.country;
+        current_company_country = company.country;
         updateCompanyRegistrationNumberLabel(selectedCountry);
 
       });
@@ -145,8 +144,8 @@
                                     <div class="min-w-0 flex-auto">
                                         <div x-text="seller?.internal_name?.trim() ? `${seller.name} (${seller.internal_name})` : seller?.name"                                                class="text-sm font-semibold leading-6 text-gray-900 line-clamp-2"
                                                 :class="{
-                                                'text-indigo-700': selectedSeller.slug === seller.slug,
-                                                'text-gray-900': selectedSeller.slug !== seller.slug
+                                                'text-indigo-700': selectedSeller?.slug === seller.slug,
+                                                'text-gray-900': selectedSeller?.slug !== seller.slug
                                                 }">
                                         </div>
                                         <div class="mt-1 flex text-xs leading-5 text-gray-500"
@@ -164,8 +163,8 @@
                                 </div>
                                 <div class="flex shrink-0 items-center gap-x-4">
                                     <svg :class="{
-                                                'text-indigo-700 font-medium': selectedSeller.slug === seller.slug,
-                                                'text-gray-400 font-normal': selectedSeller.slug !== seller.slug
+                                                'text-indigo-700 font-medium': selectedSeller?.slug === seller.slug,
+                                                'text-gray-400 font-normal': selectedSeller?.slug !== seller.slug
                                                 }"
                                             class="h-5 w-5 flex-none " viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
@@ -180,184 +179,210 @@
         </div>
     </div>
     <div x-ref="companyForm"
-         class="w-[50%] h-full border-l border-gray-200 flex flex-col transition-transform duration-500 ease-in-out">
-         <div x-cloak x-show="Object.keys(selectedSeller).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                </svg>
-                <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'settings.views.sellers.no_seller_selected' }}</span>
-            </div>
-        </div>
-
-        <div x-cloak x-show="Object.keys(selectedSeller).length !== 0" class="flex flex-col h-full pb-5">
-            <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
-                <div class="w-1/2 text-left">
-                    <button @click.prevent="showCompanyList();"
-                        href="#" class="px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        class="w-[50%] h-full border-l border-gray-200 flex flex-col transition-transform duration-500 ease-in-out">
+        <template x-if="selectedSeller">
+            <div class="h-full">
+                <div x-cloak x-show="Object.keys(selectedSeller).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
-                    </button>
+                        <span class="mt-2 block text-md font-semibold text-gray-500">{{t 'settings.views.sellers.no_seller_selected' }}</span>
+                    </div>
                 </div>
-                <div class="w-1/2 text-right my-auto flex items-center justify-center">
-                    <a x-show="selectedSeller.slug !== '{{session.current_company.slug}}'" href="#"
-                        class="underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
-                            @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller.slug) ">      
-                        {{t 'settings.views.sellers.delete' }}
-                    </a>
-                    <span x-show="selectedSeller.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600 text-right pr-4 sm:pr-0">
-                        You cannot delete current company
-                    </span>
+
+                <div x-cloak x-show="Object.keys(selectedSeller).length !== 0" class="flex flex-col h-full pb-5">
+                    <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
+                        <div class="w-1/2 text-left">
+                            <button @click.prevent="showCompanyList();"
+                                href="#" class="px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="w-1/2  my-auto flex items-center justify-end">
+                            <span x-show="selectedSeller?.slug !== '{{session.current_company.slug}}'"
+                                class="cursor-pointer text-right underline px-3.5 py-2.5 text-sm font-semibold text-red-600 hover:text-red-400"
+                                    @click.prevent="if (confirm('{{t 'settings.views.sellers.delete_confirm' }}')) deleteSeller(selectedSeller?.slug) ">      
+                                {{t 'settings.views.sellers.delete' }}
+                            </span>
+                            <span x-show="selectedSeller?.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600 text-right pr-4 sm:pr-0">
+                                You cannot delete current company
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-auto">
+                        <div>
+                            <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.name' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.name" autocomplete="off"
+                                    id="name"
+                                    @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="seller_internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.sellers.internal_name' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.internal_name" autocomplete="off"
+                                    placeholder="{{t 'settings.views.sellers.internal_name_placeholder' }}"
+                                    id="seller_internal_name"
+                                    @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="address" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.address' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.address1" autocomplete="off"
+                                    id="address"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <input type="text" x-model="selectedSeller.address2" autocomplete="off"
+                                    class="mt-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.zip' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.zip" autocomplete="off"
+                                    id="zip"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="city" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.city' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.city" autocomplete="off"
+                                    id="city"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="country" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.country' }}</label>
+                            <div class="mt-1">
+                                <select x-on:change="selectedSeller.country = $event.target.value; selectedSeller = {...selectedSeller};"
+                                        id="country" name="country"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
+                                        <template x-for="(countryCode, index) in Object.keys(frequentlySelectedCountries)" :key="index">
+                                            <option x-bind:selected="countryCode === selectedCountry" :value="countryCode" x-text="frequentlySelectedCountries[countryCode].name"></option>
+                                        </template>
+                                    </optgroup>
+                                    <optgroup label="{{t 'users.views.signup2.all_countries' }}">
+                                        <template x-for="(countryCode, index) in Object.keys(countries)" :key="index">
+                                            <option x-bind:selected="countryCode === selectedCountry && !Object.keys(frequentlySelectedCountries).includes(selectedCountry)" :value="countryCode" x-text="countries[countryCode].name"></option>
+                                        </template>
+                                    </optgroup>
+                                </select>                  
+                            </div>
+                        </div>
+                        <div>
+                            <label for="vat_number" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.vat_number' }}</label>
+                            <div class="mt-1">
+                                <input x-bind:disabled="selectedSeller.without_vat" 
+                                    type="text" x-model="selectedSeller.vat_number" autocomplete="off"
+                                    id="vat_number"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
+                                <div class="mt-1">
+                                    {{!-- value="session.signup.company.without_vat" --}}
+                                    <input x-model="selectedSeller.without_vat"
+                                        type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.without_vat' }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label x-text="company_registration_number_label" for="company_registration_number" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.company_registration_number" autocomplete="off"
+                                    id="company_registration_number"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="default_currency" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.currency' }}</label>
+                            <div class="mt-1">
+                                <select x-model="selectedSeller.settings.default_currency"
+                                    id="default_currency"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
+                                        <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+                                            <option :selected="currency.label === selectedSeller?.settings?.default_currency?.label" 
+                                                    :value="JSON.stringify(currency)" 
+                                                    x-text="`${currency.name} (${currency.symbol})`"></option>
+                                        </template>
+                                    </optgroup>
+                                    <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
+                                        <template x-for="(currency, index) in currencies" :key="index">
+                                            <option :selected="currency.label === selectedSeller?.settings?.default_currency?.label && !frequentlySelectedCurrencies.some(c => c.label === currency.label)" 
+                                                    :value="JSON.stringify(currency)" 
+                                                    x-text="`${currency.name} (${currency.symbol})`"></option>
+                                        </template>
+                                    </optgroup>
+                                </select>                    
+                            </div>
+                        </div>
+                        <div>
+                            <label for="contact_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.contact_name' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.contact_name" autocomplete="off"
+                                    id="contact_name" 
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.phone' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.phone" autocomplete="off"
+                                    id="phone" 
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.email' }}</label>
+                            <div class="mt-1">
+                                <input type="text" x-model="selectedSeller.email" autocomplete="off"
+                                    id="email" 
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="website" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.website' }}</label>
+                            <div class="mt-1">
+                                <div class="mt-1 flex rounded-md shadow-sm">
+                                    <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">https://</span>
+                                    <input id="website" x-model="selectedSeller.website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-r-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                </div>
+                            </div>
+                        </div>
+                        <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
+                            x-on:drop.prevent="handleDrop" 
+                            x-on:dragover.prevent 
+                            x-on:dragenter="isDragging = true" 
+                            x-on:dragleave="isDragging = false"
+                            class="flex items-center justify-center w-full">
+                            <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" 
+                                    class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
+                                    <p x-show="!logoFile?.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
+                                    <p x-show="logoFile?.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="logoFile?.filename"></span> (<span x-text="formatBytes(logoFile?.size, sizes)"></span> - <span x-text="logoFile?.type"></span>)</p>
+                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
+                                    <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
+                                </div>
+                                <input x-on:change="submitUploadForm"
+                                    id="dropzone-file" type="file" class="hidden"/> 
+                            </label>
+
+                        </div>
+                        <template x-if="selectedSeller?.logo?.slug" class="mt-4">
+                            <img :src="`/file/serve/${selectedSeller?.logo?.slug}`" :alt="selectedSeller?.logo?.filename" class="image-class">
+                        </template>
+                    </div>
                 </div>
             </div>
-
-            <div class="px-4 flex-1 flex flex-col gap-y-5 overflow-y-auto">
-                <div>
-                    <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.name' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.name" autocomplete="off"
-                            id="name"
-                            @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="seller_internal_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.sellers.internal_name' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.internal_name" autocomplete="off"
-                            placeholder="{{t 'settings.views.sellers.internal_name_placeholder' }}"
-                            id="seller_internal_name"
-                            @blur="setTimeout(() => $dispatch('loadcompanies'), 2000)"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="address" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.address' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.address1" autocomplete="off"
-                            id="address"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <input type="text" x-model="selectedSeller.address2" autocomplete="off"
-                            class="mt-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.zip' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.zip" autocomplete="off"
-                            id="zip"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="city" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.city' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.city" autocomplete="off"
-                            id="city"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="country" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.country' }}</label>
-                    <div class="mt-1">
-                        <select x-on:change="selectedSeller.country = $event.target.value; selectedSeller = {...selectedSeller};"
-                                id="country" name="country"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
-                                <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
-                                <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
-                                </template>
-                            </optgroup>
-                            <optgroup label="{{t 'users.views.signup2.all_countries' }}">
-                                <template x-for="(country, index) in countries" :key="index">
-                                <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
-                                </template>
-                            </optgroup>
-                        </select>                   
-                    </div>
-                </div>
-                <div>
-                    <label for="vat_number" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.vat_number' }}</label>
-                    <div class="mt-1">
-                        <input x-bind:disabled="selectedSeller.without_vat" 
-                            type="text" x-model="selectedSeller.vat_number" autocomplete="off"
-                            id="vat_number"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
-                        <div class="mt-1">
-                            {{!-- value="session.signup.company.without_vat" --}}
-                            <input x-model="selectedSeller.without_vat"
-                                type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.without_vat' }}</label>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <label x-text="company_registration_number_label" for="company_registration_number" class="block text-sm font-medium leading-6 text-gray-900"></label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.company_registration_number" autocomplete="off"
-                            id="company_registration_number"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="contact_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.contact_name' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.contact_name" autocomplete="off"
-                            id="contact_name" 
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.phone' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.phone" autocomplete="off"
-                            id="phone" 
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.email' }}</label>
-                    <div class="mt-1">
-                        <input type="text" x-model="selectedSeller.email" autocomplete="off"
-                            id="email" 
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="website" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.website' }}</label>
-                    <div class="mt-1">
-                        <div class="mt-1 flex rounded-md shadow-sm">
-                            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">https://</span>
-                            <input id="website" x-model="selectedSeller.website" name="website" value="{{ session.signup.company.website }}" type="text" class="block w-full appearance-none rounded-r-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                        </div>
-                    </div>
-                </div>
-                <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
-                    x-on:drop.prevent="handleDrop" 
-                    x-on:dragover.prevent 
-                    x-on:dragenter="isDragging = true" 
-                    x-on:dragleave="isDragging = false"
-                    class="flex items-center justify-center w-full">
-                    <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" 
-                            class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
-                            <p x-show="!logoFile.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
-                            <p x-show="logoFile.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="logoFile.filename"></span> (<span x-text="formatBytes(logoFile.size, sizes)"></span> - <span x-text="logoFile.type"></span>)</p>
-                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
-                            <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
-                        </div>
-                        <input x-on:change="submitUploadForm"
-                            id="dropzone-file" type="file" class="hidden"/> 
-                    </label>
-
-                </div>
-                <span x-text="selectedSeller.logo.key"></span>
-                <div x-show="selectedSeller.logo.key" class="mt-4">
-                    <img :src="`/file/serve/${selectedSeller.logo.slug}`" :alt="selectedSeller.logo.filename" class="image-class">
-                </div>
-            </div>
-        </div>
-    </div> 
+        </template> 
+    </div>  
 </div>

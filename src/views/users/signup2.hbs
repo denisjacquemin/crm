@@ -1,7 +1,6 @@
 <div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8"
      x-data="{
       countries: {{ stringify countries }},
-      frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
       defaultCountry: '{{ defaultCountry }}',
       selectedCountry: null,
       without_vat: {{#if session.signup.company.without_vat}}{{session.signup.company.without_vat}}{{else}}false{{/if}},
@@ -74,13 +73,14 @@
                 id="country" name="country"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
               <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
-                <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
-                  <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
+                <template x-for="(country, code) in frequentlySelectedCountries" :key="code">
+                    <option :value="code" x-text="country.name"></option>
                 </template>
+
               </optgroup>
               <optgroup label="{{t 'users.views.signup2.all_countries' }}">
-                <template x-for="(country, index) in countries" :key="index">
-                  <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                <template x-for="(country, code) in countries" :key="code">
+                    <option :value="code" x-text="country.name"></option>
                 </template>
               </optgroup>
             </select>

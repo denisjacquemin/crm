@@ -1,0 +1,157 @@
+<div class="flex flex-1 w-full flex-col gap-y-8 sm:gap-y-14 p-4"
+     x-data="{
+        current_country: '',
+        default_taxrates: [],
+        taxrates: [],
+        addEmptyTaxrate: function() {
+            this.taxrates.push({value: '0', label: 'rate label'})
+        },
+        saveRate: async function(taxrate) {
+            const data = await fetchUrl('/company/savetaxrate', 'PATCH', { 
+                taxrate: JSON.stringify(taxrate) 
+            });
+            const index = this.taxrates.findIndex(rate => rate._id === taxrate._id);
+            if (index !== -1) {
+                this.taxrates[index]._id = data.taxrate._id;
+            }
+            const index_in_custom_taxrates = this.custom_taxrates.findIndex(rate => rate._id === taxrate._id);
+            if (index_in_custom_taxrates !== -1) {
+                this.custom_taxrates[index_in_custom_taxrates] = data.taxrate;
+            } else {
+                this.custom_taxrates.push(data.taxrate);
+            }
+        },
+        deleteRate: function(taxrate) {
+            fetchUrl('/company/deletetaxrate', 'DELETE', { 
+                taxrate: JSON.stringify(taxrate) 
+            });
+            this.taxrates = this.taxrates.filter(rate => rate !== taxrate);
+            this.custom_taxrates = this.custom_taxrates.filter(rate => rate._id !== taxrate._id);
+        }
+    }"
+        
+     x-init="taxrates = {{ stringify session.current_company.taxrates }}"
+     x-intersect="
+        default_taxrates = countries[current_company_country].taxrates;
+        current_country = countries[current_company_country].name;
+     "
+>
+    <div class="sm:flex sm:items-start p-2 sm:p-4">
+        <div
+            class="hidden sm:flex mx-auto h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        </div>
+        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">{{t
+                'settings.views.files.files_for_all_docs' }}
+            </h3>
+            <div class="mt-2">
+                <p class="text-sm text-gray-500">{{t 'settings.views.files.files_for_all_docs_help' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-y-4"
+         x-data="{ default_taxrate_selected: default_taxrate }">
+        <label for="custom_vatrates" class="text-base font-semibold leading-7 text-gray-900">{{t
+            'settings.views.vatrates.default_vatrates_selected' }}</label>
+        <p class="text-sm text-gray-500">{{t 'settings.views.vatrates.default_vatrates_selected_help' country=(countries.[session.current_company.country].name) }}</p>
+        <select x-model="default_taxrate_selected" id="vat" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <!-- Empty value option -->
+            <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company_country].name + ')'">
+                <template x-for="(rate, index) in countries[current_company_country].taxrates" :key="index">
+                    <option :value="rate._id" 
+                            :selected="default_taxrate === rate._id"
+                            x-text="`${rate.label}`"></option>
+                </template>
+            </optgroup>
+            <optgroup x-show="custom_taxrates.length > 0" label="{{ t 'documents.views.index.items_modal.custom_taxrates' }}">
+                <template x-for="(rate, index) in custom_taxrates" :key="index">
+                    <option :value="rate._id" 
+                            :selected="default_taxrate === rate._id"
+                            x-text="`${rate.label} (${rate.value}%)`"></option>
+                </template>
+            </optgroup>
+        </select>
+
+        <button type="button" id="newDocumentButton"
+                class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                @click="fetchUrl('/company/defaulttaxrate', 'PATCH', { default_taxrate: default_taxrate_selected }); default_taxrate = default_taxrate_selected;">      
+                {{t 'settings.views.vatrates.set_default_vatrate_button' }}
+        </button>
+    </div>
+
+    <div class="flex flex-col gap-y-4">
+        <label for="custom_vatrates" class="text-base font-semibold leading-7 text-gray-900">{{t
+            'settings.views.vatrates.custom_vatrates' }}</label>
+
+        <div x-show="taxrates?.length === 0">
+            <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-12 w-12 text-gray-300  lucide lucide-percent"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                <span class="my-4 block font-normal text-gray-400">{{t 'settings.views.vatrates.no_custom_taxrates_yet'
+                }}</span>
+                <button type="button"
+                class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none"
+                @click.prevent="addEmptyTaxrate">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="mr-2 lucide lucide-paperclip">
+                    <path
+                    d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+                {{ t 'settings.views.vatrates.add_custom_taxrate' }}
+                </button>
+            </div>
+            </div>
+        </div>    
+
+        <template x-show="taxrates?.length > 0" x-for="(taxrate, index) in taxrates" :key="index">
+            <div class="flex w-full space-x-2 sm:space-x-4 ">
+                <!-- Two divs with equal width taking the remaining space -->
+                <div class="w-14">
+                    <label for="taxrate_value" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.vatrates.value' }}</label>
+                    <input @input="taxrate.value = $event.target.value"
+                           :value="taxrate.value" type="text" class="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+                <div class="flex-1">
+                    <label for="taxrate_label" class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.vatrates.label' }}</label>
+                    <input @input="taxrate.label = $event.target.value"
+                           :value="taxrate.label" type="text" class="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+                <!-- Three divs that take the content width -->
+                <div class="flex-none self-end mb-1">
+                    <button type="button" id="newDocumentButton"
+                        class="w-full block rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        @click.prevent="saveRate(taxrate)">
+                        {{t 'settings.views.vatrates.save_button' }}
+                    </button>
+                </div>
+                <div class="flex-none self-end mb-2">
+                    <button type="button" class="flex items-center" @click="deleteRate(taxrate)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
+                </div>
+            </div>
+        </template>
+
+
+        <button x-show="taxrates?.length > 0" type="button" id="newDocumentButton"
+            class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            @click.prevent="addEmptyTaxrate">
+            {{t 'settings.views.vatrates.create_vatrate_button' }}
+        </button>
+
+    </div>
+    <div class="flex flex-col gap-y-4">
+        <label for="custom_vatrates" class="text-base font-semibold leading-7 text-gray-900">{{t
+            'settings.views.vatrates.default_vatrates' }}</label>
+        <p class="text-sm text-gray-500">{{t 'settings.views.vatrates.default_vatrates_help' country=(countries.[session.current_company.country].name) }}</p>
+        <p class="text-sm text-gray-500">{{t 'settings.views.vatrates.country_selected_is' }}: <span class="font-bold" x-text="current_country"></span> </p>
+        <ul class="list-disc text-sm ml-5">
+            <template x-for="(taxrate, index) in default_taxrates" :key="index">
+                <li x-text="`${taxrate.label}`"></li>
+            </template>
+        </ul>
+    </div>
+</div>

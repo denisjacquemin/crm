@@ -20,6 +20,11 @@ const schemaOptions = {
     }
 };
 
+const taxrateSchema = new mongoose.Schema({
+    value: { type: String, required: true },
+    label: { type: String, required: true },
+});
+
 const companySchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true, default: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}` },
     name: { type: String, required: true },
@@ -38,19 +43,16 @@ const companySchema = new mongoose.Schema({
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     logo: { type: mongoose.Schema.Types.ObjectId, ref: 'File', required: false },
+    taxrates: [{ type: taxrateSchema, required: false }],
+    default_taxrate: { type: mongoose.Schema.Types.ObjectId, required: false },
     settings: {
         default_template: { type: String, required: false, default: 'default_template' },
-        default_currency: { type: currencySchema, required: false, default: {
-            name: process.env.DEFAULT_CURRENCY_NAME,
-            label: process.env.DEFAULT_CURRENCY_LABEL,
-            symbol: process.env.DEFAULT_CURRENCY_SYMBOL
-        } },
+        default_currency: { type: currencySchema, required: false },
         show_delivery_date: { type: Boolean, required: false, default: true },
         show_target_invoice: { type: Boolean, required: false, default: true },
         default_language: { type: String, required: false, default: 'en' },
         default_notes_on_invoice: { type: String, required: false, default: '' },
         default_notes_on_credit_notes: { type: String, required: false, default: '' },
-        default_vat: { type: String, required: false, default: '21' },
         default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
         default_payment_method: { type: String, required: false, default: 'bank_transfer' },
         default_bank_account: { type: String, required: false, default: '' },
@@ -62,6 +64,7 @@ const companySchema = new mongoose.Schema({
 
 }, schemaOptions);
 
-const Company = mongoose.model('Company', companySchema);
-
-module.exports = Company;
+module.exports = {
+    Company: mongoose.model('Company', companySchema),
+    taxrateSchema
+};

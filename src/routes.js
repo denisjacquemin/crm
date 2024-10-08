@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 // const csrfProtection = require('./middlewares/csrf');
 const auth = require('./middlewares/auth');
+const globalData = require('./middlewares/globalData');
 // const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddlewareS3');
 const { uploadMiddleware, handleFileUpload } = require('./middlewares/uploadMiddlewareS3');
 
@@ -22,8 +23,6 @@ router.get("/test", (req, res) => {
 
 router.post("/preferences/changelang", globalController.changeLang);
 router.get("/settings/:tabid?", auth, globalController.settings);
-router.post("/taxRates", globalController.getTaxRatesByCountryCodes);
-
 
 router.get("/users/signup-1", userController.signup1);
 router.post("/users/signup-1", userController.signup1Post);
@@ -44,15 +43,15 @@ router.patch("/user/resetemail", auth, userController.resetEmail);
 router.patch("/user/resetpasswordfromsettings", auth, userController.resetPasswordFromSettings);
 
 // Needs authentication and ACL
-router.get(["/", "/app", "/dashboard"], auth, dashboardController.index);
+router.get(["/", "/app", "/dashboard"], auth, globalData, dashboardController.index);
 
 
-router.get("/documents", auth, documentsController.index);
+router.get("/documents", auth, globalData, documentsController.index);
 
 // router.post("/document/new", auth, documentsController.newDocument);
 router.post("/document/newInvoiceAjax", auth, documentsController.createInvoiceAjax);
 router.post("/document/newCreditNoteAjax", auth, documentsController.createCreditNoteAjax);
-router.get("/document/edit/:slug?", auth, documentsController.edit);
+router.get("/document/edit/:slug?", auth, globalData, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
 router.patch("/document/:slug?", auth, documentsController.update); // autosave for documents
 
@@ -81,7 +80,6 @@ router.patch("/product/:slug?", auth, productsController.update); // autosave fo
 
 
 router.patch("/company/defaultinvoiceduedatetermstype", auth, companiesController.setDefaultInvoiceDueDateTermsType);
-router.patch("/company/defaultcurrency", auth, companiesController.setDefaultCurrency);
 router.patch("/company/showdeliverydate", auth, companiesController.showdeliverydate);
 router.patch("/company/showtargetinvoice", auth, companiesController.showtargetinvoice);
 router.patch("/company/defaultnotesoninvoice", auth, companiesController.defaultnotesoninvoice);
@@ -90,6 +88,9 @@ router.patch("/company/defaultnotesoncreditnotes", auth, companiesController.def
 router.patch("/company/currentInvoiceSequence", auth, companiesController.updateInvoiceSequence);
 router.get("/companies/editAjax/:slug", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);
+router.patch('/company/savetaxrate', auth, companiesController.saveOrUpdateTaxRate);
+router.patch('/company/defaulttaxrate', auth, companiesController.defaulttaxrate);
+router.delete('/company/deletetaxrate', auth, companiesController.deleteTaxRate);
 router.patch("/company/:slug?", auth, companiesController.update); // autosave for sellers/companies
 router.get("/companies/currentusercompanies", auth, companiesController.getCurrentUserCompanies);
 router.delete("/companies/deleteAjax/:slug?", auth, companiesController.deleteAjax);

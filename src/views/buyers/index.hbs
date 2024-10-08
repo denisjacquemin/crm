@@ -68,8 +68,6 @@
         },
         buyers: {{ stringify buyers }},
         selectedBuyer: {},
-        countries: {{ stringify countries }},
-        frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
         defaultCountry: '{{ defaultCountry }}',
         selectedCountry: null,
      }"
@@ -269,13 +267,21 @@
                         <select x-on:change="selectedBuyer.country = $event.target.value;"  id="country" 
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
-                                <template x-for="(country, index) in frequentlySelectedCountries" :key="index">
-                                <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
+                                <template x-for="(countryCode, index) in Object.keys(frequentlySelectedCountries)" :key="index">
+                                    <option 
+                                        x-bind:selected="countryCode === selectedCountry" 
+                                        :value="countryCode" 
+                                        x-text="frequentlySelectedCountries[countryCode].name">
+                                    </option>
                                 </template>
                             </optgroup>
                             <optgroup label="{{t 'users.views.signup2.all_countries' }}">
-                                <template x-for="(country, index) in countries" :key="index">
-                                <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                                <template x-for="(countryCode, index) in Object.keys(countries)" :key="index">
+                                    <option 
+                                        x-bind:selected="countryCode === selectedCountry && !Object.keys(frequentlySelectedCountries).includes(selectedCountry)" 
+                                        :value="countryCode" 
+                                        x-text="countries[countryCode].name">
+                                    </option>
                                 </template>
                             </optgroup>
                         </select>

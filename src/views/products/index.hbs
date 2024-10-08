@@ -25,7 +25,7 @@
         editProduct: async function(index) {
             try {
                 const data = await fetchUrl(`/products/editAjax/${this.products[index].slug}`, 'GET');
-                this.selectedProduct = data;
+                this.selectedProduct = data.product;
                 this.products[index] = this.selectedProduct;
                 if (window.innerWidth < 640) this.showProductForm();
             } catch (error) { console.error('Error editing product', error); }
@@ -33,7 +33,7 @@
         deleteProduct: async function(slug) {
             try {
                 const data = await fetchUrl(`/products/deleteAjax/${slug}`, 'DELETE');
-                this.selectedProduct = {};
+                this.selectedProduct = { custom_vat_rate: { is_custom: false, value: '', label: '' } };
                 localStorage.removeItem(`autosave#product#${slug}`); // if exist of course
                 this.searchProduct();
                 if (window.innerWidth < 640) this.showProductsList();
@@ -41,22 +41,7 @@
                 console.log('Error deleting document', error); 
             }
         },
-        getTaxRates: async function() {
-            let countries = [];
-            if (countries.length === 0) {
-                countries.push(this.selectedCountry);
-            }
-
-            try {
-                const data = await fetchUrl('/taxRates', 'POST', { countries });
-                this.taxRates = data;
-                } catch (error) {
-                console.error('Error getting tax rates', error);
-            }
-        },
         selectedCountry: '{{defaultCountry}}',
-        countries: [],
-        taxRates: [],
         searchProductTerm: '',
         sortBy: 'createdAtdesc',
         searchProduct: async function() {
@@ -70,15 +55,22 @@
                 });
         },
         products: {{ stringify products }},
-        selectedProduct: {},
+        selectedProduct: { custom_vat_rate: { is_custom: false, value: '', label: '' } },
      }"
      x-init="
-       getTaxRates();
        $watch('selectedProduct', (value, oldValue) => {
           var product = { ...value };
-          if (product.slug) {
-            product.autosave_updated_at = new Date();
-            localStorage.setItem('autosave#product#' + value.slug, JSON.stringify(product));
+          if (Object.keys(product).length !== 0) {
+            if (product.custom_vat_rate.is_custom || product.vat === '') {
+                product.vat = null;
+            } else {
+                product.custom_vat_rate.value = '';
+                product.custom_vat_rate.label = '';
+            }
+            if (product.slug) {
+                product.autosave_updated_at = new Date();
+                localStorage.setItem('autosave#product#' + value.slug, JSON.stringify(product));
+            }
           }
         });
      ">
@@ -182,7 +174,7 @@
             <template x-if="products.length > 0">
                 <ul role="list" class="divide-y divide-gray-100">
                     <template x-for="(product, index) in products" :key="index">
-                        <li class="relative py-5 hover:bg-gray-100 cursor-pointer" role="listitem"
+                        <li class="relative py-2 hover:bg-gray-100 cursor-pointer" role="listitem"
                             @click.prevent="editProduct(index);"
                             :data-slug="product.slug"
                             
@@ -224,7 +216,7 @@
     </div>
     <div x-ref="productForm"
          class="pb-5 w-[50%] h-full border-l border-gray-200 flex flex-col sm:flex-1 transition-transform duration-500 ease-in-out">
-        <div x-cloak x-show="Object.keys(selectedProduct).length === 0" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <div x-cloak x-show="!selectedProduct.slug" class="relative block w-full h-full p-5 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -233,7 +225,7 @@
             </div>
         </div>
         
-        <div x-cloak x-show="Object.keys(selectedProduct).length !== 0" class="flex flex-col h-full">
+        <div x-cloak x-show="selectedProduct.slug" class="flex flex-col h-full">
             <div class="w-full py-2 mb-3 sm:pr-2 text-right flex shadow-md sm:shadow-none">
                 <div class="w-1/2 text-left sm:hidden">
                     <button @click.prevent="if (window.innerWidth < 640) showProductsList();"
@@ -252,124 +244,70 @@
                 </div>
             </div>
             
-            <div class="px-4 flex-1 grid gap-y-5 overflow-y-scroll">
-                
-                
-                
+            <div class="px-4 flex-1 flex flex-col gap-y-4 overflow-y-scroll">
                 <div>
                     <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'products.views.index.name_label' }}</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.name" autocomplete="off"
-                            placeholder="{{t 'products.views.index.name_placeholder' }}" id="name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
+                    <input type="text" x-model="selectedProduct.name" autocomplete="off"
+                        placeholder="{{t 'products.views.index.name_placeholder' }}" id="name"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
                 <div>
                     <label for="description" class="block text-sm font-medium leading-6 text-gray-900">{{t 'products.views.index.description_label' }}</label>
-                    <div class="mt-2">
-                        <textarea x-model="selectedProduct.description" autocomplete="off" rows="2"
-                            placeholder="{{t 'products.views.index.description_placeholder' }}" id="description"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </textarea>
-                    </div>
+                    <textarea x-model="selectedProduct.description" autocomplete="off" rows="2"
+                        placeholder="{{t 'products.views.index.description_placeholder' }}" id="description"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </textarea>
                 </div>
                 <div>
                     <label for="reference" class="block text-sm font-medium leading-6 text-gray-900">{{t 'products.views.index.reference_label' }}</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.reference" autocomplete="off"
-                            placeholder="{{t 'products.views.index.reference_placeholder' }}" id="reference"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
+                    <input type="text" x-model="selectedProduct.reference" autocomplete="off"
+                        placeholder="{{t 'products.views.index.reference_placeholder' }}" id="reference"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
                 <div>
                     <label for="vat" class="block text-sm font-medium leading-6 text-gray-900">{{t 'products.views.index.vat_label' }}</label>
-                    <div class="mt-2">
-                        
-                        <select x-show="!selectedProduct.custom_vat_rate" x-model="selectedProduct.vat" id="vat" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <!-- Empty value option -->
-                            <option value="" selected></option> 
-                            <template x-if="Object.keys(taxRates.taxRates).length > 1">
-                                <template x-for="(countryData, countryCode) in taxRates.taxRates" :key="countryCode">
-                                    <optgroup :label="countryData.country">
-                                        <template x-for="rate in countryData.rates" :key="rate.id">
-                                            <option :value="rate.id">{{ rate.name }}</option>
-                                        </template>
-                                    </optgroup>
-                                </template>
+                    <select x-show="!selectedProduct?.custom_vat_rate?.is_custom" x-model="selectedProduct.vat" id="vat" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <!-- Empty value option -->
+                        <option value="" selected></option> 
+                        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company_country].name + ')'">
+                            <template x-for="(rate, index) in countries[current_company_country].taxrates" :key="index">
+                                <option :value="rate._id" 
+                                        :selected="selectedProduct.vat === rate._id || default_taxrate === rate._id"
+                                        x-text="`${rate.label}`"></option>
                             </template>
-                            <template x-if="Object.keys(taxRates.taxRates).length === 1">
-                                <template x-for="(countryData, countryCode) in taxRates.taxRates" :key="countryCode">
-                                    <template x-for="rate in countryData.rates" :key="rate.id">
-                                        <option :value="rate.id" x-text="rate.name"></option>
-                                    </template>
-                                </template>
+                        </optgroup>
+                        <optgroup x-show="custom_taxrates.length > 0" label="{{ t 'documents.views.index.items_modal.custom_taxrates' }}">
+                            <template x-for="(rate, index) in custom_taxrates" :key="index">
+                                <option :value="rate._id" 
+                                        :selected="selectedProduct.vat === rate._id || default_taxrate === rate._id"
+                                        x-text="`${rate.label} (${rate.value}%)`"></option>
                             </template>
-                        </select>
-                        <div x-show="selectedProduct.custom_vat_rate" class="relative mt-2 rounded-md shadow-sm">
-                            <input type="text" x-model="selectedProduct.vat"
-                            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="0.00" >
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        </optgroup>
+                    </select>
+                    <div class="flex gap-x-2" x-show="selectedProduct?.custom_vat_rate?.is_custom">
+                        <div class="w-20 relative rounded-md shadow-sm">
+                            <input type="text" x-model="selectedProduct.custom_vat_rate.value"
+                                   class="text-right block w-full rounded-md border-0 py-1.5 pr-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  >
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <span class="text-gray-500 sm:text-sm">%</span>
                             </div>
                         </div>
-                        <div class="mt-1 flex justify-end align-middle">
-                            {{!-- value="session.signup.company.without_vat" --}}
-                            <input x-model="selectedProduct.custom_vat_rate" @change="selectedProduct.vat = ''"
-                                type="checkbox" id="without_vat" name="without_vat" class="h-4 w-4 mt-1 mr-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="without_vat" class="text-sm font-medium leading-6 text-gray-900">Custom VAT Rate</label>
-                        </div>
+                        <input type="text" x-model="selectedProduct.custom_vat_rate.label" placeholder="{{t 'documents.views.index.items_modal.vat_rate_label' }}"
+                            class="flex-1 block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" >
+                    </div>
+                    <div class="mt-1 flex justify-end align-middle">
+                        {{!-- value="session.signup.company.without_vat" --}}
+                        <input x-model="selectedProduct.custom_vat_rate.is_custom" @change="selectedProduct.vat = ''"
+                            type="checkbox" id="custom_vat_rate" name="custom_vat_rate" class="h-4 w-4 mt-1 mr-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        <label for="custom_vat_rate" class="text-sm font-medium leading-6 text-gray-900">Custom VAT Rate</label>
                     </div>
                 </div>
                 <div>
                     <label for="unit_price" class="block text-sm font-medium leading-6 text-gray-900">{{t 'products.views.index.unit_price_label' }}</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.unit_price" autocomplete="off"
-                            placeholder="{{t 'products.views.index.unit_price_placeholder' }}" id="unit_price"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="zip" class="block text-sm font-medium leading-6 text-gray-900">Zip</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.zip" autocomplete="off"
-                            placeholder="Zip number" id="zip"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.city" autocomplete="off"
-                            placeholder="City" id="city"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Name</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.contact_name" autocomplete="off"
-                            placeholder="Contact Name" id="phone"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Contact Phone</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.phone" autocomplete="off"
-                            placeholder="Phone number" id="phone"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Contact Email</label>
-                    <div class="mt-2">
-                        <input type="text" x-model="selectedProduct.email" autocomplete="off"
-                            placeholder="email" id="email"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                
+                    <input type="text" x-model="selectedProduct.unit_price" autocomplete="off"
+                        placeholder="{{t 'products.views.index.unit_price_placeholder' }}" id="unit_price"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>              
             </div>
         </div>
     </div>

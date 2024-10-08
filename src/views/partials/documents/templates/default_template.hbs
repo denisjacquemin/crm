@@ -291,7 +291,7 @@
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black sheet transform-origin-top-left xl:mx-auto">
       <span class="top-left">
-        <template x-if="selectedDocument.config.seller.logo.slug">
+        <template x-if="selectedDocument.config?.seller?.logo?.slug">
             <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
         </template> 
       </span>

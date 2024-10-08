@@ -6,6 +6,10 @@
         show_target_invoice: null,
     }"
     x-intersect="
+        updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
+        updateClickHandler(() => {
+            openSlide = false;
+        });
         show_delivery_date = selectedDocument.config.show_delivery_date;
         show_delivery_date_option = selectedDocument.config.document_type === 'invoice';
         show_target_invoice = selectedDocument.config.show_target_invoice;
@@ -14,8 +18,6 @@
 >   
     <div class="col-span-full"
          x-data="{
-            frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
-            currencies: {{ stringify currencies }},
             get selectedCurrency() {
                 return JSON.stringify(selectedDocument.config.currency);
             },
@@ -24,24 +26,24 @@
             }
         }"
     >
-      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.currency'}}</label>
-      <div class="mt-2">
+    <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.currency'}}</label>
+    <div class="mt-2">
         <select x-model="selectedCurrency"
                 id="default_currency"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
-                        <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
-                            <option x-bind:selected="currency.label === selectedDocument.config?.currency?.label" :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
-                        </template>
-                    </optgroup>
-                    <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
-                        <template x-for="(currency, index) in currencies" :key="index">
-                            <option x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)" :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
-                        </template>
-                    </optgroup>
-                </select>
-            </select>      
-        </div>
+            <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
+                <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+                    <option :selected="currency.label === selectedDocument.config?.currency?.label" 
+                            :value="JSON.stringify(currency)" 
+                            x-text="`${currency.name} (${currency.symbol})`"></option>
+                </template>
+            </optgroup>
+            <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
+                <template x-for="(currency, index) in currencies" :key="index">
+                    <option x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)" :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
+                </template>
+            </optgroup>
+        </select>
     </div>
 
     <div x-show="show_delivery_date_option" class="col-span-full"

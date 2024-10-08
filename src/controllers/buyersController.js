@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongodb');
 const BuyersService = require('../services/buyers.service');
 const { BuyersTypesenseService } = require('../services/buyers.typesense.service');
 const DateHelper = require('../lib/date-helpers');
@@ -25,12 +24,9 @@ async function index(req, res, next) {
         const buyers = results.hits.map(hit => hit.document);
         const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
 
-        console.log('current company coutnry:', req.session.current_company.country);
         res.render('buyers/index', {
             layout: false,
             buyers: buyers,
-            countries: req.i18n.t('countries:countries',  { returnObjects: true }),
-            frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
             defaultCountry: geo && geo.country,
             ...getCompanyRegistrationNumberLabels(req)
         });

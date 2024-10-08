@@ -132,6 +132,9 @@ const hbs = create({
                 return options.fn(this);
             }
         },
+        or: function(v1, v2) {
+            return v1 || v2;
+        },
         formatBytes: function(bytes) {
             return formatBytes(bytes);
         }
@@ -179,6 +182,7 @@ app.use(function(req, res, next) {
     }
     res.locals.notifications = notifications;
     res.locals.session = req.session;
+
     res.locals.csrfToken = req.csrfToken();
     next();
 });

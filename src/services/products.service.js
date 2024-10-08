@@ -4,7 +4,6 @@ class ProductsService {
 
     async create(data) {
         try {
-            console.log('data', data);
             const product = new Product(data);
             const productCreated = await product.save();
             return productCreated ? productCreated : null;

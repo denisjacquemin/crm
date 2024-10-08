@@ -25,7 +25,7 @@
             <option :value="$id('tab', 3)">{{t 'settings.views.tabs.invoices' }}</option>
             <option :value="$id('tab', 4)">{{t 'settings.views.tabs.credit_notes' }}</option>
             <option :value="$id('tab', 5)">{{t 'settings.views.tabs.files' }}</option>
-
+            <option :value="$id('tab', 6)">{{t 'settings.views.tabs.vat' }}</option>
         </select>
     </div>
     <div class="hidden">
@@ -149,6 +149,18 @@
                         {{t 'settings.views.tabs.files' }}
                     </a>
                 </li>
+                <li class="pl-2">
+                    <a role="tab" href="#" :id="$id('tab', whichChild($el.parentElement, $refs.tablist))"
+                        @click.prevent="select($el.id)" @focus.prevent="select($el.id)"
+                        :tabindex="isSelected($el.id)? 0: -1"
+                        :class="isSelected($el.id)? 'bg-gray-100 text-indigo-600': 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'"
+                        :aria-selected="isSelected($el.id)"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 shrink-0"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+
+                        {{t 'settings.views.tabs.vat' }}
+                    </a>
+                </li>
 
             </ul>
         </nav>
@@ -179,6 +191,10 @@
             aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="flex flex-col h-full">
             <div class="h-full">{{> settings/files }}</div>
         </section>
-
+        <section x-show="isSelected($id('tab', whichChild($el, $el.parentElement)))"
+            :aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" role="tabpanel"
+            aria-labelledby="$id('tab', whichChild($el, $el.parentElement))" class="overflow-y-auto">
+            <div class="h-full">{{> settings/vatrates }}</div>
+        </section>
     </div>
 </div>

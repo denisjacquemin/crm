@@ -1,14 +1,10 @@
 <div class="flex h-full w-[300%]" x-data="{ 
         itemIndexEdited: -1,  
-        formItem: {
-            form_automatic_computation: true,
-            reduction_unit: '%',
-            vat: '21',
-        },
+        formItem: { vat: JSON.stringify({ value: '', label: ''}) },
         createNewItem: function() {
-
             this.resetFormItem();
             this.showItemForm();
+            console.log('createNewItem', this.formItem);
         },
         startEdit: function(index) {
             this.resetFormItem();
@@ -18,9 +14,13 @@
                 name: item.name,
                 reference: item.reference,
                 description: item.description,
-                form_automatic_computation: item.form_automatic_computation,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                reduction: item.reduction,
                 reduction_unit: item.reduction_unit,
-                vat: item.vat,
+                vat: typeof item.vat === 'object' ? JSON.stringify(item.vat) : item.vat,
+                custom_vat_rate: item.custom_vat_rate,
+                form_automatic_computation: item.form_automatic_computation,
                 amountvatexcl: item.amountvatexcl,
                 amountvat: item.amountvat,
                 amountvatincl: item.amountvatincl,
@@ -41,6 +41,8 @@
             document.getElementById('item-quantity').value = '';
             document.getElementById('item-unit-price').value = '';
             document.getElementById('item-reduction').value = '';
+            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            const default_vat = taxrates.find(rate => rate._id === this.default_taxrate);
             this.formItem = {
                 name: '',
                 reference: '',
@@ -49,11 +51,12 @@
                 unit_price: '0.0',
                 reduction: '0',
                 reduction_unit: '%',
-                vat: '21',
+                vat: JSON.stringify(default_vat),
+                custom_vat_rate: false,
+                form_automatic_computation: true,
                 amountvatexcl: this.formatNumber(0.0),
                 amountvat: this.formatNumber(0.0),
                 amountvatincl: this.formatNumber(0.0),
-                form_automatic_computation: true,
             }
             this.itemIndexEdited = -1;
             this.description = '';
@@ -72,11 +75,12 @@
                 unit_price: String(this.formItem.unit_price || '0.0'),
                 reduction: String(this.formItem.reduction || '0'),
                 reduction_unit: this.formItem.reduction_unit,
-                vat: String(this.formItem.vat),
+                vat: this.formItem.vat,
+                custom_vat_rate: this.formItem.custom_vat_rate,
+                form_automatic_computation: this.formItem.form_automatic_computation,
                 amountvatexcl: this.formItem.amountvatexcl,
                 amountvat: this.formItem.amountvat,
                 amountvatincl: this.formItem.amountvatincl,
-                form_automatic_computation: this.formItem.form_automatic_computation,
             }
             if (this.itemIndexEdited===-1) {
                 this.selectedDocument.config.items.unshift(newItem);
@@ -86,7 +90,7 @@
             this.computeInvoiceAmounts();
             this.showItemsList();
         },
-        chooseProduct: function(){
+        chooseProduct: async function(){
             if (this.selectedProductIndex === null) {
                 dispatch('notify', { 
                     content: '{{ t 'documents.views.index.items_modal.no_product_selected' }}', 
@@ -96,13 +100,30 @@
                 return;
             }
             this.resetFormItem();
+            {{!-- const data = await fetchUrl(`/products/editAjax/${this.products[this.selectedProductIndex].slug}`, 'GET');
+            console.log('data.product', data.product); --}}
+
+            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            let full_vat = { value: '', label: '' };
+            if (this.products[this.selectedProductIndex].custom_vat_rate.is_custom) {
+                full_vat = {
+                    value: this.products[this.selectedProductIndex].custom_vat_rate.value,
+                    label: this.products[this.selectedProductIndex].custom_vat_rate.label
+                }
+            } else {
+                full_vat = taxrates.find(rate => rate._id === this.products[this.selectedProductIndex].vat);
+                if (!full_vat) {
+                    full_vat = { value: '', label: '' };
+                }
+            }
             Object.assign(this.formItem, { 
                 name: this.products[this.selectedProductIndex].name, 
                 description: this.products[this.selectedProductIndex].description, 
                 reference: this.products[this.selectedProductIndex].reference, 
                 unit_price: this.products[this.selectedProductIndex].unit_price, 
-                vat: this.products[this.selectedProductIndex].vat,
-                
+                vat: JSON.stringify(full_vat),
+                custom_vat_rate: !this.countries[this.current_company_country].taxrates.includes(this.products[this.selectedProductIndex].vat)
+
             });
             document.getElementById('item-quantity').value = this.formItem.quantity;
             document.getElementById('item-unit-price').value = this.formItem.unit_price;
@@ -113,15 +134,14 @@
             this.amountvatexcl = this.formatNumber(parseFloat(this.formItem.amountvatexcl));
             this.amountvat = this.formatNumber(parseFloat(this.formItem.amountvat));
             this.amountvatincl = this.formatNumber(parseFloat(this.formItem.amountvatincl)); 
-            console.log('this.formItem', this.formItem);
             this.computeAmounts();
             this.showItemForm();
         },
         computeInvoiceAmounts: function() {
-            dispatch('notify', { 
+            {{!-- dispatch('notify', { 
                 content: 'computeInvoiceAmounts', 
                 type: 'info' 
-            });
+            }); --}}
             let totalAmountVatExcl = 0.0;
             let totalAmountVat = 0.0;
             let totalAmountVatIncl = 0.0;
@@ -216,17 +236,17 @@
             return formatter.format(amount).replace(',', '.').replaceAll('\u202F', ' '); 
         },
         computeAmounts: function() {
-            dispatch('notify', { 
+            {{!-- dispatch('notify', { 
                 content: 'computeAmounts', 
                 type: 'info' 
-            });
-
+            }); --}}
             const quantity = this.stringToFloat(this.formItem.quantity) || 1;
             const unitPrice = this.stringToFloat(this.formItem.unit_price)  || 0;
             const reduction = this.stringToFloat(this.formItem.reduction) || 0;
-
+            console.log('quantity', quantity, 'unitPrice', unitPrice, 'reduction', reduction);
             const reductionUnit = this.formItem.reduction_unit;
-            const vat = this.stringToFloat(this.formItem.vat) || 0;
+            const vat = this.stringToFloat(JSON.parse(this.formItem.vat).value) || 0;
+            console.log('vat', vat);
             const vatRate = vat === -1 ? 0 : vat;
             let vatExcl = 0.0;
             if (reductionUnit === '%') {
@@ -317,7 +337,9 @@
        updateClickHandler(() => {
           openSlide = false;
        });
-    ">
+    "
+    @searchproducts.window="searchProduct()"
+    >
     <div x-ref="itemsList"
         class="px-4 sm:px-6 w-1/3 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
 
@@ -579,28 +601,14 @@
                             x-bind:placeholder="formItem.form_automatic_computation ? (formItem.reduction_unit === '%' ? '0' : `0.00`) : ''"
                             class="block w-full rounded-md border-0 py-1.5 text-right text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <select x-model="formItem.reduction_unit"
+                            x-on:change="computeAmounts()"
                             class="block ml-2 w-24 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option value="%">%</option>
-                            <option value="EUR">EUR</option>
+                            <option value="EUR" x-text="selectedDocument.config.currency.label"></option>
                         </select>
                     </div>
                 </div>
-                <div>
-                    <div class="col-span-1 md:col-span-2">
-                        <label for="item-vat"
-                            class="text-right block w-full text-sm font-medium leading-6 text-gray-900">{{t
-                            'documents.views.index.items_modal.vat_rate' }}</label>
-                        <select x-model="formItem.vat" id="item-vat"
-                            @change="computeAmounts()"
-                            class="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="-1">{{t 'documents.views.index.items_modal.not_applicable' }}</option>
-                            <option value="0">0%</option>
-                            <option value="6">6%</option>
-                            <option value="20">20%</option>
-                            <option value="21">21%</option>
-                        </select>
-                    </div>
-                </div>
+                {{> documents/rates_select}}
             </div>
 
             <div class="grid grid-cols-1 gap-y-4 sm:col-span-3 sm:col-start-4">
@@ -667,6 +675,8 @@
                     type="text" id="search-product"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
                     placeholder="{{t 'documents.views.index.items_modal.search_placeholder' }}" autocomplete="off">
+                <svg @click="searchProduct()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                     class="ml-2 sm:mx-2 h-5 w-5 cursor-pointer text-indigo-500  lucide lucide-rotate-cw"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
             </div>
             <template x-if="products.length > 0">
                 <div>

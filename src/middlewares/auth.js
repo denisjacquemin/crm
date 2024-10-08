@@ -4,6 +4,7 @@ module.exports = async function(req, res, next) {
 
     let redirect = false;
 
+
     if (!req.session.isAuth || !req.session.user) { 
         req.session.isAuth = false; // isAuth is true and session.user is empty then set isAuth to false
         req.session.destroy(); // and make sure the session is destroyed
