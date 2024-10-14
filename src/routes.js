@@ -54,6 +54,7 @@ router.post("/document/newCreditNoteAjax", auth, documentsController.createCredi
 router.get("/document/edit/:slug?", auth, globalData, documentsController.edit);
 router.get("/document/editAjax/:slug?", auth, documentsController.editAjax);
 router.patch("/document/:slug?", auth, documentsController.update); // autosave for documents
+router.post("/document/sendbymail", auth, documentsController.sendDocumentByMail);
 
 router.get("/document/preview/:slug", auth, documentsController.preview);
 router.get("/document/:slug.pdf", auth, documentsController.toPDFWithPuppeteer); 
@@ -90,6 +91,8 @@ router.get("/companies/editAjax/:slug", auth, companiesController.editAjax);
 router.post("/company/newAjax", auth, companiesController.newCompanyAjax);
 router.patch('/company/savetaxrate', auth, companiesController.saveOrUpdateTaxRate);
 router.patch('/company/defaulttaxrate', auth, companiesController.defaulttaxrate);
+router.patch('/company/send_cc_to', auth, companiesController.setSend_cc_to);
+router.patch('/company/send_bcc_to', auth, companiesController.setSend_bcc_to);
 router.delete('/company/deletetaxrate', auth, companiesController.deleteTaxRate);
 router.patch("/company/:slug?", auth, companiesController.update); // autosave for sellers/companies
 router.get("/companies/currentusercompanies", auth, companiesController.getCurrentUserCompanies);

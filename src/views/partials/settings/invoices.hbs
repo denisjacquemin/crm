@@ -46,7 +46,7 @@
             </select>
         </div>
         
-        <button type="button" id="newDocumentButton"
+        <button type="button"
                 class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 @click="fetchUrl('/company/defaultinvoiceduedatetermstype', 'PATCH', { default_invoice_due_date_terms_type: default_invoice_due_date_terms_type })">      
                 {{t 'settings.views.invoices.invoices_default_invoice_due_date_terms_type_button' }}
@@ -67,7 +67,7 @@
             </select>
         </div>
         
-        <button type="button" id="newDocumentButton"
+        <button type="button"
                 class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 @click="fetchUrl('/company/showdeliverydate', 'PATCH', { show_delivery_date: show_delivery_date })">      
                 {{t 'settings.views.invoices.show_delivery_date_button' }}

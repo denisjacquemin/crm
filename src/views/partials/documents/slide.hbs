@@ -29,7 +29,7 @@
                       },
                       updateClickHandler(newHandler) {
                           this.clickHandler = newHandler;
-                      },  
+                      }
                     }"
                 >
                   <div class="flex-none col-span-full px-4 py-2 sm:px-6 sm:py-6 border-b border-gray-200">
@@ -48,6 +48,10 @@
                           <template x-if="slideContentPartialName == 'slideFiles'">
                             <span>{{t 'documents.views.index.files_modal.modal_title' }}</span>
                           </template>
+                          <template x-if="slideContentPartialName == 'slideEmail'">
+                            <span>{{t 'documents.views.index.email_modal.modal_title' }}</span>
+                          </template>
+                          
                           <button x-html="buttonContent" @click.prevent="clickHandler" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                           </button>
                         </h2>
@@ -76,6 +80,10 @@
 
                     <template  x-if="slideContentPartialName == 'slideFiles'">
                         {{> documents/slideFiles }}
+                    </template>
+
+                    <template  x-if="slideContentPartialName == 'slideEmail'">
+                        {{> documents/slideEmail }}
                     </template>
                   </div>
                 </div>

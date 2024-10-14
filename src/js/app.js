@@ -6,7 +6,6 @@ import intersect from '@alpinejs/intersect'
 import dayjs, { locale } from 'dayjs' // import Day.js
 import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat'; // Import the localizedFormat plugin for formatting
-import PinchZoom from 'pinch-zoom-js';
 import 'dayjs/locale/es'
 import 'dayjs/locale/pt-br'
 import 'dayjs/locale/fr'
@@ -16,6 +15,9 @@ import 'dayjs/locale/ru'
 import 'dayjs/locale/zh-cn'
 import 'dayjs/locale/nl'
 import i18next from 'i18next';
+
+
+
 
 import { formatBytes } from '../lib/formatBytes';
 
@@ -82,7 +84,6 @@ window.dispatch = function(name, detail = {}) {
     window.dispatchEvent(new CustomEvent(name, { detail }))
 }
 
-window.PinchZoom = PinchZoom;
 window.dayjs = dayjs // make Day.js available globally
 dayjs.locale('en') // set English as default locale
 

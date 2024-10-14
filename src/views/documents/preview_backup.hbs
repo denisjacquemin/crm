@@ -3,7 +3,6 @@
     overflow: auto; /* Add scrolling if the content overflows the container */
     bacground-color: #123455"
     class="flex-1 flex"
-    @tabpreviewshown.window="initPinchZoom()"
     x-data="{
         scale: 1.0,
         selectedDocument: this.selectedDocument ? this.selectedDocument : {{stringify document}},

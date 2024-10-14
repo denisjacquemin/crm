@@ -215,6 +215,45 @@ async function setDefaultInvoiceDueDateTermsType(req, res, next) {
     }
 }
 
+async function setSend_cc_to(req, res, next) {
+    try {
+        // Update company settings.send_cc_to
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.send_cc_to": req.body.send_cc_to } });
+
+        // Update the send_cc_to field on the user's session
+        req.session.current_company.settings.send_cc_to = req.body.send_cc_to;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.send_cc_to_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.setSend_cc_to `, err.message);
+        next(err);
+    }
+}
+
+async function setSend_bcc_to(req, res, next) {
+    try {
+        // Update company settings.send_bcc_to
+        await CompanyService.update(req.session
+            .current_company._id, { $set: { "settings.send_bcc_to": req.body.send_bcc_to } });
+
+        // Update the send_bcc_to field on the user's session
+        req.session.current_company.settings.send_bcc_to = req.body.send_bcc_to;
+
+        // Send a success response
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.send_bcc_to_updated'), type: 'success' }});
+
+    } catch (err) {
+        // If an error occurs, log the error and pass it to the next middleware
+        console.error(`Error in userController.setSend_bcc_to `, err.message);
+        next(err);
+    }
+}
+
+
 async function saveOrUpdateTaxRate(req, res, next) {
     try {
         const taxrate = JSON.parse(req.body.taxrate);
@@ -420,5 +459,7 @@ module.exports = {
     showtargetinvoice,
     saveOrUpdateTaxRate,
     defaulttaxrate,
-    deleteTaxRate
+    deleteTaxRate,
+    setSend_cc_to,
+    setSend_bcc_to
 }

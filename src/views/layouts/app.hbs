@@ -11,8 +11,7 @@
         <script type="text/javascript" src="/public/app.bundle.js"></script>
     </head>
 
-    <body class="" 
-          @updatenavbutton="navState = $event.detail.value" `
+    <body @updatenavbutton="navState = $event.detail.value" `
           x-data="{ 
             navState: 'menu',   
             modalSize: null,

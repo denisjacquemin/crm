@@ -130,9 +130,19 @@
             "name": "Spain",
             "taxrates": [
                 {
+                    "_id": "650c7b9f8f1b2c1a1a1a9d00",
+                    "value": "2",
+                    "label": "2%"
+                },
+                {
                     "_id": "650c7b9f8f1b2c1a1a1a9a00",
                     "value": "4",
                     "label": "4%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9e00",
+                    "value": "5",
+                    "label": "5%"
                 },
                 {
                     "_id": "650c7b9f8f1b2c1a1a1a9b00",
@@ -917,6 +927,11 @@
                     "_id": "650c7b9f8f1b2c1a1a1a9600",
                     "value": "20",
                     "label": "20%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9700",
+                    "value": "23",
+                    "label": "23%"
                 }
             ],
             "default_taxrate": "650c7b9f8f1b2c1a1a1a9600"
@@ -946,9 +961,19 @@
             "name": "Spain",
             "taxrates": [
                 {
+                    "_id": "650c7b9f8f1b2c1a1a1a9d00",
+                    "value": "2",
+                    "label": "2%"
+                },
+                {
                     "_id": "650c7b9f8f1b2c1a1a1a9a00",
                     "value": "4",
                     "label": "4%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9e00",
+                    "value": "5",
+                    "label": "5%"
                 },
                 {
                     "_id": "650c7b9f8f1b2c1a1a1a9b00",

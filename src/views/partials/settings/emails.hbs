@@ -1,0 +1,41 @@
+<div class="flex flex-1 w-full flex-col gap-y-8 p-4">
+    <div x-data="{send_cc_to: '{{ session.current_company.settings.send_cc_to }}' }"
+        class="flex flex-col gap-y-4">
+        <label for="send_cc_to" class="text-base font-semibold leading-7 text-gray-900">{{t
+            'settings.views.emails.send_cc_to' }}</label>
+        <div class="">
+            <p class="m-0 mb-2 text-sm">{{t 'settings.views.emails.send_cc_to_help' }}</p>
+            <label for="send_bcc_tosend_cc_to" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'settings.views.emails.send_cc_to' }}</label>
+            <input x-model="send_cc_to" id="send_cc_to"
+                   placeholder="{{t 'settings.views.emails.send_cc_to_placeholder' }}"
+                   type="text" class="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+
+        <button type="button"
+            class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            @click="fetchUrl('/company/send_cc_to', 'PATCH', { send_cc_to: send_cc_to })">
+            {{t 'settings.views.emails.send_cc_to_button' }}
+        </button>
+    </div>
+    <div x-data="{send_bcc_to: '{{ session.current_company.settings.send_bcc_to }}' }"
+        class="flex flex-col gap-y-4">
+        <label for="send_bcc_to" class="text-base font-semibold leading-7 text-gray-900">{{t
+            'settings.views.emails.send_bcc_to' }}</label>
+        <div class="">
+            <p class="m-0 mb-2 text-sm">{{t 'settings.views.emails.send_bcc_to_help' }}</p>
+            <label for="send_bcc_tosend_bcc_to" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'settings.views.emails.send_bcc_to' }}</label>
+            <input x-model="send_bcc_to" id="send_bcc_to"
+                   placeholder="{{t 'settings.views.emails.send_bcc_to_placeholder' }}"
+                   type="text" class="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+
+        </div>
+
+        <button type="button"
+            class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            @click="fetchUrl('/company/send_bcc_to', 'PATCH', { send_bcc_to: send_bcc_to })">
+            {{t 'settings.views.emails.send_bcc_to_button' }}
+        </button>
+    </div>
+</div>

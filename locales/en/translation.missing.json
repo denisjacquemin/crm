@@ -63,6 +63,14 @@
           "delete_confirm": "documents.views.index.files_modal.delete_confirm",
           "delete": "documents.views.index.files_modal.delete",
           "companyfiles_no_file_uploaded_yet": "documents.views.index.files_modal.companyfiles_no_file_uploaded_yet"
+        },
+        "email_modal": {
+          "modal_title": "documents.views.index.email_modal.modal_title",
+          "recipient": "documents.views.index.email_modal.recipient",
+          "cc": "documents.views.index.email_modal.cc",
+          "more_options": "documents.views.index.email_modal.more_options",
+          "less_options": "documents.views.index.email_modal.less_options",
+          "cc_placeholder": "documents.views.index.email_modal.cc_placeholder"
         }
       },
       "edit_form": {
@@ -75,6 +83,10 @@
         "no_items_yet": "documents.views.edit_form.no_items_yet",
         "create_first_item": "documents.views.edit_form.create_first_item",
         "no_files_yet": "documents.views.edit_form.no_files_yet"
+      },
+      "email_modal": {
+        "invoice": "documents.views.email_modal.invoice",
+        "credit_note": "documents.views.email_modal.credit_note"
       }
     }
   },
@@ -121,6 +133,13 @@
         "value": "settings.views.myaccount.value",
         "label": "settings.views.myaccount.label",
         "code": "settings.views.myaccount.code"
+      },
+      "emails": {
+        "send_bcc_to_placeholder": "settings.views.emails.send_bcc_to_placeholder",
+        "send_cc_to": "settings.views.emails.send_cc_to",
+        "send_cc_to_help": "settings.views.emails.send_cc_to_help",
+        "send_cc_to_placeholder": "settings.views.emails.send_cc_to_placeholder",
+        "send_cc_to_button": "settings.views.emails.send_cc_to_button"
       }
     },
     "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",

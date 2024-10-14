@@ -108,12 +108,17 @@ async function newProductAjax(req, res, next) {
 async function createNewProductInMongoAndTypesense(req) {
     // automatically sync in Typense by a mongoose's hook in models/product.model.js
     try {
+        const defaultTaxrate = req.session.current_company.default_taxrate || res.locals.countries[req.session.current_company.country].default_taxrate;
+
         const productCreated = await ProductsService.create({
             company_id: req.session.current_company._id,
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('products.controller.default_product_name'),
+            vat: new mongoose.Types.ObjectId(defaultTaxrate),
         });
+
+        console.log('Product created:', productCreated);
         
         return productCreated ? productCreated.toObject() : null;
 

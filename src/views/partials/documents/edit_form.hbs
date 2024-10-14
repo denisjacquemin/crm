@@ -187,10 +187,16 @@
         @keyup.space.prevent="open = false;" style="display: none;">
         <ul class="py-1" role="none">
           <li>
+            <a x-bind:href="'/document/' + selectedDocument.slug + '.pdf'" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1"
+              @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event)" @mouseleave="onMouseLeave($event)">
+              {{ t 'documents.views.edit_form.download_document' }}
+            </a>
+          </li>
+          <li>
             <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1"
               @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event)" @mouseleave="onMouseLeave($event)"
-              @click.prevent="if (confirm('{{t 'documents.views.edit_form.delete_confirm' }}')) { handleDelete(); } open = false;">
-              {{ t 'documents.views.edit_form.delete_document' }}
+              @click.prevent="slideContentPartialName='slideEmail'; openSlide = true">
+              {{ t 'documents.views.edit_form.send_by_email' }}
             </a>
           </li>
           <li>
@@ -208,6 +214,13 @@
                 class="mr-1 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
                 title="{{t 'common.credit_note_long' }}">{{t 'common.credit_note_short' }}</span>
               {{ t 'documents.views.edit_form.create_credit_note' }}
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-red-600 hover:text-red-400 block px-4 py-2 text-sm" role="menuitem" tabindex="-1"
+              @mouseenter="onMouseEnter($event)" @mousemove="onMouseMove($event)" @mouseleave="onMouseLeave($event)"
+              @click.prevent="if (confirm('{{t 'documents.views.edit_form.delete_confirm' }}')) { handleDelete(); } open = false;">
+              {{ t 'documents.views.edit_form.delete_document' }}
             </a>
           </li>
         </ul>

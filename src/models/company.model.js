@@ -58,7 +58,9 @@ const companySchema = new mongoose.Schema({
         default_bank_account: { type: String, required: false, default: '' },
         current_invoice_sequence: { type: Number, required: false, default: 1 },
         current_credit_note_sequence: { type: Number, required: false, default: 1 },
-        default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' }
+        default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
+        send_cc_to: { type: String, required: false, default: '' },
+        send_bcc_to: { type: String, required: false, default: '' },
     },
 
 

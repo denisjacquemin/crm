@@ -102,7 +102,7 @@
             this.resetFormItem();
             {{!-- const data = await fetchUrl(`/products/editAjax/${this.products[this.selectedProductIndex].slug}`, 'GET');
             console.log('data.product', data.product); --}}
-
+            console.log('this.products[this.selectedProductIndex]', this.products[this.selectedProductIndex]);
             const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
             let full_vat = { value: '', label: '' };
             if (this.products[this.selectedProductIndex].custom_vat_rate.is_custom) {

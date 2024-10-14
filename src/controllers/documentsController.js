@@ -6,6 +6,10 @@ const _ = require('lodash');
 const { jsPDF } = require('jspdf');
 const puppeteer = require('puppeteer');
 const dayjs = require('dayjs');
+const Mailer = require('./utils/mailer');
+const { htmlToText } = require('html-to-text');
+
+
 
 const DEFAULT_SORT_BY = 'createdAt:desc';
 const DEFAULT_INCLUDE_FIELDS = 'slug, createdAt, updatedAt, config.subject, config.reference, config.invoice_number, config.credit_note_number, config.document_type, config.amounts.total, config.buyer.name, config.template_name, config.invoice_date';
@@ -94,6 +98,102 @@ async function newDocumentAjax(req, res) {
                 type: 'error'
             }
         });
+    }
+}
+
+function validateEmailList(emailList) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emails = emailList.split(',').map(email => email.trim());
+    return emails.every(email => emailRegex.test(email));
+}
+
+async function sendDocumentByMail(req, res, next) {
+    try {
+        const document = await DocumentService.getBySlugAndCompanyId(req.body.slug, req.session.current_company._id);
+        if (!document) {
+            return res.status(404).json({ 
+                notification: { message: 'Document not found', type: 'error'}
+            });
+        }
+
+        const { recipients, cc, bcc, subject, body } = req.body.data;
+
+        if (!recipients || !subject || !body) {
+            return res.status(400).json({
+                notification: {
+                    message: req.i18n.t('documents.controller.required_fields_missing'),
+                    submessage: req.i18n.t('documents.controller.fields_required'),
+                    type: 'error'
+                }
+            });
+        }
+
+        // Validate email lists
+        if (!validateEmailList(recipients)) {
+            return res.status(400).json({
+                notification: {
+                    message: req.i18n.t('documents.controller.recipients_invalid'),
+                    submessage: req.i18n.t('documents.controller.recipients_invalid_sub'),
+                    type: 'error'
+                }
+            });
+        }
+        if (cc && !validateEmailList(cc)) {
+            return res.status(400).json({
+                notification: {
+                    message: req.i18n.t('documents.controller.cc_invalid'),
+                    submessage: req.i18n.t('documents.controller.cc_invalid_sub'),
+                    type: 'error'
+                }
+            });
+        }
+        if (bcc && !validateEmailList(bcc)) {
+            return res.status(400).json({
+                notification: {
+                    message: req.i18n.t('documents.controller.bcc_invalid'),
+                    submessage: req.i18n.t('documents.controller.bcc_invalid_sub'),
+                    type: 'error'
+                }
+            });
+        }
+
+        // Convert HTML body to plain text
+        const text = htmlToText(body, {
+            wordwrap: 130, // Wrap text at 130 characters
+            preserveNewlines: true // Preserve newlines
+        });
+
+        const pdfBuffer = await generatePDFBuffer(req.body.slug, req.cookies);
+
+        const mailOptions = {
+            from: `${process.env.DEFAULT_SENDER_NAME} <${process.env.DEFAULT_SENDER_EMAIL}>`,
+            to: recipients,
+            bcc: bcc,
+            subject: subject,
+            charset: 'utf-8',
+            text: text,
+            html: body,
+            attachments: [
+                {
+                    filename: `${req.params.slug}.pdf`,
+                    content: pdfBuffer,
+                    contentType: 'application/pdf'
+                }
+            ]       
+        };
+
+        await Mailer.sendDocument(req, mailOptions, next);
+
+
+        res.status(200).json({
+            notification: {
+                message: req.i18n.t('documents.controller.email_sent_to') + req.body.data.recipients,
+                type: 'success'
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(req.i18n.t('common.unknown_error'));
     }
 }
 
@@ -584,11 +684,25 @@ async function preview(req, res) {
 
 async function toPDFWithPuppeteer(req, res) {
  
+    try {
+        const pdfBuffer = await generatePDFBuffer(req.params.slug, req.cookies);
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${req.params.slug}.pdf"`,
+            'Content-Length': pdfBuffer.length
+        });
+        res.send(pdfBuffer);
+    } catch (err) {
+        console.error(`Error in toPDFWithPuppeteer: ${err.message}`);
+        next(err);
+    }
+}
+
+async function generatePDFBuffer(slug, cookies) {
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
     // get cookie and pass the cookie to the page
-    const cookies = req.cookies;
     await page.setCookie(...Object.keys(cookies).map(key => ({
         name: key,
         value: cookies[key],
@@ -598,18 +712,14 @@ async function toPDFWithPuppeteer(req, res) {
         secure: false,
         sameSite: 'Lax',
         preferCSSPageSize: true,
-
     })));
 
-    await page.goto(`http://localhost:3000/document/preview/${req.params.slug}`, { waitUntil: 'load' });
+    await page.goto(`http://localhost:3000/document/preview/${slug}`, { waitUntil: 'load' });
 
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }, preferCSSPageSize: true});
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }, preferCSSPageSize: true });
     await browser.close();
 
-    res.setHeader('Content-Disposition', `attachment; filename="${req.params.slug}.pdf"`);
-
-    res.type('application/pdf');
-    res.send(pdfBuffer);
+    return pdfBuffer;
 }
 
 async function toPDF(req, res) {
@@ -649,4 +759,5 @@ module.exports = {
     preview,
     toPDF,
     toPDFWithPuppeteer,
+    sendDocumentByMail
 };

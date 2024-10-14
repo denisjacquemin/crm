@@ -1,5 +1,18 @@
 const transport = require('../../services/lib/mailer');
 
+
+async function sendDocument(req, mailOptions, next) {
+
+    try {
+        const info = await transport.sendMail(mailOptions);
+        console.log(`Email sent: ${info.response}`, mailOptions);
+    } catch (err) {
+        console.error(`Error in mailer.sendDocument `, err.message);
+        next(err);
+    }
+
+}
+
 async function sendForgotPasswordMessage(req, user, token, next) {
 
     const html = `
@@ -37,11 +50,12 @@ ${req.i18n.t('users.views.forgotpassword.email_content.thanks')}
         const info = await transport.sendMail(mailOptions);
         console.log(`Email sent: ${info.response}`);
     } catch (err) {
-        console.error(`Error in userController.forgotPasswordPost `, err.message);
+        console.error(`Error in mailer.forgotPasswordPost `, err.message);
         next(err);
     }
 }
 
 module.exports = {
-    sendForgotPasswordMessage
+    sendForgotPasswordMessage,
+    sendDocument
 };

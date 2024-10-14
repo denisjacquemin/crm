@@ -1,0 +1,192 @@
+<div class="flex flex-col h-full w-full px-4 sm:px-6 pt-5 gap-y-4 overflow-y-auto" x-data="{
+        form_email: {
+            recipients: '',
+            cc: '',
+            subject: '',
+            body: '',
+        },
+        getSubject: function() {
+            let subject = '';
+            if (this.selectedDocument.config.document_type === 'invoice') {
+                subject = `{{t 'documents.views.index.email_modal.invoice'}} ${this.selectedDocument.config.invoice_number} - ${this.selectedDocument.config.seller.name}`;
+                if (this.selectedDocument.config.subject) {
+                    subject += ` (${this.selectedDocument.config.subject})`;
+                }
+            } else if (this.selectedDocument.config.document_type === 'credit_note'){
+                subject = `{{t 'documents.views.index.email_modal.credit_note'}} ${this.selectedDocument.config.credit_note_number} - ${this.selectedDocument.config.seller.name}`;
+                if (this.selectedDocument.config.subject) {
+                    subject += ` (${this.selectedDocument.config.subject})`;
+                }
+            }
+            return subject;
+        },
+        getFileName: function() {
+            let fileName = '';
+            if (this.selectedDocument.config.document_type === 'invoice') {
+                fileName = `{{t 'documents.views.index.email_modal.invoice'}} ${this.selectedDocument.config.invoice_number}  ${this.selectedDocument.config.seller.name}`;
+                if (this.selectedDocument.config.subject) {
+                    fileName += ` (${this.selectedDocument.config.subject})`;
+                }
+            } else if (this.selectedDocument.config.document_type === 'credit_note'){
+                fileName = `{{t 'documents.views.index.email_modal.credit_note'}} ${this.selectedDocument.config.credit_note_number}  ${this.selectedDocument.config.seller.name}`;
+                if (this.selectedDocument.config.subject) {
+                    fileName += ` (${this.selectedDocument.config.subject})`;
+                }
+            }
+            return fileName.replace(/\s+/g, '_');
+        }
+     }" x-intersect="
+        updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-send'><path d='M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z'/><path d='m21.854 2.147-10.94 10.939'/></svg>{{t 'documents.views.index.email_modal.send_email' }}`);
+        updateClickHandler(async () => {
+            await fetchUrl('/document/sendbymail', 'POST', { data: form_email, slug: selectedDocument.slug });
+        });
+        form_email = {
+            recipients: '{{session.current_company.email}}',
+            bcc: '{{session.current_company.settings.send_bcc_to}}',
+            cc: '{{session.current_company.settings.send_cc_to}}',
+            subject: getSubject() ,
+            body: '<p>Add <strong>default</strong> body in settings</p>',
+        }
+    ">
+
+    {{!-- Email destinataire
+
+    Envoyer une copie à
+
+    text email --}}
+    <div class="w-full">
+        <label for="email-recipient" class="block text-sm font-medium leading-6 text-gray-900">{{t
+            'documents.views.index.email_modal.recipient' }}</label>
+        <input type="text" id="email-recipient" autocomplete="off" x-model="form_email.recipients"
+            placeholder="{{t 'documents.views.index.email_modal.recipient_placeholder' }}"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+    </div>
+
+    <div class="w-full">
+        <label for="email-subject" class="block text-sm font-medium leading-6 text-gray-900">{{t
+            'documents.views.index.email_modal.subject' }}</label>
+        <input type="text" id="email-subject" autocomplete="off" x-model="form_email.subject"
+            placeholder="{{t 'documents.views.index.email_modal.subject_placeholder' }}"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+    </div>
+    <div class="w-full">
+        <div class="flex flex-row items-end">
+            <label for="email-body" class="flex-none block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.email_modal.body' }}</label>
+            {{!-- <textarea type="text" id="email-body" autocomplete="off" x-model="form_email.body"
+                placeholder="{{t 'documents.views.index.email_modal.body_placeholder' }}" rows="10"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </textarea> --}}
+            <div class="flex-1 mb-1 justify-end text-right">
+                <button type="button" @click="document.execCommand('bold', false, null)" tabindex="-1"
+                    class="border rounded-sm h-8 w-8 font-bold hover:bg-gray-100 hover:border-gray-300">
+                    {{ t 'documents.views.index.email_modal.bold' }}
+                </button>
+                <button type="button" @click="document.execCommand('italic', false, null)" tabindex="-1"
+                    class="border rounded-sm h-8 w-8 italic hover:bg-gray-100 hover:border-gray-300">
+                    {{ t 'documents.views.index.email_modal.italic' }}
+                </button>
+                <button type="button" @click="document.execCommand('underline', false, null)" tabindex="-1"
+                    class="border rounded-sm h-8 w-8 underline hover:bg-gray-100 hover:border-gray-300">
+                    {{ t 'documents.views.index.email_modal.underline' }}
+                </button>
+                <button type="button" @click="document.execCommand('strikeThrough', false, null)" tabindex="-1"
+                    class="border rounded-sm h-8 w-8 line-through hover:bg-gray-100 hover:border-gray-300">
+                    {{ t 'documents.views.index.email_modal.strike' }}
+                </button>
+            </div>
+        </div>
+        <div x-ref="editor" ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset
+            focus:ring-indigo-600
+            class="h-52 rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 p-2 text-gray-900 sm:text-sm overflow-y-auto focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+            contenteditable="true" @input="form_email.body = $refs.editor.innerHTML"
+            x-init="$refs.editor.innerHTML = form_email.body"
+            @keydown.enter.prevent="document.execCommand('insertLineBreak')"></div>
+    </div>
+
+    <div class="w-full grid grid-cols-1 gap-y-4 sm:grid-cols-2 gap-x-6">
+        <div class="col-span-1">
+            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">Attached file to the
+                message</label>
+            <div class="flex w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="h-4 w-4 flex-none mr-2 mt-1 ucide lucide-paperclip">
+                    <path
+                        d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+                <a x-bind:href="'/document/' + selectedDocument.slug + '.pdf'"
+                    class="flex-1 cursor-pointer text-gray-700 block text-sm" x-text="getFileName() + '.pdf'"
+                    style="overflow-wrap: anywhere">
+                </a>
+            </div>
+        </div>
+        <div class="col-span-1">
+            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">Links files to the
+                message</label>
+            <ul x-show="selectedDocument.config.files.length > 0">
+                <template x-for="(file, index) in selectedDocument.config.files" :key="index">
+                    <li>
+                        <div class="flex w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="h-4 w-4 flex-none mr-2 mt-1 lucide lucide-link">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                            </svg>
+                            <a x-bind:href="'/document/' + selectedDocument.slug + '.pdf'"
+                                class="flex-1 cursor-pointer text-gray-700 block text-sm"
+                                x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"
+                                style="overflow-wrap: anywhere">
+                            </a>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+            <div x-show="selectedDocument.config.files.length === 0">
+                No file linked to this message
+            </div>
+        </div>
+    </div>
+
+    <div x-data="{ showMoreOptions: false }" class="w-full flex flex-col gap-y-4">
+        <span @click="showMoreOptions = !showMoreOptions"
+            class="inline text-sm font-medium leading-6 text-gray-900 cursor-pointer">
+            <template x-if="!showMoreOptions">
+                <span>{{t 'documents.views.index.email_modal.more_options' }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="h-3 w-3 inline lucide lucide-chevron-down">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </span>
+            </template>
+            <template x-if="showMoreOptions">
+                <span>{{t 'documents.views.index.email_modal.less_options' }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="h-3 w-3 inline lucide lucide-chevron-up">
+                        <path d="m18 15-6-6-6 6" />
+                    </svg>
+                </span>
+            </template>
+        </span>
+        <div x-show="showMoreOptions" class="w-full">
+            <label for="email-cc" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.email_modal.cc' }}</label>
+            <input type="text" id="email-ccc" autocomplete="off" x-model="form_email.cc"
+                placeholder="{{t 'documents.views.index.email_modal.cc_placeholder' }}"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+        <div x-show="showMoreOptions" class="w-full">
+            <label for="email-bcc" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.email_modal.bcc' }}</label>
+            <input type="text" id="email-bcc" autocomplete="off" x-model="form_email.bcc"
+                placeholder="{{t 'documents.views.index.email_modal.bcc_placeholder' }}"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+
+    </div>
+
+
+</div>

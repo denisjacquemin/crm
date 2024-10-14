@@ -488,6 +488,7 @@ async function forgotPasswordPost(req, res, next) {
     await Mailer.sendForgotPasswordMessage(req, user, token, next);
 
     // Set a flash message and redirect to the signin page
+    // TODO is it working with flash messages?
     req.flash('info', {
         'message': req.i18n.t('users.controller.email_sent')
     });
