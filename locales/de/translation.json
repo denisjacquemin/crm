@@ -1,0 +1,5 @@
+{
+    "default_template": {
+        "invoice_number_footer": "Rechnung #"
+    }
+}

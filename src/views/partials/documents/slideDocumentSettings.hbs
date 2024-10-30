@@ -1,11 +1,9 @@
-<div class="px-3 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6"
-    x-data="{
+<div class="p-4 sm:px-6 h-full overflow-y-auto" x-data="{
         show_delivery_date_option: true,
         show_target_invoice_option: true, 
         show_delivery_date: null,     
         show_target_invoice: null,
-    }"
-    x-intersect="
+    }" x-intersect="
         updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
         updateClickHandler(() => {
             openSlide = false;
@@ -14,74 +12,125 @@
         show_delivery_date_option = selectedDocument.config.document_type === 'invoice';
         show_target_invoice = selectedDocument.config.show_target_invoice;
         show_target_invoice_option = selectedDocument.config.document_type === 'credit_note';
-    "
->   
-    <div class="col-span-full"
-         x-data="{
+    ">
+    <div class="grid gap-y-4" x-data="{
             get selectedCurrency() {
                 return JSON.stringify(selectedDocument.config.currency);
             },
             set selectedCurrency(value) {
                 selectedDocument.config.currency = JSON.parse(value);
             }
-        }"
-    >
-    <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.currency'}}</label>
-    <div class="mt-2">
-        <select x-model="selectedCurrency"
-                id="default_currency"
+        }">
+        <div>
+            <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.invoice_settings.language'}}</label>
+            <select x-model="selectedDocument.config.language" id="language"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
-                <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
-                    <option :selected="currency.label === selectedDocument.config?.currency?.label" 
-                            :value="JSON.stringify(currency)" 
-                            x-text="`${currency.name} (${currency.symbol})`"></option>
-                </template>
-            </optgroup>
-            <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
-                <template x-for="(currency, index) in currencies" :key="index">
-                    <option x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)" :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
-                </template>
-            </optgroup>
-        </select>
-    </div>
+                <optgroup label="{{t 'documents.views.index.invoice_settings.frequently_selected' }}">
+                    <template x-for="language in frequentlySelectedLanguages" :key="language.code_dnt">
+                        <option :value="language.code_dnt" x-text="language.name"
+                            :selected="(selectedDocument.config.language && selectedDocument.config.language=== language.code_dnt) || 
+                                                       (!selectedDocument.config.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)">
+                        </option>
+                    </template>
+                </optgroup>
+                <optgroup label="{{t 'documents.views.index.invoice_settings.all_languages' }}">
+                    <template x-for="language in languages" :key="language.code_dnt">
+                        <option :value="language.code_dnt" x-text="language.name"
+                            :selected="((selectedDocument.config.language && selectedDocument.config.language === language.code_dnt) || 
+                                                       (!selectedDocument.config.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)) && 
+                                                       !frequentlySelectedLanguages.some(l => l.code_dnt === language.code_dnt)"></option>
+                    </template>
+                </optgroup>
+            </select>
+        </div>
 
-    <div x-show="show_delivery_date_option" class="col-span-full"
-        x-init="
-            console.log('selectedDocument.config.show_delivery_date', selectedDocument.config.show_delivery_date);
-            {{!-- require to keep show_delivery_date as a boolean --}}
-            $watch('show_delivery_date', value => {
-                console.log(value);
-                selectedDocument.config.show_delivery_date = (value === true || value === 'true');
-            });
-        " 
-    >
-      <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_delivery_date'}}</label>
-      <div class="mt-2">
-        <select x-model="show_delivery_date"
-                id="show-delivery-date"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <option value="true">{{t 'settings.views.invoices.yes_show_delivery_date' }}</option>
-                    <option value="false">{{t 'settings.views.invoices.no_show_delivery_date' }}</option>
-        </select>
-      </div>
-    </div>
 
-    <div x-show="show_target_invoice_option" class="col-span-full"
-        x-init="
-            $watch('show_target_invoice', value => {
-                selectedDocument.config.show_target_invoice = (value === true || value === 'true');
-            });
-        "  
-    >
-      <label for="show-target-invoice" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.invoice_settings.show_target_invoice'}}</label>
-      <div class="mt-2">
-        <select x-model="show_target_invoice"
-                id="show-target-invoice"
+        <div>
+            <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.invoice_settings.currency'}}</label>
+            <select x-model="selectedCurrency" id="default_currency"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <option value="true">{{t 'settings.views.invoices.yes_show_target_invoice' }}</option>
-                    <option value="false">{{t 'settings.views.invoices.no_show_target_invoice' }}</option>
-        </select>
-      </div>
+                <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
+                    <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+                        <option :selected="currency.label === selectedDocument.config?.currency?.label"
+                            :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
+                    </template>
+                </optgroup>
+                <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
+                    <template x-for="(currency, index) in currencies" :key="index">
+                        <option
+                            x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)"
+                            :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
+                    </template>
+                </optgroup>
+            </select>
+        </div>
+
+        <div x-show="show_delivery_date_option" x-init="
+                {{!-- require to keep show_delivery_date as a boolean --}}
+                $watch('show_delivery_date', value => {
+                    selectedDocument.config.show_delivery_date = (value === true || value === 'true');
+                });
+            ">
+            <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.invoice_settings.show_delivery_date'}}</label>
+            <select x-model="show_delivery_date" id="show-delivery-date"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <option value="true">{{t 'settings.views.invoices.yes_show_delivery_date' }}</option>
+                <option value="false">{{t 'settings.views.invoices.no_show_delivery_date' }}</option>
+            </select>
+        </div>
+
+        <div x-show="show_target_invoice_option" x-init="
+                $watch('show_target_invoice', value => {
+                    selectedDocument.config.show_target_invoice = (value === true || value === 'true');
+                });
+             ">
+            <label for="show-target-invoice" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.invoice_settings.show_target_invoice'}}</label>
+            <select x-model="show_target_invoice" id="show-target-invoice"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <option value="true">{{t 'settings.views.invoices.yes_show_target_invoice' }}</option>
+                <option value="false">{{t 'settings.views.invoices.no_show_target_invoice' }}</option>
+            </select>
+        </div>
+
+        <div class="flex flex-row gap-x-4">
+            <div class="flex-1"
+                 x-data="{
+                    handleRibbonPredefinedChange(event) {
+                        selectedDocument.config.ribbon.text = event.target.value;
+                    }
+                 }"
+            >
+                <label for="ribbonText" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                    'documents.views.index.invoice_settings.show_ribbon'}}</label>
+                <div class="relative rounded-md shadow-sm">
+                    <input type="text" x-model="selectedDocument.config.ribbon.text" id="ribbonText"
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        placeholder="{{t 'documents.views.index.invoice_settings.ribbon_text_placeholder'}}">
+                    <div class="absolute inset-y-0 right-0 flex items-center">
+                        <select id="predefined"
+                            @change="handleRibbonPredefinedChange"
+                            class="w-1 h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                            <option value="">{{t 'documents.views.index.invoice_settings.custom' }}</option>
+                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}</option>
+                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}</option>
+                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-none">
+                <label for="ribbonPosition" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                    'documents.views.index.invoice_settings.ribbon_position'}}</label>
+                <select x-model="selectedDocument.config.ribbon.position" id="ribbonPosition"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+            </div>
+        </div>
     </div>
 </div>

@@ -289,62 +289,74 @@
       <div id="pageone"
         {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
         class="page text-black sheet transform-origin-top-left xl:mx-auto">
-      <span class="top-left">
-        <template x-if="selectedDocument.config?.seller?.logo?.slug">
-            <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
-        </template> 
-      </span>
-      <span class="bottom-right">{{ t 'default_template.invoice_number_footer' }} <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ t 'default_template.page' }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
+        
+        <template x-if="selectedDocument.config.ribbon.text">
+            <div 
+            :class="`top-${selectedDocument.config.ribbon.position}-ribbon`"
+            class="ribbon" x-text="selectedDocument.config.ribbon.text"></div>
+        </template>
+
+        <span class="top-left">
+            <template x-if="selectedDocument.config?.seller?.logo?.slug">
+                <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
+            </template> 
+        </span>
+      <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang }} <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ i18n 'default_template.page' doc_lang }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
 
 
         <header> 
-            <template x-if="selectedDocument.config.document_type === 'invoice'"><h1>{{ t 'default_template.invoice' }}</h1></template>       
-            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ t 'default_template.credit_note' }}</h1></template>
+            <template x-if="selectedDocument.config.document_type === 'invoice'"><h1>{{ i18n 'default_template.invoice' doc_lang }}</h1></template>       
+            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ i18n 'default_template.credit_note' doc_lang }}</h1></template>
 
             <div id="document_number_dates">
                 <template x-if="selectedDocument.config.document_type === 'invoice'">
                     <div>
-                        <span class="spacing">{{ t 'default_template.invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
-                        <span class="spacing">{{ t 'default_template.invoice_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
-                        <span class="spacing">{{ t 'default_template.due_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
-                        <span x-show="selectedDocument.config.show_delivery_date" class="spacing">{{ t 'default_template.delivery_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.invoice_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.invoice_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                        <span x-show="selectedDocument.config.show_delivery_date" class="spacing">{{ i18n 'default_template.delivery_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></span></span>
                     </div>
                 </template>
                 <template x-if="selectedDocument.config.document_type === 'credit_note'">
                     <div>
-                        <span class="spacing">{{ t 'default_template.credit_note_number' }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
-                        <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ t 'default_template.target_invoice_number' }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
-                        <span class="spacing">{{ t 'default_template.credit_note_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
-                        <span class="spacing">{{ t 'default_template.due_date' }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.credit_note_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
+                        <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ i18n 'default_template.target_invoice_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.credit_note_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                        <span class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
                     </div>
                 </template>
             </div>  
 
             <div id="seller_address">
                 <span style="font-size: 150%; font-weight: 700;" x-text="orEmpty(selectedDocument.config.seller.name)"></span><br/>
-                <span style="" x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br/>
+                <span style="" x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br>
                 <span x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br/>
-                <span x-text="orEmpty(selectedDocument.config.seller.country)"></span><br/><br/>
-                <span> {{t 'default_template.vat_number'}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br/>
+                <span x-text="countries[selectedDocument.config.seller.country].name"></span><br/><br/>
+                <span>{{i18n 'default_template.vat_number' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br>
+                <template x-if="company_form_settings[selectedDocument.config.seller.country]?.registration_number?.display">
+                    <span><span x-text="company_form_settings[selectedDocument.config.seller.country].registration_number.label"></span>: <span x-text="orEmpty(selectedDocument.config.seller.registration_number)">toto</span><br></span>
+                </template>
+                <span>{{i18n 'default_template.contact_person' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.contact_lastname) + ' ' + orEmpty(selectedDocument.config.seller.contact_firstname)"></span></span><br>
                 <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/>
-                <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/><br/>
+                <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/>
+                <span x-text="orEmpty(selectedDocument.config.seller.website)"></span>
             </div>
             <div id="ref-purpose">
                 <table style="border-spacing: 0;">
                     <tr x-show="selectedDocument.config.reference">
-                        <td>{{ t 'default_template.reference' }}:</td>
+                        <td>{{ i18n 'default_template.reference' doc_lang }}:</td>
                         <td style="padding-left: 10px; font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.reference)"></td>
                     </tr>
                     <tr x-show="selectedDocument.config.subject">
-                        <td>{{ t 'default_template.purpose' }}:</td>
+                        <td>{{ i18n 'default_template.purpose' doc_lang }}:</td>
                         <td style="padding-left: 10px;font-weight: 700;"
                             x-text="orEmpty(selectedDocument.config.subject)"></td>
                     </tr>
                 </table>
             </div>
             
-            <div id="billed_to"style="font-weight: 400;">{{ t 'default_template.billed_to' }}</div>
+            <div id="billed_to"style="font-weight: 400;">{{ i18n 'default_template.billed_to' doc_lang }}</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
@@ -360,11 +372,11 @@
             <div id="products" class="page1">
                 <div class="table">
                     <div class="thead">
-                        <div class="th" style="text-align:left;width:300px">{{t 'default_template.description'}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.quantity_short'}}</div>
-                        <div class="th" style="text-align:right">{{t 'default_template.unit_price_short'}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.vat'}}</div>
-                        <div class="th" style="text-align:right">{{t 'default_template.total'}}</div>
+                        <div class="th" style="text-align:left;width:300px">{{i18n 'default_template.description' doc_lang}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.quantity_short' doc_lang}}</div>
+                        <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short' doc_lang}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat' doc_lang}}</div>
+                        <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}</div>
                     </div>
                     <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
                         <div class="tr">
@@ -383,17 +395,17 @@
                     <table class="amounts">
                         <tr>
                             <td width="50%"></td>
-                            <td style="text-align: right;">{{t 'default_template.total_vat_excl'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">{{t 'default_template.vat_total'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">{{t 'default_template.total_vat_incl'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
                         </tr>
                     </table>
@@ -423,18 +435,18 @@
             box-sizing: border-box;"
         class="page sheet text-black transform-origin-top-left xl:mx-auto">
         <span class="top-left">top left - currentPage:</span>
-        <span class="bottom-right">{{ t 'default_template.invoice_number_footer'}} - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
+        <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang}} - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
         <main>
             <div id="products" class="page2plus">
 
                 
                 <div class="table">
                     <div class="thead">
-                        <div class="th" style="text-align:left;width:300px">{{t 'default_template.description'}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.quantity_short'}}</div>
-                        <div class="th" style="text-align:right">{{t 'default_template.unit_price_short'}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{t 'default_template.vat'}}</div>
-                        <div class="th" style="text-align:right">{{t 'default_template.total'}}</div>
+                        <div class="th" style="text-align:left;width:300px">{{i18n 'default_template.description' doc_lang}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.quantity_short' doc_lang}}</div>
+                        <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short' doc_lang}}</div>
+                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat' doc_lang}}</div>
+                        <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}</div>
                     </div>
                     <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
                         <div class="tr">
@@ -455,17 +467,17 @@
                     <table class="amounts">
                         <tr>
                             <td width="50%"></td>
-                            <td style="text-align: right;">{{t 'default_template.total_vat_excl'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">{{t 'default_template.vat_total'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: right;">{{t 'default_template.total_vat_incl'}}</td>
+                            <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}</td>
                             <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
                         </tr>
                     </table>

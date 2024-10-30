@@ -1,0 +1,10 @@
+{
+    "languages": [
+        { "id": 1, "name": "English / Anglais", "code_dnt": "en" },
+        { "id": 2, "name": "Español / Espagnol", "code_dnt": "es" },
+        { "id": 3, "name": "Français", "code_dnt": "fr" },
+        { "id": 4, "name": "Nederlands / Néerlandais", "code_dnt": "nl" },
+        { "id": 5, "name": "Deutsch / Allemand", "code_dnt": "de" },
+        { "id": 6, "name": "Italiana / Italien", "code_dnt": "it" }
+    ]
+}

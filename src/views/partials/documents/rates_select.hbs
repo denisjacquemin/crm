@@ -3,7 +3,7 @@
 
         initializeCustomVatRate() {
             const vat = JSON.parse(this.formItem.vat);
-            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            const taxrates = this.countries[this.current_company.country].taxrates.concat(this.custom_taxrates);
             this.formItem.custom_vat_rate = !taxrates.some(rate => rate.label === vat.label && rate.value === vat.value) && !(vat.label === '' && vat.value === '');
             this.showCustomTaxRate = this.formItem.custom_vat_rate;
         },
@@ -25,17 +25,17 @@
             class="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
     >
         <option value="0" :selected="JSON.parse(formItem.vat).label === '' && JSON.parse(formItem.vat).value === ''"></option> 
-        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company_country].name + ')'">
-            <template x-for="(rate, index) in countries[current_company_country].taxrates" :key="index">
+        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company.country].name + ')'">
+            <template x-for="(rate, index) in countries[current_company.country].taxrates" :key="index">
                 <option :value="JSON.stringify(rate)" 
-                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company_country].default_taxrate === rate._id)"
+                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company.country].default_taxrate === rate._id)"
                         x-text="`${rate.label}`"></option>
             </template>
         </optgroup>
         <optgroup x-show="custom_taxrates.length > 0" label="{{ t 'documents.views.index.items_modal.custom_taxrates' }}">
             <template x-for="(rate, index) in custom_taxrates" :key="index">
                 <option :value="JSON.stringify(rate)" 
-                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company_country].default_taxrate === rate._id)"
+                        :selected="(formItem.vat ? JSON.parse(formItem.vat).label === rate.label && JSON.parse(formItem.vat).value === rate.value : countries[current_company.country].default_taxrate === rate._id)"
                         x-text="`${rate.label} (${rate.value}%)`"></option>
             </template>
         </optgroup>

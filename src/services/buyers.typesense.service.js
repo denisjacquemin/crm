@@ -18,6 +18,7 @@ const schema = {
         { "name": "contact_name", "type": "string", "facet": false, "optional": true },
         { "name": "email", "type": "string", "facet": false, "optional": true },
         { "name": "phone", "type": "string", "facet": false, "optional": true },
+        { "name": "language", "type": "string", "facet": false, "optional": true },
         { "name": "delivery_name", "type": "string", "facet": false, "optional": true },
         { "name": "delivery_attention", "type": "string", "facet": false, "optional": true },
         { "name": "delivery_address1", "type": "string", "facet": false, "optional": true },

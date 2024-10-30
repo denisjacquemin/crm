@@ -72,6 +72,7 @@ const documentSchema = new mongoose.Schema({
             country: { type: String, required: false, default: '' },
             vat_number: { type: String, required: false, default: '' },
             phone: { type: String, required: false, default: '' },
+            language: { type: String, required: false },
             email: {
                 type: String,
                 required: false,
@@ -90,6 +91,7 @@ const documentSchema = new mongoose.Schema({
             zip: { type: String, required: false, default: '' },
             country: { type: String, required: false, default: '' },
             vat_number: { type: String, required: false, default: '' },
+            registration_number: { type: String, required: false, default: '' },
             phone: { type: String, required: false, default: '' },
             logo: { type: mongoose.Schema.Types.ObjectId, ref: 'File', required: false },
             email: {
@@ -101,6 +103,12 @@ const documentSchema = new mongoose.Schema({
                     message: props => `${props.value} is not a valid email address!`
                 }
             },
+            contact_title: { type: String, required: false, default: '' },
+            contact_lastname: { type: String, required: false, default: '' },
+            contact_firstname: { type: String, required: false, default: '' },
+            contact_email: { type: String, required: false, default: '' },
+            contact_phone: { type: String, required: false, default: '' },
+            website: { type: String, required: false, default: '' }
         },
         amounts: {
             subtotal: { type: String, required: false, default: 0 },
@@ -120,6 +128,14 @@ const documentSchema = new mongoose.Schema({
             }, 
             required: false, 
             default: {} 
+        },
+        ribbon: {
+            type: {
+                text: { type: String, required: false, default: '' },
+                position: { type: String, required: false, default: 'left', enum: ['left', 'right'] }
+            },
+            required: false,
+            default: {}
         },
         invoice_delivery_date: { type: String, required: false, default: () => dayjs().format('YYYY-MM-DD') },
         currency: { type: currencySchema, required: false },

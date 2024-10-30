@@ -5,7 +5,6 @@ async function sendDocument(req, mailOptions, next) {
 
     try {
         const info = await transport.sendMail(mailOptions);
-        console.log(`Email sent: ${info.response}`, mailOptions);
     } catch (err) {
         console.error(`Error in mailer.sendDocument `, err.message);
         next(err);

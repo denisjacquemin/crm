@@ -42,18 +42,6 @@
                 console.log('Error deleting document', error); 
             }
         },
-        company_registration_number_label: '',
-        company_registration_number_label_translations: {{ stringify company_registration_number_label_translations }},
-        updateCompanyRegistrationNumberLabel: function(country_code) {
-            var countries = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
-            if (countries.includes(country_code)) {
-                this.company_registration_number_label = this.company_registration_number_label_translations.find(function (element) {
-                    return element.country_code == country_code;
-                }).label 
-            } else {
-                this.company_registration_number_label = '{{t 'users.views.signup2.company_registration_number' }}';
-            }
-        },
         searchClientTerm: '',
         sortBy: 'createdAtdesc',
         searchClient: async function() {
@@ -72,16 +60,14 @@
         selectedCountry: null,
      }"
      x-init="
-       selectedCountry = defaultCountry || frequentlySelectedCountries[0].value;
+       selectedCountry = defaultCountry || frequentlySelectedCountries[0];
        $watch('selectedBuyer', (value, oldValue) => {
-          console.log('selectedBuyer', value);
           var buyer = { ...value };
           if (buyer.slug) {
             buyer.autosave_updated_at = new Date();
             localStorage.setItem('autosave#buyer#' + value.slug, JSON.stringify(buyer));
           }
           selectedCountry = buyer.country;
-          updateCompanyRegistrationNumberLabel(selectedCountry);
         });
      ">
     <div x-ref="clientsList"
@@ -267,18 +253,18 @@
                         <select x-on:change="selectedBuyer.country = $event.target.value;"  id="country" 
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
-                                <template x-for="(countryCode, index) in Object.keys(frequentlySelectedCountries)" :key="index">
+                                <template x-for="(countryCode, index) in frequentlySelectedCountries" :key="index">
                                     <option 
                                         x-bind:selected="countryCode === selectedCountry" 
                                         :value="countryCode" 
-                                        x-text="frequentlySelectedCountries[countryCode].name">
+                                        x-text="countries[countryCode].name">
                                     </option>
                                 </template>
                             </optgroup>
                             <optgroup label="{{t 'users.views.signup2.all_countries' }}">
                                 <template x-for="(countryCode, index) in Object.keys(countries)" :key="index">
                                     <option 
-                                        x-bind:selected="countryCode === selectedCountry && !Object.keys(frequentlySelectedCountries).includes(selectedCountry)" 
+                                        x-bind:selected="countryCode === selectedCountry && !frequentlySelectedCountries.includes(selectedCountry)" 
                                         :value="countryCode" 
                                         x-text="countries[countryCode].name">
                                     </option>
@@ -301,14 +287,16 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                    <label for="bce" class="block text-sm font-medium leading-6 text-gray-900" x-text="company_registration_number_label"></label>
-                    <div class="mt-2">
-                        <input id="company_registration_number" type="text" x-model="selectedBuyer.company_registration_number" autocomplete="off"
-                            placeholder="Company number" id="bce"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <template x-if="company_form_settings[selectedBuyer.country]?.registration_number?.display">
+                    <div>
+                        <label for="registration_number" class="block text-sm font-medium leading-6 text-gray-900" x-text="company_form_settings[selectedBuyer.country]?.registration_number?.label"></label>
+                        <div class="mt-2">
+                            <input id="registration_number" type="text" x-model="selectedBuyer.registration_number" autocomplete="off"
+                                :placeholder="company_form_settings[selectedBuyer.country]?.registration_number?.label"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
                     </div>
-                </div>
+                </template>
                 
                 <div>
                     <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.name_label' }}</label>
@@ -460,9 +448,9 @@
                                         <option x-bind:selected="country.value === selectedCountry" :value="country.value" x-text="country.name"></option>
                                         </template>
                                     </optgroup>
-                                    <optgroup label="{{t 'users.views.signup2.all_countries' }}">
+                                    <optgroup label="{{t 'users.views.signup2.all_countries' }}"> 
                                         <template x-for="(country, index) in countries" :key="index">
-                                        <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.some(c => c.value === selectedCountry)" :value="country.value" x-text="country.name"></option>
+                                        <option x-bind:selected="country.value === selectedCountry && !frequentlySelectedCountries.includes(selectedCountry)" :value="country.value" x-text="country.name"></option>
                                         </template>
                                     </optgroup>
                                 </select>
@@ -485,6 +473,28 @@
                         <input type="text" x-model="selectedBuyer.contact_name" autocomplete="off"
                             placeholder="{{t 'buyers.views.index.contact_name_placeholder' }}" id="contact_name"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="language" class="block text-sm font-medium leading-6 text-gray-900">{{t 'buyers.views.index.language_label' }}</label>
+                    <div class="mt-2">
+                        <select x-model="selectedBuyer.language" id="language" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <optgroup label="{{t 'buyers.views.index.frequently_selected' }}">
+                                <template x-for="language in frequentlySelectedLanguages" :key="language.code_dnt">
+                                    <option :value="language.code_dnt" x-text="language.name" 
+                                            :selected="(selectedBuyer.language && selectedBuyer.language === language.code_dnt) || 
+                                                       (!selectedBuyer.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)"></option>
+                                </template>
+                            </optgroup>
+                            <optgroup label="{{t 'buyers.views.index.all_languages' }}">
+                                <template x-for="language in languages" :key="language.code_dnt">
+                                    <option :value="language.code_dnt" x-text="language.name" 
+                                            :selected="((selectedBuyer.language && selectedBuyer.language === language.code_dnt) || 
+                                                       (!selectedBuyer.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)) && 
+                                                       !frequentlySelectedLanguages.some(l => l.code_dnt === language.code_dnt)"></option>
+                                </template>
+                            </optgroup>
+                        </select>
                     </div>
                 </div>
                 <div>

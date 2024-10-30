@@ -2,9 +2,7 @@ const UserService = require('../services/users.service');
 const CompanyService = require('../services/companies.service');
 const FileService = require('../services/files.service');
 const geoip = require('geoip-lite');
-const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
-const { French } = require("flatpickr/dist/l10n/fr.js").default.fr
-
+const i18next = require('i18next');
 
 
 
@@ -12,29 +10,31 @@ const { French } = require("flatpickr/dist/l10n/fr.js").default.fr
 async function changeLang(req, res, next) {
 
     try {
-        // Get the lang parameter from the request body
+    // Get the lang parameter from the request body
         const lng= req.body.lng;
-
-        // Check if the lang parameter is valid
-        // if (!validator.isIn(lang, ['en', 'es', 'fr'])) {
-        //     // If the lang parameter is not valid, set a flash message and redirect to the home page
-        //     req.flash('messages', req.i18n.t('languages.invalid_language'));
-
-        //     return res.status(200).send();
-        // }
 
         // update in db only if user is logged in
         if (req.session.isAuth) {
             // Update the user's language in db
-            console.log('req.session.user._id', req.session.user._id);
             await UserService.updateById(req.session
                 .user._id, {language: lng});
-            req.session.user.language = lng;
+            
+                
+        }
+
+        if (req.session.user) {
+            // If user exists, update only the language property
+            req.session.user = {
+                ...req.session.user,
+                language: lng
+            };
+        } else {
+            // If user doesn't exist yet, create a new user object with only the language
+            req.session.user = { language: lng };
         }
 
         const referer = req.get('referer');
         const redirectUrl = referer.includes('lng=') ? referer.replace(/lng=\w+/g, `lng=${lng}`) : `${referer}?lng=${lng}`;
-        console.log(redirectUrl);
         res.redirect(redirectUrl);
     } catch (err) {
         next(err);
@@ -42,6 +42,24 @@ async function changeLang(req, res, next) {
 
 }
 
+async function staticData(req, res) {
+    const data = {
+        countries: req.i18n.t('countries:countries', { returnObjects: true }),
+        frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }),
+        currencies: req.i18n.t('currencies:currencies', { returnObjects: true }),
+        languages: req.i18n.t('languages:all_languages', { returnObjects: true }),
+        frequentlySelectedLanguages: req.i18n.t('languages:frequently_selected_languages', { returnObjects: true }),
+        choose_languages_dropdown: req.i18n.t('languages:choose_languages_dropdown', { returnObjects: true }),
+        languages: req.i18n.t('languages:all_languages', { returnObjects: true }),   
+        i18n_languages: process.env.TRANSLATION_i18_CODE.split(','),
+        all_languages: req.i18n.t('all_languages:all_languages', { returnObjects: true }),
+        company_form_settings: req.i18n.t('custom_settings:company_form', { returnObjects: true })
+    };
+    const jsContent = `window.staticData = ${JSON.stringify(data)};`;
+    res.set('Content-Type', 'application/javascript');
+    res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+    res.send(jsContent);
+}
 
 async function settings(req, res) {
     try {
@@ -66,7 +84,6 @@ async function settings(req, res) {
             currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
             defaultCountry: (geo && geo.country) || Object.keys(frequentlySelectedCountries)[0],
             taxRates: req.i18n.t('taxrates:taxrates', { returnObjects: true }),
-            ...getCompanyRegistrationNumberLabels(req),
             layout: false
         });
     } catch (err) {
@@ -78,5 +95,6 @@ async function settings(req, res) {
 
 module.exports = {
     changeLang,
-    settings
+    settings,
+    staticData
 };

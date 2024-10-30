@@ -20,6 +20,8 @@ router.get("/test", (req, res) => {
     res.render("test");
 });
 
+router.get('/public/static-data.js', globalController.staticData);
+
 
 router.post("/preferences/changelang", globalController.changeLang);
 router.get("/settings/:tabid?", auth, globalController.settings);
@@ -93,6 +95,7 @@ router.patch('/company/savetaxrate', auth, companiesController.saveOrUpdateTaxRa
 router.patch('/company/defaulttaxrate', auth, companiesController.defaulttaxrate);
 router.patch('/company/send_cc_to', auth, companiesController.setSend_cc_to);
 router.patch('/company/send_bcc_to', auth, companiesController.setSend_bcc_to);
+router.patch('/company/update_email_templates', auth, companiesController.updateEmailTemplates);
 router.delete('/company/deletetaxrate', auth, companiesController.deleteTaxRate);
 router.patch("/company/:slug?", auth, companiesController.update); // autosave for sellers/companies
 router.get("/companies/currentusercompanies", auth, companiesController.getCurrentUserCompanies);
@@ -105,7 +108,7 @@ router.get("/files/editAjax/:slug", auth, filesController.editAjax);
 router.post('/file/upload', auth, uploadMiddleware, handleFileUpload, filesController.upload);
 router.post('/file/uploadForDocument', auth, uploadMiddleware, handleFileUpload, filesController.upload);
 router.patch("/file/:slug?", auth, filesController.update); // autosave for files
-router.get('/file/download/:slug', auth, filesController.downloadFile);
+router.get('/file/download/:slug', filesController.downloadFile); // no auth because it's used in emails
 router.get('/file/serve/:slug', auth, filesController.serveFile);
 router.delete("/files/deleteAjax/:slug", auth, filesController.deleteAjax);
 router.get("/files/company", auth, filesController.getCurrentCompanyFiles);

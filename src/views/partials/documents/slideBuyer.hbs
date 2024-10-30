@@ -1,14 +1,8 @@
 
-<div class="px-4 sm:px-6 mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6">   
+<div class="h-full px-4 sm:px-6 py-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-6 overflow-y-auto">   
     <div class="col-span-full mb-6">
       <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">Find a Buyer (by name, address, city or VAT number)</label>
         <div class="mt-2"
-            x-init="
-            $watch('openSlide', value => { {{!-- not fired the first time the partial is called, but fired after when openSlide change   --}}
-                if (value && slideContentPartialName == 'slideBuyer') {
-                    init();
-                }
-            });"
             x-data="{
               choices: null,
               searchResults: [],
@@ -62,6 +56,7 @@
                     selectedDocument.config.buyer.vat_number = selectedBuyer.vat_number;
                     selectedDocument.config.buyer.email = selectedBuyer.email;
                     selectedDocument.config.buyer.phone = selectedBuyer.phone;
+                    selectedDocument.config.buyer.language = selectedBuyer.language;
 
                     // Clear the search results
                     // choices.clearChoices();
@@ -72,10 +67,20 @@
               }
             }"
             x-intersect="
+              init();
               {{!-- Ensure the initial button is configured to close the slide when clicked --}}
               updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
               updateClickHandler(() => {
                   openSlide = false;
+              });
+            "
+            x-init="
+              $watch('selectedDocument.config.buyer.language', (newVal, oldVal) => {
+                if (newVal && i18n_languages.find(lang => lang.code_dnt === newVal)) {  
+                  selectedDocument.config.language = newVal;
+                } else {
+                  selectedDocument.config.language = 'en';
+                }
               });
             "
             >

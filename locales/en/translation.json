@@ -81,7 +81,10 @@
             "show_target_invoice_updated": "Show target invoice number has been updated",
             "default_vat_rate_updated": "Default VAT Rate has been updated",
             "send_cc_to_updated": "Send a copy to has been updated",
-            "send_bcc_to_updated": "Send a hidden copy to has been updated"
+            "send_bcc_to_updated": "Send a hidden copy to has been updated",
+            "email_subject_template": "{1} {2} - {3}",
+            "email_message_template": "Dear [Client's Name],<br><br>I hope this message finds you well. Please find attached the invoice. Kindly review the details and let me know if you have any questions or require further clarification.<br><br>Invoice Number: [Invoice Number]<br>Invoice Date: [Invoice Date]<br>Due Date: [Due Date]<br>Amount Due: [Amount]<br><br>Thank you for your prompt attention to this matter.<br><br>Best regards,",
+            "email_templates_updated": "Email templates have been updated"
         },
         "create_new_company": "Create new company",
         "company_name": "Name",
@@ -191,13 +194,27 @@
                     "bold": "B",
                     "italic": "i",
                     "underline": "U",
-                    "strike": "S"                  
+                    "strike": "S",
+                    "attached_file": "Attached file to the message",
+                    "links_files": "Links files to the message",
+                    "no_file_linked": "No file linked to this message",
+                    "language": "Language"
                 },
                 "invoice_settings": {
-                    "modal_title": "Invoice Settings",
+                    "modal_title": "Settings",
                     "currency": "Currency",
                     "show_delivery_date": "Show Delivery Date",
-                    "show_target_invoice": "Show Target Invoice Number"
+                    "show_target_invoice": "Show Target Invoice Number",
+                    "language": "Language",
+                    "frequently_selected": "Frequently Selected",
+                    "all_languages": "All",
+                    "show_ribbon": "Ribbon text",
+                    "ribbon_position": "Position",
+                    "ribbon_text_placeholder": "Type the text or choose predefined",
+                    "ribbon_text_paid": "Already Paid",
+                    "ribbon_text_reminder": "Reminder",
+                    "ribbon_text_duplicate": "Duplicate",
+                    "custom": "None or Custom"
                 }
             },
             "edit_form": {
@@ -264,7 +281,14 @@
                 "email": "Email",
                 "password": "Password",
                 "sign_up": "Sign up",
-                "or_continue_with": "Or continue with"
+                "or_continue_with": "Or continue with",
+                "title": "Title",
+                "select_title": "Select a title",
+                "mr": "Mr",
+                "mrs": "Mrs",
+                "ms": "Ms",
+                "dr": "Dr",
+                "lastname": "Last Name"
             },
             "signup2": {
                 "create_company": "Create a new Company",
@@ -277,8 +301,8 @@
                 "vat_number": "VAT Number",
                 "without_vat": "Without VAT Number",
                 "contact_name": "Contact Name",
-                "phone": "Phone",
-                "email":"Email",
+                "phone": "Company phone",
+                "email":"Company Email",
                 "description": "Description",
                 "address": "Address",
                 "phone_number": "Phone Number",
@@ -286,60 +310,13 @@
                 "sign_up": "Sign up",
                 "frequently_selected_countries": "Frequently Selected",
                 "all_countries": "All",
+                "language": "Language",
+                "frequently_selected_languages": "Frequently Selected",
+                "all_languages": "All",
                 "currency": "Default currency",
-                "company_registration_number":  "Company Number",
-                "company_registration_number_BE": "BCE Number",
-                "company_registration_number_FR": "SIREN / SIRET Number",
-                "company_registration_number_CA": "Business Number",
-                "company_registration_number_NL": "KvK Number",
-                "company_registration_number_LU": "RCS Number",
-                "company_registration_number_DE": "HRB Number",
-                "company_registration_number_IT": "REA Number",
-                "company_registration_number_ES": "NIF Number",
-                "company_registration_number_US": "EIN Number",
-                "company_registration_number_GB": "Company Number",
-                "company_registration_number_IE": "CRO Number",
-                "company_registration_number_AT": "FN Number",
-                "company_registration_number_CH": "UID Number",
-                "company_registration_number_PL": "REGON Number",
-                "company_registration_number_PT": "NIF Number",
-                "company_registration_number_SE": "Org. Number",
-                "company_registration_number_DK": "CVR Number",
-                "company_registration_number_NO": "Org. Number",
-                "company_registration_number_FI": "Y-tunnus Number",
-                "company_registration_number_HU": "Cg. Number",
-                "company_registration_number_RO": "CUI Number",
-                "company_registration_number_BG": "BULSTAT Number",
-                "company_registration_number_GR": "ΑΦΜ Number",
-                "company_registration_number_CZ": "IČO Number",
-                "company_registration_number_SK": "IČO Number",
-                "company_registration_number_SI": "ID Number",
-                "company_registration_number_HR": "OIB Number",
-                "company_registration_number_RS": "PIB Number",
-                "company_registration_number_BA": "JIB Number",
-                "company_registration_number_ME": "PIB Number",
-                "company_registration_number_AL": "NIPT Number",
-                "company_registration_number_MK": "PIB Number",
-                "company_registration_number_XK": "NIPT Number",
-                "company_registration_number_TR": "Vergi No",
-                "company_registration_number_RU": "ИНН Number",
-                "company_registration_number_BY": "УНП Number",
-                "company_registration_number_UA": "ЄДРПОУ Number",
-                "company_registration_number_MD": "IDNO Number",
-                "company_registration_number_LV": "PVN Number",
-                "company_registration_number_LT": "Įmonės kodas",
-                "company_registration_number_EE": "Reg. Number",
-                "company_registration_number_CY": "ΑΦΜ Number",
-                "company_registration_number_MT": "VAT Number",
-                "company_registration_number_LI": "UID Number",
-                "company_registration_number_IS": "VSK Number",
-                "company_registration_number_FO": "VSK Number",
-                "company_registration_number_GL": "CVR Number",
-                "company_registration_number_SJ": "Org. Number",
-                "company_registration_number_AX": "Y-tunnus Number",
-                "company_registration_number_DZ": "NIF Number",
-                "company_registration_number_MA": "RC Number",
-                "company_registration_number_TN": "RC Number"
+                "contact_title": "Contact Title",
+                "contact_firstname": "Contact First Name",
+                "contact_lastname": "Contact Last Name"
             },
             "forgotpassword" : {
                 "reset_your_password": "Reset your password",
@@ -461,8 +438,10 @@
                 "phone_label": "Phone",
                 "phone_placeholder": "Customer's phone",
                 "email_label": "Email",
-                "email_placeholder": "Customer's email"
-
+                "email_placeholder": "Customer's email",
+                "language_label": "Communication Language",
+                "frequently_selected": "Frequently Selected"
+                
 
 
 
@@ -599,7 +578,18 @@
                 "send_bcc_to": "Send a hidden copy to",
                 "send_bcc_to_help": "Each email will be sent to the following addresses as a hidden copy (BCC). Recipients will not see these addresses. Separate multiple addresses with commas.",
                 "send_bcc_to_button": "Update hidden copy to",
-                "send_bcc_to_placeholder": "afirstemail@example.com, asecondemail@example.com"
+                "send_bcc_to_placeholder": "afirstemail@example.com, asecondemail@example.com",
+                "email_subject_label": "Email Subject template",
+                "email_template_help": "You can use these templates to customize the email subject and body.",
+                "link_ail_template_help": "{x} will be replaced by the corresponding value.",
+                "choose_language": "Choose the template's language",
+                "email_templates": "Email templates",
+                "email_template_type": "Type of document (Invoice, Quote, Credit Note)",
+                "document_number": "Document number",
+                "seller_name": "Seller's name",
+                "language": "Language",
+                "update_email_templates": "Update Email Templates",
+                "link_email_template_help": "Click here to see all available placeholders {x}."
             }
 
         },
@@ -617,7 +607,7 @@
         "due_date": "Due Date",
         "delivery_date":"Delivery Date",
         "currency": "Currency",
-        "vat_number": "VAT Number",
+        "vat_number": "VAT",
         "description": "Description",
         "quantity_short": "Qty",
         "unit_price_short": "U. Price",
@@ -629,20 +619,14 @@
         "credit_note_number": "Credit Note Number",
         "target_invoice_number": "Target Invoice Number",
         "credit_note_date": "Credit Note Date",
-        "reference": "Reference"
+        "reference": "Reference",
+        "contact_person": "Contact person"
 
         
         
     },
     "do_not_translate": {
-        "languages": [
-            { "id": 1, "name": "English", "code_dnt": "en" },
-            { "id": 2, "name": "Español / Spanish", "code_dnt": "es" },
-            { "id": 3, "name": "Français / French", "code_dnt": "fr" },
-            { "id": 4, "name": "Nederlands / Dutch", "code_dnt": "nl" },
-            { "id": 5, "name": "German / Deutsch", "code_dnt": "de" },
-            { "id": 6, "name": "Italian / Italiana", "code_dnt": "it" }
-        ],
+        
 
         "timezones": {
             "Africa/Abidjan": "Africa/Abidjan (+00:00)",

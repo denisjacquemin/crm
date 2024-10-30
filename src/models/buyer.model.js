@@ -34,7 +34,7 @@ const buyerSchema = new mongoose.Schema({
     zip: { type: String, required: false },
     country: { type: String, required: false },
     vat_number: { type: String, required: false },
-    company_registration_number: { type: String, required: false },
+    registration_number: { type: String, required: false },
     default_due_delay: { type: String, required: false },
     without_vat: { type: Boolean, required: true, default: false },
     contact_name: { type: String, required: false },
@@ -48,6 +48,7 @@ const buyerSchema = new mongoose.Schema({
     delivery_zip: { type: String, required: false },
     delivery_country: { type: String, required: false },
     delivery_phone: { type: String, required: false },
+    language: { type: String, required: false },
     email: {
         type: String,
         required: false,

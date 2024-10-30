@@ -21,6 +21,7 @@ const schemaOptions = {
 
 const userSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true, default: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}` },
+    title: { type: String, required: false },
     firstname: { type: String, required: false },
     lastname: { type: String, required: false },
     language: { type: String, required: true, default: 'en-US' },

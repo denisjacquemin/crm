@@ -38,7 +38,6 @@
             }
         },
         showCompanyForm: function() {
-            console.log('showCompanyForm');
             this.$refs.companiesList.style.transform = 'translateX(-100%)'; 
             this.$refs.companyForm.style.transform = 'translateX(-100%)';
         },
@@ -48,17 +47,6 @@
         },
         defaultCountry: '{{ defaultCountry }}',
         selectedCountry: null,
-        company_registration_number_label_translations: {{ stringify company_registration_number_label_translations }},
-        updateCompanyRegistrationNumberLabel: function(country_code) {
-            var countries = ['BE', 'FR', 'CA', 'NL', 'LU', 'DE', 'IT', 'ES', 'US', 'IE', 'AT', 'CH', 'PL', 'PT', 'SE', 'DK', 'NO', 'FI', 'HU', 'RO', 'BG', 'GR', 'CZ', 'SK', 'SI', 'HR', 'RS', 'BA', 'ME', 'AL', 'MK', 'XK', 'TR', 'RU', 'BY', 'UA', 'MD', 'LV', 'LT', 'EE', 'CY', 'MT', 'LI', 'IS', 'FO', 'GL', 'SJ', 'AX', 'DZ', 'MA', 'TN'];
-            if (countries.includes(country_code)) {
-                this.company_registration_number_label = this.company_registration_number_label_translations.find(function (element) {
-                    return element.country_code == country_code;
-                }).label 
-            } else {
-                this.company_registration_number_label = '{{t 'users.views.signup2.company_registration_number' }}';
-            }
-        },
         without_vat: {{#if selectedSeller.without_vat}}{{selectedSeller.without_vat}}{{else}}false{{/if}},
         logoFile: {},
         submitUploadForm: async function(event) {
@@ -85,8 +73,7 @@
         },
     }"
     x-init="
-      selectedCountry = defaultCountry || Object.keys(frequentlySelectedCountries)[0];
-      updateCompanyRegistrationNumberLabel(selectedCountry);
+      selectedCountry = defaultCountry || frequentlySelectedCountries[0];
       
       $watch('selectedSeller', (value, oldValue) => {
         var company = { ...value };
@@ -95,9 +82,7 @@
             localStorage.setItem('autosave#company#' + value.slug, JSON.stringify(company));
         }
         selectedCountry = company.country;
-        current_company_country = company.country;
-        updateCompanyRegistrationNumberLabel(selectedCountry);
-
+        current_company.country = company.country;
       });
       $watch('logoFile', (value, oldValue) => {
             var file = { ...value };
@@ -266,13 +251,13 @@
                                         id="country" name="country"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <optgroup label="{{t 'users.views.signup2.frequently_selected_countries' }}">
-                                        <template x-for="(countryCode, index) in Object.keys(frequentlySelectedCountries)" :key="index">
-                                            <option x-bind:selected="countryCode === selectedCountry" :value="countryCode" x-text="frequentlySelectedCountries[countryCode].name"></option>
+                                        <template x-for="(countryCode, index) in frequentlySelectedCountries" :key="index">
+                                            <option x-bind:selected="countryCode === selectedCountry" :value="countryCode" x-text="countries[countryCode].name"></option>
                                         </template>
                                     </optgroup>
                                     <optgroup label="{{t 'users.views.signup2.all_countries' }}">
                                         <template x-for="(countryCode, index) in Object.keys(countries)" :key="index">
-                                            <option x-bind:selected="countryCode === selectedCountry && !Object.keys(frequentlySelectedCountries).includes(selectedCountry)" :value="countryCode" x-text="countries[countryCode].name"></option>
+                                            <option x-bind:selected="countryCode === selectedCountry && !frequentlySelectedCountries.includes(selectedCountry)" :value="countryCode" x-text="countries[countryCode].name"></option>
                                         </template>
                                     </optgroup>
                                 </select>                  
@@ -293,14 +278,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label x-text="company_registration_number_label" for="company_registration_number" class="block text-sm font-medium leading-6 text-gray-900"></label>
-                            <div class="mt-1">
-                                <input type="text" x-model="selectedSeller.company_registration_number" autocomplete="off"
-                                    id="company_registration_number"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+
+                        <template x-if="company_form_settings[selectedSeller.country]?.registration_number?.display ?? company_form_settings.default?.registration_number?.display">
+                            <div>
+                                <label x-text="company_form_settings[selectedSeller.country].registration_number.label" for="registration_number" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                                <div class="mt-1">
+                                    <input type="text" x-model="selectedSeller.registration_number" autocomplete="off"
+                                        id="registration_number"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
                             </div>
-                        </div>
+                        </template>
+
                         <div>
                             <label for="default_currency" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.currency' }}</label>
                             <div class="mt-1">
@@ -308,7 +297,7 @@
                                     id="default_currency"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
-                                        <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+                                        <template x-for="(currency, index) in countries[selectedSeller.country].currencies" :key="index">
                                             <option :selected="currency.label === selectedSeller?.settings?.default_currency?.label" 
                                                     :value="JSON.stringify(currency)" 
                                                     x-text="`${currency.name} (${currency.symbol})`"></option>
@@ -324,14 +313,38 @@
                                 </select>                    
                             </div>
                         </div>
-                        <div>
-                            <label for="contact_name" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.contact_name' }}</label>
-                            <div class="mt-1">
-                                <input type="text" x-model="selectedSeller.contact_name" autocomplete="off"
-                                    id="contact_name" 
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <div class="bg-gray-100 -mx-4 px-4 py-4 gap-y-5 flex flex-col">
+                            <div>
+                                <label for="contact_title" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup2.contact_title' }}</label>
+                                <select id="contact_title" name="contact_title" autocomplete="honorific-prefix" 
+                                        x-model="selectedSeller.contact_title"
+                                        class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                <option value="mr" :selected="selectedSeller.contact_title === 'mr'">{{t 'users.views.signup1.mr' }}</option>
+                                <option value="mrs" :selected="selectedSeller.contact_title === 'mrs'">{{t 'users.views.signup1.mrs' }}</option>
+                                <option value="ms" :selected="selectedSeller.contact_title === 'ms'">{{t 'users.views.signup1.ms' }}</option>
+                                <option value="dr" :selected="selectedSeller.contact_title === 'dr'">{{t 'users.views.signup1.dr' }}</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="contact_firstname" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.contact_firstname' }}</label>
+                                <div class="mt-1">
+                                    <input type="text" x-model="selectedSeller.contact_firstname" autocomplete="given-name"
+                                        id="contact_firstname" 
+                                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="contact_lastname" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.contact_lastname' }}</label>
+                                <div class="mt-1">
+                                    <input type="text" x-model="selectedSeller.contact_lastname" autocomplete="family-name"
+                                        id="contact_lastname" 
+                                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                </div>
                             </div>
                         </div>
+
                         <div>
                             <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.phone' }}</label>
                             <div class="mt-1">

@@ -18,7 +18,6 @@ const config = {
   mongodb: {
     url: mongoDbUrl,
 
-    // TODO Change this to your database name:
     databaseName: database,
 
     options: {

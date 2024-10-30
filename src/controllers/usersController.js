@@ -12,10 +12,6 @@ const mongo = require('../services/lib/mongo');
 const session = require('express-session');
 const geoip = require('geoip-lite');
 const mongoose = require('mongoose');
-const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
-
-
-
 
 async function signup1(req, res, next) {
     // Check if the user is already authenticated
@@ -42,22 +38,26 @@ async function signup1Post(req, res, next) {
     }
 
     // Destructure the crm-email, crm-password, and firstname fields from the request body
-    const { firstname, 'crm-email': crmEmail, 'crm-password': crmPassword } = req.body;
+    const { title, firstname, lastname, email, password } = req.body;
 
     // Trim the whitespace from the email, password, and passwordConfirmation fields
+    const trimmedTitle = title && title.trim();
     const trimmedFirstname = firstname && firstname.trim();
-    const trimmedEmail = crmEmail && crmEmail.trim().toLowerCase();
-    const trimmedPassword = crmPassword && crmPassword.trim();
+    const trimmedLastname = lastname && lastname.trim();
+    const trimmedEmail = email && email.trim().toLowerCase();
+    const trimmedPassword = password && password.trim();
 
     req.session.signup = req.session.signup || {};
     req.session.signup.user = {
+        title: trimmedTitle,
         firstname: trimmedFirstname,
+        lastname: trimmedLastname,
         email: trimmedEmail,
         password: trimmedPassword
     }
 
     // Check if any of the required fields are empty
-    if (!trimmedFirstname || !trimmedEmail || !trimmedPassword) {
+    if (!trimmedTitle || !trimmedFirstname || !trimmedLastname || !trimmedEmail || !trimmedPassword) {
         // If any of the fields are empty, render the signup page again with an error message
         return res.render('users/signup1', {
             notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.all_fields_required')}]
@@ -121,10 +121,19 @@ async function signup2(req, res, next) {
     }
 
     try {
+        const defaultCountry = req.i18n.language.split('-')[0];
+        console.log('defaultCountry', defaultCountry);
         // Render the signup page
         res.render("users/signup2", { 
-            ...getCountrySelect(req),
-            ...getCompanyRegistrationNumberLabels(req)
+            ...defaultCountry,
+            company: {
+                country: defaultCountry.defaultCountry || Object.keys(req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }))[0],
+                language: req.i18n.language.split('-')[0],
+                without_vat: false,
+                contact_title: req.session.signup.user.title,
+                contact_firstname: req.session.signup.user.firstname,
+                contact_lastname: req.session.signup.user.lastname
+            }           
         });
     } catch (err) {
         // If an error occurs, log the error and pass it to the next middleware
@@ -149,11 +158,14 @@ async function signup2Post(req, res, next) {
         city,
         country,
         vat_number,
-        company_registration_number, 
-        contact_name,
+        registration_number, 
+        contact_title,
+        contact_firstname,
+        contact_lastname,
         phone,
         email,
-        website
+        website,
+        language
     } = req.body;
     const without_vat = req.body.without_vat === 'on';
 
@@ -165,12 +177,14 @@ async function signup2Post(req, res, next) {
     const trimmedCity = city && city.trim();
     const trimmedCountry = country && country.trim();
     const trimmedVatNumber = vat_number && vat_number.trim();
-    const trimmedCompanyRegistrationNumber = company_registration_number && company_registration_number.trim();
-    const trimmedContactName = contact_name && contact_name.trim();
+    const trimmedRegistrationNumber = registration_number && registration_number.trim();
+    const trimmedContactTitle = contact_title && contact_title.trim();
+    const trimmedContactFirstname = contact_firstname && contact_firstname.trim();
+    const trimmedContactLastname = contact_lastname && contact_lastname.trim();
     const trimmedPhone = phone && phone.trim();
     const trimmedEmail = email && email.trim();
     const trimmedWebsite = website && website.trim();
-
+    const trimmedLanguage = language && language.trim();
     // put the company fields into session.signup.company
     req.session.signup = req.session.signup || {};
     req.session.signup.company = {
@@ -181,17 +195,20 @@ async function signup2Post(req, res, next) {
         city: trimmedCity,
         country: trimmedCountry,
         vat_number: trimmedVatNumber,
-        company_registration_number: trimmedCompanyRegistrationNumber,
+        registration_number: trimmedRegistrationNumber,
         without_vat: without_vat,
-        contact_name: trimmedContactName,
+        contact_title: trimmedContactTitle,
+        contact_firstname: trimmedContactFirstname,
+        contact_lastname: trimmedContactLastname,
         phone: trimmedPhone,
         email: trimmedEmail,
         website: trimmedWebsite,
+        language: trimmedLanguage,
+        settings: {email_subject_templates: {}}
     }
 
     const locals = {
         ...getCountrySelect(req),
-        ...getCompanyRegistrationNumberLabels(req),
         without_vat: req.session.signup.company.without_vat || false
     }
 
@@ -247,16 +264,15 @@ async function signup2Post(req, res, next) {
         userCreated = await UserService.create(user, {}); //await userService.create(user, { session });
 
         // Get the company
-        const company = req.session.signup.company;
+        const company = req.session.signup.company;        
         company._id = companyId;
         company.users = [userId];
-
-        console.log('company', company);
 
         company.taxrates = [];
 
         // Create the company
         companyCreated = await CompanyService.create(company, {}); //await companyService.create(company, { session });
+
 
         await session.commitTransaction();
         session.endSession();
@@ -273,6 +289,8 @@ async function signup2Post(req, res, next) {
     const { password, ...saferUser } = userCreated.toObject();
     req.session.user = saferUser 
     req.session.current_company = companyCreated.toObject();
+
+    console.log('req.session.current_company in signup2Post ACTION', req.session.current_company);
 
     delete req.session.signup
 
@@ -335,7 +353,7 @@ async function signinPost(req, res, next) {
         return res.render('users/signin', {
             email: crmEmail,
             password: trimmedPassword,
-            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: trimmedEmail}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
+            notifications: [{id: new Date().getTime(), type: 'error', content: req.i18n.t('users.controller.email_invalid', {email: crmEmail}), subcontent: req.i18n.t('users.controller.email_invalid_sub')}]
         });
     }
 
@@ -855,15 +873,13 @@ async function OAuthGoogleCallback(req, res, next) {
     res.disableBackButtonRedirect('/');
 }
 
-// function getCountrySelect(req) {
-//     //req.ip;
-//     const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
-//     return {
-//         countries: req.i18n.t('countries:countries',  { returnObjects: true }),
-//         frequentlySelectedCountries: req.i18n.t('countries:frequently_selected_countries',  { returnObjects: true }),
-//         defaultCountry: geo && geo.country
-//     };
-// }
+function getCountrySelect(req) {
+    //req.ip;
+    const geo = geoip.lookup(req.ip);//geoip.lookup('178.51.244.142');
+    return {
+        defaultCountry: geo && geo.country
+    };
+}
 
 module.exports = {
     signup1,

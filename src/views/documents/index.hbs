@@ -38,6 +38,24 @@
                 this.$refs.col1.style.transform = 'translateX(0)';
                 this.$refs.col2.style.transform = 'translateX(0)';
             },
+            template_name: 'documents`templates' + this.selectedDocument?.config?.template_name || 'template1',
+            previewData: '',
+            loadPreview: async function(slug, lang) {
+                let data = '';
+                if (slug !== undefined) {
+                    try {
+                        let url = `/document/preview/${slug}?nl=true`;
+                        if (lang) {
+                            url += `&lang=${encodeURIComponent(lang)}`;
+                        }
+                        const response = await fetch(url);
+                        data = await response.text();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+                return data;
+            },
             toggleTab: function(tabRef) {
                 // Hide all tabs and remove highlight
                 document.getElementById('col21').classList.add('hidden');
@@ -74,6 +92,12 @@
                 showCol1();
             } 
          }); --}}
+        $watch('selectedDocument.config.language', (value, oldValue) => {
+            console.log('selectedDocument.config.language changed', value);
+            loadPreview(selectedDocument.slug, value).then(data => {
+                previewData = data;
+            });
+        });
         $watch('selectedDocument', (value, oldValue) => {
             console.log('selectedDocument changed');
             var document = { ...value };
@@ -399,24 +423,7 @@
                     </template>
                 </div>
                 <div id="col22" style="background-color: #f9fbfd"
-                    class="hidden w-full flex 2xl:flex-1 2xl:block 2xl:w-auto border-l border-gray-200" x-init="
-                          
-                     " x-data="{
-                        template_name: 'documents`templates' + selectedDocument?.config?.template_name || 'template1',
-                        previewData: '',
-                        loadPreview: async function(slug) {
-                            let data = '';
-                            if (slug !== undefined) {
-                                try {
-                                    const response = await fetch('/document/preview/' + slug + '?nl=true');
-                                    data = await response.text();
-                                } catch (error) {
-                                    console.error(error);
-                                }
-                            }
-                            return data;
-                        }
-                    }">
+                    class="hidden w-full flex 2xl:flex-1 2xl:block 2xl:w-auto border-l border-gray-200">
                     <template x-if="! selectedDocument">
                         <div
                             class="relative block p-4 w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">

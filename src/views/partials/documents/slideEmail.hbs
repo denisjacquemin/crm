@@ -1,24 +1,32 @@
-<div class="flex flex-col h-full w-full px-4 sm:px-6 pt-5 gap-y-4 overflow-y-auto" x-data="{
+<div class="flex flex-col h-full w-full px-4 sm:px-6 py-5 gap-y-4 overflow-y-auto" x-data="{
         form_email: {
             recipients: '',
+            bcc: '',
             cc: '',
             subject: '',
             body: '',
+            language: '',
         },
         getSubject: function() {
-            let subject = '';
+            let subject = current_company.settings.email_subject_templates[this.form_email.language];
+
             if (this.selectedDocument.config.document_type === 'invoice') {
-                subject = `{{t 'documents.views.index.email_modal.invoice'}} ${this.selectedDocument.config.invoice_number} - ${this.selectedDocument.config.seller.name}`;
-                if (this.selectedDocument.config.subject) {
-                    subject += ` (${this.selectedDocument.config.subject})`;
-                }
-            } else if (this.selectedDocument.config.document_type === 'credit_note'){
-                subject = `{{t 'documents.views.index.email_modal.credit_note'}} ${this.selectedDocument.config.credit_note_number} - ${this.selectedDocument.config.seller.name}`;
-                if (this.selectedDocument.config.subject) {
-                    subject += ` (${this.selectedDocument.config.subject})`;
-                }
+                subject = subject.replace('{1}', '{{t 'documents.views.index.email_modal.invoice'}}');
+                subject = subject.replace('{2}', this.selectedDocument.config.invoice_number);
+            } else if (this.selectedDocument.config.document_type === 'credit_note') {
+                subject = subject.replace('{1}', '{{t 'documents.views.index.email_modal.credit_note'}}');
+                subject = subject.replace('{2}', this.selectedDocument.config.credit_note_number);
             }
+            subject = subject.replace('{3}', this.selectedDocument.config.seller.name);
+
+            
             return subject;
+        },
+        getBody: function() {
+            console.log('In body', this.form_email.language, current_company);
+            let body = current_company.settings.email_message_templates[this.form_email.language];
+            console.log('body', body);
+            return body;
         },
         getFileName: function() {
             let fileName = '';
@@ -41,13 +49,24 @@
             await fetchUrl('/document/sendbymail', 'POST', { data: form_email, slug: selectedDocument.slug });
         });
         form_email = {
-            recipients: '{{session.current_company.email}}',
-            bcc: '{{session.current_company.settings.send_bcc_to}}',
-            cc: '{{session.current_company.settings.send_cc_to}}',
-            subject: getSubject() ,
-            body: '<p>Add <strong>default</strong> body in settings</p>',
+            language: selectedDocument?.config?.language,
+            recipients: selectedDocument?.buyer?.email,
+            bcc: current_company.settings.send_bcc_to,
+            cc: current_company.settings.send_cc_to,
         }
-    ">
+
+        form_email.subject = getSubject();
+        form_email.body = getBody();
+        $refs.editor.innerHTML = form_email.body;
+    "
+    x-init="
+        $watch('form_email.language', (newVal, oldVal) => {
+            form_email.subject = getSubject();
+            form_email.body = getBody();
+            $refs.editor.innerHTML = form_email.body;
+        });
+    "
+    >
 
     {{!-- Email destinataire
 
@@ -97,17 +116,16 @@
             </div>
         </div>
         <div x-ref="editor" ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset
-            focus:ring-indigo-600
-            class="h-52 rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 p-2 text-gray-900 sm:text-sm overflow-y-auto focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-            contenteditable="true" @input="form_email.body = $refs.editor.innerHTML"
-            x-init="$refs.editor.innerHTML = form_email.body"
-            @keydown.enter.prevent="document.execCommand('insertLineBreak')"></div>
+                focus:ring-indigo-600
+                class="h-60 rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 p-2 text-gray-900 sm:text-sm overflow-y-auto focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                contenteditable="true"
+                @input="form_email.body = $event.target.innerHTML"
+                @keydown.enter.prevent="document.execCommand('insertLineBreak')">
+        </div>
     </div>
-
-    <div class="w-full grid grid-cols-1 gap-y-4 sm:grid-cols-2 gap-x-6">
+    <div class="w-full grid grid-cols-1 gap-y-4 sm:grid-cols-2 gap-x-8">
         <div class="col-span-1">
-            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">Attached file to the
-                message</label>
+            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.email_modal.attached_file' }}</label>
             <div class="flex w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -122,8 +140,7 @@
             </div>
         </div>
         <div class="col-span-1">
-            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">Links files to the
-                message</label>
+            <label for="email-body" class="block text-sm font-medium leading-6 text-gray-900">{{t 'documents.views.index.email_modal.links_files' }}</label>
             <ul x-show="selectedDocument.config.files.length > 0">
                 <template x-for="(file, index) in selectedDocument.config.files" :key="index">
                     <li>
@@ -134,17 +151,25 @@
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                             </svg>
-                            <a x-bind:href="'/document/' + selectedDocument.slug + '.pdf'"
-                                class="flex-1 cursor-pointer text-gray-700 block text-sm"
-                                x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"
-                                style="overflow-wrap: anywhere">
+
+                            <a @click.prevent="downloadFile(selectedDocument.slug)" 
+                               class="flex-1 cursor-pointer text-gray-700 block text-sm"
+                               style="overflow-wrap: anywhere"
+                               x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
+                                    <path d="M12 13v8l-4-4" />
+                                    <path d="m12 21 4-4" />
+                                    <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" />
+                                </svg>
                             </a>
                         </div>
                     </li>
                 </template>
             </ul>
-            <div x-show="selectedDocument.config.files.length === 0">
-                No file linked to this message
+            <div x-show="selectedDocument.config.files.length === 0" class="text-gray-700 block text-sm">
+                {{t 'documents.views.index.email_modal.no_file_linked' }}
             </div>
         </div>
     </div>
@@ -185,7 +210,16 @@
                 placeholder="{{t 'documents.views.index.email_modal.bcc_placeholder' }}"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
         </div>
-
+        <div x-show="showMoreOptions" class="w-full">
+            <label for="email-language" class="block text-sm font-medium leading-6 text-gray-900">{{t
+                'documents.views.index.email_modal.language' }}</label>
+            <select id="email-language" x-model="form_email.language"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <template x-for="lang in i18n_languages" :key="lang">
+                    <option :value="lang" x-text="all_languages[lang].name"></option>
+                </template>
+            </select>
+        </div>
     </div>
 
 

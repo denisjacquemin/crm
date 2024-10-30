@@ -1,403 +1,5 @@
 {
-    "frequently_selected_countries": {
-        "FR": {
-            "name": "France",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5500",
-                    "value": "2.1",
-                    "label": "2.1%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5600",
-                    "value": "5.5",
-                    "label": "5.5%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5700",
-                    "value": "10",
-                    "label": "10%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5800",
-                    "value": "20",
-                    "label": "20%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a5800",
-            "languages": [
-                {
-                    "code_dnt": "fr",
-                    "name": "French"
-                }
-            ],
-            "default_language_code_dnt": "fr",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "SIREN / SIRET Number"
-        },
-        "BE": {
-            "name": "Belgium",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a4000",
-                    "value": "6",
-                    "label": "6%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a4100",
-                    "value": "12",
-                    "label": "12%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a4200",
-                    "value": "21",
-                    "label": "21%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a4200",
-            "languages": [
-                {
-                    "code_dnt": "nl",
-                    "name": "Dutch"
-                },
-                {
-                    "code_dnt": "fr",
-                    "name": "French"
-                },
-                {
-                    "code_dnt": "de",
-                    "name": "German"
-                }
-            ],
-            "default_language_code_dnt": "nl",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "BCE Number"
-        },
-        "LU": {
-            "name": "Luxembourg",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a7400",
-                    "value": "3",
-                    "label": "3%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a7500",
-                    "value": "8",
-                    "label": "8%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a7600",
-                    "value": "17",
-                    "label": "17%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a7600",
-            "languages": [
-                {
-                    "code_dnt": "lb",
-                    "name": "Luxembourgish"
-                },
-                {
-                    "code_dnt": "fr",
-                    "name": "French"
-                },
-                {
-                    "code_dnt": "de",
-                    "name": "German"
-                }
-            ],
-            "default_language_code_dnt": "lb",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "RCS Number"
-        },
-        "DE": {
-            "name": "Germany",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5a00",
-                    "value": "7",
-                    "label": "7%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a5b00",
-                    "value": "19",
-                    "label": "19%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a5b00",
-            "languages": [
-                {
-                    "code_dnt": "de",
-                    "name": "German"
-                }
-            ],
-            "default_language_code_dnt": "de",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "Handelsregisternummer"
-        },
-        "IT": {
-            "name": "Italy",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a6700",
-                    "value": "4",
-                    "label": "4%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a6800",
-                    "value": "5",
-                    "label": "5%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a6900",
-                    "value": "10",
-                    "label": "10%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a6a00",
-                    "value": "22",
-                    "label": "22%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a6a00",
-            "languages": [
-                {
-                    "code_dnt": "it",
-                    "name": "Italian"
-                }
-            ],
-            "default_language_code_dnt": "it",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "Partita IVA Number"
-        },
-        "NL": {
-            "name": "Netherlands",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a8100",
-                    "value": "9",
-                    "label": "9%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a8200",
-                    "value": "21",
-                    "label": "21%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a8200",
-            "languages": [
-                {
-                    "code_dnt": "nl",
-                    "name": "Dutch"
-                }
-            ],
-            "default_language_code_dnt": "nl",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "KvK Number"
-        },
-        "ES": {
-            "name": "Spain",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a9d00",
-                    "value": "2",
-                    "label": "2%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a9a00",
-                    "value": "4",
-                    "label": "4%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a9e00",
-                    "value": "5",
-                    "label": "5%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a9b00",
-                    "value": "10",
-                    "label": "10%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1a9c00",
-                    "value": "21",
-                    "label": "21%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1a9c00",
-            "languages": [
-                {
-                    "code_dnt": "es",
-                    "name": "Spanish"
-                }
-            ],
-            "default_language_code_dnt": "es",
-            "default_currency": "EUR",
-            "currencies": [
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                },
-                {
-                    "name": "Swiss Franc",
-                    "label": "CHF",
-                    "symbol": "CHF"
-                }
-            ],
-            "registration_number_label": "CIF Number"
-        },
-        "GB": {
-            "name": "United Kingdom",
-            "taxrates": [
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1aa800",
-                    "value": "5",
-                    "label": "5%"
-                },
-                {
-                    "_id": "650c7b9f8f1b2c1a1a1aa900",
-                    "value": "20",
-                    "label": "20%"
-                }
-            ],
-            "default_taxrate": "650c7b9f8f1b2c1a1a1aa900",
-            "languages": [
-                {
-                    "code_dnt": "en",
-                    "name": "English"
-                }
-            ],
-            "default_language_code_dnt": "en",
-            "default_currency": "GBP",
-            "currencies": [
-                {
-                    "name": "British Pound Sterling",
-                    "label": "GBP",
-                    "symbol": "£"
-                },
-                {
-                    "name": "Euro",
-                    "label": "EUR",
-                    "symbol": "€"
-                },
-                {
-                    "name": "United States Dollar",
-                    "label": "USD",
-                    "symbol": "$"
-                }
-            ],
-            "registration_number_label": "Company Number"
-        }
-    },
+    "frequently_selected_countries": ["FR", "BE", "LU", "DE", "IT", "NL", "ES", "GB"],
     "countries": {
         "AF": {
             "name": "Afghanistan",
@@ -739,7 +341,8 @@
                     "symbol": "CHF"
                 }
             ],
-            "registration_number_label": "BCE Number"
+            "vat_number_label": "VAT Number",
+            "registration_number_label": { "label": "BCE Number", "display": false }
         },
         "BA": {
             "name": "Bosnia and Herzegovina",
@@ -1153,7 +756,8 @@
                     "symbol": "CHF"
                 }
             ],
-            "registration_number_label": "SIREN / SIRET Number"
+            "vat_number_label": "VAT Number",
+            "registration_number_label": { "label": "SIREN / SIRET Number", "display": true }
         },
         "GE": {
             "name": "Georgia",
@@ -1191,6 +795,48 @@
                 }
             ],
             "registration_number_label": "Identification Number"
+        },
+        "DE": {
+            "name": "Germany",
+            "taxrates": [
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a5a00",
+                    "value": "7",
+                    "label": "7%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a5b00",
+                    "value": "19",
+                    "label": "19%"
+                }
+            ],
+            "default_taxrate": "650c7b9f8f1b2c1a1a1a5b00",
+            "languages": [
+                {
+                    "code_dnt": "de",
+                    "name": "German"
+                }
+            ],
+            "default_language_code_dnt": "de",
+            "default_currency": "EUR",
+            "currencies": [
+                {
+                    "name": "Euro",
+                    "label": "EUR",
+                    "symbol": "€"
+                },
+                {
+                    "name": "United States Dollar",
+                    "label": "USD",
+                    "symbol": "$"
+                },
+                {
+                    "name": "Swiss Franc",
+                    "label": "CHF",
+                    "symbol": "CHF"
+                }
+            ],
+            "registration_number_label": "Company number"
         },
         "GR": {
             "name": "Greece",
@@ -1584,6 +1230,61 @@
             ],
             "registration_number_label": "Įmonės kodas"
         },
+        "LU": {
+            "name": "Luxembourg",
+            "taxrates": [
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a7400",
+                    "value": "3",
+                    "label": "3%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a7500",
+                    "value": "8",
+                    "label": "8%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a7600",
+                    "value": "17",
+                    "label": "17%"
+                }
+            ],
+            "default_taxrate": "650c7b9f8f1b2c1a1a1a7600",
+            "languages": [
+                {
+                    "code_dnt": "lb",
+                    "name": "Luxembourgish"
+                },
+                {
+                    "code_dnt": "fr",
+                    "name": "French"
+                },
+                {
+                    "code_dnt": "de",
+                    "name": "German"
+                }
+            ],
+            "default_language_code_dnt": "lb",
+            "default_currency": "EUR",
+            "currencies": [
+                {
+                    "name": "Euro",
+                    "label": "EUR",
+                    "symbol": "€"
+                },
+                {
+                    "name": "United States Dollar",
+                    "label": "USD",
+                    "symbol": "$"
+                },
+                {
+                    "name": "Swiss Franc",
+                    "label": "CHF",
+                    "symbol": "CHF"
+                }
+            ],
+            "registration_number_label": "RCS Number"
+        },
         "MT": {
             "name": "Malta",
             "taxrates": [
@@ -1698,6 +1399,48 @@
                 }
             ],
             "registration_number_label": "RCI Number"
+        },
+        "NL": {
+            "name": "Netherlands",
+            "taxrates": [
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a8100",
+                    "value": "9",
+                    "label": "9%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a8200",
+                    "value": "21",
+                    "label": "21%"
+                }
+            ],
+            "default_taxrate": "650c7b9f8f1b2c1a1a1a8200",
+            "languages": [
+                {
+                    "code_dnt": "nl",
+                    "name": "Dutch"
+                }
+            ],
+            "default_language_code_dnt": "nl",
+            "default_currency": "EUR",
+            "currencies": [
+                {
+                    "name": "Euro",
+                    "label": "EUR",
+                    "symbol": "€"
+                },
+                {
+                    "name": "United States Dollar",
+                    "label": "USD",
+                    "symbol": "$"
+                },
+                {
+                    "name": "Swiss Franc",
+                    "label": "CHF",
+                    "symbol": "CHF"
+                }
+            ],
+            "registration_number_label": "KvK Number"
         },
         "NO": {
             "name": "Norway",
@@ -1995,6 +1738,63 @@
             ],
             "registration_number_label": "Matična številka"
         },
+        "ES": {
+            "name": "Spain",
+            "taxrates": [
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9d00",
+                    "value": "2",
+                    "label": "2%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9a00",
+                    "value": "4",
+                    "label": "4%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9e00",
+                    "value": "5",
+                    "label": "5%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9b00",
+                    "value": "10",
+                    "label": "10%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1a9c00",
+                    "value": "21",
+                    "label": "21%"
+                }
+            ],
+            "default_taxrate": "650c7b9f8f1b2c1a1a1a9c00",
+            "languages": [
+                {
+                    "code_dnt": "es",
+                    "name": "Spanish"
+                }
+            ],
+            "default_language_code_dnt": "es",
+            "default_currency": "EUR",
+            "currencies": [
+                {
+                    "name": "Euro",
+                    "label": "EUR",
+                    "symbol": "€"
+                },
+                {
+                    "name": "United States Dollar",
+                    "label": "USD",
+                    "symbol": "$"
+                },
+                {
+                    "name": "Swiss Franc",
+                    "label": "CHF",
+                    "symbol": "CHF"
+                }
+            ],
+            "registration_number_label": "CIF Number"
+        },
         "SE": {
             "name": "Sweden",
             "taxrates": [
@@ -2150,6 +1950,48 @@
                 }
             ],
             "registration_number_label": "ЄДРПОУ"
+        },
+        "GB": {
+            "name": "United Kingdom",
+            "taxrates": [
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1aa800",
+                    "value": "5",
+                    "label": "5%"
+                },
+                {
+                    "_id": "650c7b9f8f1b2c1a1a1aa900",
+                    "value": "20",
+                    "label": "20%"
+                }
+            ],
+            "default_taxrate": "650c7b9f8f1b2c1a1a1aa900",
+            "languages": [
+                {
+                    "code_dnt": "en",
+                    "name": "English"
+                }
+            ],
+            "default_language_code_dnt": "en",
+            "default_currency": "GBP",
+            "currencies": [
+                {
+                    "name": "British Pound Sterling",
+                    "label": "GBP",
+                    "symbol": "£"
+                },
+                {
+                    "name": "Euro",
+                    "label": "EUR",
+                    "symbol": "€"
+                },
+                {
+                    "name": "United States Dollar",
+                    "label": "USD",
+                    "symbol": "$"
+                }
+            ],
+            "registration_number_label": "Company Number"
         },
         "VA": {
             "name": "Vatican City",

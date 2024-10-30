@@ -116,7 +116,8 @@ async function sendDocumentByMail(req, res, next) {
             });
         }
 
-        const { recipients, cc, bcc, subject, body } = req.body.data;
+        const { recipients, cc, bcc, subject } = req.body.data;
+        let body = req.body.data.body.trim();
 
         if (!recipients || !subject || !body) {
             return res.status(400).json({
@@ -157,6 +158,12 @@ async function sendDocumentByMail(req, res, next) {
             });
         }
 
+        // add linked files to the body if any, each link should be separated by new lines
+        if (document.config.files.length > 0) {
+            body += `<br><br>--<br>${document.config.files.map(file => `<a href="${process.env.HOST}/file/download/${file.slug}">${file.name}</a>`).join('<br>')}`;
+        }
+        
+
         // Convert HTML body to plain text
         const text = htmlToText(body, {
             wordwrap: 130, // Wrap text at 130 characters
@@ -187,7 +194,7 @@ async function sendDocumentByMail(req, res, next) {
 
         res.status(200).json({
             notification: {
-                message: req.i18n.t('documents.controller.email_sent_to') + req.body.data.recipients,
+                message: req.i18n.t('documents.controller.email_sent_to') + ' ' + req.body.data.recipients,
                 type: 'success'
             }
         });
@@ -459,8 +466,15 @@ async function createCommonDocument(req, document_type) {
                     country: req.session.current_company.country,
                     vat_number: req.session.current_company.vat_number,
                     phone: req.session.current_company.phone,
-                    email: req.session.user.email,
-                    logo: req.session.current_company.logo
+                    email: req.session.current_company.email,
+                    logo: req.session.current_company.logo,
+                    contact_title: req.session.current_company.contact_title,
+                    contact_lastname: req.session.current_company.contact_lastname,
+                    contact_firstname: req.session.current_company.contact_firstname,
+                    contact_email: req.session.current_company.contact_email,
+                    contact_phone: req.session.current_company.contact_phone,
+                    website: req.session.current_company.website,
+                    registration_number: req.session.current_company.registration_number
                 },
                 buyer: {
                     name: req.i18n.t('documents.controller.choose_a_customer'),
@@ -665,33 +679,35 @@ async function search(req, res) {
     }
 }
 
-
 async function preview(req, res) {
     const document = await DocumentService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
     if (!document) {
         return res.status(404).send();
     }
-
+       
     const layout = req.query.nl === 'true' ? false : 'preview';
+
 
     res.render("documents/preview", {
         layout,
         document: document.toObject(),
+        doc_lang: req.query.lang || document.config.language,
         template_name: document.config.template_name 
     });
 }
 
 
 async function toPDFWithPuppeteer(req, res) {
- 
     try {
         const pdfBuffer = await generatePDFBuffer(req.params.slug, req.cookies);
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename="${req.params.slug}.pdf"`,
-            'Content-Length': pdfBuffer.length
-        });
-        res.send(pdfBuffer);
+        
+        // Set headers
+        res.contentType('application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${req.params.slug}.pdf"`);
+        res.setHeader('Content-Length', pdfBuffer.length);
+        
+        // Send the buffer directly without JSON conversion
+        res.end(pdfBuffer, 'binary');
     } catch (err) {
         console.error(`Error in toPDFWithPuppeteer: ${err.message}`);
         next(err);
@@ -699,27 +715,42 @@ async function toPDFWithPuppeteer(req, res) {
 }
 
 async function generatePDFBuffer(slug, cookies) {
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ 
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
-    // get cookie and pass the cookie to the page
-    await page.setCookie(...Object.keys(cookies).map(key => ({
-        name: key,
-        value: cookies[key],
-        domain: 'localhost',
-        path: '/',
-        httpOnly: false,
-        secure: false,
-        sameSite: 'Lax',
-        preferCSSPageSize: true,
-    })));
+    try {
+        const cookieArray = Object.entries(cookies).map(([key, value]) => ({
+            name: key,
+            value: value,
+            domain: 'localhost',
+            path: '/',
+            httpOnly: false,
+            secure: false,
+            sameSite: 'Lax'
+        }));
+        await page.setCookie(...cookieArray);
 
-    await page.goto(`http://localhost:3000/document/preview/${slug}`, { waitUntil: 'load' });
+        await page.goto(`http://localhost:3000/document/preview/${slug}`, { 
+            waitUntil: 'networkidle2',  // Changed from 'load' to ensure all resources are loaded
+            timeout: 30000 // 30 second timeout
+        });
 
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }, preferCSSPageSize: true });
-    await browser.close();
-
-    return pdfBuffer;
+        const pdfBuffer = await page.pdf({ 
+            format: 'A4', 
+            printBackground: true, 
+            margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }, 
+            preferCSSPageSize: true
+        });
+        return pdfBuffer;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    } finally {
+        await browser.close();
+    }
 }
 
 async function toPDF(req, res) {

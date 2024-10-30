@@ -1,5 +1,5 @@
 {{!-- Black bar at the top --}}
-<div class="bg-gray-800 text-white px-2 flex justify-between items-center xl:container">   
+<div class="bg-gray-800 text-white px-2 flex justify-between items-center xl:container">  
   <div class="group flex-1 justify-start hidden lg:flex" 
        x-init="$dispatch('loadcompanies');"
        x-data="{
@@ -49,7 +49,7 @@
   <!-- Right column -->
   <div class="flex-1 justify-end hidden lg:flex"
        x-data="{
-                languages: {{stringify languages}},
+                languages: {{stringify i18n_languages}},
                 languageSelected: '{{session.user.language}}',
             }">
     <form action="/preferences/changelang" method="POST" id="lng-form">
@@ -58,7 +58,7 @@
             <select name="lng" @change="document.getElementById('lng-form').submit();"
                     name="currency"
                     class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium text-white border-none group-hover:text-gray-100">
-                <template x-for="language in languages">
+                <template x-for="language in choose_languages_dropdown">
                     <option x-text="language.name" :value="language.code_dnt" :selected="language.code_dnt === languageSelected"></option>
                 </template>
             </select>

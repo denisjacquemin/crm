@@ -21,7 +21,6 @@ async function index(req, res, next) {
             layout: false,
             products: products,
             defaultCountry: req.session.current_company.country,
-            // ...getCompanyRegistrationNumberLabels(req)
         });
     } catch (err) {
         next(err);
@@ -108,7 +107,23 @@ async function newProductAjax(req, res, next) {
 async function createNewProductInMongoAndTypesense(req) {
     // automatically sync in Typense by a mongoose's hook in models/product.model.js
     try {
-        const defaultTaxrate = req.session.current_company.default_taxrate || res.locals.countries[req.session.current_company.country].default_taxrate;
+        const companyCountry = req.session.current_company.country;
+        const countryData = req.i18n.t(`countries:countries.${companyCountry}`, { returnObjects: true })
+        
+        let defaultTaxrate;
+
+        if (req.session.current_company.default_taxrate) {
+            // Check if the company's default_taxrate exists in the country's taxrates
+            const foundTaxrate = countryData.taxrates.find(taxrate => taxrate._id === req.session.current_company.default_taxrate);
+            if (foundTaxrate) {
+                defaultTaxrate = foundTaxrate._id;
+            }
+        }
+
+        // If no valid default_taxrate was found, use the country's default
+        if (!defaultTaxrate) {
+            defaultTaxrate = countryData.default_taxrate;
+        }
 
         const productCreated = await ProductsService.create({
             company_id: req.session.current_company._id,

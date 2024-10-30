@@ -4,11 +4,13 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+        <meta name="google" content="notranslate">
+        <meta name="robots" content="noindex, nofollow">
         <title>Milo</title>
         <meta name="csrf-token" content="{{csrfToken}}">
         <link rel="stylesheet" href="/public/css/styles.css" />
         <script type="text/javascript" src="/public/app.bundle.js"></script>
+        <script src="/public/static-data.js"></script>
     </head>
 
     <body @updatenavbutton="navState = $event.detail.value" `
@@ -17,14 +19,10 @@
             modalSize: null,
             companies: [],
             companyFiles: [],
-            default_taxrate: '{{ default_taxrate}}',
-            countries: {{ stringify countries }},
-            custom_taxrates: {{ stringify session.current_company.taxrates }},
-            frequentlySelectedCountries: {{ stringify frequentlySelectedCountries }},
-            current_company_country: '{{ session.current_company.country }}',
+            current_company: {{ stringify session.current_company }},
             defaultCurrency: {{ stringify defaultCurrency }},
-            frequentlySelectedCurrencies: {{ stringify frequentlySelectedCurrencies }},
-            currencies: {{ stringify currencies }},
+            default_taxrate: '{{ default_taxrate}}', 
+            custom_taxrates: {{ stringify session.current_company.taxrates }},
             openSettingsModal: false,
             closeModal: function() {
                 this.openSettingsModal = false;
@@ -52,6 +50,7 @@
                 if (callback) callback();
             },
             async loadCompanies() {
+                console.log('loadCompanies');
                 const data = await fetchUrl('/companies/currentusercompanies')
                 this.companies = data;
             },
@@ -62,7 +61,11 @@
           }"
           @loadcompanies="loadCompanies()"
           @loadcompanyfiles="loadCompanyFiles()"
-          x-init="dayjs.locale('{{session.user.language}}');"
+          x-init="
+            Object.assign($data, window.staticData);
+            frequentlySelectedCurrencies = countries[current_company.country].currencies;
+            dayjs.locale('{{session.user.language}}');
+          "
         >
         
         <div class="h-screen flex flex-col">

@@ -7,7 +7,6 @@ const _ = require('lodash');
 const { updateMany } = require('../models/document.model');
 const mongoose = require('mongoose');
 const geoip = require('geoip-lite');
-const { getCompanyRegistrationNumberLabels } = require('./utils/helper');
 
 
 
@@ -28,7 +27,6 @@ async function index(req, res, next) {
             layout: false,
             buyers: buyers,
             defaultCountry: geo && geo.country,
-            ...getCompanyRegistrationNumberLabels(req)
         });
     } catch (err) {
         next(err);
@@ -120,6 +118,7 @@ async function createNewBuyerInMongoAndTypesense(req) {
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('buyers.controller.default_company_name'),
+            country: req.session.current_company.country
         });
         
         return buyerCreated ? buyerCreated.toObject() : null;

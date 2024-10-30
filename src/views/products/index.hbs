@@ -269,8 +269,8 @@
                     <select x-show="!selectedProduct?.custom_vat_rate?.is_custom" x-model="selectedProduct.vat" id="vat" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <!-- Empty value option -->
                         <option value="" selected></option> 
-                        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company_country].name + ')'">
-                            <template x-for="(rate, index) in countries[current_company_country].taxrates" :key="index">
+                        <optgroup :label="'{{t 'documents.views.index.items_modal.standard_taxrates' }}' + ' (' + countries[current_company.country].name + ')'">
+                            <template x-for="(rate, index) in countries[current_company.country].taxrates" :key="index">
                                 <option :value="rate._id" 
                                         :selected="selectedProduct.vat === rate._id || default_taxrate === rate._id"
                                         x-text="`${rate.label}`"></option>

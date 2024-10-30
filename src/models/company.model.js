@@ -36,8 +36,10 @@ const companySchema = new mongoose.Schema({
     country: { type: String, required: false },
     vat_number: { type: String, required: false },
     without_vat: { type: Boolean, required: false },
-    company_registration_number: { type: String, required: false },
-    contact_name: { type: String, required: false },
+    registration_number: { type: String, required: false },
+    contact_title: { type: String, required: false },
+    contact_firstname: { type: String, required: false },
+    contact_lastname: { type: String, required: false },
     phone: { type: String, required: false },
     email: { type: String, required: false},
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -61,6 +63,14 @@ const companySchema = new mongoose.Schema({
         default_invoice_due_date_terms_type: { type: String, required: false, default: '+30' },
         send_cc_to: { type: String, required: false, default: '' },
         send_bcc_to: { type: String, required: false, default: '' },
+        email_subject_templates: {
+            type: Object,
+            default: {}
+        },
+        email_message_templates: {
+            type: Object,
+            default: {}
+        }
     },
 
 

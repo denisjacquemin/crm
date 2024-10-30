@@ -1,305 +1,39 @@
 {
-  "do_not_translate": {
-    "languages": "do_not_translate.languages"
-  },
-  "signin": {
-    "user_does_not_exist": "signin.user_does_not_exist",
-    "": {
-      "email_or_password_invalid": "signin..email_or_password_invalid"
-    },
-    "timezone": "signin.timezone",
-    "all_fields_require": "signin.all_fields_require",
-    "forgot_password": {
-      "email_taken": "signin.forgot_password.email_taken",
-      "email_updated": "signin.forgot_password.email_updated"
-    }
-  },
-  "forgot_password": {
-    "reset_your_password": "forgot_password.reset_your_password",
-    "email_required": "forgot_password.email_required",
-    "user_does_not_exist": "forgot_password.user_does_not_exist",
-    "email_updated": "forgot_password.email_updated",
-    "email_taken": "forgot_password.email_taken",
-    "email_invalid_sub": "forgot_password.email_invalid_sub"
-  },
-  "reset_password": {
-    "password_required": "reset_password.password_required",
-    "confirm_password_required": "reset_password.confirm_password_required",
-    "password_updated": "reset_password.password_updated",
-    "please_sign_in": "reset_password.please_sign_in"
-  },
-  "signup": {
-    "password_not_strong_enough": "signup.password_not_strong_enough",
-    "password_not_strong_enough_sub": "signup.password_not_strong_enough_sub",
-    "sign_up": "signup.sign_up",
-    "or": "signup.or",
-    "already_have_an_account": "signup.already_have_an_account"
-  },
-  "documents": {
-    "document_not_found": "documents.document_not_found",
-    "index": {
-      "new_invoice": "documents.index.new_invoice"
-    },
-    "document_not_found_sub": "documents.document_not_found_sub",
-    "views": {
-      "index": {
-        "buyer_modal": {
-          "modal_title": "documents.views.index.buyer_modal.modal_title",
-          "modal_subtitle": "documents.views.index.buyer_modal.modal_subtitle",
-          "back_button": "documents.views.index.buyer_modal.back_button"
-        },
-        "items_modal": {
-          "name_label": "documents.views.index.items_modal.name_label",
-          "name_placeholder": "documents.views.index.items_modal.name_placeholder",
-          "custom_taxrates": "documents.views.index.items_modal.custom_taxrates",
-          "vat_rate_label": "documents.views.index.items_modal.vat_rate_label"
-        },
-        "invoice_settings": {
-          "show_deliverry_date": "documents.views.index.invoice_settings.show_deliverry_date"
-        },
-        "files_modal": {
-          "document_files": "documents.views.index.files_modal.document_files",
-          "edit": "documents.views.index.files_modal.edit",
-          "delete_confirm": "documents.views.index.files_modal.delete_confirm",
-          "delete": "documents.views.index.files_modal.delete",
-          "companyfiles_no_file_uploaded_yet": "documents.views.index.files_modal.companyfiles_no_file_uploaded_yet"
-        },
-        "email_modal": {
-          "modal_title": "documents.views.index.email_modal.modal_title",
-          "recipient": "documents.views.index.email_modal.recipient",
-          "cc": "documents.views.index.email_modal.cc",
-          "more_options": "documents.views.index.email_modal.more_options",
-          "less_options": "documents.views.index.email_modal.less_options",
-          "cc_placeholder": "documents.views.index.email_modal.cc_placeholder"
-        }
-      },
-      "edit_form": {
-        "delivery_date": "documents.views.edit_form.delivery_date",
-        "delete_document": "documents.views.edit_form.delete_document",
-        "notes_on_invoice_label": "documents.views.edit_form.notes_on_invoice_label",
-        "notes_on_invoice_placeholder": "documents.views.edit_form.notes_on_invoice_placeholder",
-        "credit_note_date": "documents.views.edit_form.credit_note_date",
-        "manage_items": "documents.views.edit_form.manage_items",
-        "no_items_yet": "documents.views.edit_form.no_items_yet",
-        "create_first_item": "documents.views.edit_form.create_first_item",
-        "no_files_yet": "documents.views.edit_form.no_files_yet"
-      },
-      "email_modal": {
-        "invoice": "documents.views.email_modal.invoice",
-        "credit_note": "documents.views.email_modal.credit_note"
-      }
-    }
-  },
-  "common": {
-    "not_found": "common.not_found",
-    "still_authenticated": "common.still_authenticated"
-  },
-  "settings": {
-    "current_invoice_sequence_updated": "settings.current_invoice_sequence_updated",
-    "views": {
-      "tabs": {
-        "": "settings.views.tabs.",
-        "invoices": {
-          "frequently_selected_currencies": "settings.views.tabs.invoices.frequently_selected_currencies",
-          "all_currencies": "settings.views.tabs.invoices.all_currencies"
-        }
-      },
-      "invoices": {
-        "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button",
-        "warning_title": "settings.views.invoices.warning_title",
-        "show_target_invoice": "settings.views.invoices.show_target_invoice",
-        "yes_show_target_invoice": "settings.views.invoices.yes_show_target_invoice",
-        "no_show_target_invoice": "settings.views.invoices.no_show_target_invoice",
-        "show_target_invoice_button": "settings.views.invoices.show_target_invoice_button"
-      },
-      "files": {
-        "no_file_uploaded_yet": "settings.views.files.no_file_uploaded_yet"
-      },
-      "credit_notes": {
-        "show_target_invoice_help": "settings.views.credit_notes.show_target_invoice_help",
-        "yes_show_target_invoice": "settings.views.credit_notes.yes_show_target_invoice",
-        "no_show_target_invoice": "settings.views.credit_notes.no_show_target_invoice",
-        "update_default_notes_on_credit_notes_button": "settings.views.credit_notes.update_default_notes_on_credit_notes_button"
-      },
-      "vatrates": {
-        "custom_vatrates": "settings.views.vatrates.custom_vatrates",
-        "custom_vatrates_help": "settings.views.vatrates.custom_vatrates_help",
-        "create_vatrate_button": "settings.views.vatrates.create_vatrate_button",
-        "value": "settings.views.vatrates.value",
-        "label": "settings.views.vatrates.label",
-        "save_button": "settings.views.vatrates.save_button"
-      },
-      "myaccount": {
-        "value": "settings.views.myaccount.value",
-        "label": "settings.views.myaccount.label",
-        "code": "settings.views.myaccount.code"
-      },
-      "emails": {
-        "send_bcc_to_placeholder": "settings.views.emails.send_bcc_to_placeholder",
-        "send_cc_to": "settings.views.emails.send_cc_to",
-        "send_cc_to_help": "settings.views.emails.send_cc_to_help",
-        "send_cc_to_placeholder": "settings.views.emails.send_cc_to_placeholder",
-        "send_cc_to_button": "settings.views.emails.send_cc_to_button"
-      }
-    },
-    "invoices_default_invoice_due_date_terms_type_updated": "settings.invoices_default_invoice_due_date_terms_type_updated",
-    "default_currency_updated": "settings.default_currency_updated"
-  },
-  "signup2": {
-    "zip": "signup2.zip",
-    "city": "signup2.city",
-    "country": "signup2.country",
-    "vat_number": "signup2.vat_number",
-    "phone": "signup2.phone",
-    "contact_name": "signup2.contact_name"
-  },
-  "global": {
-    "settings": {
-      "logout": "global.settings.logout",
-      "sign_me_out": "global.settings.sign_me_out",
-      "signout": "global.settings.signout"
-    }
-  },
   "users": {
-    "controller": {
-      "password_not_strong_enough": "users.controller.password_not_strong_enough",
-      "password_not_strong_enough_sub": "users.controller.password_not_strong_enough_sub",
-      "all_fields_required": "users.controller.all_fields_required",
-      "address1_is_required": "users.controller.address1_is_required"
-    },
     "views": {
       "signup2": {
-        "company_registration_number": "users.views.signup2.company_registration_number",
-        "company_registration_number_undefined": "users.views.signup2.company_registration_number_undefined",
-        "company_registration_number_": "users.views.signup2.company_registration_number_",
-        "company_registration_number_BE": "users.views.signup2.company_registration_number_BE",
-        "internal_name": "users.views.signup2.internal_name",
-        "internal_name_placeholder": "users.views.signup2.internal_name_placeholder",
-        "frequently_selected_currencies": "users.views.signup2.frequently_selected_currencies",
-        "all_currencies": "users.views.signup2.all_currencies",
-        "currency": "users.views.signup2.currency"
-      },
-      "index": {
-        "seller_modal": {
-          "modal_title": "users.views.index.seller_modal.modal_title"
-        }
+        "company_registration_number": "users.views.signup2.company_registration_number"
       }
-    },
-    "controller_password": {
-      "email_sent": "users.controller_password.email_sent"
     }
   },
   "buyers": {
-    "views_countries": "buyers.views_countries",
-    "views": {
-      "countries": "buyers.views.countries",
-      "frequently_selected_countries": "buyers.views.frequently_selected_countries",
-      "index": {
-        "create_new_client": "buyers.views.index.create_new_client",
-        "sort_by": "buyers.views.index.sort_by",
-        "creation_date": "buyers.views.index.creation_date",
-        "name": "buyers.views.index.name",
-        "no_client_found": "buyers.views.index.no_client_found",
-        "no_client_selected": "buyers.views.index.no_client_selected",
-        "delete_confirm": "buyers.views.index.delete_confirm",
-        "delete": "buyers.views.index.delete",
-        "country": "buyers.views.index.country",
-        "vat_number": "buyers.views.index.vat_number",
-        "without_vat": "buyers.views.index.without_vat",
-        "address": "buyers.views.index.address",
-        "invoicing_address": "buyers.views.index.invoicing_address",
-        "delivery_attention": "buyers.views.index.delivery_attention",
-        "delivery_attention_placeholder": "buyers.views.index.delivery_attention_placeholder",
-        "delivery_country": "buyers.views.index.delivery_country",
-        "delivery_address_label": "buyers.views.index.delivery_address_label",
-        "delivery_address_placeholder": "buyers.views.index.delivery_address_placeholder",
-        "delivery_phone_label": "buyers.views.index.delivery_phone_label",
-        "delivery_phone_placeholder": "buyers.views.index.delivery_phone_placeholder"
-      }
-    }
-  },
-  "session": {
-    "signup": {
-      "company": {
-        "country": "session.signup.company.country"
-      }
-    }
-  },
-  "users_controller": {
-    "email_taken": "users_controller.email_taken"
-  },
-  "companies": {
-    "controller": {
-      "default_company_name": "companies.controller.default_company_name",
-      "show_delivery_date_updated": "companies.controller.show_delivery_date_updated",
-      "taxrate_saved": "companies.controller.taxrate_saved",
-      "taxrate_deleted": "companies.controller.taxrate_deleted"
-    }
-  },
-  "taxrates": {
-    "test": "taxrates.test",
-    "rates": {
-      "test": "taxrates.rates.test"
-    }
-  },
-  "rates": {
-    "test": "rates.test"
-  },
-  "taxRates": {
-    "FR": "taxRates.FR"
-  },
-  "buyerss": {
-    "views": {
-      "countries": "buyerss.views.countries",
-      "frequently_selected_countries": "buyerss.views.frequently_selected_countries"
-    }
-  },
-  "products": {
     "views": {
       "index": {
-        "create_new_client": "products.views.index.create_new_client",
-        "sort_by": "products.views.index.sort_by",
-        "creation_date": "products.views.index.creation_date",
-        "name": "products.views.index.name",
-        "no_client_found": "products.views.index.no_client_found",
-        "no_client_selected": "products.views.index.no_client_selected",
-        "delete_confirm": "products.views.index.delete_confirm",
-        "delete": "products.views.index.delete",
-        "country": "products.views.index.country",
-        "vat_number": "products.views.index.vat_number",
-        "without_vat": "products.views.index.without_vat",
-        "create_new_product": "products.views.index.create_new_product",
-        "no_product_found": "products.views.index.no_product_found",
-        "no_product_selected": "products.views.index.no_product_selected",
-        "vat_label": "products.views.index.vat_label"
+        "all_languages": "buyers.views.index.all_languages"
       }
-    },
-    "controller": {
-      "default_product_name": "products.controller.default_product_name"
     }
   },
-  "languages": {
-    "invalid_language": "languages.invalid_language",
-    "language_changed": "languages.language_changed"
-  },
-  "edit_form": {
-    "invoice_date": "edit_form.invoice_date"
-  },
-  "default_template": {
-    "purpose": "default_template.purpose",
-    "vat": "default_template.vat",
-    "delivery_date": "default_template.delivery_date",
-    "credit_note_number": "default_template.credit_note_number",
-    "target_invoice_number": "default_template.target_invoice_number",
-    "credit_note_date": "default_template.credit_note_date",
-    "refernce": "default_template.refernce",
-    "reference": "default_template.reference"
-  },
-  "sizes": "sizes",
-  "files": {
-    "controller": {
-      "error_serving_file": "files.controller.error_serving_file"
+  "settings": {
+    "views": {
+      "emails": {
+        "link_email_template_help": "settings.views.emails.link_email_template_help"
+      }
     }
   },
-  "country_selected_is": "country_selected_is"
+  "documents": {
+    "views": {
+      "index": {
+        "email_modal": {
+          "language": "documents.views.index.email_modal.language"
+        },
+        "invoice_settings": {
+          "show_ribbon": "documents.views.index.invoice_settings.show_ribbon",
+          "ribbon_position": "documents.views.index.invoice_settings.ribbon_position",
+          "custom": "documents.views.index.invoice_settings.custom",
+          "invoice_long": "documents.views.index.invoice_settings.invoice_long",
+          "credit_note_long": "documents.views.index.invoice_settings.credit_note_long"
+        }
+      }
+    }
+  }
 }

@@ -1,21 +1,4 @@
 {
-    "frequently_selected_currencies": [
-        {
-            "name": "Euro",
-            "label": "EUR",
-            "symbol": "€"
-        },
-        {
-            "name": "United States Dollar",
-            "label": "USD",
-            "symbol": "$"
-        },
-        {
-            "name": "Swiss Franc",
-            "label": "CHF",
-            "symbol": "CHF"
-        }
-    ],
     "currencies": [
       {
         "name": "United Arab Emirates Dirham",

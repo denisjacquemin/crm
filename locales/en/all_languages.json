@@ -1,0 +1,128 @@
+{
+    "all_languages": {
+        "ar": {
+            "name": "Arabic",
+            "code_dnt": "ar"
+        },
+        "bn": {
+            "name": "Bengali",
+            "code_dnt": "bn"
+        },
+        "zh": {
+            "name": "Chinese (Simplified)",
+            "code_dnt": "zh"
+        },
+        "zh-tw": {
+            "name": "Chinese (Traditional)",
+            "code_dnt": "zh-TW"
+        },
+        "cs": {
+            "name": "Czech",
+            "code_dnt": "cs"
+        },
+        "da": {
+            "name": "Danish",
+            "code_dnt": "da"
+        },
+        "nl": {
+            "name": "Dutch",
+            "code_dnt": "nl"
+        },
+        "en": {
+            "name": "English",
+            "code_dnt": "en"
+        },
+        "fi": {
+            "name": "Finnish",
+            "code_dnt": "fi"
+        },
+        "fr": {
+            "name": "French",
+            "code_dnt": "fr"
+        },
+        "de": {
+            "name": "German",
+            "code_dnt": "de"
+        },
+        "el": {
+            "name": "Greek",
+            "code_dnt": "el"
+        },
+        "he": {
+            "name": "Hebrew",
+            "code_dnt": "he"
+        },
+        "hi": {
+            "name": "Hindi",
+            "code_dnt": "hi"
+        },
+        "hu": {
+            "name": "Hungarian",
+            "code_dnt": "hu"
+        },
+        "id": {
+            "name": "Indonesian",
+            "code_dnt": "id"
+        },
+        "it": {
+            "name": "Italian",
+            "code_dnt": "it"
+        },
+        "ja": {
+            "name": "Japanese",
+            "code_dnt": "ja"
+        },
+        "ko": {
+            "name": "Korean",
+            "code_dnt": "ko"
+        },
+        "ms": {
+            "name": "Malay",
+            "code_dnt": "ms"
+        },
+        "no": {
+            "name": "Norwegian",
+            "code_dnt": "no"
+        },
+        "pl": {
+            "name": "Polish",
+            "code_dnt": "pl"
+        },
+        "pt": {
+            "name": "Portuguese",
+            "code_dnt": "pt"
+        },
+        "ro": {
+            "name": "Romanian",
+            "code_dnt": "ro"
+        },
+        "ru": {
+            "name": "Russian",
+            "code_dnt": "ru"
+        },
+        "es": {
+            "name": "Spanish",
+            "code_dnt": "es"
+        },
+        "sv": {
+            "name": "Swedish",
+            "code_dnt": "sv"
+        },
+        "th": {
+            "name": "Thai",
+            "code_dnt": "th"
+        },
+        "tr": {
+            "name": "Turkish",
+            "code_dnt": "tr"
+        },
+        "uk": {
+            "name": "Ukrainian",
+            "code_dnt": "uk"
+        },
+        "vi": {
+            "name": "Vietnamese",
+            "code_dnt": "vi"
+        }
+    }
+}

@@ -62,8 +62,6 @@ async function deleteAjax(req, res, next) {
           });
         const companyDeleted = await CompanyService.delete(company._id.toString());
 
-        console.log('deleteAjax', company._id.toString(), req.session.user.companies);
-
         res.status(200).json(companyDeleted.toObject());
         
     } catch (error) {
@@ -130,16 +128,9 @@ async function newCompanyAjax(req, res, next) {
             country: country,
             vat_number: '',
             users: [req.session.user._id],
-            tax_rates: [],
-            settings: {
-                default_currency: {
-                    name: process.env.DEFAULT_CURRENCY_NAME,
-                    label: process.env.DEFAULT_CURRENCY_LABEL,
-                    symbol: process.env.DEFAULT_CURRENCY_SYMBOL
-                },
-            }
+            tax_rates: []            
         });
-        // add the company id to the user's companies array in Session and DB
+                // add the company id to the user's companies array in Session and DB
         if (req.session.user.companies.indexOf(companyCreated._id.toString()) === -1) {
             req.session.user.companies.push(companyCreated._id.toString());
         }
@@ -252,6 +243,23 @@ async function setSend_bcc_to(req, res, next) {
         next(err);
     }
 }
+async function updateEmailTemplates(req, res, next) {
+    try {
+        await CompanyService.update(req.session.current_company._id, {
+            $set: {
+                "settings.email_subject_templates": req.body.email_subject_templates,
+                "settings.email_message_templates": req.body.email_message_templates
+            }
+        });
+        req.session.current_company.settings.email_subject_templates = req.body.email_subject_templates;
+        req.session.current_company.settings.email_message_templates = req.body.email_message_templates;
+
+        return res.status(200).json({ notification: { message: req.i18n.t('companies.controller.email_templates_updated'), type: 'success' }});
+    } catch (err) {
+        console.error(`Error in companiesController.updateEmailTemplates `, err.message);
+        next(err);
+    }
+}
 
 
 async function saveOrUpdateTaxRate(req, res, next) {
@@ -288,8 +296,6 @@ async function saveOrUpdateTaxRate(req, res, next) {
         }
 
         // Optionally, update the taxrates field on the user's session if needed
-        console.log('req.session.current_company.taxrates', req.session.current_company.taxrates);
-        console.log('taxrate._id.toString()', taxrate._id);
         const existingTaxrateIndex = req.session.current_company.taxrates.findIndex(tr => tr._id.toString() === taxrate._id.toString());
         if (existingTaxrateIndex !== -1) {
             req.session.current_company.taxrates[existingTaxrateIndex] = taxrate;
@@ -461,5 +467,6 @@ module.exports = {
     defaulttaxrate,
     deleteTaxRate,
     setSend_cc_to,
-    setSend_bcc_to
+    setSend_bcc_to,
+    updateEmailTemplates
 }

@@ -1,0 +1,14 @@
+{
+    "company_form": {
+        "default": {
+            "vat_number_label": "VAT Number",
+            "registration_number": {
+                "display": false
+            }
+        },
+        "FR": {
+            "vat_number_label": "VAT Number",
+            "registration_number": { "label": "SIREN / SIRET", "display": true }
+        }        
+    }
+}

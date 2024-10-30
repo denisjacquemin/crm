@@ -41,7 +41,7 @@
             document.getElementById('item-quantity').value = '';
             document.getElementById('item-unit-price').value = '';
             document.getElementById('item-reduction').value = '';
-            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            const taxrates = this.countries[this.current_company.country].taxrates.concat(this.custom_taxrates);
             const default_vat = taxrates.find(rate => rate._id === this.default_taxrate);
             this.formItem = {
                 name: '',
@@ -103,7 +103,7 @@
             {{!-- const data = await fetchUrl(`/products/editAjax/${this.products[this.selectedProductIndex].slug}`, 'GET');
             console.log('data.product', data.product); --}}
             console.log('this.products[this.selectedProductIndex]', this.products[this.selectedProductIndex]);
-            const taxrates = this.countries[this.current_company_country].taxrates.concat(this.custom_taxrates);
+            const taxrates = this.countries[this.current_company.country].taxrates.concat(this.custom_taxrates);
             let full_vat = { value: '', label: '' };
             if (this.products[this.selectedProductIndex].custom_vat_rate.is_custom) {
                 full_vat = {
@@ -122,7 +122,7 @@
                 reference: this.products[this.selectedProductIndex].reference, 
                 unit_price: this.products[this.selectedProductIndex].unit_price, 
                 vat: JSON.stringify(full_vat),
-                custom_vat_rate: !this.countries[this.current_company_country].taxrates.includes(this.products[this.selectedProductIndex].vat)
+                custom_vat_rate: !this.countries[this.current_company.country].taxrates.includes(this.products[this.selectedProductIndex].vat)
 
             });
             document.getElementById('item-quantity').value = this.formItem.quantity;

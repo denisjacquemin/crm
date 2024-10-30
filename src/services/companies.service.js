@@ -1,5 +1,7 @@
 const {Company} = require('../models/company.model');
 const { ObjectId } = require('mongoose').Types;
+const i18next = require('i18next');
+
 
 class CompanyService {
  
@@ -21,8 +23,34 @@ class CompanyService {
     static async create(data, options = {}) {
         try {
             const company = new Company(data);
-            await company.save(options);
-            return company;
+            company.default_taxrate = i18next.t(`countries:countries.${company.country}.default_taxrate`, { returnObjects: true });
+            company.settings.default_currency = i18next.t(`countries:countries.${company.country}.currencies`, { returnObjects: true }).find(currency => currency.label === i18next.t(`countries:countries.${company.country}.default_currency`, { returnObjects: true })); // find the default currency
+
+            // Initialize email subject templates for each preloaded language
+            // This creates a template for each language supported by the application
+            const i18n_languages = process.env.TRANSLATION_i18_CODE.split(',');
+            company.settings.email_subject_templates = (() => {
+                const templates = {};
+                i18n_languages.forEach(lang => {
+                    const key = 'companies.controller.email_subject_template';
+                    templates[lang] = i18next.t(key, {lng: lang});
+                });
+                return templates;
+            })();
+
+            // Initialize email message templates for each preloaded language
+            company.settings.email_message_templates = (() => {
+                const templates = {};
+                i18n_languages.forEach(lang => {
+                    const key = 'companies.controller.email_message_template';
+                    templates[lang] = i18next.t(key, {lng: lang});
+                });
+                return templates;
+            })();
+
+            
+            const companySaved = await company.save(options);           
+            return companySaved;
         } catch (error) {
             throw error;
         }

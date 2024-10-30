@@ -7,6 +7,8 @@ const path = require("path");
 const Typesense = require('./src/services/lib/typesense');
 const compression = require('compression');
 const mongooseHelper = require('./src/services/lib/mongoose');
+const i18next = require('i18next');
+const fs = require('fs');
 const { i18nMiddleware } = require('./src/middlewares/i18next');
 const { formatBytes } = require('./src/lib/formatBytes');
 
@@ -63,6 +65,10 @@ const { create } = require("express-handlebars");
 const hbs = create({
     extname: ".hbs",
     helpers: {
+        i18n: function(key, lang) {
+            const result = i18next.t(key, { lng: lang });
+            return result;
+        },
         API_HOSTNAME: function() {
             return process.env.API_HOSTNAME;
         },

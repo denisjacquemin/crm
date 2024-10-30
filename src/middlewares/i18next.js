@@ -21,6 +21,8 @@ var lngDetector = new i18Middleware.LanguageDetector();
 // Add your custom detector
 lngDetector.addDetector(sessionLanguageDetector);
 
+const i18n_languages = process.env.TRANSLATION_i18_CODE ? process.env.TRANSLATION_i18_CODE.split(',') : ['en'];
+console.log('i18n_languages', i18n_languages);
 
 i18next.use(i18nBackend)
   .use(lngDetector)
@@ -33,7 +35,7 @@ i18next.use(i18nBackend)
       caches: ['cookie']
     },
     partialBundledLanguages: true,
-    ns: ['translation', 'taxrates', 'countries', 'currencies'],
+    ns: ['translation', 'taxrates', 'countries', 'currencies', 'languages', 'all_languages', 'custom_settings'],
     defaultNS: 'translation',
     backend: {
       loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
@@ -45,7 +47,8 @@ i18next.use(i18nBackend)
 
     load: 'languageOnly',
     saveMissing: true,
-    nonExplicitSupportedLngs: true
+    nonExplicitSupportedLngs: true,
+    preload: i18n_languages
   });
 
 function formatBytes(bytes) {

@@ -43,7 +43,15 @@
                             <span>{{t 'documents.views.index.items_modal.modal_title' }}</span>
                           </template>
                           <template x-if="slideContentPartialName == 'slideInvoiceSettings'">
-                            <span>{{t 'documents.views.index.invoice_settings.modal_title' }}</span>
+                            <span>
+                              <template x-if="selectedDocument.config.document_type === 'invoice'">
+                                <span>{{t 'common.invoice_long' }}</span>
+                              </template>
+                              <template x-if="selectedDocument.config.document_type === 'credit_note'">
+                                <span>{{t 'common.credit_note_long' }}</span>
+                              </template>
+                              <span> {{t 'documents.views.index.invoice_settings.modal_title' }}</span>
+                            </span>
                           </template>
                           <template x-if="slideContentPartialName == 'slideFiles'">
                             <span>{{t 'documents.views.index.files_modal.modal_title' }}</span>

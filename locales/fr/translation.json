@@ -480,7 +480,7 @@
         "current_invoice_sequence_updated": "The invoice sequence has been updated"
     },
     "default_template": {
-        "invoice_number_footer": "Invoice #",
+        "invoice_number_footer": "FFacture #",
         "invoice_number": "Invoice Number",
         "page": "Page",
         "invoice": "Invoice",
