@@ -2808,61 +2808,6 @@ input[type="date"] {
   background-color: #fff7ca; 
   background-image: linear-gradient(to right, #fff2ac, #fff7ca);
 }
-@media (min-width: 1280px) {
-
-  .xl\:container {
-    width: 100%;
-  }
-
-  @media (min-width: 640px) {
-
-    .xl\:container {
-      max-width: 640px;
-    }
-  }
-
-  @media (min-width: 768px) {
-
-    .xl\:container {
-      max-width: 768px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-
-    .xl\:container {
-      max-width: 1024px;
-    }
-  }
-
-  @media (min-width: 1124px) {
-
-    .xl\:container {
-      max-width: 1124px;
-    }
-  }
-
-  @media (min-width: 1280px) {
-
-    .xl\:container {
-      max-width: 1280px;
-    }
-  }
-
-  @media (min-width: 1540px) {
-
-    .xl\:container {
-      max-width: 1540px;
-    }
-  }
-
-  @media (min-width: 1920px) {
-
-    .xl\:container {
-      max-width: 1920px;
-    }
-  }
-}
 @media (min-width: 1540px) {
 
   .\32xl\:container {
@@ -4015,6 +3960,11 @@ input[type="date"] {
 
   .\32xl\:m-auto {
     margin: auto;
+  }
+
+  .\32xl\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .\32xl\:block {
