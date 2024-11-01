@@ -1,6 +1,6 @@
 const {Company} = require('../models/company.model');
 const { ObjectId } = require('mongoose').Types;
-const i18next = require('i18next');
+const { i18next } = require('../middlewares/i18next');
 
 
 class CompanyService {
@@ -23,6 +23,7 @@ class CompanyService {
     static async create(data, options = {}) {
         try {
             const company = new Company(data);
+            console.log('company.country:', company);
             company.default_taxrate = i18next.t(`countries:countries.${company.country}.default_taxrate`, { returnObjects: true });
             company.settings.default_currency = i18next.t(`countries:countries.${company.country}.currencies`, { returnObjects: true }).find(currency => currency.label === i18next.t(`countries:countries.${company.country}.default_currency`, { returnObjects: true })); // find the default currency
 

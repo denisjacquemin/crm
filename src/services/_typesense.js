@@ -27,9 +27,9 @@ class TypesenseService {
 
             if (!existingCollection) {
                 await this.client.collections().create(this.schema);
-                console.log(`Created collection ${this.collectionName}`);
+                console.debug(`Created collection ${this.collectionName}`);
             } else {
-                console.log(`Using existing collection ${this.collectionName}`);
+                console.debug(`Using existing collection ${this.collectionName}`);
             }
         } catch (error) {
             console.error(`Failed to create collection`);

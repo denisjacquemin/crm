@@ -127,7 +127,7 @@ async function signup2(req, res, next) {
         res.render("users/signup2", { 
             ...defaultCountry,
             company: {
-                country: defaultCountry.defaultCountry || Object.keys(req.i18n.t('countries:frequently_selected_countries', { returnObjects: true }))[0],
+                country: defaultCountry.defaultCountry || req.i18n.t('countries:frequently_selected_countries', { returnObjects: true })[0],
                 language: req.i18n.language.split('-')[0],
                 without_vat: false,
                 contact_title: req.session.signup.user.title,

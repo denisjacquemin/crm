@@ -49,7 +49,6 @@ class ProductsTypesenseService extends TypesenseService {
 
     async search(query, searchParameters = {}) {
         try {
-            console.log('in searcg', query, searchParameters)
             return await super.searchDocuments(query, searchParameters);
         } catch(error) {
             console.error('Error searching products:', error);

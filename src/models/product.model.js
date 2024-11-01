@@ -42,6 +42,8 @@ const productSchema = new mongoose.Schema({
 
 productSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
     try {
+        console.log('### upsert product in post hook', doc.slug);
+
         const productsTypesenseService = new ProductsTypesenseService();
         await productsTypesenseService.upsert(doc);
         next(); // Continue with the save/update operation in MongoDB
@@ -61,6 +63,7 @@ productSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], asyn
 productSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async function(next) {
     try {
       const deletedProductId = this._id;
+      console.log('### deletedProductId in pre hook', this.slug);
       const productsTypesenseService = new ProductsTypesenseService();
       await productsTypesenseService.delete(deletedProductId);  
     } catch (error) {

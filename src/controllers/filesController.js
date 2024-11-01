@@ -96,7 +96,7 @@ async function deleteAjax(req, res, next) {
             });
         }
 
-        await FileService.delete(file._id);
+        await FileService.delete(file._id, req.session.user._id);
         res.status(200).json({ notification: { message: req.i18n.t('files.controller.file_deleted'), type: 'success' } });
 
     } catch (error) {
@@ -197,40 +197,59 @@ const s3Client = new S3Client({
   });
 
 async function downloadFile(req, res, next) {
-    let slug;
     try {
-      slug = req.params.slug; // Assuming the filename is passed as a query parameter
-    // get filename
-      const file = await FileService.getBySlug(slug);
-      if (!file) {
-        console.error(`downloadFile: file not found (${slug}):`);
-        return next({ 
-            status: 404, 
-            notification: { message: req.i18n.t('files.controller.file_not_found'), type: 'error'}
-        });
-      }
-      const filename = file.filename;
-      const key = file.key;
-      const bucketName = process.env.AWS_S3_BUCKET; // Bucket name from environment variables
-  
-      const params = {
-        Bucket: bucketName,
-        Key: key
-      };
-  
-      console.log('params', params);
-      const command = new GetObjectCommand(params);
-      const data = await s3Client.send(command);
-  
-      res.setHeader('Content-Type', data.ContentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-  
-      await streamPipeline(data.Body, res);
+        const slug = req.params.slug;
+        
+        // Get file
+        const file = await FileService.getBySlug(slug);
+        if (!file) {
+            return next({ 
+                status: 404, 
+                message: 'File not found',
+                notification: { 
+                    message: req.i18n.t('files.controller.file_not_found'), 
+                    type: 'error'
+                }
+            });
+        }
+
+        const params = {
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: file.key
+        };
+
+        try {
+            const command = new GetObjectCommand(params);
+            const data = await s3Client.send(command);
+
+            res.setHeader('Content-Type', data.ContentType);
+            res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+
+            await streamPipeline(data.Body, res);
+        } catch (s3Error) {
+            console.error(`S3 error for file ${slug}:`, s3Error);
+            return next({
+                status: 500,
+                message: 'Download error',
+                notification: { 
+                    message: req.i18n.t('files.controller.error_downloading_file'), 
+                    type: 'error'
+                }
+            });
+        }
+
     } catch (error) {
-      console.error(`downloadFile: Error downloading file (${slug}):`, error);
-      res.status(500).json({ notification: { message: req.i18n.t('files.controller.error_downloading_file'), type: 'error' } });
+        console.error(`General error downloading file ${req.params.slug}:`, error);
+        return next({
+            status: 500,
+            message: error.message,
+            notification: { 
+                message: req.i18n.t('files.controller.error_downloading_file'), 
+                type: 'error'
+            }
+        });
     }
-  };
+}
 
   async function serveFile(req, res, next) {
     let slug;

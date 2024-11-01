@@ -82,24 +82,24 @@ async function index(req, res) {
 
 // }
 
-async function newDocumentAjax(req, res) {
-    try {
-        const document = await createNewDocumentInMongoAndTypesense(req);
+// async function newDocumentAjax(req, res) {
+//     try {
+//         const document = await createNewDocumentInMongoAndTypesense(req);
 
-        res.json(document);
+//         res.json(document);
         
-    } catch (err) {
-        console.error('catching:', err);
+//     } catch (err) {
+//         console.error('catching:', err);
         
-        res.status(500).json({
-            notification: {
-                message: req.i18n.t('common.unknown_error'),
-                submessage: req.i18n.t('common.try_again'),
-                type: 'error'
-            }
-        });
-    }
-}
+//         res.status(500).json({
+//             notification: {
+//                 message: req.i18n.t('common.unknown_error'),
+//                 submessage: req.i18n.t('common.try_again'),
+//                 type: 'error'
+//             }
+//         });
+//     }
+// }
 
 function validateEmailList(emailList) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -216,7 +216,7 @@ async function duplicateAjax(req, res) {
             });
         }
 
-        const newDocument = await createNewDocumentInMongoAndTypesense(req);
+        const newDocument = await createCommonDocument(req, originalDocument.config.document_type);
 
         // Deep copy originalDocument to manipulate data
         let dataToCopy = JSON.parse(JSON.stringify(originalDocument.toObject()));

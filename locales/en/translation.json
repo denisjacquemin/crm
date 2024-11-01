@@ -34,7 +34,8 @@
         "signout": "Sign out",
         "signout_alt": "Click here to sign out",
         "clients": "Customers",
-        "products": "Products &amp; Services"
+        "products": "Products &amp; Services",
+        "products_description": "Manage your products and services"
     },
     "products": {
         "views": {
@@ -440,11 +441,13 @@
                 "email_label": "Email",
                 "email_placeholder": "Customer's email",
                 "language_label": "Communication Language",
-                "frequently_selected": "Frequently Selected"
-                
-
-
-
+                "frequently_selected": "Frequently Selected",
+                "contact_title_label": "Contact Title",
+                "contact_firstname_label": "Contact First Name",
+                "contact_lastname_label": "Contact Last Name",
+                "contact_firstname_placeholder": "Customer's contact first name",
+                "contact_lastname_placeholder": "Customer's contact last name",
+                "all_languages": "All"
             }
         }
     },

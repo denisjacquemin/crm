@@ -74,6 +74,7 @@ async function editAjax(req, res, next) {
 };
 
 async function deleteAjax(req, res, next) {
+    console.log('### delete product', req.params.slug);
 
     try {
         const productToDelete = await ProductsService.getBySlugAndCompanyId(req.params.slug, req.session.current_company._id);
@@ -132,8 +133,6 @@ async function createNewProductInMongoAndTypesense(req) {
             name: req.i18n.t('products.controller.default_product_name'),
             vat: new mongoose.Types.ObjectId(defaultTaxrate),
         });
-
-        console.log('Product created:', productCreated);
         
         return productCreated ? productCreated.toObject() : null;
 
@@ -143,6 +142,7 @@ async function createNewProductInMongoAndTypesense(req) {
 }
 
 async function update(req, res, next) {
+    console.log('### update product', req.body.value.slug);
     try {
         let product = await ProductsService.getBySlugAndCompanyId(req.body.value.slug, req.session.current_company._id);
 

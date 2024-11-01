@@ -53,8 +53,12 @@ class FileService {
             (query, data, options);
     }
 
-    static async delete(id) {
-        return await File.deleteOne({ _id: id });
+    static async delete(id, userId) {
+        return await File.findByIdAndUpdate(id, {
+            deleted: true,
+            deletedAt: new Date(),
+            deletedBy: userId
+        }, { new: true });
     }
 
     static async getFileIdsByCompanyIdAndDocumentType(companyId, documentType) {

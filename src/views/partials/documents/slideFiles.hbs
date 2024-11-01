@@ -47,7 +47,6 @@
             return this.selectedDocument.config.files.some(f => f.slug === slug);
         },  
         submitUploadForm: async function(event) {
-            console.log('submitUploadForm', event);
             event.preventDefault();
             const fileInput = event.target;
             let file;
@@ -62,11 +61,7 @@
             if (this.selectedFile && this.selectedFile._id) {
                 formData.append('file_id', this.selectedFile._id);
             }
-            this.isUploading = true;
             const data = await fetchUrl('/file/uploadForDocument', 'POST', formData);
-            this.isUploading = false;
-            console.log('1. File uploaded', data);
-            console.log('2. File uploaded', file);
             this.selectedFile.filename = file.name;
             this.selectedFile.size = file.size;
             this.selectedFile.type = file.type;
@@ -249,21 +244,7 @@
                                 <a @click.prevent="editFile(file.slug);" href="#" class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.edit' }}</a>
                                 <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
                                 <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
-                            </div>
-                            {{!-- <span>
-                                <span :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="block text-sm font-medium" x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name"></span>
-                                <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
-                                <span :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="block text-sm">
-                                    <span x-show="!file.filename" @click.prevent="editFile(file.slug);" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate font-medium text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
-                                    <span x-show="file.filename" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate font-medium " x-text="file.filename"></span>
-                                    <span x-show="file.filename" :class="selected ? 'text-indigo-600' : 'text-gray-400'" class="flex-shrink-0" x-text="formatBytes(file.size, sizes)"></span>
-                                </span>
-                                <div class="mt-2 flex text-sm ">
-                                    <a @click.prevent="editFile(file.slug);" href="#" class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.edit' }}</a>
-                                    <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
-                                    <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" target="_blank" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
-                                </div>
-                            </span> --}}
+                            </div>                            
                         </div>
                         <a x-show="file.filename" @click.prevent="downloadFile(file.slug)" class="cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -337,7 +318,7 @@
                                 x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
                             </div>
                             <div class="flex-1 flex min-w-0 gap-2">
-                                <span x-show="!file.filename" @click="loadModalContent('/settings/4')" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="!file.filename" @click="loadModalContent('/settings/5')" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
                                 <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
                                 <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
                             </div>

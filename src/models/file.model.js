@@ -33,6 +33,18 @@ const fileSchema = new mongoose.Schema({
     key: { type: String, required: false },
     url: { type: String, required: false },
     default_attached_document_types: { type: [String], required: false },
+    deleted: { 
+        type: Boolean, 
+        default: false 
+    },
+    deletedAt: { 
+        type: Date, 
+        default: null 
+    },
+    deletedBy: { 
+        type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false 
+    }
+    
 }, schemaOptions);
 
 const File = mongoose.model('File', fileSchema);

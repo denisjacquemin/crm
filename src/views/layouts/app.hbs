@@ -17,6 +17,8 @@
           x-data="{ 
             navState: 'menu',   
             modalSize: null,
+            modalTitle: null,
+            modalDescription: null,
             companies: [],
             companyFiles: [],
             current_company: {{ stringify session.current_company }},
@@ -30,15 +32,26 @@
             async openConfirmModal(title, message, confirmCallback) {
                 this.$refs.confirmModal.open(title, message, confirmCallback);
             },
-            async loadModalContent(url, callback, focusInputId, size = 'medium') {
-                
-                
+            async loadModalContent(url, options = {}) {
+                console.log('options', options);
+                const {
+                    callback = null,
+                    focusInputId = null,
+                    size = 'medium',
+                    title = '',
+                    description = ''
+                } = options;
+
                 const text = await fetchUrl(url, 'GET');
-                if (!text) return;
+                if (!text || text === 'unauthorized') return;
+                
                 this.modalSize = size;
+                this.modalTitle = title;
+                this.modalDescription = description;
 
                 this.$refs.modalContent.innerHTML = text;
                 this.openSettingsModal = true;
+                
                 if (focusInputId) {
                     this.$nextTick(() => {
                         const inputElement = this.$refs.modalContent.querySelector(`#${focusInputId}`);

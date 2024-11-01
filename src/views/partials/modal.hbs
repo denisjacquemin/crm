@@ -45,8 +45,11 @@
           >
             <div class="flex border-b border-gray-200 p-4 pr-2 sm:px-0">
                 <div class="flex-1">
-                    <h2 class="text-xl font-semibold leading-6 text-gray-900" id="slide-over-title" x-text="modalSize">Settings</h2>
-                    <p class="mt-2 mb-2 inline sm:block sm:mb-4 text-sm text-gray-700">Update any settings.</p>
+                    <h2 class="text-xl font-semibold leading-6 text-gray-900" 
+                        id="slide-over-title" 
+                        x-html="modalTitle"></h2>
+                    <p class="mt-2 mb-2 inline sm:block sm:mb-4 text-sm text-gray-700"
+                       x-html="modalDescription"></p>
                 </div>
                 <div class="relative right-0 top-0 -ml-8 flex mb-2 sm:-ml-10">
                     <button x-on:click="closeModal()" type="button" class="z-50 rounded-md bg-gray-200 p-2 text-gray-400 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white w-[40px] h-[40px]" spellcheck="false">

@@ -64,9 +64,9 @@ function formatBytes(bytes) {
 
   return `${formattedSize} ${sizes[i]}`;
 }
-module.exports = i18Middleware.handle(i18next);
 
 module.exports = {
   i18nMiddleware: i18Middleware.handle(i18next),
-  formatBytes
+  formatBytes,
+  i18next
 };

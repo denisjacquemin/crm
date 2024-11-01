@@ -7,26 +7,31 @@
             body: '',
             language: '',
         },
+        replaceTemplateVariables: function(template, documentConfig) {
+            const replacements = {
+                '{1}': documentConfig.document_type === 'invoice' 
+                    ? '{{t "documents.views.index.email_modal.invoice"}}'
+                    : '{{t "documents.views.index.email_modal.credit_note"}}',
+                '{2}': documentConfig.document_type === 'invoice'
+                    ? documentConfig.invoice_number
+                    : documentConfig.credit_note_number,
+                '{3}': documentConfig.seller.name,
+                '{4}': documentConfig.buyer?.title || '',
+                '{5}': documentConfig.buyer?.lastname || '',
+                '{6}': documentConfig.due_date || ''
+            };
+
+            return Object.entries(replacements).reduce((text, [key, value]) => {
+                return text.replace(key, value || '');
+            }, template);
+        },
         getSubject: function() {
-            let subject = current_company.settings.email_subject_templates[this.form_email.language];
-
-            if (this.selectedDocument.config.document_type === 'invoice') {
-                subject = subject.replace('{1}', '{{t 'documents.views.index.email_modal.invoice'}}');
-                subject = subject.replace('{2}', this.selectedDocument.config.invoice_number);
-            } else if (this.selectedDocument.config.document_type === 'credit_note') {
-                subject = subject.replace('{1}', '{{t 'documents.views.index.email_modal.credit_note'}}');
-                subject = subject.replace('{2}', this.selectedDocument.config.credit_note_number);
-            }
-            subject = subject.replace('{3}', this.selectedDocument.config.seller.name);
-
-            
-            return subject;
+            const template = current_company.settings.email_subject_templates[this.form_email.language];
+            return this.replaceTemplateVariables(template, this.selectedDocument.config);
         },
         getBody: function() {
-            console.log('In body', this.form_email.language, current_company);
-            let body = current_company.settings.email_message_templates[this.form_email.language];
-            console.log('body', body);
-            return body;
+            const template = current_company.settings.email_message_templates[this.form_email.language];
+    return this.replaceTemplateVariables(template, this.selectedDocument.config);
         },
         getFileName: function() {
             let fileName = '';

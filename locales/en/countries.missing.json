@@ -1,15 +1,8 @@
 {
-  "US": "US",
-  "test": "test",
-  "taxrates": {
-    "FR": {
-      "country": "taxrates.FR.country"
+  "countries": {
+    "0": {
+      "default_taxrate": "countries.0.default_taxrate",
+      "currencies": "countries.0.currencies"
     }
-  },
-  "countries": "countries",
-  "frequently_selected_countries": "frequently_selected_countries",
-  "countries[BE]": {
-    "taxrates": "countries[BE].taxrates"
-  },
-  "countries['BE']": "countries['BE']"
+  }
 }

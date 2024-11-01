@@ -9,7 +9,12 @@
   "buyers": {
     "views": {
       "index": {
-        "all_languages": "buyers.views.index.all_languages"
+        "all_languages": "buyers.views.index.all_languages",
+        "contact_title_label": "buyers.views.index.contact_title_label",
+        "contact_firstname_label": "buyers.views.index.contact_firstname_label",
+        "contact_firstname_placeholder": "buyers.views.index.contact_firstname_placeholder",
+        "contact_lastname_label": "buyers.views.index.contact_lastname_label",
+        "contact_lastname_placeholder": "buyers.views.index.contact_lastname_placeholder"
       }
     }
   },

@@ -44,11 +44,16 @@
             }            
             var formData = new FormData();
             formData.append('file', file);
+
+            if (this.selectedFile && this.selectedFile._id) {
+                formData.append('file_id', this.selectedFile._id);
+            }
             
             const data = await fetchUrl('/file/upload', 'POST', formData);
             this.selectedFile.filename = file.name;
             this.selectedFile.size = file.size;
             this.selectedFile.type = file.type;
+            this.selectedFile.key = data.data.key;
 
             document.getElementById('file-name').focus();
         },
