@@ -85,6 +85,53 @@
                     date = dayjs.unix(Number(timestamp));
                 }
                 return date.format(format);
+            },
+            searchDocument: async function() {
+                try {
+                    const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
+                    const searchQuery = encodeURIComponent(this.searchDocumentTerm.trim() || '*');
+                    const data = await fetchUrl(`/documents/search?q=${searchQuery}${sortByParam}`, 'GET');
+                    
+                    // Preserve selected document's state if it exists
+                    if (this.selectedDocument && this.selectedDocument._id) {
+                        const selectedDocIndex = data.findIndex(doc => doc._id === this.selectedDocument._id);
+                        
+                        if (selectedDocIndex !== -1) {
+                            // Update the document in the search results with the current selected state
+                            data[selectedDocIndex] = {
+                                ...data[selectedDocIndex],  // Keep any new data from search
+                                ...this.selectedDocument,   // Override with current selected state
+                                updatedAt: this.selectedDocument.updatedAt
+                            };
+                        } else if (this.searchDocumentTerm.trim() === '') {
+                            // If no search term and selected document not in results, add it
+                            data.unshift(this.selectedDocument);
+                        }
+                    }
+                    
+                    this.documents = data;
+                } catch (error) {
+                    console.error('Error searching for documents:', error);
+                }
+            },
+            editDocument: async function(index) {
+                try {
+                    const data = await fetchUrl(`/documents/editAjax/${this.documents[index].slug}`, 'GET');
+                    this.selectedDocument = data;
+                    this.documents[index] = this.selectedDocument;
+                    this.selectedDocumentIndex = index;
+                    if (window.innerWidth < 640) this.showDocumentForm();
+                } catch (error) { 
+                    console.error('Error editing document', error);
+                }
+            },
+            init() {
+                this.$watch('searchDocumentTerm', (value) => {
+                    clearTimeout(this._searchTimeout);
+                    this._searchTimeout = setTimeout(() => {
+                        this.searchDocument();
+                    }, 300);
+                });
             }
      }" x-init="
         {{!-- window.addEventListener('popstate', () => { // catch back gesture and tap on back button on smartphones

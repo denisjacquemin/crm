@@ -4,7 +4,6 @@ const flash = require('connect-flash');
 const express = require("express");
 const helmet = require("helmet");
 const path = require("path");
-const Typesense = require('./src/services/lib/typesense');
 const compression = require('compression');
 const mongooseHelper = require('./src/services/lib/mongoose');
 const i18next = require('i18next');
@@ -229,7 +228,7 @@ app.use(function(err, req, res, next) {
 
 async function startServer() {
     try {
-        await Promise.all([mongooseHelper.connect(), Typesense.connectToTypesense()]);
+        await mongooseHelper.connect();
         app.listen(process.env.PORT, () => {
             console.log(`🚀 Server is running on port ${process.env.PORT}`);
         });

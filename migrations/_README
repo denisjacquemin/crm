@@ -1,4 +1,4 @@
-npx migrate-mongo create add-email-subject-templates
+// npx migrate-mongo create add-email-subject-templates
 
 module.exports = {
   async up(db, client) {
@@ -20,5 +20,5 @@ module.exports = {
   }
 };
 
-npx migrate-mongo up
+// npx migrate-mongo up
 

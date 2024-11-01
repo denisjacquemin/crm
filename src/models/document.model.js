@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const {validateEmail} = require('./_helper.model');
-const { DocumentsTypesenseService } = require('../services/documents.typesense.service');
 
 const dayjs = require('dayjs');
 
@@ -162,48 +161,27 @@ const documentSchema = new mongoose.Schema({
     },
 }, schemaOptions);
 
-documentSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
-    try {
-
-        const documentsTypesenseService = new DocumentsTypesenseService();
-        await documentsTypesenseService.upsertDocument(doc);
-        next();
-    } catch (error) {
-        console.error('Error saving/updating product in Typesense:', error.message);
-        // Handle error - For simplicity, removing the document from MongoDB
-        try {
-            const document = await Document.findOne({ _id: doc._id.toString(), company_id: doc.company_id.toString() });
-            if (document) {
-                await document.deleteOne();
-            }            
-        } catch (deleteError) {
-            console.error('Error deleting document from MongoDB:', deleteError.message);
-        }
-        next(error); // Abort the save/update operation in MongoDB
-    }
+// Add text index for MongoDB search
+documentSchema.index({ 
+    'config.subject': 'text',
+    'config.reference': 'text',
+    'config.invoice_number': 'text',
+    'config.credit_note_number': 'text',
+    'config.buyer.name': 'text',
+    'config.buyer.vat_number': 'text',
+}, {
+    weights: {
+        'config.invoice_number': 10,
+        'config.credit_note_number': 10,
+        'config.reference': 8,
+        'config.subject': 7,
+        'config.buyer.name': 6,
+        'config.buyer.vat_number': 5,
+    },
+    name: "documents_text_index",
+    default_language: "english",
+    language_override: "none"
 });
-
-
-documentSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async function(next) {
-    try {
-        const deletedDocumentId = this._id;
-        const documentsTypesenseService = new DocumentsTypesenseService();
-        
-        // Delete the document from Typesense
-        await documentsTypesenseService.deleteDocument(deletedDocumentId);
-        
-        // Delete related files from MongoDB
-        console.log('this', this);
-        console.log('this.config.documentFiles', this.config.documentFiles);
-        await mongoose.model('File').deleteMany({ _id: { $in: this.config.documentFiles } });
-        
-        next();
-    } catch (error) {
-      console.error(`Failed to delete product from Typesense: ${error.message}`);
-      next(error); // Abort the remove operation in MongoDB
-    }
-});
-
 
 module.exports = {
     Document: mongoose.model('Document', documentSchema),

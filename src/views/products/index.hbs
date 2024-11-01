@@ -45,14 +45,32 @@
         searchProductTerm: '',
         sortBy: 'createdAtdesc',
         searchProduct: async function() {
-            const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
-            await fetchUrl('/products/search?q=' + encodeURIComponent(this.searchProductTerm.trim() || '*') + sortByParam, 'GET')
-                .then(data => {
-                    this.products = data;
-                })
-                .catch(error => {
-                    console.error('Error searching for products', error);
-                });
+            try {
+                const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
+                const searchQuery = encodeURIComponent(this.searchProductTerm.trim() || '*');
+                const data = await fetchUrl(`/products/search?q=${searchQuery}${sortByParam}`, 'GET');
+                
+                // Preserve selected product's state if it exists
+                if (this.selectedProduct && this.selectedProduct._id) {
+                    const selectedProductIndex = data.findIndex(product => product._id === this.selectedProduct._id);
+                    
+                    if (selectedProductIndex !== -1) {
+                        // Update the product in the search results with the current selected state
+                        data[selectedProductIndex] = {
+                            ...data[selectedProductIndex],  // Keep any new data from search
+                            ...this.selectedProduct,        // Override with current selected state
+                            updatedAt: this.selectedProduct.updatedAt  // Ensure timestamp is preserved
+                        };
+                    } else if (this.searchProductTerm.trim() === '') {
+                        // If no search term and selected product not in results, add it
+                        data.unshift(this.selectedProduct);
+                    }
+                }
+                
+                this.products = data;
+            } catch (error) {
+                console.error('Error searching for products:', error);
+            }
         },
         products: {{ stringify products }},
         selectedProduct: { custom_vat_rate: { is_custom: false, value: '', label: '' } },

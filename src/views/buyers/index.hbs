@@ -45,14 +45,22 @@
         searchClientTerm: '',
         sortBy: 'createdAtdesc',
         searchClient: async function() {
-            const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
-            await fetchUrl('/buyers/search?q=' + encodeURIComponent(this.searchClientTerm.trim() || '*') + sortByParam, 'GET')
-                .then(data => {
-                    this.buyers = data;
-                })
-                .catch(error => {
-                    console.error('Error searching for clients', error);
-                });
+            try {
+                const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
+                const data = await fetchUrl('/buyers/search?q=' + encodeURIComponent(this.searchClientTerm.trim() || '*') + sortByParam, 'GET');
+                
+                // If there's a selected buyer, find it in the new results and update it
+                if (this.selectedBuyer) {
+                    const selectedBuyerIndex = data.findIndex(buyer => buyer._id === this.selectedBuyer._id);
+                    if (selectedBuyerIndex !== -1) {
+                        data[selectedBuyerIndex] = this.selectedBuyer;
+                    }
+                }
+                
+                this.buyers = data;
+            } catch (error) {
+                console.error('Error searching for clients', error);
+            }
         },
         buyers: {{ stringify buyers }},
         selectedBuyer: {},

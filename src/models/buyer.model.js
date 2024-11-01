@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const {validateEmail} = require('./_helper.model');
-const {BuyersTypesenseService} = require('../services/buyers.typesense.service');
-const BuyerService = require('../services/buyers.service');
 
 const schemaOptions = {
     timestamps: true,
@@ -61,36 +59,60 @@ const buyerSchema = new mongoose.Schema({
     },
 }, schemaOptions);
 
-buyerSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate'], async function (doc, next) {
-    try {
-        const buyersTypesenseService = new BuyersTypesenseService();
-        await buyersTypesenseService.upsert(doc);
-        console.log('Buyer.post(save) ' + '%s has been saved in Typesense', doc._id);
-        next(); // Continue with the save/update operation in MongoDB
-    } catch (error) {
-        console.error('Error saving/updating document in Typesense:', error.message);
-        // Handle error - For simplicity, removing the document from MongoDB
-        try {
-            await BuyerService.delete(doc._id);
-                console.log('Document removed from MongoDB due to Typesense error:', doc._id);
-            } catch (deleteError) {
-            console.error('Error deleting document from MongoDB:', deleteError.message);
-        }
-        next(error); // Abort the save/update operation in MongoDB
-    }
+// Add text index (similar to products)
+buyerSchema.index({ 
+    name: 'text',
+    address1: 'text',
+    address2: 'text',
+    city: 'text',
+    vat_number: 'text',
+    contact_firstname: 'text',
+    contact_lastname: 'text',
+    email: 'text',
+    phone: 'text'
+}, {
+    weights: {
+        name: 10,
+        vat_number: 8,
+        contact_firstname: 5,
+        contact_lastname: 5,
+        email: 5,
+        phone: 3,
+        address1: 2,
+        address2: 1,
+        city: 1
+    },
+    name: "buyers_text_index"
 });
 
-
-  
-buyerSchema.pre(['remove', 'deleteOne', 'delete'], { document: true }, async function(next) {
-    try {
-      const deletedBuyerId = this._id;
-      const buyersTypesenseService = new BuyersTypesenseService();
-      await buyersTypesenseService.delete(deletedBuyerId);  
-    } catch (error) {
-      console.error(`Failed to delete document from Typesense: ${error.message}`);
-      next(error); // Abort the remove operation in MongoDB
-    }
+// Add text index with additional fields
+buyerSchema.index({ 
+    name: 'text',
+    address1: 'text',
+    address2: 'text',
+    city: 'text',
+    zip: 'text',                    // Added
+    vat_number: 'text',
+    registration_number: 'text',    // Added
+    contact_firstname: 'text',
+    contact_lastname: 'text',
+    email: 'text',
+    phone: 'text'
+}, {
+    weights: {
+        name: 10,
+        vat_number: 8,
+        registration_number: 8,      // Added
+        zip: 7,                      // Added
+        contact_firstname: 5,
+        contact_lastname: 5,
+        email: 5,
+        phone: 3,
+        address1: 2,
+        address2: 1,
+        city: 1
+    },
+    name: "buyers_text_index"
 });
 
 const Buyer = mongoose.model('Buyer', buyerSchema);
