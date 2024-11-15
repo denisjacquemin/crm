@@ -3,7 +3,8 @@
             numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1,
             orEmpty(value) {
                 return value || '';
-            }
+            },
+            session: {{ stringify session }}
         }"
     id="printme"
     class="flex-1 flex">
@@ -21,7 +22,7 @@
         }
 
         #template3 {            
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
             font-size: 14px;
             color: #000;
         }
@@ -120,12 +121,6 @@
             word-wrap: break-word;
             line-height: initial;
             text-align: left;
-        }
-
-        #template3 header #billed_to {
-            position: absolute;
-            top: 4.5cm;
-            left: 11cm;
         }
 
         #template3 header #buyer_address {
@@ -295,6 +290,11 @@
             :class="`top-${selectedDocument.config.ribbon.position}-ribbon`"
             class="ribbon" x-text="selectedDocument.config.ribbon.text"></div>
         </template>
+        <template x-if="selectedDocument.config.stamp.text">
+            <div :class="`stamp stamp-style${selectedDocument.config.stamp.type}`" style="max-width: 80%;">
+                <span x-text="selectedDocument.config.stamp.text"></span>
+            </div>
+        </template>
 
         <span class="top-left">
             <template x-if="selectedDocument.config?.seller?.logo?.slug">
@@ -333,13 +333,33 @@
                 <span x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br/>
                 <span x-text="countries[selectedDocument.config.seller.country].name"></span><br/><br/>
                 <span>{{i18n 'default_template.vat_number' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br>
+                
                 <template x-if="company_form_settings[selectedDocument.config.seller.country]?.registration_number?.display">
-                    <span><span x-text="company_form_settings[selectedDocument.config.seller.country].registration_number.label"></span>: <span x-text="orEmpty(selectedDocument.config.seller.registration_number)">toto</span><br></span>
+                    <span><span x-text="company_form_settings[selectedDocument.config.seller.country].registration_number.label"></span>: <span x-text="orEmpty(selectedDocument.config.seller.registration_number)"></span><br></span>
                 </template>
-                <span>{{i18n 'default_template.contact_person' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.contact_lastname) + ' ' + orEmpty(selectedDocument.config.seller.contact_firstname)"></span></span><br>
-                <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/>
-                <span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/>
-                <span x-text="orEmpty(selectedDocument.config.seller.website)"></span>
+                
+                <template x-if="selectedDocument.config.show_iban && selectedDocument.config.seller.bank_accounts && selectedDocument.config.seller.bank_accounts.some(acc => acc.iban || acc.bic)">
+                    <template x-for="(account, index) in selectedDocument.config.seller.bank_accounts.filter(acc => acc.iban || acc.bic)" :key="index">
+                        <div><span x-text="account.iban"></span> <span x-text="account.bic"></span><br></div>
+                    </template>
+                </template>
+
+                <template x-if="selectedDocument.config.show_contact_person">
+                    <span>{{i18n 'default_template.contact_person' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.contact_lastname) + ' ' + orEmpty(selectedDocument.config.seller.contact_firstname)"></span><br></span>
+                </template>
+                
+                <template x-if="selectedDocument.config.show_seller_phone">
+                    <span>{{i18n 'default_template.seller_phone' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/></span>
+                </template>
+                
+                <template x-if="selectedDocument.config.show_seller_email">
+                    <div><span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/></div>
+                </template>
+
+                <template x-if="selectedDocument.config.show_seller_website">
+                    <div><span x-text="orEmpty(selectedDocument.config.seller.website)"></span><br/></div>
+                </template>
+                
             </div>
             <div id="ref-purpose">
                 <table style="border-spacing: 0;">
@@ -356,7 +376,6 @@
                 </table>
             </div>
             
-            <div id="billed_to"style="font-weight: 400;">{{ i18n 'default_template.billed_to' doc_lang }}</div>
             <div id="buyer_address">
                 <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
                 <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
@@ -386,7 +405,7 @@
                             </div>
                             <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
                             <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`"></div>
-                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat)}%`"></div>
+                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat.value)}%`"></div>
                             <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`"></div>
                         </div>
                     </template>
@@ -416,7 +435,9 @@
          
 
         <footer>
-            <div class="notes" x-text="selectedDocument.config.notes_on_invoice"></div>
+            <template x-if="selectedDocument.config.notes_on_invoice">
+                <div class="notes" x-text="selectedDocument.config.notes_on_invoice"></div>
+            </template>
              <div class="row-container">
                 <div class="left" >Eventuellement un logo</div>
                 <div class="right">Numero de compte etc</div>

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="{{lng}}" class="h-full bg-gray-100">
+  <head>
+    <!-- ... existing head content ... -->
+  </head>
+  <body class="h-full">
+    <!-- Add tooltip component at the app level -->
+    <div x-data="tooltip">
+      <!-- Include the tooltip partial -->
+      <template x-teleport="body">{{> tooltip}}</template>
+
+      <!-- Wrap the entire app content -->
+      {{{body}}}
+    </div>
+
+    <!-- ... existing scripts ... -->
+  </body>
+</html>

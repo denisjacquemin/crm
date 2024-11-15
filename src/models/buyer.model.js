@@ -1,28 +1,44 @@
-const mongoose = require('mongoose');
-const {validateEmail} = require('./_helper.model');
+const mongoose = require("mongoose");
+const { validateEmail } = require("./_helper.model");
 
 const schemaOptions = {
-    timestamps: true,
-    toJSON: {
-        virtuals: true,
-        transform: (doc, ret) => {
-            delete ret.__v;
-            return ret;
-        }
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret.__v;
+      return ret;
     },
-    toObject: {
-        virtuals: true,
-        transform: (doc, ret) => {
-            delete ret.__v;
-            return ret;
-        }
-    }
+  },
+  toObject: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret.__v;
+      return ret;
+    },
+  },
 };
 
-const buyerSchema = new mongoose.Schema({
-    company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-    created_by_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    slug: { type: String, required: true, unique: true, default: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}` },
+const buyerSchema = new mongoose.Schema(
+  {
+    company_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
+    created_by_user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      default: `${Math.random()
+        .toString(36)
+        .substring(2, 15)}-${Date.now().toString(36)}`,
+    },
     name: { type: String, required: true },
     attention: { type: String, required: false },
     address1: { type: String, required: false },
@@ -50,71 +66,75 @@ const buyerSchema = new mongoose.Schema({
     delivery_phone: { type: String, required: false },
     language: { type: String, required: false },
     email: {
-        type: String,
-        required: false,
-        validate: {
-            validator: validateEmail,
-            message: props => `${props.value} is not a valid email address!`
-        }
+      type: String,
+      required: false,
     },
-}, schemaOptions);
+  },
+  schemaOptions
+);
 
 // Add text index (similar to products)
-buyerSchema.index({ 
-    name: 'text',
-    address1: 'text',
-    address2: 'text',
-    city: 'text',
-    vat_number: 'text',
-    contact_firstname: 'text',
-    contact_lastname: 'text',
-    email: 'text',
-    phone: 'text'
-}, {
+buyerSchema.index(
+  {
+    name: "text",
+    address1: "text",
+    address2: "text",
+    city: "text",
+    vat_number: "text",
+    contact_firstname: "text",
+    contact_lastname: "text",
+    email: "text",
+    phone: "text",
+  },
+  {
     weights: {
-        name: 10,
-        vat_number: 8,
-        contact_firstname: 5,
-        contact_lastname: 5,
-        email: 5,
-        phone: 3,
-        address1: 2,
-        address2: 1,
-        city: 1
+      name: 10,
+      vat_number: 8,
+      contact_firstname: 5,
+      contact_lastname: 5,
+      email: 5,
+      phone: 3,
+      address1: 2,
+      address2: 1,
+      city: 1,
     },
-    name: "buyers_text_index"
-});
+    name: "buyers_text_index",
+  }
+);
 
 // Add text index with additional fields
-buyerSchema.index({ 
-    name: 'text',
-    address1: 'text',
-    address2: 'text',
-    city: 'text',
-    zip: 'text',                    // Added
-    vat_number: 'text',
-    registration_number: 'text',    // Added
-    contact_firstname: 'text',
-    contact_lastname: 'text',
-    email: 'text',
-    phone: 'text'
-}, {
+buyerSchema.index(
+  {
+    name: "text",
+    address1: "text",
+    address2: "text",
+    city: "text",
+    zip: "text", // Added
+    vat_number: "text",
+    registration_number: "text", // Added
+    contact_firstname: "text",
+    contact_lastname: "text",
+    email: "text",
+    phone: "text",
+  },
+  {
     weights: {
-        name: 10,
-        vat_number: 8,
-        registration_number: 8,      // Added
-        zip: 7,                      // Added
-        contact_firstname: 5,
-        contact_lastname: 5,
-        email: 5,
-        phone: 3,
-        address1: 2,
-        address2: 1,
-        city: 1
+      name: 10,
+      vat_number: 8,
+      registration_number: 8, // Added
+      zip: 7, // Added
+      contact_firstname: 5,
+      contact_lastname: 5,
+      email: 5,
+      phone: 3,
+      address1: 2,
+      address2: 1,
+      city: 1,
     },
-    name: "buyers_text_index"
-});
+    name: "buyers_text_index",
+  }
+);
 
-const Buyer = mongoose.model('Buyer', buyerSchema);
+const Buyer = mongoose.model("Buyer", buyerSchema);
 
 module.exports = Buyer;

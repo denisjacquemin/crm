@@ -1,5 +1,4 @@
-<div class="flex h-full w-[200%]" 
-      x-data="{
+<div class="flex h-full w-[200%]" x-data="{
         {{!-- companyFiles: {{ stringify companyFiles }}, --}}
         isUploading: false,
         selectedFile: {},
@@ -126,8 +125,7 @@
                 this.addOrUpdateFile(file);
             }            
         },
-     }"
-     x-init="
+     }" x-init="
         console.log('Before loadcompanyfiles');
         $dispatch('loadcompanyfiles');
         $watch('selectedFile', (value, oldValue) => {
@@ -137,15 +135,13 @@
                 localStorage.setItem('autosave#file#' + value.slug, JSON.stringify(file));
             }
         });
-     "
-     x-intersect="
+     " x-intersect="
        {{!-- Ensure the initial button is configured to close the slide when clicked --}}
        updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
        updateClickHandler(() => {
           openSlide = false;
        });
-     "
-     >
+     ">
     <div x-ref="filesList"
         class="w-[50%] px-4 sm:px-6 pt-5 gap-x-6 gap-y-2 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="border-l-4 border-blue-400 bg-blue-50 p-4">
@@ -189,7 +185,8 @@
             </label>
             <div x-show="selectedDocument.config.documentFiles.length === 0"
                 class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 sm:-mx-6 py-4">
-                <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <div
+                    class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -216,10 +213,11 @@
                 </div>
             </div>
 
-            <div x-show="selectedDocument.config.documentFiles.length > 0" class="-space-y-px rounded-md bg-white sm:px-4">
+            <div x-show="selectedDocument.config.documentFiles.length > 0"
+                class="-space-y-px rounded-md bg-white sm:px-4">
                 <template x-for="(file, index) in selectedDocument.config.documentFiles" :key="index">
-                        
-                    <label  x-data="{selected: isFileSelected(file.slug)}"
+
+                    <label x-data="{selected: isFileSelected(file.slug)}"
                         class="flex flex-1 items-center cursor-pointer border-y sm:border border-gray-900/10 bg-gray-500/5 p-2 px-4 -mx-4 focus:outline-none"
                         :class="{
                                 'cursor-pointer': file.filename,
@@ -227,29 +225,40 @@
                                 'sm:rounded-bl-md sm:rounded-br-md': index === selectedDocument.config.documentFiles.length - 1,
                                 'z-10 border-indigo-200 bg-indigo-50' : selected,
                                 'border-gray-200' : !selected
-                        }"
-                    >
+                        }">
                         <input @change="toggleFileSelection(file, selected)" :id="`input-${file.slug}`"
-                               :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"/>
+                            :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox"
+                            class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                         <div class="ml-4 flex flex-col min-w-0 flex-1">
-                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="flex-1 truncate text-sm font-semibold text-gray-900"
+                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'"
+                                class="flex-1 truncate text-sm font-semibold text-gray-900"
                                 x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
                             </div>
                             <div class="flex-1 flex min-w-0 gap-2">
-                                <span x-show="!file.filename" @click="editFile(file.slug);" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline cursor-pointer" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
-                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
-                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+                                <span x-show="!file.filename" @click="editFile(file.slug);"
+                                    :class="selected ? 'text-indigo-700' : 'text-gray-500'"
+                                    class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline cursor-pointer"
+                                    x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600"
+                                    x-text="file.filename"></span>
+                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400"
+                                    x-text="formatBytes(file.size, sizes)"></span>
                             </div>
                             <div class="mt-2 flex text-sm">
-                                <a @click.prevent="editFile(file.slug);" href="#" class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.edit' }}</a>
+                                <a @click.prevent="editFile(file.slug);" href="#"
+                                    class="pr-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t
+                                    'documents.views.index.files_modal.edit' }}</a>
                                 <div :class="selected ? 'border-indigo-600' : 'border-gray-400'" class="border-l"></div>
-                                <a  @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)" href="#" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t 'documents.views.index.files_modal.delete' }}</a>
-                            </div>                            
+                                <a @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(file.slug)"
+                                    href="#" class="px-2 text-indigo-600 hover:text-indigo-500 hover:underline">{{t
+                                    'documents.views.index.files_modal.delete' }}</a>
+                            </div>
                         </div>
                         <a x-show="file.filename" @click.prevent="downloadFile(file.slug)" class="cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
+                                stroke-linejoin="round"
+                                class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
                                 <path d="M12 13v8l-4-4" />
                                 <path d="m12 21 4-4" />
                                 <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" />
@@ -261,11 +270,15 @@
 
 
             <label class="mt-6 block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/5')" class="cursor-pointer font-normal text-indigo-600">{{t
+                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/5', {
+                            title: '{{t 'global.settings.settings' }}',
+                            description: '{{t 'global.settings.settings_description' }}'
+                          })" class="cursor-pointer font-normal text-indigo-600">{{t
                     'documents.views.index.files_modal.company_files_manage_them'}}</span></label>
             <div x-show="companyFiles.length === 0"
                 class="bg-gray-100 border border-y-gray-300 px-4 -mx-4 sm:px-6 sm:-mx-6 py-4">
-                <div class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <div
+                    class="relative block w-full h-full text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <div class="rounded-lg border-2 border-dashed border-gray-300 p-10 h-full w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -275,7 +288,10 @@
                         </svg>
                         <span class="my-4 block font-normal text-gray-400">{{t
                             'documents.views.index.files_modal.empty_company_files'}}</span>
-                        <button x-on:click.prevent="loadModalContent('/settings/4')" type="button"
+                        <button x-on:click.prevent="loadModalContent('/settings/4', {
+                            title: '{{t 'global.settings.settings' }}',
+                            description: '{{t 'global.settings.settings_description' }}'
+                          })" type="button"
                             class="w-full my-2 relative inline-flex items-center rounded-md  px-3.5 py-2.5 text-sm font-semibold bg-indigo-600 text-white ring-inset  focus:z-10 hover:bg-indigo-500 focus-visible:bg-indigo-500 focus-visible:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -299,82 +315,97 @@
                                 updateSelected: function() {
                                     this.selected = selectedDocument.config.files.some(f => f.slug === file.slug);
                                 }
-                        }"
-                        x-init="updateSelected()"
-                        x-effect="updateSelected()"
-                        :x-ref="'file#' + file.slug"
+                        }" x-init="updateSelected()" x-effect="updateSelected()" :x-ref="'file#' + file.slug"
                         class="flex flex-1 items-center cursor-pointer border-y sm:border border-gray-900/10 bg-gray-500/5 p-4 -mx-4 focus:outline-none"
-                            :class="{
+                        :class="{
                                 'cursor-pointer': file.filename,
                                 'sm:rounded-tl-md sm:rounded-tr-md': index === 0,
                                 'sm:rounded-bl-md sm:rounded-br-md': index === companyFiles.length - 1,
                                 'z-10 border-indigo-200 bg-indigo-50' : selected,
                                 'border-gray-200' : !selected
-                        }"
-                    >
-                        <input @change="toggleFileSelection(file, selected)" :disabled="!file.filename" x-show="file.filename" x-model="selected" type="checkbox"  class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        }">
+                        <input @change="toggleFileSelection(file, selected)" :disabled="!file.filename"
+                            x-show="file.filename" x-model="selected" type="checkbox"
+                            class="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                         <div class="ml-4 flex flex-col min-w-0 flex-1">
-                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'" class="flex-1 truncate text-sm font-semibold text-gray-900"
+                            <div :class="selected ? 'text-indigo-900' : 'text-gray-900'"
+                                class="flex-1 truncate text-sm font-semibold text-gray-900"
                                 x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
                             </div>
                             <div class="flex-1 flex min-w-0 gap-2">
-                                <span x-show="!file.filename" @click="loadModalContent('/settings/5')" :class="selected ? 'text-indigo-700' : 'text-gray-500'" class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline" x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
-                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600" x-text="file.filename"></span>
-                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400" x-text="formatBytes(file.size, sizes)"></span>
+                                <span x-show="!file.filename" @click="loadModalContent('/settings/5', {
+                            title: '{{t 'global.settings.settings' }}',
+                                    description: '{{t 'global.settings.settings_description' }}'
+                                  })"
+                                    :class="selected ? 'text-indigo-700' : 'text-gray-500'"
+                                    class="truncate text-sm text-indigo-600 hover:text-indigo-500 hover:underline"
+                                    x-text="'{{t 'documents.views.index.files_modal.no_file_uploaded_yet' }}'"></span>
+                                <span x-show="file.filename" class="truncate text-sm font-semibold text-gray-600"
+                                    x-text="file.filename"></span>
+                                <span x-show="file.filename" class="flex-shrink-0 text-sm text-gray-400"
+                                    x-text="formatBytes(file.size, sizes)"></span>
                             </div>
                         </div>
                         <a x-show="file.filename" @click.stop.prevent="downloadFile(file.slug)" class="cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
+                                stroke-linejoin="round"
+                                class="text-indigo-600 hover:text-indigo-500 ml-4 h-5 w-5 lucide lucide-cloud-download">
                                 <path d="M12 13v8l-4-4" />
                                 <path d="m12 21 4-4" />
                                 <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" />
                             </svg>
                         </a>
-                    </label>                    
+                    </label>
                 </template>
             </div>
         </div>
     </div>
 
-    <div x-ref="fileForm" class="w-[50%] px-4 sm:px-6 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
+    <div x-ref="fileForm"
+        class="w-[50%] px-4 sm:px-6 h-full transition-transform duration-500 ease-in-out overflow-y-auto">
         <div class="py-2 px-4 -mx-4 mb-3 text-right flex shadow-md sm:shadow-none">
             <div class="w-1/2 text-left">
-                <button @click.prevent="showFilesList"
-                    href="#" class="pr-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">      
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <button @click.prevent="showFilesList" href="#"
+                    class="pr-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                 </button>
             </div>
             <div class="w-1/2 text-right my-auto sm:w-full">
-                <a @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(selectedFile.slug)" href="#" 
-                    class="underline text-sm font-semibold text-red-600 hover:text-red-400">{{t 'documents.views.index.files_modal.delete' }}</a>
+                <a @click.prevent="if (confirm('{{t 'documents.views.index.files_modal.delete_confirm' }}')) deleteFile(selectedFile.slug)"
+                    href="#" class="underline text-sm font-semibold text-red-600 hover:text-red-400">{{t
+                    'documents.views.index.files_modal.delete' }}</a>
             </div>
         </div>
 
 
         <div class="flex-1 flex flex-col gap-y-5 mb-5">
             <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }"
-                x-on:drop.prevent="handleDrop" 
-                x-on:dragover.prevent 
-                x-on:dragenter="isDragging = true"
-                x-on:dragleave="isDragging = false" 
-                class="flex items-center justify-center w-full">
+                x-on:drop.prevent="handleDrop" x-on:dragover.prevent x-on:dragenter="isDragging = true"
+                x-on:dragleave="isDragging = false" class="flex items-center justify-center w-full">
                 <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file"
-                        class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
+                    class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg x-show="!isUploading" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        <svg x-show="!isUploading" xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
                             class="mb-5 text-gray-500 lucide lucide-cloud-upload">
                             <path d="M12 13v8" />
                             <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
                             <path d="m8 17 4-4 4 4" />
                         </svg>
-                        <p x-show="!selectedFile.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
-                        <p x-show="selectedFile.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="selectedFile.filename"></span> (<span x-text="formatBytes(selectedFile.size, sizes)"></span> - <span x-text="selectedFile.type"></span>)</p>
-                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
+                        <p x-show="!selectedFile.filename" class="mb-2 text-sm text-gray-600">{{t
+                            'settings.views.files.no_file_uploaded_yet' }}</p>
+                        <p x-show="selectedFile.filename"
+                            class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span
+                                x-text="selectedFile.filename"></span> (<span
+                                x-text="formatBytes(selectedFile.size, sizes)"></span> - <span
+                                x-text="selectedFile.type"></span>)</p>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t
+                                'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
                         <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
                     </div>
                     <input x-on:change="submitUploadForm" id="dropzone-file" type="file" class="hidden" />

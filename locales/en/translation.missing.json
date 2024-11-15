@@ -2,7 +2,36 @@
   "users": {
     "views": {
       "signup2": {
-        "company_registration_number": "users.views.signup2.company_registration_number"
+        "company_registration_number": "users.views.signup2.company_registration_number",
+        "iban": "users.views.signup2.iban",
+        "bic": "users.views.signup2.bic",
+        "bank_accounts": "users.views.signup2.bank_accounts",
+        "add_bank_account": "users.views.signup2.add_bank_account",
+        "bank_account": "users.views.signup2.bank_account",
+        "remove_bank_account": "users.views.signup2.remove_bank_account",
+        "name": "users.views.signup2.name",
+        "address": "users.views.signup2.address",
+        "zip": "users.views.signup2.zip",
+        "city": "users.views.signup2.city",
+        "country": "users.views.signup2.country",
+        "frequently_selected_countries": "users.views.signup2.frequently_selected_countries",
+        "all_countries": "users.views.signup2.all_countries",
+        "vat_number": "users.views.signup2.vat_number",
+        "without_vat": "users.views.signup2.without_vat",
+        "currency": "users.views.signup2.currency",
+        "contact_title": "users.views.signup2.contact_title",
+        "contact_firstname": "users.views.signup2.contact_firstname",
+        "contact_lastname": "users.views.signup2.contact_lastname",
+        "phone": "users.views.signup2.phone",
+        "email": "users.views.signup2.email",
+        "website": "users.views.signup2.website"
+      },
+      "signup1": {
+        "no_title": "users.views.signup1.no_title",
+        "mr": "users.views.signup1.mr",
+        "mrs": "users.views.signup1.mrs",
+        "ms": "users.views.signup1.ms",
+        "dr": "users.views.signup1.dr"
       }
     }
   },
@@ -21,24 +50,304 @@
   "settings": {
     "views": {
       "emails": {
-        "link_email_template_help": "settings.views.emails.link_email_template_help"
+        "link_email_template_help": "settings.views.emails.link_email_template_help",
+        "contact_title": "settings.views.emails.contact_title",
+        "contact_firstname": "settings.views.emails.contact_firstname",
+        "contact_lastname": "settings.views.emails.contact_lastname",
+        "invoice_date": "settings.views.emails.invoice_date",
+        "invoice_due_date": "settings.views.emails.invoice_due_date",
+        "total_amount": "settings.views.emails.total_amount",
+        "send_cc_to": "settings.views.emails.send_cc_to",
+        "send_cc_to_help": "settings.views.emails.send_cc_to_help",
+        "send_cc_to_placeholder": "settings.views.emails.send_cc_to_placeholder",
+        "send_cc_to_button": "settings.views.emails.send_cc_to_button",
+        "send_bcc_to": "settings.views.emails.send_bcc_to",
+        "send_bcc_to_help": "settings.views.emails.send_bcc_to_help",
+        "send_bcc_to_placeholder": "settings.views.emails.send_bcc_to_placeholder",
+        "send_bcc_to_button": "settings.views.emails.send_bcc_to_button",
+        "email_templates": "settings.views.emails.email_templates",
+        "email_template_help": "settings.views.emails.email_template_help",
+        "email_template_type": "settings.views.emails.email_template_type",
+        "document_number": "settings.views.emails.document_number",
+        "seller_name": "settings.views.emails.seller_name",
+        "choose_language": "settings.views.emails.choose_language",
+        "email_subject_label": "settings.views.emails.email_subject_label",
+        "update_email_templates": "settings.views.emails.update_email_templates"
+      },
+      "invoices": {
+        "show_hide_fields": "settings.views.invoices.show_hide_fields",
+        "show_delivery_date_help": "settings.views.invoices.show_delivery_date_help",
+        "show_contact_person": "settings.views.invoices.show_contact_person",
+        "invoice_prefix_help_end": "settings.views.invoices.invoice_prefix_help_end",
+        "sequence_step": "settings.views.invoices.sequence_step",
+        "sequence_step_help": "settings.views.invoices.sequence_step_help",
+        "reset_sequence_yearly": "settings.views.invoices.reset_sequence_yearly",
+        "reset_sequence_yearly_help": "settings.views.invoices.reset_sequence_yearly_help",
+        "next_number_preview": "settings.views.invoices.next_number_preview",
+        "next_number_preview_help": "settings.views.invoices.next_number_preview_help",
+        "sequence_increment": "settings.views.invoices.sequence_increment",
+        "sequence_increment_help": "settings.views.invoices.sequence_increment_help",
+        "reset_yearly": "settings.views.invoices.reset_yearly",
+        "reset_yearly_help": "settings.views.invoices.reset_yearly_help",
+        "frequently_selected_currencies": "settings.views.invoices.frequently_selected_currencies",
+        "all_currencies": "settings.views.invoices.all_currencies",
+        "warning_title": "settings.views.invoices.warning_title",
+        "warning_text": "settings.views.invoices.warning_text",
+        "numbering_settings": "settings.views.invoices.numbering_settings",
+        "invoice_prefix": "settings.views.invoices.invoice_prefix",
+        "invoice_prefix_help": "settings.views.invoices.invoice_prefix_help",
+        "current_sequence": "settings.views.invoices.current_sequence",
+        "sequence_combined_help": "settings.views.invoices.sequence_combined_help",
+        "update_numbering_settings": "settings.views.invoices.update_numbering_settings",
+        "invoices_default_invoice_due_date_terms_type": "settings.views.invoices.invoices_default_invoice_due_date_terms_type",
+        "invoices_default_invoice_due_date_terms_type_help": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_help",
+        "invoices_default_invoice_due_date_terms_type_button": "settings.views.invoices.invoices_default_invoice_due_date_terms_type_button",
+        "show_hide_help": "settings.views.invoices.show_hide_help",
+        "show_due_date": "settings.views.invoices.show_due_date",
+        "show_delivery_date": "settings.views.invoices.show_delivery_date",
+        "show_seller_email": "settings.views.invoices.show_seller_email",
+        "show_seller_website": "settings.views.invoices.show_seller_website",
+        "show_seller_phone": "settings.views.invoices.show_seller_phone",
+        "show_iban": "settings.views.invoices.show_iban",
+        "default_notes_on_invoice": "settings.views.invoices.default_notes_on_invoice",
+        "default_notes_on_invoice_help": "settings.views.invoices.default_notes_on_invoice_help",
+        "update_default_notes_on_invoice_button": "settings.views.invoices.update_default_notes_on_invoice_button",
+        "current_sequence_help": "settings.views.invoices.current_sequence_help"
+      },
+      "credit_notes": {
+        "show_hide_fields": "settings.views.credit_notes.show_hide_fields",
+        "show_hide_help": "settings.views.credit_notes.show_hide_help",
+        "show_delivery_date": "settings.views.credit_notes.show_delivery_date",
+        "show_contact_person": "settings.views.credit_notes.show_contact_person",
+        "show_seller_email": "settings.views.credit_notes.show_seller_email",
+        "show_seller_phone": "settings.views.credit_notes.show_seller_phone",
+        "show_iban": "settings.views.credit_notes.show_iban",
+        "show_due_date": "settings.views.credit_notes.show_due_date",
+        "show_target_invoice": "settings.views.credit_notes.show_target_invoice",
+        "show_seller_website": "settings.views.credit_notes.show_seller_website",
+        "default_notes_on_credit_notes": "settings.views.credit_notes.default_notes_on_credit_notes",
+        "default_notes_on_credit_notes_help": "settings.views.credit_notes.default_notes_on_credit_notes_help",
+        "update_default_notes_on_credit_notes_button": "settings.views.credit_notes.update_default_notes_on_credit_notes_button"
+      },
+      "": {
+        "show_hide_fields": "settings.views..show_hide_fields",
+        "show_hide_help": "settings.views..show_hide_help",
+        "show_delivery_date": "settings.views..show_delivery_date",
+        "show_contact_person": "settings.views..show_contact_person",
+        "show_seller_email": "settings.views..show_seller_email",
+        "show_seller_phone": "settings.views..show_seller_phone",
+        "show_iban": "settings.views..show_iban"
+      },
+      "tabs": {
+        "select_tab": "settings.views.tabs.select_tab",
+        "myaccount": "settings.views.tabs.myaccount",
+        "sellers": "settings.views.tabs.sellers",
+        "invoices": "settings.views.tabs.invoices",
+        "credit_notes": "settings.views.tabs.credit_notes",
+        "files": "settings.views.tabs.files",
+        "vat": "settings.views.tabs.vat",
+        "emails": "settings.views.tabs.emails"
+      },
+      "myaccount": {
+        "email": "settings.views.myaccount.email",
+        "email_help": "settings.views.myaccount.email_help",
+        "email_placeholder": "settings.views.myaccount.email_placeholder",
+        "email_update_button": "settings.views.myaccount.email_update_button",
+        "change_password": "settings.views.myaccount.change_password",
+        "change_password_help": "settings.views.myaccount.change_password_help",
+        "current_password": "settings.views.myaccount.current_password",
+        "new_password": "settings.views.myaccount.new_password",
+        "confirm_new_password": "settings.views.myaccount.confirm_new_password",
+        "change_password_button": "settings.views.myaccount.change_password_button"
+      },
+      "sellers": {
+        "create_seller_button": "settings.views.sellers.create_seller_button",
+        "no_seller_found": "settings.views.sellers.no_seller_found",
+        "no_seller_selected": "settings.views.sellers.no_seller_selected",
+        "delete_confirm": "settings.views.sellers.delete_confirm",
+        "delete": "settings.views.sellers.delete",
+        "delete_current_company": "settings.views.sellers.delete_current_company",
+        "internal_name": "settings.views.sellers.internal_name",
+        "internal_name_placeholder": "settings.views.sellers.internal_name_placeholder"
+      },
+      "files": {
+        "logo": "settings.views.files.logo",
+        "no_file_uploaded_yet": "settings.views.files.no_file_uploaded_yet",
+        "click_to_upload": "settings.views.files.click_to_upload",
+        "or_drag_and_drop": "settings.views.files.or_drag_and_drop",
+        "allowed_file_types": "settings.views.files.allowed_file_types",
+        "files_for_all_docs": "settings.views.files.files_for_all_docs",
+        "files_for_all_docs_help": "settings.views.files.files_for_all_docs_help",
+        "create_file_button": "settings.views.files.create_file_button",
+        "no_file_found": "settings.views.files.no_file_found",
+        "no_file_selected": "settings.views.files.no_file_selected",
+        "delete_confirm": "settings.views.files.delete_confirm",
+        "delete": "settings.views.files.delete",
+        "name": "settings.views.files.name",
+        "internal_name": "settings.views.files.internal_name",
+        "internal_name_placeholder": "settings.views.files.internal_name_placeholder",
+        "selected_by_default": "settings.views.files.selected_by_default",
+        "upload_before_selecting": "settings.views.files.upload_before_selecting"
+      },
+      "vatrates": {
+        "vatrates_settings": "settings.views.vatrates.vatrates_settings",
+        "vatrates_settings_help": "settings.views.vatrates.vatrates_settings_help",
+        "default_vatrates_selected": "settings.views.vatrates.default_vatrates_selected",
+        "default_vatrates_selected_help": "settings.views.vatrates.default_vatrates_selected_help",
+        "set_default_vatrate_button": "settings.views.vatrates.set_default_vatrate_button",
+        "custom_vatrates": "settings.views.vatrates.custom_vatrates",
+        "custom_vatrates_help": "settings.views.vatrates.custom_vatrates_help",
+        "value": "settings.views.vatrates.value",
+        "label": "settings.views.vatrates.label",
+        "save_button": "settings.views.vatrates.save_button",
+        "add_custom_taxrate": "settings.views.vatrates.add_custom_taxrate",
+        "default_vatrates": "settings.views.vatrates.default_vatrates",
+        "default_vatrates_help": "settings.views.vatrates.default_vatrates_help",
+        "country_selected_is": "settings.views.vatrates.country_selected_is"
       }
-    }
+    },
+    "invoice_numbering_updated": "settings.invoice_numbering_updated"
   },
   "documents": {
     "views": {
       "index": {
         "email_modal": {
-          "language": "documents.views.index.email_modal.language"
+          "language": "documents.views.index.email_modal.language",
+          "body": "documents.views.index.email_modal.body",
+          "bold": "documents.views.index.email_modal.bold",
+          "italic": "documents.views.index.email_modal.italic",
+          "underline": "documents.views.index.email_modal.underline",
+          "strike": "documents.views.index.email_modal.strike"
         },
         "invoice_settings": {
           "show_ribbon": "documents.views.index.invoice_settings.show_ribbon",
           "ribbon_position": "documents.views.index.invoice_settings.ribbon_position",
           "custom": "documents.views.index.invoice_settings.custom",
           "invoice_long": "documents.views.index.invoice_settings.invoice_long",
-          "credit_note_long": "documents.views.index.invoice_settings.credit_note_long"
+          "credit_note_long": "documents.views.index.invoice_settings.credit_note_long",
+          "show_delivery_date": "documents.views.index.invoice_settings.show_delivery_date",
+          "stamp_position": "documents.views.index.invoice_settings.stamp_position"
+        },
+        "buyer_modal": {
+          "choose_and_back": "documents.views.index.buyer_modal.choose_and_back",
+          "form": {
+            "delivery_address": "documents.views.index.buyer_modal.form.delivery_address",
+            "delivery_name": "documents.views.index.buyer_modal.form.delivery_name",
+            "delivery_name_placeholder": "documents.views.index.buyer_modal.form.delivery_name_placeholder",
+            "delivery_attention": "documents.views.index.buyer_modal.form.delivery_attention",
+            "delivery_attention_placeholder": "documents.views.index.buyer_modal.form.delivery_attention_placeholder",
+            "delivery_address1": "documents.views.index.buyer_modal.form.delivery_address1",
+            "delivery_address1_placeholder": "documents.views.index.buyer_modal.form.delivery_address1_placeholder",
+            "delivery_address2": "documents.views.index.buyer_modal.form.delivery_address2",
+            "delivery_address2_placeholder": "documents.views.index.buyer_modal.form.delivery_address2_placeholder",
+            "delivery_zip": "documents.views.index.buyer_modal.form.delivery_zip",
+            "delivery_zip_placeholder": "documents.views.index.buyer_modal.form.delivery_zip_placeholder",
+            "delivery_city": "documents.views.index.buyer_modal.form.delivery_city",
+            "delivery_city_placeholder": "documents.views.index.buyer_modal.form.delivery_city_placeholder",
+            "delivery_country": "documents.views.index.buyer_modal.form.delivery_country",
+            "delivery_country_placeholder": "documents.views.index.buyer_modal.form.delivery_country_placeholder",
+            "delivery_phone": "documents.views.index.buyer_modal.form.delivery_phone",
+            "delivery_phone_placeholder": "documents.views.index.buyer_modal.form.delivery_phone_placeholder"
+          },
+          "cancel": "documents.views.index.buyer_modal.cancel",
+          "modal_title": "documents.views.index.buyer_modal.modal_title",
+          "modal_subtitle": "documents.views.index.buyer_modal.modal_subtitle"
+        },
+        "files_modal": {
+          "no_file_uploaded_yet": "documents.views.index.files_modal.no_file_uploaded_yet"
+        },
+        "items_modal": {
+          "standard_taxrates": "documents.views.index.items_modal.standard_taxrates",
+          "custom_taxrates": "documents.views.index.items_modal.custom_taxrates"
+        }
+      },
+      "edit_form": {
+        "15": "documents.views.edit_form.15",
+        "30": "documents.views.edit_form.30",
+        "due_on_receipt": "documents.views.edit_form.due_on_receipt",
+        "download_document": "documents.views.edit_form.download_document",
+        "send_by_email": "documents.views.edit_form.send_by_email",
+        "duplicate_document": "documents.views.edit_form.duplicate_document",
+        "create_credit_note": "documents.views.edit_form.create_credit_note",
+        "delete_confirm": "documents.views.edit_form.delete_confirm",
+        "delete_document": "documents.views.edit_form.delete_document",
+        "invoice_date": "documents.views.edit_form.invoice_date",
+        "credit_note_date": "documents.views.edit_form.credit_note_date",
+        "due_date": "documents.views.edit_form.due_date",
+        "custom": "documents.views.edit_form.custom",
+        "delivery_date": "documents.views.edit_form.delivery_date",
+        "customer": "documents.views.edit_form.customer",
+        "credit_note_number": "documents.views.edit_form.credit_note_number",
+        "target_invoice_number": "documents.views.edit_form.target_invoice_number",
+        "invoice_number": "documents.views.edit_form.invoice_number",
+        "subject_label": "documents.views.edit_form.subject_label",
+        "subject_placeholder": "documents.views.edit_form.subject_placeholder",
+        "reference_label": "documents.views.edit_form.reference_label",
+        "reference_placeholder": "documents.views.edit_form.reference_placeholder",
+        "items": "documents.views.edit_form.items",
+        "no_items_yet": "documents.views.edit_form.no_items_yet",
+        "create_first_item": "documents.views.edit_form.create_first_item",
+        "manage_items": "documents.views.edit_form.manage_items",
+        "total_base_amount": "documents.views.edit_form.total_base_amount",
+        "total_vat_amount": "documents.views.edit_form.total_vat_amount",
+        "total_amount": "documents.views.edit_form.total_amount",
+        "notes_on_invoice_label": "documents.views.edit_form.notes_on_invoice_label",
+        "notes_on_invoice_placeholder": "documents.views.edit_form.notes_on_invoice_placeholder",
+        "notes_on_internal_label": "documents.views.edit_form.notes_on_internal_label",
+        "notes_on_internal_placeholder": "documents.views.edit_form.notes_on_internal_placeholder",
+        "files": "documents.views.edit_form.files",
+        "no_files_yet": "documents.views.edit_form.no_files_yet",
+        "add_files": "documents.views.edit_form.add_files"
+      }
+    }
+  },
+  "files": {
+    "middleware": {
+      "no_file_uploaded": "files.middleware.no_file_uploaded"
+    }
+  },
+  "File too large": "File too large",
+  "companies": {
+    "controller": {
+      "taxrate_saved": "companies.controller.taxrate_saved",
+      "taxrate_deleted": "companies.controller.taxrate_deleted",
+      "show_hide_fields_updated": "companies.controller.show_hide_fields_updated"
+    }
+  },
+  "nav": {
+    "buyers": "nav.buyers",
+    "buyers_description": "nav.buyers_description"
+  },
+  "global": {
+    "settings": {
+      "settings": "global.settings.settings"
+    }
+  },
+  "default_template": {
+    "reference": "default_template.reference"
+  },
+  "common": {
+    "invoice_short": "common.invoice_short",
+    "credit_note_short": "common.credit_note_short",
+    "quote_short": "common.quote_short",
+    "document_types": "common.document_types",
+    "sizes": "common.sizes",
+    "invoice_long": "common.invoice_long",
+    "credit_note_long": "common.credit_note_long",
+    "toggle_password_visbility": "common.toggle_password_visbility"
+  },
+  "Set the current sequence number and choose whether to reset it to 1 at the beginning of each year": {
+    " When reset yearly is enabled, the number format will include the year (e": {
+      "g": {
+        ", 2024-00001)": {
+          "": "Set the current sequence number and choose whether to reset it to 1 at the beginning of each year. When reset yearly is enabled, the number format will include the year (e.g., 2024-00001)."
         }
       }
+    }
+  },
+  "This prefix will be added before the invoice number (e": {
+    "g": {
+      ", ": "This prefix will be added before the invoice number (e.g., "
     }
   }
 }

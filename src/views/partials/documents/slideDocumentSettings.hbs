@@ -1,136 +1,384 @@
-<div class="p-4 sm:px-6 h-full overflow-y-auto" x-data="{
+<div
+  class="p-4 sm:px-6 h-full overflow-y-auto"
+  x-data="{
+        show_due_date_option: true,
         show_delivery_date_option: true,
         show_target_invoice_option: true, 
         show_delivery_date: null,     
         show_target_invoice: null,
-    }" x-intersect="
+        show_contact_person: null,
+        show_seller_email: null,
+        show_seller_website: null,
+        show_seller_phone: null,
+        show_iban: null,
+        documentType: null,
+        session: {{ stringify session }}
+    }"
+  x-intersect="
+        documentType = selectedDocument.config.document_type;
         updateButtonContent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-check'><path d='M20 6 9 17l-5-5'/></svg>{{t 'documents.views.index.items_modal.back_button' }}`);
         updateClickHandler(() => {
             openSlide = false;
         });
-        show_delivery_date = selectedDocument.config.show_delivery_date;
-        show_delivery_date_option = selectedDocument.config.document_type === 'invoice';
-        show_target_invoice = selectedDocument.config.show_target_invoice;
-        show_target_invoice_option = selectedDocument.config.document_type === 'credit_note';
-    ">
-    <div class="grid gap-y-4" x-data="{
+        // Initialize values from company settings based on document type
+        const settings = session.current_company.settings[documentType];
+        show_delivery_date = settings.show_delivery_date;
+        show_delivery_date_option = settings.show_delivery_date;
+        show_due_date_option = (documentType === 'credit_note') ? true : false;
+        show_target_invoice = settings.show_target_invoice;
+        show_target_invoice_option = (documentType === 'credit_note') ? true : false;
+        show_contact_person = settings.show_contact_person;
+        show_seller_email = settings.show_seller_email;
+        show_seller_website = settings.show_seller_website;
+        show_seller_phone = settings.show_seller_phone;
+        show_iban = settings.show_iban;
+    "
+>
+  <div
+    class="grid gap-y-4"
+    x-data="{
             get selectedCurrency() {
                 return JSON.stringify(selectedDocument.config.currency);
             },
             set selectedCurrency(value) {
                 selectedDocument.config.currency = JSON.parse(value);
             }
-        }">
-        <div>
-            <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.invoice_settings.language'}}</label>
-            <select x-model="selectedDocument.config.language" id="language"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                <optgroup label="{{t 'documents.views.index.invoice_settings.frequently_selected' }}">
-                    <template x-for="language in frequentlySelectedLanguages" :key="language.code_dnt">
-                        <option :value="language.code_dnt" x-text="language.name"
-                            :selected="(selectedDocument.config.language && selectedDocument.config.language=== language.code_dnt) || 
-                                                       (!selectedDocument.config.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)">
-                        </option>
-                    </template>
-                </optgroup>
-                <optgroup label="{{t 'documents.views.index.invoice_settings.all_languages' }}">
-                    <template x-for="language in languages" :key="language.code_dnt">
-                        <option :value="language.code_dnt" x-text="language.name"
-                            :selected="((selectedDocument.config.language && selectedDocument.config.language === language.code_dnt) || 
+        }"
+  >
+    <div>
+      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">
+        {{t 'documents.views.index.invoice_settings.language'}}
+      </label>
+      <select
+        x-model="selectedDocument.config.language"
+        id="language"
+        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      >
+        <optgroup label="{{t 'documents.views.index.invoice_settings.frequently_selected' }}">
+          <template x-for="language in frequentlySelectedLanguages" :key="language.code_dnt">
+            <option
+              :value="language.code_dnt"
+              x-text="language.name"
+              :selected="(selectedDocument.config.language && selectedDocument.config.language=== language.code_dnt) || 
+                                                       (!selectedDocument.config.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)"
+            ></option>
+          </template>
+        </optgroup>
+        <optgroup label="{{t 'documents.views.index.invoice_settings.all_languages' }}">
+          <template x-for="language in languages" :key="language.code_dnt">
+            <option
+              :value="language.code_dnt"
+              x-text="language.name"
+              :selected="((selectedDocument.config.language && selectedDocument.config.language === language.code_dnt) || 
                                                        (!selectedDocument.config.language && countries[selectedCountry].default_language_code_dnt === language.code_dnt)) && 
-                                                       !frequentlySelectedLanguages.some(l => l.code_dnt === language.code_dnt)"></option>
-                    </template>
-                </optgroup>
-            </select>
+                                                       !frequentlySelectedLanguages.some(l => l.code_dnt === language.code_dnt)"
+            ></option>
+          </template>
+        </optgroup>
+      </select>
+    </div>
+
+    <div>
+      <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">
+        {{t 'documents.views.index.invoice_settings.currency'}}
+      </label>
+      <select
+        x-model="selectedCurrency"
+        id="default_currency"
+        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      >
+        <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
+          <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
+            <option
+              :selected="currency.label === selectedDocument.config?.currency?.label"
+              :value="JSON.stringify(currency)"
+              x-text="`${currency.name} (${currency.symbol})`"
+            ></option>
+          </template>
+        </optgroup>
+        <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
+          <template x-for="(currency, index) in currencies" :key="index">
+            <option
+              x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)"
+              :value="JSON.stringify(currency)"
+              x-text="`${currency.name} (${currency.symbol})`"
+            ></option>
+          </template>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-sm font-medium leading-6 text-gray-900">
+        {{t 'settings.views.invoices.show_hide_fields' }}
+      </label>
+      <p class="text-sm text-gray-500">{{t 'documents.views.index.show_hide_help' }}</p>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_due_date"
+            x-model="selectedDocument.config.show_due_date"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
         </div>
-
-
-        <div>
-            <label for="buyer-name" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.invoice_settings.currency'}}</label>
-            <select x-model="selectedCurrency" id="default_currency"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                <optgroup label="{{t 'settings.views.invoices.frequently_selected_currencies' }}">
-                    <template x-for="(currency, index) in frequentlySelectedCurrencies" :key="index">
-                        <option :selected="currency.label === selectedDocument.config?.currency?.label"
-                            :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
-                    </template>
-                </optgroup>
-                <optgroup label="{{t 'settings.views.invoices.all_currencies' }}">
-                    <template x-for="(currency, index) in currencies" :key="index">
-                        <option
-                            x-bind:selected="currency.label === selectedDocument.config?.currency?.label && !frequentlySelectedCurrencies.some(c => c.label === selectedDocument.config.currency.label)"
-                            :value="JSON.stringify(currency)" x-text="`${currency.name} (${currency.symbol})`"></option>
-                    </template>
-                </optgroup>
-            </select>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_due_date" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_due_date' }}
+          </label>
         </div>
+      </div>
 
-        <div x-show="show_delivery_date_option" x-init="
-                {{!-- require to keep show_delivery_date as a boolean --}}
-                $watch('show_delivery_date', value => {
-                    selectedDocument.config.show_delivery_date = (value === true || value === 'true');
-                });
-            ">
-            <label for="show-delivery-date" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.invoice_settings.show_delivery_date'}}</label>
-            <select x-model="show_delivery_date" id="show-delivery-date"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                <option value="true">{{t 'settings.views.invoices.yes_show_delivery_date' }}</option>
-                <option value="false">{{t 'settings.views.invoices.no_show_delivery_date' }}</option>
-            </select>
+      <div class="relative flex items-start" x-show="show_delivery_date_option">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_delivery_date"
+            x-model="selectedDocument.config.show_delivery_date"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
         </div>
-
-        <div x-show="show_target_invoice_option" x-init="
-                $watch('show_target_invoice', value => {
-                    selectedDocument.config.show_target_invoice = (value === true || value === 'true');
-                });
-             ">
-            <label for="show-target-invoice" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.invoice_settings.show_target_invoice'}}</label>
-            <select x-model="show_target_invoice" id="show-target-invoice"
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                <option value="true">{{t 'settings.views.invoices.yes_show_target_invoice' }}</option>
-                <option value="false">{{t 'settings.views.invoices.no_show_target_invoice' }}</option>
-            </select>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_delivery_date" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_delivery_date' }}
+          </label>
         </div>
+      </div>
 
-        <div class="flex flex-row gap-x-4">
-            <div class="flex-1"
-                 x-data="{
+      <div class="relative flex items-start" x-show="show_target_invoice_option">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_target_invoice"
+            x-model="selectedDocument.config.show_target_invoice"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_target_invoice" class="font-medium text-gray-900">
+            {{t 'settings.views.credit_notes.show_target_invoice' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_contact_person"
+            x-model="selectedDocument.config.show_contact_person"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_contact_person" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_contact_person' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_seller_email"
+            x-model="selectedDocument.config.show_seller_email"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_seller_email" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_seller_email' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_seller_website"
+            x-model="selectedDocument.config.show_seller_website"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_seller_website" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_seller_website' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_seller_phone"
+            x-model="selectedDocument.config.show_seller_phone"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_seller_phone" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_seller_phone' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            type="checkbox"
+            id="show_iban"
+            x-model="selectedDocument.config.show_iban"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for="show_iban" class="font-medium text-gray-900">
+            {{t 'settings.views.invoices.show_iban' }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Ribbon settings --}}
+    <div class="flex flex-row gap-x-4">
+      <div
+        class="flex-1"
+        x-data="{
                     handleRibbonPredefinedChange(event) {
                         selectedDocument.config.ribbon.text = event.target.value;
                     }
                  }"
+      >
+        <label for="ribbonText" class="block text-sm font-medium leading-6 text-gray-900">
+          {{t 'documents.views.index.invoice_settings.show_ribbon'}}
+        </label>
+        <div class="relative rounded-md shadow-sm">
+          <input
+            type="text"
+            x-model="selectedDocument.config.ribbon.text"
+            id="ribbonText"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="{{t 'documents.views.index.invoice_settings.ribbon_text_placeholder'}}"
+          />
+          <div class="absolute inset-y-0 right-0 flex items-center">
+            <select
+              id="predefined"
+              @change="handleRibbonPredefinedChange"
+              class="w-1 h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
             >
-                <label for="ribbonText" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                    'documents.views.index.invoice_settings.show_ribbon'}}</label>
-                <div class="relative rounded-md shadow-sm">
-                    <input type="text" x-model="selectedDocument.config.ribbon.text" id="ribbonText"
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        placeholder="{{t 'documents.views.index.invoice_settings.ribbon_text_placeholder'}}">
-                    <div class="absolute inset-y-0 right-0 flex items-center">
-                        <select id="predefined"
-                            @change="handleRibbonPredefinedChange"
-                            class="w-1 h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                            <option value="">{{t 'documents.views.index.invoice_settings.custom' }}</option>
-                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}</option>
-                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}</option>
-                            <option :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}'" value="{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}">{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-none">
-                <label for="ribbonPosition" class="block text-sm font-medium leading-6 text-gray-900">{{t
-                    'documents.views.index.invoice_settings.ribbon_position'}}</label>
-                <select x-model="selectedDocument.config.ribbon.position" id="ribbonPosition"
-                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                </select>
-            </div>
+              <option value="">{{t 'documents.views.index.invoice_settings.custom' }}</option>
+              <option
+                :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}
+              </option>
+              <option
+                :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}
+              </option>
+              <option
+                :selected="selectedDocument.config.ribbon.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}
+              </option>
+            </select>
+          </div>
         </div>
+      </div>
+      <div class="flex-none">
+        <label for="ribbonPosition" class="block text-sm font-medium leading-6 text-gray-900">
+          {{t 'documents.views.index.invoice_settings.ribbon_position'}}
+        </label>
+        <select
+          x-model="selectedDocument.config.ribbon.position"
+          id="ribbonPosition"
+          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        >
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
     </div>
+    <div class="flex flex-row gap-x-4">
+      <div
+        class="flex-1"
+        x-data="{
+                    handleStampTextChange(event) {
+                        selectedDocument.config.stamp.text = event.target.value;
+                    }
+                 }"
+      >
+        <label for="stampText" class="block text-sm font-medium leading-6 text-gray-900">
+          {{t 'documents.views.index.invoice_settings.show_stamp'}}
+        </label>
+        <div class="relative rounded-md shadow-sm">
+          <input
+            type="text"
+            x-model="selectedDocument.config.stamp.text"
+            id="stampText"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="{{t 'documents.views.index.invoice_settings.stamp_text_placeholder'}}"
+          />
+          <div class="absolute inset-y-0 right-0 flex items-center">
+            <select
+              id="type"
+              @change="handleStampTextChange"
+              class="w-1 h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+            >
+              <option value="">{{t 'documents.views.index.invoice_settings.custom' }}</option>
+              <option
+                :selected="selectedDocument.config.stamp.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_paid' }}
+              </option>
+              <option
+                :selected="selectedDocument.config.stamp.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_reminder' }}
+              </option>
+              <option
+                :selected="selectedDocument.config.stamp.text === '{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}'"
+                value="{{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}"
+              >
+                {{t 'documents.views.index.invoice_settings.ribbon_text_duplicate' }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="flex-none">
+        <label for="stampType" class="block text-sm font-medium leading-6 text-gray-900">
+          {{t 'documents.views.index.invoice_settings.stamp_type'}}
+        </label>
+        <select
+          x-model="selectedDocument.config.stamp.type"
+          id="stampType"
+          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        >
+          <option :selected="selectedDocument.config.stamp.type === '1'" value="1">
+            {{t 'documents.views.index.invoice_settings.stamp_type_rounded' }}
+          </option>
+          <option :selected="selectedDocument.config.stamp.type === '2'" value="2">
+            {{t 'documents.views.index.invoice_settings.stamp_type_double_rounded' }}
+          </option>
+          <option :selected="selectedDocument.config.stamp.type === '3'" value="3">
+            {{t 'documents.views.index.invoice_settings.stamp_type_rectangle' }}
+          </option>
+          <option :selected="selectedDocument.config.stamp.type === '4'" value="4">
+            {{t 'documents.views.index.invoice_settings.stamp_type_double_rectangle' }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
 </div>

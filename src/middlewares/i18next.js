@@ -13,7 +13,7 @@ const sessionLanguageDetector = {
       }
     }
     return null;
-  }
+  },
 };
 
 // Create a new instance of LanguageDetector
@@ -21,25 +21,40 @@ var lngDetector = new i18Middleware.LanguageDetector();
 // Add your custom detector
 lngDetector.addDetector(sessionLanguageDetector);
 
-const i18n_languages = process.env.TRANSLATION_i18_CODE ? process.env.TRANSLATION_i18_CODE.split(',') : ['en'];
+const i18n_languages = process.env.TRANSLATION_i18_CODE
+  ? process.env.TRANSLATION_i18_CODE.split(',')
+  : ['en'];
 console.log('i18n_languages', i18n_languages);
 
-i18next.use(i18nBackend)
+i18next
+  .use(i18nBackend)
   .use(lngDetector)
   .init({
     detection: {
       order: ['sessionLanguageDetector', 'querystring', 'cookie', 'header'],
-      // Register the custom detector
       detectors: [sessionLanguageDetector],
       lookupCookie: 'lng',
-      caches: ['cookie']
+      caches: ['cookie'],
+      cookieOptions: {
+        path: '/',
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      },
     },
     partialBundledLanguages: true,
-    ns: ['translation', 'taxrates', 'countries', 'currencies', 'languages', 'all_languages', 'custom_settings'],
+    ns: [
+      'translation',
+      'taxrates',
+      'countries',
+      'currencies',
+      'languages',
+      'all_languages',
+      'custom_settings',
+    ],
     defaultNS: 'translation',
     backend: {
       loadPath: `${rootDir}/locales/{{lng}}/{{ns}}.json`,
-      addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`
+      addPath: `${rootDir}/locales/{{lng}}/{{ns}}.missing.json`,
     },
     fallbackLng: 'en',
     // nonExplicitSupportedLngs: true,
@@ -48,7 +63,7 @@ i18next.use(i18nBackend)
     load: 'languageOnly',
     saveMissing: true,
     nonExplicitSupportedLngs: true,
-    preload: i18n_languages
+    preload: i18n_languages,
   });
 
 function formatBytes(bytes) {
@@ -68,5 +83,5 @@ function formatBytes(bytes) {
 module.exports = {
   i18nMiddleware: i18Middleware.handle(i18next),
   formatBytes,
-  i18next
+  i18next,
 };

@@ -41,64 +41,105 @@
     <div x-data="{
             email_subject_templates: {{ stringify session.current_company.settings.email_subject_templates }}, 
             email_message_templates: {{ stringify session.current_company.settings.email_message_templates }},
-            selectedLanguage: {{ stringify session.current_company.settings.default_language }} 
-        }"
-        x-init="
+            selectedLanguage: '{{ session.user.language }}',
+        }" x-init="
             $watch('selectedLanguage', (newVal, oldVal) => {
                 $refs.editor.innerHTML = email_message_templates[selectedLanguage]
             });
-        "
-        class="flex flex-col gap-y-4">
+        " class="flex flex-col gap-y-4">
         <label for="send_bcc_to" class="text-base font-semibold leading-7 text-gray-900">{{t
             'settings.views.emails.email_templates' }}</label>
-        <p class="m-0 mb-2 text-sm">{{t 'settings.views.emails.email_template_help' }} <span>{{t 'settings.views.emails.link_email_template_help' }}</span></p>
-
-            <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {x}
-                        </th>
-                        <th scope="col" class="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Description
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {1}
-                        </td>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                            {{ t 'settings.views.emails.email_template_type' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {2}
-                        </td>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                            {{ t 'settings.views.emails.document_number' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {3}
-                        </td>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                            {{ t 'settings.views.emails.seller_name' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {4}
-                        </td>
-                        <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                            Total amount of the document
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <p class="m-0 mb-2 text-sm">{{t 'settings.views.emails.email_template_help' }} <span
+                class="cursor-pointer text-indigo-600 hover:text-indigo-500" @click="$refs.templateTable.classList.toggle('hidden')">{{t
+                'settings.views.emails.link_email_template_help' }}</span></p>
+        <table x-ref="templateTable" class="hidden divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col"
+                        class="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {x}
+                    </th>
+                    <th scope="col"
+                        class="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Description
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {1}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.email_template_type' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {2}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.document_number' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {3}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.seller_name' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {4}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.contact_title' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 text-sm font-medium text-gray-900">
+                        {5}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.contact_firstname' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 text-sm font-medium text-gray-900">
+                        {6}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 text-sm text-gray-500">
+                        {{ t 'settings.views.emails.contact_lastname' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 text-sm font-medium text-gray-900">
+                        {7}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2  text-sm text-gray-500">
+                        {{ t 'settings.views.emails.invoice_date' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {8}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
+                        {{ t 'settings.views.emails.invoice_due_date' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {9}
+                    </td>
+                    <td class="px-2 sm:px-6 py-2 whitespace-nowrap text-sm text-gray-500">
+                        {{ t 'settings.views.emails.total_amount' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
         <div>
             <div class="flex flex-row items-end justify-between">
@@ -108,7 +149,8 @@
                 <select id="language-select" x-model="selectedLanguage"
                     class="block appearance-none bg-white border border-gray-300 text-gray-700 text-sm px-4 pr-8 py-1 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                     <template x-for="lang in i18n_languages" :key="lang">
-                        <option :value="lang" x-text="all_languages[lang].name" :selected="selectedLanguage === lang"></option>
+                        <option :value="lang" x-text="all_languages[lang].name" :selected="selectedLanguage === lang">
+                        </option>
                     </template>
                 </select>
 
@@ -116,8 +158,8 @@
         </div>
         <div>
             <label for="language-select" class="block text-sm font-medium leading-6 text-gray-900">
-                    {{t 'settings.views.emails.email_subject_label' }}
-                </label>
+                {{t 'settings.views.emails.email_subject_label' }}
+            </label>
             <input type="text" id="email-subject-template" x-model="email_subject_templates[selectedLanguage]"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
@@ -147,8 +189,7 @@
             <div x-ref="editor" ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset
                 focus:ring-indigo-600
                 class="h-60 rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 p-2 text-gray-900 sm:text-sm overflow-y-auto focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-                contenteditable="true"
-                x-init="$refs.editor.innerHTML = email_message_templates[selectedLanguage]"
+                contenteditable="true" x-init="$refs.editor.innerHTML = email_message_templates[selectedLanguage]"
                 @input="email_message_templates[selectedLanguage] = $event.target.innerHTML"
                 @keydown.enter.prevent="document.execCommand('insertLineBreak')"></div>
         </div>

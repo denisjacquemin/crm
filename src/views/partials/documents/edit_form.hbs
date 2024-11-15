@@ -235,6 +235,9 @@
       <template x-if="selectedDocument.config.document_type === 'credit_note'"><label for="invoiceDate"
           @click="invoiceDatePicker.open()" class=" flex-grow block text-sm font-medium leading-6 text-gray-900">{{ t
           'documents.views.edit_form.credit_note_date' }}</label></template>
+      <template x-if="selectedDocument.config.document_type === 'quote'"><label for="invoiceDate"
+          @click="invoiceDatePicker.open()" class=" flex-grow block text-sm font-medium leading-6 text-gray-900">{{ t
+          'documents.views.edit_form.quote_date' }}</label></template>
       </label>
       <input x-ref="invoiceDate" type="text"
         class="flex-1 text-indigo-500 text-right cursor-pointer sm:text-sm sm:leading-6 border-none mr-2 p-0 m-0 focus:ring-0 focus:border-none"
@@ -327,7 +330,7 @@
     </div>
 
     <div
-      x-show="selectedDocument.config.document_type === 'invoice' && selectedDocument.config.show_delivery_date === true"
+      x-show="selectedDocument.config.show_delivery_date === true"
       class="flex flex-row">
       <label for="deliveryDate" @click="deliveryDatePicker.open()"
         class=" flex-grow block text-sm font-medium leading-6 text-gray-900">{{ t
@@ -370,6 +373,18 @@
       </div>
     </div>
 
+
+    <template x-if="selectedDocument.config.document_type === 'quote'">
+      <div class="col-span-full flex flex-col">
+        <label for="quoteNumber" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
+          'documents.views.edit_form.quote_number' }}</label>
+        <div class="w-full flex items-center justify-center">
+          <input placeholder="YYYY#00000" type="text" x-model="selectedDocument.config.quote_number" id="quoteNumber"
+            autocomplete="off" class="block flex-1 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+      </div>
+    </template>
+
     <template x-if="selectedDocument.config.document_type === 'credit_note'">
       <div class="col-span-full flex flex-col">
         <label for="creditNoteNumber" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
@@ -403,8 +418,18 @@
     </div>
 
     <div class="col-span-full flex flex-col">
-      <label for="subject" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
-        'documents.views.edit_form.subject_label' }}</label>
+      <template x-if="selectedDocument.config.document_type === 'invoice'">
+        <label for="subject" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
+          'documents.views.edit_form.subject_label' }}</label>
+      </template>
+      <template x-if="selectedDocument.config.document_type === 'credit_note'">
+        <label for="subject" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
+          'documents.views.edit_form.credit_note_subject_label' }}</label>
+      </template>
+      <template x-if="selectedDocument.config.document_type === 'quote'">
+        <label for="subject" class="block w-full text-sm font-medium leading-6 text-gray-900">{{ t
+          'documents.views.edit_form.quote_subject_label' }}</label>
+      </template>
       <div class="w-full flex items-center justify-center">
         <input placeholder="{{ t 'documents.views.edit_form.subject_placeholder' }}" type="text"
           x-model="selectedDocument.config.subject" id="subject" autocomplete="off"

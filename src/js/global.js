@@ -1,114 +1,153 @@
 // Select all input/button elements with type attribute equals to submit
 const submitButtons = document.querySelectorAll("input[type='submit'], button[type='submit']");
 // Loop through all submit buttons
-submitButtons.forEach(button => {
-    // Add a click event listener to each button
-    button.addEventListener("click", () => {
-        // Add the opacity-50 and pointer-events-none classes to the button, disabling it
-        button.classList.add("opacity-50", "pointer-events-none");
-        // change the text of the button to loading
-        // assign button.innerText with button data-disbaled-text attribute
-        button.innerText = button.dataset.disabledText;
-        // disabling the button
-        button.disabled = true;
-        // submiting form
-        button.form.submit();
-    });
+submitButtons.forEach((button) => {
+  // Add a click event listener to each button
+  button.addEventListener('click', () => {
+    // Add the opacity-50 and pointer-events-none classes to the button, disabling it
+    button.classList.add('opacity-50', 'pointer-events-none');
+    // change the text of the button to loading
+    // assign button.innerText with button data-disbaled-text attribute
+    button.innerText = button.dataset.disabledText;
+    // disabling the button
+    button.disabled = true;
+    // submiting form
+    button.form.submit();
+  });
 });
 
-window.formatDate = function(date, format = 'M/D/YYYY') {
-    if (typeof date === 'number') {
-        // Convert Unix timestamp (in seconds) to milliseconds and create a Date object
-        date = new Date(date * 1000);
-    }
-    // Use dayjs to format the date, now handling both original and Unix timestamp inputs
-    return dayjs(date).format(format);
-}
-
-window.fetchUrl = async function(url, method = 'GET', body = null) {
-    const options = {
-        method: method,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    };
-
-    if (body) {
-        if (body instanceof FormData) {
-            options.body = body;
-            // Do not set Content-Type header for FormData
-        } else {
-            options.body = JSON.stringify(body);
-            options.headers['Content-Type'] = 'application/json';
-        }
-    }
-
-    try {
-        const response = await fetch(url, options);
-        const contentType = response.headers.get("content-type");
-        let data;
-
-        if (contentType && contentType.includes("application/json")) {
-            data = await response.json();
-        } else if (contentType && contentType.includes("text/html")) {
-            data = await response.text();
-        }
-
-        if (data && data.notification) {
-            dispatch('notify', { content: data.notification.message, subcontent: data.notification.submessage, type: data.notification.type ? data.notification.type : 'info' });
-        }
-
-        if (response.status === 401) {
-            history.replaceState(null, '', window.location.href);
-            location.reload();
-        } else if (!response.ok) {
-            console.log('Error fetching URL', response);
-            throw new Error('Looks like there was a problem. Status Code: ' + response.status);
-        }
-
-        return data;
-    } catch (error) {
-        console.error('Error fetching URL', error);
-        throw error;
-    }
+window.formatDate = function (date, format = 'M/D/YYYY') {
+  if (typeof date === 'number') {
+    // Convert Unix timestamp (in seconds) to milliseconds and create a Date object
+    date = new Date(date * 1000);
+  }
+  // Use dayjs to format the date, now handling both original and Unix timestamp inputs
+  return dayjs(date).format(format);
 };
 
+window.fetchUrl = async function (url, method = 'GET', body = null) {
+  const options = {
+    method: method,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    },
+  };
 
-
-window.formatAddress = function(address1, address2, zip, city, country) {
-    var formattedAddress1 = address1 || '';
-    var formattedAddress2 = address2 ? ' ' + address2 : '';
-    var formattedZip = zip ? ' ' + zip : '';
-    var formattedCity = city ? ' ' + city : '';
-    var formattedCountry = country ? ' ' + country : '';
-    return `${formattedAddress1}${formattedAddress2}${formattedZip}${formattedCity}${formattedCountry}`;
-}
-
-window.deepMergeObjects = function(target, ...sources) {
-    if (!sources.length) {
-        return target;
+  if (body) {
+    if (body instanceof FormData) {
+      options.body = body;
+      // Do not set Content-Type header for FormData
+    } else {
+      options.body = JSON.stringify(body);
+      options.headers['Content-Type'] = 'application/json';
     }
-    const source = sources.shift();
-    if (isObject(target) && isObject(source)) {
-        for (const key in source) {
-            if (isObject(source[key])) {
-                if (!target[key]) {
-                    Object.assign(target, {
-                        [key]: {}
-                    });
-                }
-                deepMergeObjects(target[key], source[key]);
-            } else {
-                Object.assign(target, {
-                    [key]: source[key]
-                });
-            }
+  }
+
+  try {
+    const response = await fetch(url, options);
+    const contentType = response.headers.get('content-type');
+    let data;
+
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else if (contentType && contentType.includes('text/html')) {
+      data = await response.text();
+    }
+
+    if (data && data.notification) {
+      dispatch('notify', {
+        content: data.notification.message,
+        subcontent: data.notification.submessage,
+        type: data.notification.type ? data.notification.type : 'info',
+      });
+    }
+
+    if (response.status === 401) {
+      history.replaceState(null, '', window.location.href);
+      location.reload();
+    } else if (!response.ok) {
+      console.log('Error fetching URL', response);
+      throw new Error('Looks like there was a problem. Status Code: ' + response.status);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching URL', error);
+    throw error;
+  }
+};
+
+window.formatAddress = function (address1, address2, zip, city, country) {
+  var formattedAddress1 = address1 || '';
+  var formattedAddress2 = address2 ? ' ' + address2 : '';
+  var formattedZip = zip ? ' ' + zip : '';
+  var formattedCity = city ? ' ' + city : '';
+  var formattedCountry = country ? ' ' + country : '';
+  return `${formattedAddress1}${formattedAddress2}${formattedZip}${formattedCity}${formattedCountry}`;
+};
+
+window.deepMergeObjects = function (target, ...sources) {
+  if (!sources.length) {
+    return target;
+  }
+  const source = sources.shift();
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) {
+          Object.assign(target, {
+            [key]: {},
+          });
         }
+        deepMergeObjects(target[key], source[key]);
+      } else {
+        Object.assign(target, {
+          [key]: source[key],
+        });
+      }
     }
-    return deepMergeObjects(target, ...sources);
-}
+  }
+  return deepMergeObjects(target, ...sources);
+};
 
 function isObject(item) {
-    return item && typeof item === 'object' && !Array.isArray(item);
+  return item && typeof item === 'object' && !Array.isArray(item);
 }
+
+document.addEventListener('alpine:init', () => {
+  Alpine.data('tooltip', () => ({
+    show: false,
+    text: '',
+    x: 0,
+    y: 0,
+    timeoutId: null,
+    showTooltip(text, event) {
+      // Clear any existing timeout
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+      }
+
+      this.text = text;
+      this.show = true;
+      // Position the tooltip below the trigger element
+      const rect = event.target.getBoundingClientRect();
+      this.x = rect.left;
+      this.y = rect.bottom + window.scrollY + 5;
+    },
+    hideTooltip() {
+      // Add a small delay before hiding the tooltip
+      this.timeoutId = setTimeout(() => {
+        this.show = false;
+        this.timeoutId = null;
+      }, 200); // 200ms delay
+    },
+    // Clean up timeout when component is destroyed
+    destroy() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+    },
+  }));
+});

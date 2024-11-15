@@ -34,6 +34,47 @@
   transform: translate(29.3%) rotate(45deg);
 }
 
+.stamp {
+  position: absolute;
+  left: 300px;
+  top: 45px;
+  max-width: 60%;
+	transform: rotate(3deg);
+	color: #666;
+	font-size: 3rem;
+	font-weight: 700;
+	border: 0.25rem solid #666;
+	display: inline-block;
+	padding: 0.25rem 1rem;
+	text-transform: uppercase;
+	border-radius: 1rem;
+	font-family: 'Courier';
+	-webkit-mask-image: url('../../public/images/grunge.png');
+  -webkit-mask-size: 944px 604px;
+  mix-blend-mode: multiply;
+  color: #787b79;
+  z-index: 9;
+}
+
+.stamp-style1 {}
+
+.stamp-style2 {
+  border: 0.5rem double #787b79;
+	-webkit-mask-position: 2rem 3rem;
+}
+
+.stamp-style3 {
+  border: 0.5rem solid #787b79;
+	-webkit-mask-position: 13rem 6rem;
+  border-radius: 0;
+}
+
+.stamp-style4 {
+  border: 1rem double #787b79;
+  font-family: "Open sans", Helvetica, Arial, sans-serif;
+  border-radius: 0;
+  padding: 0.4rem;
+}
 
 .lds-ripple,
 .lds-ripple div {

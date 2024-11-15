@@ -115,55 +115,50 @@ async function getCurrentCompanyFiles(req, res) {
 }
 
 async function upload(req, res) {
-    res.status(200).json({
-        notification: { message: req.i18n.t('files.controller.file_uploaded_successfuly'), type: 'success' },
-        data: req.uploadResult
-    });
-};
+    try {
+        // Check if there was an error from the middleware
+        if (req.fileError) {
+            console.log('req.fileError', req.fileError);
+            return res.status(400).json({
+                notification: { 
+                    message: req.i18n.t(req.fileError.message), 
+                    type: 'error' 
+                }
+            });
+        }
 
+        // Check if upload result exists
+        if (!req.uploadResult) {
+            return res.status(500).json({
+                notification: { 
+                    message: req.i18n.t('files.controller.upload_failed'), 
+                    type: 'error' 
+                }
+            });
+        }
 
-
-//     const { url, key, size, type, filename } = req.uploadResult;
-
-//     const fileData = {
-//         slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
-//         company_id: req.session.current_company._id,
-//         document_id: req.body.document_id,
-//         created_by_user_id: req.session.user._id,
-//         name: req.i18n.t('files.controller.default_file_name'),
-//         internal_name: '',
-//         size: size,
-//         type: type,
-//         filename: filename,
-//         key: key,
-//         url: url
-//     };
-
-//     // Check if the file exists
-//     let fileFromDB;
-//     let existingFile;
-//     if (req.body.file_id) {
-//         existingFile = await FileService.getById({ _id: req.body.file_id });
-//     }
-
-//     if (existingFile) {
-//         // Update existing file
-//         Object.assign(existingFile, fileData);
-//         fileFromDB = await FileService.update(existingFile._id, fileData);
-//     } else {
-//         // Create new file
-//         fileFromDB = await FileService.create(fileData);
-//     }
-
-//     console.log('fileFromDB', fileFromDB)
-
-//     res.status(200).json(fileFromDB);
-// }
+        res.status(200).json({
+            notification: { 
+                message: req.i18n.t('files.controller.file_uploaded_successfuly'), 
+                type: 'success' 
+            },
+            data: req.uploadResult
+        });
+    } catch (error) {
+        console.error('File upload controller error:', error);
+        res.status(500).json({
+            notification: { 
+                message: req.i18n.t('files.controller.upload_failed'), 
+                type: 'error',
+                details: error.message 
+            }
+        });
+    }
+}
 
 async function update(req, res, next) {
     try {
         let file = await FileService.getBySlug(req.body.value.slug);
-
         if (!file) {
             return next({ status: 404, message: 'File not found' });
         }
@@ -171,11 +166,11 @@ async function update(req, res, next) {
         const { default_attached_document_types, ...otherValues } = req.body.value;
 
 
-        let updatedFile = await FileService.update(file._id, req.session.current_company._id, {
+        let updatedFile = await FileService.update(file._id, file.company_id, {
             ...otherValues,
             default_attached_document_types: default_attached_document_types
         });
-        
+        console.log('updatedFile', updatedFile);
         updatedFile = updatedFile.toObject();
         updatedFile.autosave_updated_at = req.body.value.autosave_updated_at;
 
@@ -273,7 +268,6 @@ async function downloadFile(req, res, next) {
             Key: key
         };
 
-        console.log('params', params);
         const command = new GetObjectCommand(params);
         const data = await s3Client.send(command);
 

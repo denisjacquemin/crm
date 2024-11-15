@@ -8,7 +8,6 @@
                 const data = await fetchUrl(`/companies/editAjax/${this.sellers[index].slug}`, 'GET');
                 this.selectedSeller = data;
                 this.selectedCountry = this.selectedSeller.country;
-                console.log('this.selectedCountry', this.selectedCountry, this.selectedSeller.country, this.selectedSeller)
                 this.logoFile = this.selectedSeller.logo;
                 this.sellers[index] = this.selectedSeller;
                 this.showCompanyForm();
@@ -47,7 +46,6 @@
         },
         defaultCountry: '{{ defaultCountry }}',
         selectedCountry: null,
-        without_vat: {{#if selectedSeller.without_vat}}{{selectedSeller.without_vat}}{{else}}false{{/if}},
         logoFile: {},
         submitUploadForm: async function(event) {
             event.preventDefault();
@@ -66,10 +64,33 @@
             var formData = new FormData();
             formData.append('file', file);
             
-            const uploadData = await fetchUrl('/file/upload', 'POST', formData);
+            const uploadData = await fetchUrl('/file/upload/logo', 'POST', formData);
 
             this.logoFile = { ...newFileData, is_logo: true, url: uploadData.data.url, key: uploadData.data.key, filename: file.name, size: file.size, type: file.type };
             this.selectedSeller.logo = this.logoFile;
+        },
+        handleImageError: function(event, slug, delay) {
+            setTimeout(() => {
+                event.target.src = `/file/serve/${slug}`;
+            }, delay);
+        },
+        retryCount: {},
+        async handleImageError(event, slug, maxRetries = 2) {
+            if (!this.retryCount[slug]) {
+                this.retryCount[slug] = 0;
+            }
+
+            if (this.retryCount[slug] < maxRetries) {
+                this.retryCount[slug]++;
+                
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                event.target.src = `/file/serve/${slug}?retry=${this.retryCount[slug]}`;
+            } else {
+                console.error(`Failed to load image after ${maxRetries} retries`);
+                event.target.src = '/path/to/fallback-image.png';
+                event.target.classList.add('image-load-error');
+            }
         },
     }"
     x-init="
@@ -193,7 +214,7 @@
                                 {{t 'settings.views.sellers.delete' }}
                             </span>
                             <span x-show="selectedSeller?.slug === '{{session.current_company.slug}}'" class="text-sm font-semibold text-black-600 text-right pr-4 sm:pr-0">
-                                You cannot delete current company
+                                {{t 'settings.views.sellers.delete_current_company' }}
                             </span>
                         </div>
                     </div>
@@ -313,16 +334,108 @@
                                 </select>                    
                             </div>
                         </div>
+
+                        <div class="space-y-3">
+                            <!-- Show existing bank accounts if any -->
+                            <template x-if="selectedSeller?.bank_accounts?.length > 0">
+                                <template x-for="(account, index) in selectedSeller.bank_accounts" :key="index">
+                                    <div class="flex gap-x-4">
+                                        <div class="flex-1">
+                                            <label :for="'iban-' + index" class="block text-sm font-medium leading-6 text-gray-900">
+                                                {{t 'users.views.signup2.iban' }}
+                                                <template x-if="selectedSeller.bank_accounts.length > 1">
+                                                    <span>#<span x-text="index + 1"></span></span>
+                                                </template>
+                                            </label>
+                                            <div class="mt-1 flex items-center gap-x-4">
+                                                <input type="text" 
+                                                    x-model="account.iban" 
+                                                    autocomplete="off"
+                                                    :id="'iban-' + index"
+                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                            </div>
+                                        </div>
+
+                                        <div class="w-1/3">
+                                            <label :for="'bic-' + index" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.bic' }}</label>
+                                            <div class="mt-1 flex items-center gap-x-4">
+                                                <input type="text" 
+                                                    x-model="account.bic" 
+                                                    autocomplete="off"
+                                                    :id="'bic-' + index"
+                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                
+                                                <!-- Delete button -->
+                                                <div x-show="selectedSeller.bank_accounts.length > 1" class="flex items-center">
+                                                    <button @click.prevent="selectedSeller.bank_accounts = selectedSeller.bank_accounts.filter((_, i) => i !== index)"
+                                                            type="button"
+                                                            class="text-gray-400 hover:text-gray-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <!-- Show empty form if no bank accounts -->
+                            <template x-if="!selectedSeller?.bank_accounts?.length">
+                                <div class="flex gap-x-4">
+                                    <div class="flex-1">
+                                        <label for="iban-0" class="block text-sm font-medium leading-6 text-gray-900">
+                                            {{t 'users.views.signup2.iban' }}
+                                        </label>
+                                        <div class="mt-1 flex items-center gap-x-4">
+                                            <input type="text" 
+                                                @input="selectedSeller.bank_accounts = selectedSeller.bank_accounts || []; 
+                                                       selectedSeller.bank_accounts[0] = selectedSeller.bank_accounts[0] || {};
+                                                       selectedSeller.bank_accounts[0].iban = $event.target.value"
+                                                autocomplete="off"
+                                                id="iban-0"
+                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        </div>
+                                    </div>
+
+                                    <div class="w-1/3">
+                                        <label for="bic-0" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.bic' }}</label>
+                                        <div class="mt-1 flex items-center gap-x-4">
+                                            <input type="text" 
+                                                @input="selectedSeller.bank_accounts = selectedSeller.bank_accounts || [];
+                                                       selectedSeller.bank_accounts[0] = selectedSeller.bank_accounts[0] || {};
+                                                       selectedSeller.bank_accounts[0].bic = $event.target.value"
+                                                autocomplete="off"
+                                                id="bic-0"
+                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Add bank account button (only show if there's at least one account) -->
+                            <template x-if="selectedSeller?.bank_accounts?.length > 0">
+                                <button @click.prevent="selectedSeller.bank_accounts.push({iban: '', bic: ''})" 
+                                        type="button"
+                                        class="mt-2 text-sm text-indigo-600 hover:text-indigo-500 inline-flex items-center">
+                                    <svg class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                                    </svg>
+                                    {{t 'users.views.signup2.add_bank_account' }}
+                                </button>
+                            </template>
+                        </div>
+
                         <div class="bg-gray-100 -mx-4 px-4 py-4 gap-y-5 flex flex-col">
                             <div>
                                 <label for="contact_title" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup2.contact_title' }}</label>
                                 <select id="contact_title" name="contact_title" autocomplete="honorific-prefix" 
                                         x-model="selectedSeller.contact_title"
                                         class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                <option value="mr" :selected="selectedSeller.contact_title === 'mr'">{{t 'users.views.signup1.mr' }}</option>
-                                <option value="mrs" :selected="selectedSeller.contact_title === 'mrs'">{{t 'users.views.signup1.mrs' }}</option>
-                                <option value="ms" :selected="selectedSeller.contact_title === 'ms'">{{t 'users.views.signup1.ms' }}</option>
-                                <option value="dr" :selected="selectedSeller.contact_title === 'dr'">{{t 'users.views.signup1.dr' }}</option>
+                                    <option value="" :selected="selectedSeller.contact_title === ''">{{t 'users.views.signup1.no_title' }}</option>
+                                    <option value="mr" :selected="selectedSeller.contact_title === 'mr'">{{t 'users.views.signup1.mr' }}</option>
+                                    <option value="mrs" :selected="selectedSeller.contact_title === 'mrs'">{{t 'users.views.signup1.mrs' }}</option>
+                                    <option value="ms" :selected="selectedSeller.contact_title === 'ms'">{{t 'users.views.signup1.ms' }}</option>
+                                    <option value="dr" :selected="selectedSeller.contact_title === 'dr'">{{t 'users.views.signup1.dr' }}</option>
                                 </select>
                             </div>
 
@@ -370,28 +483,39 @@
                                 </div>
                             </div>
                         </div>
-                        <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
-                            x-on:drop.prevent="handleDrop" 
-                            x-on:dragover.prevent 
-                            x-on:dragenter="isDragging = true" 
-                            x-on:dragleave="isDragging = false"
-                            class="flex items-center justify-center w-full">
-                            <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" 
-                                    class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
-                                    <p x-show="!logoFile?.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
-                                    <p x-show="logoFile?.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="logoFile?.filename"></span> (<span x-text="formatBytes(logoFile?.size, sizes)"></span> - <span x-text="logoFile?.type"></span>)</p>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> or drag and drop</p>
-                                    <p class="text-xs text-gray-500">{{t 'settings.views.files.allowed_file_types' }}</p>
-                                </div>
-                                <input x-on:change="submitUploadForm"
-                                    id="dropzone-file" type="file" class="hidden"/> 
-                            </label>
+                        <div>
+                            <label class="block text-sm font-medium leading-6 text-gray-900">{{t 'settings.views.files.logo' }}</label>
+                        
+                            <div x-data="{ isDragging: false, handleDrop(event) { submitUploadForm(event); this.isDragging = false; } }" 
+                                x-on:drop.prevent="handleDrop" 
+                                x-on:dragover.prevent 
+                                x-on:dragenter="isDragging = true" 
+                                x-on:dragleave="isDragging = false"
+                                class="flex items-center justify-center w-full">
+                                <label :class="{'dark:hover:bg-gray-600': isDragging}" for="dropzone-file" 
+                                        class="py-[20px] flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-5 text-gray-500 lucide lucide-cloud-upload"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
+                                        <p x-show="!logoFile?.filename" class="mb-2 text-sm text-gray-600">{{t 'settings.views.files.no_file_uploaded_yet' }}</p>
+                                        <p x-show="logoFile?.filename" class="text-center mx-4 mb-2 text-base text-gray-500 highlight px-2"><span x-text="logoFile?.filename"></span> (<span x-text="formatBytes(logoFile?.size, sizes)"></span> - <span x-text="logoFile?.type"></span>)</p>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">{{t 'settings.views.files.click_to_upload' }}</span> {{t 'settings.views.files.or_drag_and_drop' }}</p>
+                                        <p class="text-xs text-gray-500 px-10 text-center mx-auto">{{t 'settings.views.files.allowed_file_types' }}</p>
+                                    </div>
+                                    <input x-on:change="submitUploadForm"
+                                        id="dropzone-file" type="file" class="hidden"/> 
+                                </label>
 
+                            </div>
                         </div>
-                        <template x-if="selectedSeller?.logo?.slug" class="mt-4">
-                            <img :src="`/file/serve/${selectedSeller?.logo?.slug}`" :alt="selectedSeller?.logo?.filename" class="image-class">
+                        <template x-if="selectedSeller?.logo?.slug">
+                            <div class="mt-4">
+                                <img 
+                                    :src="`/file/serve/${selectedSeller?.logo?.slug}`" 
+                                    :alt="selectedSeller?.logo?.filename" 
+                                    class="image-class"
+                                    @error="handleImageError($event, selectedSeller?.logo?.slug, 2)"
+                                >
+                            </div>
                         </template>
                     </div>
                 </div>

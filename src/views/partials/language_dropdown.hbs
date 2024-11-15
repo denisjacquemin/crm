@@ -1,21 +1,23 @@
-<div x-data="{languageSelected: '{{session.user.language}}'}">
+<div x-data="{ languageSelected: '{{i18n.language}}' }">
   <form action="/preferences/changelang" method="POST" id="lng-form">
           {{> csrf }}
-          <div class="relative flex items-center bg-none rounded-md">
-              <select name="lng" @change="document.getElementById('lng-form').submit();"
-                      name="currency"
-                      class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium border-none text-gray-600">
-                  <template x-for="language in choose_languages_dropdown">
-                      <option x-text="language.name" :value="language.code_dnt" :selected="language.code_dnt === languageSelected"></option>
-                  </template>
-              </select>
-              <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clip-rule="evenodd"></path>
-                  </svg>
-              </div>
-          </div>
-      </form>
+    <div class="relative flex items-center bg-none rounded-md">
+      <select
+        name="lng"
+        @change="document.getElementById('lng-form').submit();"
+        name="currency"
+        class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium border-none text-gray-600">
+        <template x-for="language in choose_languages_dropdown">
+          <option x-text="language.name" :value="language.code_dnt" :selected="language.code_dnt === languageSelected"></option>
+        </template>
+      </select>
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+            clip-rule="evenodd"></path>
+          </svg>
+      </div>
+    </div>
+  </form>
 </div>

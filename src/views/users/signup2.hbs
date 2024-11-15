@@ -1,9 +1,27 @@
-<div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8" 
-     x-data="{
-      company: {},
+<div class="z-20 relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8" x-data="{
+      company: {
+        name: '',
+        address1: '',
+        address2: '',
+        zip: '',
+        city: '',
+        country: '{{defaultCountry}}',
+        vat_number: '',
+        without_vat: {{#if session.signup.company.without_vat}}true{{else}}false{{/if}},
+        contact_title: '{{session.signup.user.title}}',
+        contact_firstname: '{{session.signup.user.firstname}}',
+        contact_lastname: '{{session.signup.user.lastname}}',
+        phone: '',
+        email: '',
+        website: '',
+        language: '{{defaultLanguage}}'
+      },
       user: {{ stringify session.signup.user }},
-      without_vat: {{#if session.signup.company.without_vat}}{{session.signup.company.without_vat}}{{else}}false{{/if}},
-     }" x-init="company = {{stringify session.signup.company}}">
+      without_vat: {{#if session.signup.company.without_vat}}true{{else}}false{{/if}}
+     }" x-init="company = { 
+       ...company, 
+       ...{{stringify session.signup.company}} 
+     }">
 
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <h2 class="mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{{t
@@ -77,7 +95,7 @@
           </div>
         </div>
 
-        <div>        
+        <div>
           <label for="language">{{t 'users.views.signup2.language' }}</label>
           <div class="mt-1">
             <select id="language" name="language"
@@ -90,7 +108,8 @@
               </optgroup>
               <optgroup label="{{t 'users.views.signup2.all_languages' }}">
                 <template x-for="lang in all_languages" :key="lang.code_dnt">
-                  <option :value="lang.code_dnt" x-text="lang.name" :selected="(lang.code_dnt === company.language) && !frequentlySelectedLanguages.some(l => l.code_dnt === lang.code_dnt)">
+                  <option :value="lang.code_dnt" x-text="lang.name"
+                    :selected="(lang.code_dnt === company.language) && !frequentlySelectedLanguages.some(l => l.code_dnt === lang.code_dnt)">
                   </option>
                 </template>
               </optgroup>
@@ -101,8 +120,8 @@
         <div>
           <label for="vat_number">{{t 'users.views.signup2.vat_number' }}</label>
           <div class="mt-1">
-            <input x-bind:disabled="without_vat" id="vat_number" name="vat_number"
-              :value="company.vat_number" type="text"
+            <input x-bind:disabled="without_vat" id="vat_number" name="vat_number" :value="company.vat_number"
+              type="text"
               class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200">
             <div class="mt-1">
               {{!-- value="session.signup.company.without_vat" --}}
@@ -113,45 +132,77 @@
             </div>
           </div>
         </div>
-        
-        <template x-if="company_form_settings[company.country]?.registration_number?.display ?? company_form_settings.default?.registration_number?.display">
+
+        <template
+          x-if="company_form_settings[company.country]?.registration_number?.display ?? company_form_settings.default?.registration_number?.display">
           <div>
-            <label x-text="company_form_settings[company.country].registration_number.label" for="registration_number"></label>
+            <label x-text="company_form_settings[company.country].registration_number.label"
+              for="registration_number"></label>
             <div class="mt-1">
-              <input id="registration_number" name="registration_number"
-                :value="company.registration_number" type="text"
+              <input id="registration_number" name="registration_number" :value="company.registration_number"
+                type="text"
                 class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
             </div>
           </div>
         </template>
 
-<div class="bg-gray-100 -mx-10 px-10 py-4 gap-y-5 flex flex-col">
-  <div>
-    <label for="contact_title" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup2.contact_title' }}</label>
-    <select id="contact_title" name="contact_title" autocomplete="honorific-prefix" 
-            x-model="company.contact_title"
-            class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-      <option value="mr" :selected="company.contact_title === 'mr' || user.title === 'mr'">{{t 'users.views.signup1.mr' }}</option>
-      <option value="mrs" :selected="company.contact_title === 'mrs' || user.title === 'mrs'">{{t 'users.views.signup1.mrs' }}</option>
-      <option value="ms" :selected="company.contact_title === 'ms' || user.title === 'ms'">{{t 'users.views.signup1.ms' }}</option>
-      <option value="dr" :selected="company.contact_title === 'dr' || user.title === 'dr'">{{t 'users.views.signup1.dr' }}</option>
-    </select>
-  </div>
+        <div class="flex gap-x-4">
+          <div class="flex-1">
+            <label for="iban" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.iban'
+              }}</label>
+            <div class="mt-1">
+              <input id="iban" 
+                name="iban" :value="company.iban" type="text" autocomplete="off"
+                class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            </div>
+          </div>
 
-  <div class="col-span-6 sm:col-span-2.5">
-    <label for="contact_firstname" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup2.contact_firstname' }}</label>
-    <input id="contact_firstname" name="contact_firstname" type="text" autocomplete="given-name" 
-           x-model="company.contact_firstname"
-           class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-  </div>
+          <div class="w-1/3">
+            <label for="bic" class="block text-sm font-medium leading-6 text-gray-900">{{t 'users.views.signup2.bic'
+              }}</label>
+            <div class="mt-1">
+              <input id="bic" name="bic" :value="company.bic" type="text" autocomplete="off"
+                class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+            </div>
+          </div>
+        </div>
 
-  <div class="col-span-6 sm:col-span-2.5">
-    <label for="contact_lastname" class="block text-sm font-medium text-gray-700">{{t 'users.views.signup2.contact_lastname' }}</label>
-    <input id="contact_lastname" name="contact_lastname" type="text" autocomplete="family-name" 
-           x-model="company.contact_lastname"
-           class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-  </div>
-</div>
+        <div class="bg-gray-100 -mx-10 px-10 py-4 gap-y-5 flex flex-col">
+          <div>
+            <label for="contact_title" class="block text-sm font-medium text-gray-700">{{t
+              'users.views.signup2.contact_title' }}</label>
+            <select id="contact_title" name="contact_title" autocomplete="honorific-prefix"
+              x-model="company.contact_title"
+              class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+              <option value="" :selected="company.contact_title === '' || user.title === ''">{{t
+                'users.views.signup1.no_title' }}</option>
+              <option value="mr" :selected="company.contact_title === 'mr' || user.title === 'mr'">{{t
+                'users.views.signup1.mr' }}</option>
+              <option value="mrs" :selected="company.contact_title === 'mrs' || user.title === 'mrs'">{{t
+                'users.views.signup1.mrs' }}</option>
+              <option value="ms" :selected="company.contact_title === 'ms' || user.title === 'ms'">{{t
+                'users.views.signup1.ms' }}</option>
+              <option value="dr" :selected="company.contact_title === 'dr' || user.title === 'dr'">{{t
+                'users.views.signup1.dr' }}</option>
+            </select>
+          </div>
+
+          <div class="col-span-6 sm:col-span-2.5">
+            <label for="contact_firstname" class="block text-sm font-medium text-gray-700">{{t
+              'users.views.signup2.contact_firstname' }}</label>
+            <input id="contact_firstname" name="contact_firstname" type="text" autocomplete="given-name"
+              x-model="company.contact_firstname"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+
+          <div class="col-span-6 sm:col-span-2.5">
+            <label for="contact_lastname" class="block text-sm font-medium text-gray-700">{{t
+              'users.views.signup2.contact_lastname' }}</label>
+            <input id="contact_lastname" name="contact_lastname" type="text" autocomplete="family-name"
+              x-model="company.contact_lastname"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+          </div>
+        </div>
 
         <div>
           <label for="phone">{{t 'users.views.signup2.phone' }}</label>
@@ -189,4 +240,3 @@
     </div>
   </div>
 </div>
-

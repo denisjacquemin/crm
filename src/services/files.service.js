@@ -45,7 +45,18 @@ class FileService {
         }
     }
     static async update(id, companyId, data) {
-        return await File.findOneAndUpdate({ _id: id, company_id: companyId }, data, { new: true });
+
+        try {
+            const updatedFile = await File.findOneAndUpdate(
+                { _id: id, company_id: companyId },
+                data,
+                { new: true }
+            );
+            console.log('updatedFile', updatedFile);
+            return updatedFile;
+        } catch (error) {
+            throw new Error(`Failed to update file: ${error.message}`);
+        }
     }
 
     static async findOneAndUpdate(query, data, options = {}) {

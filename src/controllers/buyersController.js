@@ -93,7 +93,8 @@ async function createNewBuyer(req) {
             created_by_user_id: req.session.user._id,
             slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
             name: req.i18n.t('buyers.controller.default_company_name'),
-            country: req.session.current_company.country
+            country: req.session.current_company.country,
+            delivery_country: req.session.current_company.country
         };
 
         const buyerCreated = await BuyersService.create(buyerData);

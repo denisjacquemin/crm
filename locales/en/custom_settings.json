@@ -9,6 +9,28 @@
         "FR": {
             "vat_number_label": "VAT Number",
             "registration_number": { "label": "SIREN / SIRET", "display": true }
-        }        
+        }
+    },
+    "buyer_form": {
+        "DE": {
+            "state_label": "State (Bundesländer) ",
+            "state_placeholder": "State (Bundesländer) "
+        },
+        "FR": {
+            "state_label": "Département",
+            "state_placeholder": "Département"
+        },
+        "IT": {
+            "state_label": "Region (Regione)",
+            "state_placeholder": "Region (Regione)"
+        },
+        "GB": {
+            "state_label": "County",
+            "state_placeholder": "County"
+        },
+        "CH": {
+            "state_label": "Canton",
+            "state_placeholder": "Canton"
+        }
     }
 }

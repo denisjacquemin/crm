@@ -11,7 +11,6 @@ class UserService  {
     static async create(data, options = {}) {
         try {
             const user = new User(data);
-            console.log('user', user);
             if (!user.google_id) { // if not google user it should hash the password
                 user.password = await hashPassword(user.password);
             }

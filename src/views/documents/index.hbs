@@ -30,6 +30,18 @@
                     console.error('Error creating new Credit Note', error); 
                 }
             },
+            createNewQuote: async function() {
+                try {
+                    const data = await fetchUrl('/document/newQuoteAjax', 'POST');
+                    this.documents.unshift(data);
+                    this.selectedDocumentIndex = 0;
+                    this.selectedDocument = data;
+                    updateNewUrl(data.slug);
+                    if (window.innerWidth < 640) $dispatch('updatenavbutton', {value: 'back'});
+                } catch (error) { 
+                    console.error('Error creating new Quote', error); 
+                }
+            },
             showCol2: function() {
                 this.$refs.col1.style.transform = 'translateX(-100%)'; 
                 this.$refs.col2.style.transform = 'translateX(-100%)';
@@ -86,6 +98,7 @@
                 }
                 return date.format(format);
             },
+            searchDocumentTerm: '',
             searchDocument: async function() {
                 try {
                     const sortByParam = this.sortBy ? '&sort=' + encodeURIComponent(this.sortBy) : '';
@@ -139,17 +152,18 @@
                 showCol1();
             } 
          }); --}}
-        $watch('selectedDocument.config.language', (value, oldValue) => {
-            console.log('selectedDocument.config.language changed', value);
-            loadPreview(selectedDocument.slug, value).then(data => {
-                previewData = data;
-            });
-        });
         $watch('selectedDocument', (value, oldValue) => {
-            console.log('selectedDocument changed');
+            if (!value) return;
+
+            // Handle autosave
             var document = { ...value };
             document.autosave_updated_at = new Date();
             localStorage.setItem('autosave#document#' + value.slug, JSON.stringify(document));
+        });
+        $watch('selectedDocument.config.language', (value) => {
+            loadPreview(selectedDocument.slug, value).then(data => {
+                previewData = data;
+            });
         });
         $watch('navState', () => { 
             if (navState === 'back') {
@@ -220,7 +234,8 @@
                         role="menu" aria-orientation="vertical" aria-labelledby="option-menu-button" tabindex="-1">
                         <div class="py-1" role="none">
                             <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                            <a :class="{ 'bg-gray-100 text-gray-900': activeIndex === 0, 'text-gray-700': !(activeIndex === 0) }"
+                            <a @click.prevent.stop="createNewQuote"
+                                :class="{ 'bg-gray-100 text-gray-900': activeIndex === 0, 'text-gray-700': !(activeIndex === 0) }"
                                 role="menuitem" tabindex="-1" id="option-menu-item-0" @mouseenter="onMouseEnter($event)"
                                 @mousemove="onMouseMove($event, 0)" @mouseleave="onMouseLeave($event)"
                                 @click="open = false; focusButton()" href="#"
@@ -370,8 +385,8 @@
                                 }">
                                     <div class="px-4 pt-6 pb-3">
                                         <div class="mx-auto flex max-w-4xl justify-between gap-x-6">
-                                            <template x-if="document.config.document_type === 'credit_note'"><span
-                                                    class="absolute top-1 right-1 mt-1 mr-1 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                                            <template x-if="document.config.document_type === 'quote'"><span
+                                                    class="absolute top-1 right-1 mt-1 mr-1 inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10"
                                                     title="{{t 'common.quote_long' }}">{{t 'common.quote_short'
                                                     }}</span></template>
                                             <template x-if="document.config.document_type === 'credit_note'"><span

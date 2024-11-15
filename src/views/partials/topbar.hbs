@@ -1,75 +1,78 @@
 {{!-- Black bar at the top --}}
-<div class="bg-gray-800 text-white px-2 flex justify-between items-center 2xl:mx-auto 2xl:container">  
-  <div class="group flex-1 justify-start hidden lg:flex" 
-       x-init="$dispatch('loadcompanies');"
-       x-data="{
+<div class="bg-gray-800 text-white px-2 flex justify-between items-center 2xl:mx-auto 2xl:container">
+    <div class="group flex-1 justify-start hidden lg:flex" x-init="$dispatch('loadcompanies');" x-data="{
                 async changeCurrentCompany(company_slug) {
                     await fetchUrl('/companies/changeCurrentCompany', 'POST', { company_slug: company_slug });
                     window.location.reload();
                 }
             }">
-    <template x-if="companies.length > 1">
-        <div class="lg:max-w-[200px] xl:max-w-[300px] relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
-            <select @change="changeCurrentCompany(event.target.value)" id="desktop-sellers"
-                    name="currency"
+        <template x-if="companies.length > 1">
+            <div
+                class="lg:max-w-[200px] xl:max-w-[300px] relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
+                <select @change="changeCurrentCompany(event.target.value)" id="desktop-sellers" name="currency"
                     class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium text-white border-none group-hover:text-gray-100">
-                <template x-for="company in companies">
-                    <option x-text="company?.internal_name?.trim() ? company.internal_name : company.name" :value="company.slug"
-                            x-bind:selected="company.selected"></option>
-                </template>
-            </select>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"></path>
-                </svg>
+                    <template x-for="company in companies">
+                        <option x-text="company?.internal_name?.trim() ? company.internal_name : company.name"
+                            :value="company.slug" x-bind:selected="company.selected"></option>
+                    </template>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </div>
             </div>
+        </template>
+        <template x-if="companies.length === 1">
+            <p x-text="companies[0].name" class="text-sm"></p>
+        </template>
+        <div x-on:click="loadModalContent('/settings/2', {
+                            title: '{{t 'global.settings.settings' }}',
+                            description: '{{t 'global.settings.settings_description' }}'
+                          })"
+            class="hidden group-hover:inline-flex group-hover:items-center cursor-pointer ml-2 inset-y-0 right-0 items-center text-white text-sm">
+            - {{t 'topbar.manage_sellers' }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-external-link ml-1">
+                <path d="M15 3h6v6" />
+                <path d="M10 14 21 3" />
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            </svg>
         </div>
-    </template>
-    <template x-if="companies.length === 1">
-        <p x-text="companies[0].name" class="text-sm"></p>
-    </template>
-    <div x-on:click="loadModalContent('/settings/2')"
-                    class="hidden group-hover:inline-flex group-hover:items-center cursor-pointer ml-2 inset-y-0 right-0 items-center text-white text-sm">
-        - {{t 'topbar.manage_sellers' }}
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link ml-1">
-            <path d="M15 3h6v6"/>
-            <path d="M10 14 21 3"/>
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-        </svg>
     </div>
-  </div>
 
-  <!-- Middle column, visible on all screen sizes -->
-  <div class="flex-1 justify-center flex">
-    <p class="text-xs py-1 sm:text-sm">{{t 'topbar.try_features' }}<button class="cursor-pointer border border-white p-1 rounded">{{t 'topbar.load_samples' }}</button></p>
-  </div>
+    <!-- Middle column, visible on all screen sizes -->
+    <div class="flex-1 justify-center flex">
+        <p class="text-xs py-1 sm:text-sm">{{t 'topbar.try_features' }}<button
+                class="cursor-pointer border border-white p-1 rounded">{{t 'topbar.load_samples' }}</button></p>
+    </div>
 
-  <!-- Right column -->
-  <div class="flex-1 justify-end hidden lg:flex"
-       x-data="{
+    <!-- Right column -->
+    <div class="flex-1 justify-end hidden lg:flex" x-data="{
                 languages: {{stringify i18n_languages}},
                 languageSelected: '{{session.user.language}}',
             }">
-    <form action="/preferences/changelang" method="POST" id="lng-form">
-        {{> csrf }}
-        <div class="relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
-            <select name="lng" @change="document.getElementById('lng-form').submit();"
-                    name="currency"
+        <form action="/preferences/changelang" method="POST" id="lng-form">
+            {{> csrf }}
+            <div class="relative flex items-center bg-none rounded-md hover:ring-2 hover:ring-white">
+                <select name="lng" @change="document.getElementById('lng-form').submit();" name="currency"
                     class="w-full bg-transparent focus:outline-none focus:ring-0 py-0.5 pl-2 pr-8 text-sm font-medium text-white border-none group-hover:text-gray-100">
-                <template x-for="language in choose_languages_dropdown">
-                    <option x-text="language.name" :value="language.code_dnt" :selected="language.code_dnt === languageSelected"></option>
-                </template>
-            </select>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"></path>
-                </svg>
+                    <template x-for="language in choose_languages_dropdown">
+                        <option x-text="language.name" :value="language.code_dnt"
+                            :selected="language.code_dnt === languageSelected"></option>
+                    </template>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </div>
             </div>
-        </div>
-    </form>
-  </div>
+        </form>
+    </div>
 </div>

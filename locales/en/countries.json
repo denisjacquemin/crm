@@ -341,8 +341,7 @@
                     "symbol": "CHF"
                 }
             ],
-            "vat_number_label": "VAT Number",
-            "registration_number_label": { "label": "BCE Number", "display": false }
+            "vat_number_label": "VAT Number"
         },
         "BA": {
             "name": "Bosnia and Herzegovina",
