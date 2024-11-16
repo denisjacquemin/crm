@@ -36,9 +36,7 @@ function buildDocumentPrefix(documentType, companySettings, req) {
     const year = new Date().getFullYear();
     prefix = prefix.replaceAll('YYYY', year.toString()).replaceAll('YY', year.toString().slice(-2));
   }
-
   console.log('prefix', prefix);
-
   return prefix;
 }
 
@@ -210,12 +208,15 @@ async function sendDocumentByMail(req, res, next) {
 async function generateDocumentNumber(companyId, documentType, prefix, settings) {
   let sequenceValue;
   let nextSequenceValue;
-  // Get the appropriate sequence increment based on document type
   let sequenceIncrement;
+
+  // Get the appropriate sequence value and increment based on document type
   if (documentType === 'credit_note') {
     sequenceValue = await CompanyService.getNextCreditNoteSequenceValue(companyId);
     sequenceIncrement = settings.credit_note.sequence_increment || 1;
     nextSequenceValue = sequenceValue + sequenceIncrement - 1;
+
+    // Update company settings with new sequence value
     settings.current_credit_note_sequence = nextSequenceValue;
     await CompanyService.update(companyId, {
       $set: {
@@ -243,8 +244,8 @@ async function generateDocumentNumber(companyId, documentType, prefix, settings)
       },
     });
   }
-  console.log('nextSequenceValue', nextSequenceValue);
 
+  // Format the number with leading zeros
   return `${prefix}${String(nextSequenceValue).padStart(5, '0')}`;
 }
 
@@ -398,59 +399,68 @@ async function createQuoteAjax(req, res) {
 
 async function createCreditNoteFromAlreadyExistingDocumentAjax(req, res) {
   try {
-    // Fetch Original Document
+    // 1. Fetch and validate original document
     const originalDocument = await DocumentService.getBySlugAndCompanyId(
       req.body.slug,
       req.session.current_company._id
     );
 
-    // Validate Document Existence
     if (!originalDocument) {
       return res.status(404).json({
-        notification: { message: 'Document not found', type: 'error' },
+        notification: {
+          message: req.i18n.t('documents.controller.document_not_found'),
+          type: 'error',
+        },
       });
     }
 
+    // 2. Create base credit note
     const newDocument = await createCommonDocument(req, 'credit_note');
 
-    let dataToCopy = JSON.parse(JSON.stringify(originalDocument.toObject()));
+    // 3. Prepare data to copy from original document
+    const dataToCopy = {
+      items: originalDocument.items,
+      subtotal_amount: originalDocument.subtotal_amount,
+      taxable_amount: originalDocument.taxable_amount,
+      tax_amount: originalDocument.tax_amount,
+      total_amount: originalDocument.total_amount,
+      config: {
+        ...originalDocument.config,
+        // Override specific fields
+        document_type: 'credit_note',
+        invoice_date: dayjs().startOf('day').format('YYYY-MM-DD'),
+        credit_note_number: await generateDocumentNumber(
+          req.session.current_company._id,
+          'credit_note',
+          buildDocumentPrefix('credit_note', req.session.current_company.settings, req),
+          req.session.current_company.settings
+        ),
+        target_invoice_number: originalDocument.config.invoice_number,
+        show_target_invoice: true,
+        // Clear fields that shouldn't be copied
+        invoice_number: undefined,
+        invoice_due_date: undefined,
+        show_invoice_due_date: false,
+        invoice_delivery_date: undefined,
+        show_invoice_delivery_date: false,
+        files: [],
+        notes_on_invoice: undefined,
+      },
+    };
 
-    // Exclude fields that should not be copied
-    delete dataToCopy._id;
-    delete dataToCopy.created_by_user_id;
-    delete dataToCopy.slug;
-    delete dataToCopy.createdAt;
-    delete dataToCopy.updatedAt;
-    delete dataToCopy.company_id;
-    delete dataToCopy.__v;
-
-    // Exclude fields from the nested config object
-    if (dataToCopy.config) {
-      delete dataToCopy.config.document_type;
-      delete dataToCopy.config.invoice_date;
-      delete dataToCopy.config.invoice_due_date;
-      delete dataToCopy.config.credit_note_number;
-      delete dataToCopy.config.files;
-      delete dataToCopy.config.notes_on_invoice;
-    }
-
-    const creditNoteSequenceValue = await CompanyService.getNextCreditNoteSequenceValue(
-      req.session.current_company._id
-    );
-    req.session.current_company.settings.current_credit_note_sequence = creditNoteSequenceValue;
-    dataToCopy.config.credit_note_number = `${dayjs().year()}#${String(
-      req.session.current_company.settings.current_credit_note_sequence
-    ).padStart(5, '0')}`;
-    dataToCopy.config.document_type = 'credit_note';
-    dataToCopy.config.invoice_delivery_date = '';
-    delete dataToCopy.id;
-
+    // 4. Update the new document with copied data
     const updatedDocument = await DocumentService.update(newDocument._id, dataToCopy);
 
     res.json(updatedDocument.toObject());
   } catch (err) {
-    console.error(err);
-    res.status(500).send(req.i18n.t('common.unknown_error'));
+    console.error('Error creating credit note from document:', err);
+    res.status(500).json({
+      notification: {
+        message: req.i18n.t('common.unknown_error'),
+        submessage: req.i18n.t('common.try_again'),
+        type: 'error',
+      },
+    });
   }
 }
 
@@ -515,6 +525,7 @@ async function createCommonDocument(req, document_type) {
       };
     } else if (document_type === 'invoice') {
       showHideSettings = {
+        show_invoice_due_date: req.session.current_company.settings.invoice.show_invoice_due_date,
         show_delivery_date: req.session.current_company.settings.invoice.show_delivery_date,
         show_contact_person: req.session.current_company.settings.invoice.show_contact_person,
         show_seller_email: req.session.current_company.settings.invoice.show_seller_email,
@@ -577,6 +588,7 @@ async function createCommonDocument(req, document_type) {
         ...showHideSettings,
       },
     });
+    console.log('documentCreated', documentCreated);
     return documentCreated.toObject();
   } catch (err) {
     console.error(err);

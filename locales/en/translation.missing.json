@@ -226,7 +226,8 @@
           "invoice_long": "documents.views.index.invoice_settings.invoice_long",
           "credit_note_long": "documents.views.index.invoice_settings.credit_note_long",
           "show_delivery_date": "documents.views.index.invoice_settings.show_delivery_date",
-          "stamp_position": "documents.views.index.invoice_settings.stamp_position"
+          "stamp_position": "documents.views.index.invoice_settings.stamp_position",
+          "document_title": "documents.views.index.invoice_settings.document_title"
         },
         "buyer_modal": {
           "choose_and_back": "documents.views.index.buyer_modal.choose_and_back",

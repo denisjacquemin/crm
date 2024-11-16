@@ -211,7 +211,7 @@
   </div>
   <div
     x-data="{
-        show_due_date: {{ session.current_company.settings.invoice.show_due_date }},
+        show_invoice_due_date: {{ session.current_company.settings.invoice.show_invoice_due_date }},
         show_delivery_date: {{ session.current_company.settings.invoice.show_delivery_date }},
         show_contact_person: {{ session.current_company.settings.invoice.show_contact_person }},
         show_seller_email: {{ session.current_company.settings.invoice.show_seller_email }},
@@ -232,8 +232,8 @@
             <input
               type="checkbox"
               id="show_due_date_checkbox"
-              x-model="show_due_date"
-              :checked="show_due_date === true || show_due_date === 'true'"
+              x-model="show_invoice_due_date"
+              :checked="show_invoice_due_date === true || show_invoice_due_date === 'true'"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             />
           </div>

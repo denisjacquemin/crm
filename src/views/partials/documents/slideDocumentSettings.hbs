@@ -119,7 +119,7 @@
           <input
             type="checkbox"
             id="show_due_date"
-            x-model="selectedDocument.config.show_due_date"
+            x-model="selectedDocument.config.show_invoice_due_date"
             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
           />
         </div>
@@ -379,6 +379,23 @@
           </option>
         </select>
       </div>
+    </div>
+
+    <div>
+        <label for="document-title" class="block text-sm font-medium leading-6 text-gray-900">
+            {{t 'documents.views.index.invoice_settings.document_title'}}
+        </label>
+        <input
+            type="text"
+            id="document-title"
+            x-model="selectedDocument.config.document_title"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            :placeholder="selectedDocument.config.document_type === 'invoice' 
+                ? '{{t 'default_template.invoice' doc_lang}}'
+                : selectedDocument.config.document_type === 'credit_note'
+                ? '{{t 'default_template.credit_note' doc_lang}}'
+                : '{{t 'default_template.quote' doc_lang}}'"
+        />
     </div>
   </div>
 </div>

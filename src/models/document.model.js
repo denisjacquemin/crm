@@ -214,6 +214,7 @@ const documentSchema = new mongoose.Schema(
       default: [],
       documentFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
       default: [],
+      show_invoice_due_date: { type: Boolean, required: false, default: false },
       show_delivery_date: { type: Boolean, required: false, default: false },
       show_contact_person: { type: Boolean, required: false, default: false },
       show_target_invoice: { type: Boolean, required: false, default: false },

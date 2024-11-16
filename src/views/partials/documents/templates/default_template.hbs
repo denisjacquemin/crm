@@ -305,9 +305,19 @@
 
 
         <header> 
-            <template x-if="selectedDocument.config.document_type === 'invoice'"><h1>{{ i18n 'default_template.invoice' doc_lang }}</h1></template>       
-            <template x-if="selectedDocument.config.document_type === 'credit_note'"><h1>{{ i18n 'default_template.credit_note' doc_lang }}</h1></template>
-
+            <h1 x-text="selectedDocument.config.document_title || (
+        selectedDocument.config.document_type === 'invoice' 
+            ? '{{i18n  'default_template.invoice' doc_lang}}'
+                    : selectedDocument.config.document_type === 'credit_note'
+                    ? '{{i18n  'default_template.credit_note' doc_lang}}'
+                    : selectedDocument.config.document_type === 'quote'
+                    ? '{{i18n  'default_template.quote' doc_lang}}'
+                    : selectedDocument.config.document_type === 'proforma_invoice'
+                    ? '{{i18n  'default_template.proforma_invoice' doc_lang}}'
+                    : selectedDocument.config.document_type === 'order'
+                    ? '{{i18n  'default_template.order' doc_lang}}'
+                    : '{{i18n  'default_template.delivery_note' doc_lang}}'
+            )"></h1>            
             <div id="document_number_dates">
                 <template x-if="selectedDocument.config.document_type === 'invoice'">
                     <div>
@@ -322,7 +332,7 @@
                         <span class="spacing">{{ i18n 'default_template.credit_note_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
                         <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ i18n 'default_template.target_invoice_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
                         <span class="spacing">{{ i18n 'default_template.credit_note_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
-                        <span class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                        <span x-show="selectedDocument.config.show_invoice_due_date" class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
                     </div>
                 </template>
             </div>  

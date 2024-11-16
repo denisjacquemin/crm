@@ -32,18 +32,40 @@
   <div
     x-data="{ 
         credit_note_prefix: '{{ creditNotePrefix }}',
-        current_sequence: '{{ session.current_company.settings.current_credit_note_sequence }}'
+        current_sequence: '{{ session.current_company.settings.current_credit_note_sequence }}',
+        sequence_increment: {{ session.current_company.settings.credit_note.sequence_increment }},
+        reset_yearly: {{ session.current_company.settings.credit_note.reset_yearly }},
+        get nextNumberPreview() {
+          if (!this.current_sequence) {
+            return '{{t "settings.views.invoices.set_sequence_to_preview"}}';
+          }
+          const year = new Date().getFullYear();
+          const currentNum = parseInt(this.current_sequence);
+          const increment = parseInt(this.sequence_increment) || 1;
+          const nextNum = currentNum + increment;
+          const paddedNum = String(nextNum).padStart(5, '0');
+          const prefixWithYear = this.credit_note_prefix
+            .replace('YYYY', year.toString())
+            .replace('YY', year.toString().slice(-2));
+          return this.reset_yearly ? 
+            `${prefixWithYear}${paddedNum}` :
+            `${prefixWithYear}${paddedNum}`;
+        }
     }"
     class="flex flex-col gap-y-4"
   >
     <label class="text-base font-semibold leading-7 text-gray-900">
       {{t 'settings.views.invoices.numbering_settings'}}
     </label>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
       <div>
-        <label for="credit_note_prefix" class="block text-sm font-medium leading-6 text-gray-900">
-          {{t 'settings.views.invoices.invoice_prefix'}}
-        </label>
+        <div class="flex items-center gap-x-1">
+          <label for="credit_note_prefix" class="block text-sm font-medium leading-6 text-gray-900">
+            {{t 'settings.views.invoices.invoice_prefix'}}
+          </label>
+          {{> tooltip_icon message=(t 'settings.views.invoices.invoice_prefix_help')}}
+        </div>
         <div class="mt-2">
           <input
             type="text"
@@ -52,27 +74,69 @@
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
-        <p class="mt-2 text-sm text-gray-500">
-          {{t 'settings.views.invoices.invoice_prefix_help'}}
-        </p>
+      </div>
+
+      <div class="space-y-1">
+        <div>
+          <div class="flex items-center gap-x-1">
+            <label for="current_sequence" class="block text-sm font-medium leading-6 text-gray-900">
+              {{t 'settings.views.invoices.current_sequence'}}
+            </label>
+            {{> tooltip_icon message=(t 'settings.views.invoices.sequence_combined_help')}}
+          </div>
+          <div class="mt-2">
+            <input
+              type="number"
+              id="current_sequence"
+              x-model="current_sequence"
+              min="1"
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div class="relative flex items-start">
+          <div class="flex h-6 items-center">
+            <input
+              type="checkbox"
+              id="reset_yearly"
+              x-model="reset_yearly"
+              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            />
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <label for="reset_yearly" class="font-medium text-gray-900">
+              {{t 'settings.views.invoices.reset_yearly'}}
+            </label>
+          </div>
+        </div>
       </div>
 
       <div>
-        <label for="current_sequence" class="block text-sm font-medium leading-6 text-gray-900">
-          {{t 'settings.views.invoices.current_sequence'}}
-        </label>
+        <div class="flex items-center gap-x-1">
+          <label for="sequence_increment" class="block text-sm font-medium leading-6 text-gray-900">
+            {{t 'settings.views.invoices.sequence_increment'}}
+          </label>
+          {{> tooltip_icon message=(t 'settings.views.invoices.sequence_increment_help')}}
+        </div>
         <div class="mt-2">
           <input
             type="number"
-            id="current_sequence"
-            x-model="current_sequence"
+            id="sequence_increment"
+            x-model="sequence_increment"
             min="1"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
-        <p class="mt-2 text-sm text-gray-500">
-          {{t 'settings.views.invoices.current_sequence_help'}}
-        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium leading-6 text-gray-900">
+          {{t 'settings.views.invoices.next_number_preview'}}
+        </label>
+        <div class="mt-2 p-2 bg-gray-50 rounded-md h-[38px] flex items-center">
+          <p class="text-sm text-gray-700" x-text="nextNumberPreview"></p>
+        </div>
       </div>
     </div>
 
@@ -80,9 +144,11 @@
       type="button"
       class="inline-flex items-center w-full sm:w-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       @click="fetchUrl('/company/creditnotenumbering', 'PATCH', { 
-                    credit_note_prefix: credit_note_prefix,
-                    current_sequence: current_sequence
-                })"
+        credit_note_prefix: credit_note_prefix,
+        current_sequence: current_sequence,
+        sequence_increment: sequence_increment || 1,
+        reset_yearly: reset_yearly
+      })"
     >
       {{t 'settings.views.invoices.update_numbering_settings'}}
     </button>
@@ -90,7 +156,7 @@
 
   <div
     x-data="{
-        show_due_date: {{ session.current_company.settings.credit_note.show_due_date }},
+        show_invoice_due_date: {{ session.current_company.settings.credit_note.show_invoice_due_date }},
         show_delivery_date: {{ session.current_company.settings.credit_note.show_delivery_date }},
         show_contact_person: {{ session.current_company.settings.credit_note.show_contact_person }},
         show_seller_email: {{ session.current_company.settings.credit_note.show_seller_email }},
@@ -112,8 +178,8 @@
             <input
               type="checkbox"
               id="show_due_date_checkbox_cn"
-              x-model="show_due_date"
-              :checked="show_due_date === true || show_due_date === 'true'"
+              x-model="show_invoice_due_date"
+              :checked="show_invoice_due_date === true || show_invoice_due_date === 'true'"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             />
           </div>

@@ -307,7 +307,8 @@
           "stamp_text_paid": "Already Paid",
           "stamp_text_reminder": "Reminder",
           "stamp_text_duplicate": "Duplicate",
-          "show_stamp": "Stamp"
+          "show_stamp": "Stamp",
+          "document_title": "Document Title"
         }
       },
       "edit_form": {
@@ -754,6 +755,11 @@
     "page": "Page",
     "invoice": "Invoice",
     "credit_note": "Credit Note",
+    "quote": "Quote",
+    "proforma_invoice": "Proforma Invoice",
+    "order": "Order",
+    "delivery_note": "Delivery Note",
+    "invoice_correction": "Invoice Correction",
     "credit_note_number": "Credit Note Number",
     "credit_note_date": "Credit Note Date",
     "target_invoice_number": "Target Invoice Number",

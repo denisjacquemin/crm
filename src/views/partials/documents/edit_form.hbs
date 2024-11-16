@@ -260,7 +260,7 @@
       </div>
     </div>
 
-    <div class="flex flex-row">
+    <div class="flex flex-row" x-show="selectedDocument.config.show_invoice_due_date === true">
       <label for="invoiceDueDate" @click="dueDatePicker.open()"
         class="flex-grow block text-sm font-medium leading-6 text-gray-900">{{ t 'documents.views.edit_form.due_date'
         }}</label>

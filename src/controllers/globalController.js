@@ -78,17 +78,26 @@ async function settings(req, res) {
     // Calculate invoice prefix with the same logic as buildDocumentPrefix
     const invoicePrefix =
       req.session.current_company.settings.invoice.prefix === undefined
-        ? req.i18n.t('common.invoice_short') + 'YY-'
+        ? process.env.DEFAULT_INVOICE_PREFIX_FORMAT.replaceAll(
+            '[DOCUMENT_TYPE]',
+            req.i18n.t('common.invoice_short')
+          )
         : req.session.current_company.settings.invoice.prefix;
 
     const creditNotePrefix =
       req.session.current_company.settings.credit_note.prefix === undefined
-        ? req.i18n.t('common.credit_note_short') + 'YY-'
+        ? process.env.DEFAULT_CREDIT_NOTE_PREFIX_FORMAT.replaceAll(
+            '[DOCUMENT_TYPE]',
+            req.i18n.t('common.credit_note_short')
+          )
         : req.session.current_company.settings.credit_note.prefix;
 
     const quotePrefix =
       req.session.current_company.settings.quote.prefix === undefined
-        ? req.i18n.t('common.quote_short') + 'YY-'
+        ? process.env.DEFAULT_QUOTE_PREFIX_FORMAT.replaceAll(
+            '[DOCUMENT_TYPE]',
+            req.i18n.t('common.quote_short')
+          )
         : req.session.current_company.settings.quote.prefix;
 
     res.render('global/settings', {

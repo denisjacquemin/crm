@@ -149,6 +149,7 @@ async function newCompanyAjax(req, res, next) {
     }
     await UserService.updateCompanies(req.session.user._id, req.session.user.companies);
 
+    console.log('companyCreated', companyCreated);
     res.status(200).json(companyCreated.toObject());
   } catch (error) {
     next(error);
@@ -585,13 +586,19 @@ async function updateCreditNoteNumbering(req, res, next) {
 
     await CompanyService.update(req.session.current_company._id, {
       $set: {
-        'settings.credit_notes.prefix': credit_note_prefix || '',
+        'settings.credit_note.prefix': credit_note_prefix || '',
         'settings.current_credit_note_sequence': parseInt(current_sequence),
+        'settings.credit_note.reset_yearly': req.body.reset_yearly,
+        'settings.credit_note.sequence_increment': parseInt(req.body.sequence_increment),
       },
     });
 
     req.session.current_company.settings.credit_note.prefix = credit_note_prefix || '';
     req.session.current_company.settings.current_credit_note_sequence = parseInt(current_sequence);
+    req.session.current_company.settings.credit_note.reset_yearly = req.body.reset_yearly;
+    req.session.current_company.settings.credit_note.sequence_increment = parseInt(
+      req.body.sequence_increment
+    );
 
     return res.status(200).json({
       notification: {
