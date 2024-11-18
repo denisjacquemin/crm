@@ -124,7 +124,6 @@ class UserService  {
                 { $pull: { companies: companyId } },
                 { new: true }
             );
-            return result;
         } catch (error) {
             console.error(err.stack);
             throw error;

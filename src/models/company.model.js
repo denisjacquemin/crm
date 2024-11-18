@@ -42,6 +42,7 @@ const companySchema = new mongoose.Schema(
     vat_number: { type: String, required: false },
     without_vat: { type: Boolean, required: false, default: false },
     registration_number: { type: String, required: false },
+    language: { type: String, required: false },
     bank_accounts: {
       type: [
         {

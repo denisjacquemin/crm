@@ -102,14 +102,17 @@
               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
               <optgroup label="{{t 'users.views.signup2.frequently_selected_languages' }}">
                 <template x-for="lang in frequentlySelectedLanguages" :key="lang.code_dnt">
-                  <option :value="lang.code_dnt" x-text="lang.name" :selected="lang.code_dnt === company.language">
+                  <option :value="lang.code_dnt" x-text="lang.name" 
+                    :selected="company.language && company.language === lang.code_dnt">
                   </option>
                 </template>
               </optgroup>
               <optgroup label="{{t 'users.views.signup2.all_languages' }}">
                 <template x-for="lang in all_languages" :key="lang.code_dnt">
                   <option :value="lang.code_dnt" x-text="lang.name"
-                    :selected="(lang.code_dnt === company.language) && !frequentlySelectedLanguages.some(l => l.code_dnt === lang.code_dnt)">
+                          :selected="((company.language && company.language === lang.code_dnt) || 
+                               (!company.language && countries[company.country].default_language_code_dnt === lang.code_dnt)) && 
+                               !frequentlySelectedLanguages.some(l => l.code_dnt === lang.code_dnt)"
                   </option>
                 </template>
               </optgroup>

@@ -3,6 +3,7 @@ const CompanyService = require('../services/companies.service');
 const FileService = require('../services/files.service');
 const geoip = require('geoip-lite');
 const i18next = require('i18next');
+const session = require('express-session');
 
 // Change current language with i18n.changeLanguage and store it session and db if logged in
 async function changeLang(req, res, next) {
@@ -109,7 +110,7 @@ async function settings(req, res) {
       sizes: req.i18n.t('common.sizes', { returnObjects: true }),
       currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
       currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
-      defaultCountry: (geo && geo.country) || Object.keys(frequentlySelectedCountries)[0],
+      currentCompanyCountry: req.session.current_company.country,
       taxRates: req.i18n.t('taxrates:taxrates', { returnObjects: true }),
       layout: false,
       invoicePrefix: invoicePrefix,

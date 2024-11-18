@@ -56,6 +56,7 @@ async function signup1Post(req, res, next) {
     lastname: trimmedLastname,
     email: trimmedEmail,
     password: trimmedPassword,
+    language: req.i18n.language.split("-")[0] || process.env.DEFAULT_LANGUAGE,
   };
 
   // Check if any of the required fields are empty
@@ -172,8 +173,8 @@ async function signup2(req, res, next) {
     // Initialize default company data
     const defaultCompany = {
       country: defaultCountry,
-      language: defaultLanguage,
       without_vat: false,
+      language: defaultLanguage,
       contact_title: req.session.signup.user.title || "",
       contact_firstname: req.session.signup.user.firstname || "",
       contact_lastname: req.session.signup.user.lastname || "",
@@ -358,8 +359,8 @@ async function createUserAndCompanyWithoutTransaction(signupData) {
       _id: userId,
       companies: [companyId],
       timezone: DateHelper.guess(),
-      language: signupData.company.language,
     };
+
     const user = await UserService.create(userData);
 
     // Create company
@@ -369,6 +370,7 @@ async function createUserAndCompanyWithoutTransaction(signupData) {
       users: [userId],
       taxrates: [],
     };
+
     const company = await CompanyService.create(companyData);
 
     return {

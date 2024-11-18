@@ -20,7 +20,6 @@ class CompanyService {
   static async create(data, options = {}) {
     try {
       const company = new Company(data);
-      console.log('company.country:', company);
       company.default_taxrate = i18next.t(
         `countries:countries.${company.country}.default_taxrate`,
         { returnObjects: true }

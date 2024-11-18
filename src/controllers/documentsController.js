@@ -502,6 +502,13 @@ async function createCommonDocument(req, document_type) {
       document_type
     );
 
+    // document language is the language of the current company
+    // but should be in the list i18n.languages
+    // if not present in i18n.languages, i18n.language is used
+    const documentLanguage = process.env.TRANSLATION_i18_CODE.split(',').includes(req.session.current_company.language)
+      ? req.session.current_company.language
+      : req.i18n.language;
+
     // Get show/hide settings based on document type
     let showHideSettings = {};
     if (document_type === 'credit_note') {
@@ -545,7 +552,7 @@ async function createCommonDocument(req, document_type) {
       tax_amount: 0,
       total_amount: 0,
       config: {
-        language: req.session.user.language,
+        language: documentLanguage,
         invoice_date: invoice_date.format('YYYY-MM-DD'),
         invoice_due_date: {
           value:
@@ -588,7 +595,6 @@ async function createCommonDocument(req, document_type) {
         ...showHideSettings,
       },
     });
-    console.log('documentCreated', documentCreated);
     return documentCreated.toObject();
   } catch (err) {
     console.error(err);

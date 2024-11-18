@@ -129,17 +129,15 @@ async function editAjax(req, res, next) {
 
 async function newCompanyAjax(req, res, next) {
   try {
-    const geo = geoip.lookup(req.ip);
     const frequentlySelectedCountries = req.i18n.t('countries:frequently_selected_countries', {
       returnObjects: true,
     });
-    const country = (geo && geo.country) || frequentlySelectedCountries[0];
     const companyCreated = await CompanyService.create({
       created_by_user_id: req.session.user._id,
       slug: `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`,
       name: req.i18n.t('companies.controller.default_company_name'),
-      country: country,
       vat_number: '',
+      country: req.session.current_company.country,
       users: [req.session.user._id],
       tax_rates: [],
     });
