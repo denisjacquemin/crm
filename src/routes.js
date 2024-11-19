@@ -106,6 +106,9 @@ router.patch('/company/update_email_templates', auth, companiesController.update
 router.delete('/company/deletetaxrate', auth, companiesController.deleteTaxRate);
 router.patch('/company/invoicenumbering', auth, companiesController.updateInvoiceNumbering);
 router.patch('/company/creditnotenumbering', auth, companiesController.updateCreditNoteNumbering);
+router.patch('/company/quotenumbering', auth, companiesController.updateQuoteNumbering);
+router.patch('/company/defaultnotesonquote', auth, companiesController.defaultnotesonquote);
+router.patch('/company/approvalbox', auth, companiesController.updateApprovalBox);
 router.patch('/company/:slug?', auth, companiesController.update); // autosave for sellers/companies
 router.get('/companies/currentusercompanies', auth, companiesController.getCurrentUserCompanies);
 router.delete('/companies/deleteAjax/:slug?', auth, companiesController.deleteAjax);
@@ -152,6 +155,5 @@ router.get('/auth/check-session', auth, (req, res) => {
   res.status(200).json({ valid: true });
 });
 
-// router.get("/companies/new", companiesController.newCompany);
 
 module.exports = router;

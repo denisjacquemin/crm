@@ -110,6 +110,7 @@ async function settings(req, res) {
       sizes: req.i18n.t('common.sizes', { returnObjects: true }),
       currentInvoiceSequence: req.session.current_company.settings.current_invoice_sequence,
       currentCreditNoteSequence: req.session.current_company.settings.current_credit_note_sequence,
+      currentQuoteSequence: req.session.current_company.settings.current_quote_sequence,
       currentCompanyCountry: req.session.current_company.country,
       taxRates: req.i18n.t('taxrates:taxrates', { returnObjects: true }),
       layout: false,

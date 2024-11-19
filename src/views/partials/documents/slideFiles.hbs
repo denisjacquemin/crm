@@ -270,7 +270,7 @@
 
 
             <label class="mt-6 block text-sm font-medium leading-6 text-gray-900">{{t
-                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/5', {
+                'documents.views.index.files_modal.company_files' }} <span x-on:click="loadModalContent('/settings/6', {
                             title: '{{t 'global.settings.settings' }}',
                             description: '{{t 'global.settings.settings_description' }}'
                           })" class="cursor-pointer font-normal text-indigo-600">{{t
@@ -333,7 +333,7 @@
                                 x-text="file?.internal_name?.trim() ? `${file.name} (${file.internal_name})` : file?.name">
                             </div>
                             <div class="flex-1 flex min-w-0 gap-2">
-                                <span x-show="!file.filename" @click="loadModalContent('/settings/5', {
+                                <span x-show="!file.filename" @click="loadModalContent('/settings/6', {
                             title: '{{t 'global.settings.settings' }}',
                                     description: '{{t 'global.settings.settings_description' }}'
                                   })"

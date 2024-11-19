@@ -112,7 +112,10 @@
         "default_notes_on_invoice": "settings.views.invoices.default_notes_on_invoice",
         "default_notes_on_invoice_help": "settings.views.invoices.default_notes_on_invoice_help",
         "update_default_notes_on_invoice_button": "settings.views.invoices.update_default_notes_on_invoice_button",
-        "current_sequence_help": "settings.views.invoices.current_sequence_help"
+        "current_sequence_help": "settings.views.invoices.current_sequence_help",
+        "approval_label": "settings.views.invoices.approval_label",
+        "show_approval_box": "settings.views.invoices.show_approval_box",
+        "save_approval_box": "settings.views.invoices.save_approval_box"
       },
       "credit_notes": {
         "show_hide_fields": "settings.views.credit_notes.show_hide_fields",
@@ -204,6 +207,36 @@
         "default_vatrates": "settings.views.vatrates.default_vatrates",
         "default_vatrates_help": "settings.views.vatrates.default_vatrates_help",
         "country_selected_is": "settings.views.vatrates.country_selected_is"
+      },
+      "quotes": {
+        "warning_title": "settings.views.quotes.warning_title",
+        "warning_text": "settings.views.quotes.warning_text",
+        "set_sequence_to_preview": "settings.views.quotes.set_sequence_to_preview",
+        "numbering_settings": "settings.views.quotes.numbering_settings",
+        "quote_prefix": "settings.views.quotes.quote_prefix",
+        "quote_prefix_help": "settings.views.quotes.quote_prefix_help",
+        "current_sequence": "settings.views.quotes.current_sequence",
+        "sequence_combined_help": "settings.views.quotes.sequence_combined_help",
+        "reset_yearly": "settings.views.quotes.reset_yearly",
+        "sequence_increment": "settings.views.quotes.sequence_increment",
+        "sequence_increment_help": "settings.views.quotes.sequence_increment_help",
+        "next_number_preview": "settings.views.quotes.next_number_preview",
+        "update_numbering_settings": "settings.views.quotes.update_numbering_settings",
+        "show_hide_fields": "settings.views.quotes.show_hide_fields",
+        "show_hide_help": "settings.views.quotes.show_hide_help",
+        "show_delivery_date": "settings.views.quotes.show_delivery_date",
+        "show_contact_person": "settings.views.quotes.show_contact_person",
+        "show_seller_email": "settings.views.quotes.show_seller_email",
+        "show_seller_website": "settings.views.quotes.show_seller_website",
+        "show_seller_phone": "settings.views.quotes.show_seller_phone",
+        "show_iban": "settings.views.quotes.show_iban",
+        "default_notes_on_quote": "settings.views.quotes.default_notes_on_quote",
+        "default_notes_on_quote_help": "settings.views.quotes.default_notes_on_quote_help",
+        "update_default_notes_on_quote_button": "settings.views.quotes.update_default_notes_on_quote_button",
+        "approval_box": "settings.views.quotes.approval_box",
+        "show_approval_box": "settings.views.quotes.show_approval_box",
+        "approval_label": "settings.views.quotes.approval_label",
+        "update_approval_box_button": "settings.views.quotes.update_approval_box_button"
       }
     },
     "invoice_numbering_updated": "settings.invoice_numbering_updated"
@@ -325,7 +358,8 @@
     }
   },
   "default_template": {
-    "reference": "default_template.reference"
+    "reference": "default_template.reference",
+    "signature_for_approval": "default_template.signature_for_approval"
   },
   "common": {
     "invoice_short": "common.invoice_short",
@@ -349,6 +383,16 @@
   "This prefix will be added before the invoice number (e": {
     "g": {
       ", ": "This prefix will be added before the invoice number (e.g., "
+    }
+  },
+  " settings": {
+    "views": {
+      "invoices": {
+        "set_sequence_to_preview": " settings.views.invoices.set_sequence_to_preview"
+      },
+      "quotes": {
+        "set_sequence_to_preview": " settings.views.quotes.set_sequence_to_preview"
+      }
     }
   }
 }

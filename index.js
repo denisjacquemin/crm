@@ -72,6 +72,9 @@ const { create } = require("express-handlebars");
 const hbs = create({
   extname: ".hbs",
   helpers: {
+    env: function (key) {
+      return process.env[key] || '';
+    },
     i18n: function (key, lang) {
       const result = i18next.t(key, { lng: lang });
       return result;

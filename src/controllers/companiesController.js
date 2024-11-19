@@ -488,23 +488,58 @@ async function showtargetinvoice(req, res, next) {
   }
 }
 
+async function updateApprovalBox(req, res, next) {
+  try {
+    const documentType = req.body.document_type; // Default to invoice if not specified
+    const settingsPath = `settings.${documentType}`;
+
+    console.log('show approval path', `${settingsPath}.show_approval`);
+    console.log('approval label path', `${settingsPath}.approval_label`);
+    // Update company settings.show_approval and approval_label for the specific document type
+    await CompanyService.update(req.session.current_company._id, {
+      $set: {
+        [`${settingsPath}.show_approval`]: req.body.show_approval,
+        [`${settingsPath}.approval_label`]: req.body.approval_label
+      },
+    });
+
+    // Update the settings in the session
+    if (!req.session.current_company.settings[documentType]) {
+      req.session.current_company.settings[documentType] = {};
+    }
+    req.session.current_company.settings[documentType].show_approval = req.body.show_approval;
+    req.session.current_company.settings[documentType].approval_label = req.body.approval_label;
+
+    // Send a success response
+    return res.status(200).json({
+      notification: {
+        message: req.i18n.t('companies.controller.approval_box_updated'),
+        type: 'success',
+      },
+    });
+  } catch (err) {
+    console.error(`Error in companiesController.updateApprovalBox `, err.message);
+    next(err);
+  }
+}
+
 async function defaultnotesoninvoice(req, res, next) {
   try {
     // Update company settings.default_notes_on_invoice
     await CompanyService.update(req.session.current_company._id, {
       $set: {
-        'settings.default_notes_on_invoice': req.body.default_notes_on_invoice,
+        'settings.invoice.default_notes': req.body.default_notes_on_invoice,
       },
     });
 
     // Update the default_notes_on_invoice field on the user's session
-    req.session.current_company.settings.default_notes_on_invoice =
+    req.session.current_company.settings.invoice.default_notes =
       req.body.default_notes_on_invoice;
 
     // Send a success response
     return res.status(200).json({
       notification: {
-        message: req.i18n.t('companies.controller.default_notes_on_invoice_updated'),
+        message: req.i18n.t('companies.controller.default_notes_on_document_updated'),
         type: 'success',
       },
     });
@@ -520,12 +555,12 @@ async function defaultnotesoncreditnotes(req, res, next) {
     // Update company settings.default_notes_on_credit_notes
     await CompanyService.update(req.session.current_company._id, {
       $set: {
-        'settings.default_notes_on_credit_notes': req.body.default_notes_on_credit_notes,
+        'settings.credit_note.default_notes': req.body.default_notes_on_credit_notes,
       },
     });
 
     // Update the default_notes_on_credit_notes field on the user's session
-    req.session.current_company.settings.default_notes_on_credit_notes =
+    req.session.current_company.settings.credit_note.default_notes =
       req.body.default_notes_on_credit_notes;
 
     // Send a success response
@@ -659,6 +694,74 @@ async function updateInvoiceNumbering(req, res, next) {
   }
 }
 
+async function updateQuoteNumbering(req, res, next) {
+  try {
+    const { quote_prefix, current_sequence } = req.body;
+
+    if (!current_sequence || current_sequence < 0) {
+      return res.status(400).json({
+        notification: {
+          message: req.i18n.t('companies.controller.sequence_must_be_positive'),
+          type: 'error',
+        },
+      });
+    }
+
+    await CompanyService.update(req.session.current_company._id, {
+      $set: {
+        'settings.quote.prefix': quote_prefix || '',
+        'settings.current_quote_sequence': parseInt(current_sequence),
+        'settings.quote.reset_yearly': req.body.reset_yearly,
+        'settings.quote.sequence_increment': parseInt(req.body.sequence_increment),
+      },
+    });
+
+    req.session.current_company.settings.quote.prefix = quote_prefix || '';
+    req.session.current_company.settings.current_quote_sequence = parseInt(current_sequence);
+    req.session.current_company.settings.quote.reset_yearly = req.body.reset_yearly;
+    req.session.current_company.settings.quote.sequence_increment = parseInt(
+      req.body.sequence_increment
+    );
+
+    res.json({
+      notification: {
+        message: req.i18n.t('companies.controller.quote_numbering_updated'),
+        type: 'success',
+      },
+    });
+  } catch (err) {
+    console.error('Error updating quote numbering:', err);
+    res.status(500).json({
+      notification: {
+        message: req.i18n.t('common.unknown_error'),
+        type: 'error',
+      },
+    });
+  }
+}
+
+async function defaultnotesonquote(req, res, next) {
+  try {
+    await CompanyService.update(req.session.current_company._id, {
+      $set: {
+        'settings.quote.default_notes': req.body.default_notes_on_quote,
+      },
+    });
+
+    req.session.current_company.settings.quote.default_notes = req.body.default_notes_on_quote;
+
+    return res.status(200).json({
+      notification: {
+        message: req.i18n.t('companies.controller.default_notes_on_quote_updated'),
+        type: 'success',
+      },
+    });
+  } catch (err) {
+    console.error(`Error in companiesController.defaultnotesonquote `, err.message);
+    next(err);
+  }
+}
+
 module.exports = {
   updateInvoiceSequence,
   editAjax,
@@ -669,6 +772,7 @@ module.exports = {
   defaultnotesoninvoice,
   defaultnotesoncreditnotes,
   changeCurrentCompany,
+  updateApprovalBox,
   setDefaultInvoiceDueDateTermsType,
   showhidefields,
   showtargetinvoice,
@@ -680,4 +784,6 @@ module.exports = {
   updateEmailTemplates,
   updateInvoiceNumbering,
   updateCreditNoteNumbering,
+  updateQuoteNumbering,
+  defaultnotesonquote,
 };

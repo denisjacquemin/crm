@@ -91,7 +91,7 @@
       "cannot_delete_current_company": "You cannot delete the current company",
       "default_invoice_due_date_terms_type_updated": "Default Due Date Terms Type has been updated",
       "default_currency_updated": "Default Currency has been updated",
-      "default_notes_on_invoice_updated": "Default Comments (on document) has been updated",
+      "default_notes_on_document_updated": "Default Comments (on document) has been updated",
       "default_notes_on_credit_notes_updated": "Default Comments (on document) has been updated",
       "show_delivery_date_updated": "Display delivery date has been updated",
       "show_target_invoice_updated": "Display target invoice number has been updated",
@@ -109,7 +109,11 @@
       "prefix_required": "Prefix is required",
       "sequence_must_be_positive": "Sequence number must be greater than 0",
       "invoice_numbering_updated": "Invoice numbering has been updated",
-      "credit_note_numbering_updated": "Credit Note numbering has been updated"
+      "credit_note_numbering_updated": "Credit Note numbering has been updated",
+      "quote_numbering_updated": "Quote numbering settings have been updated",
+      "default_notes_on_quote_updated": "Default Comments (on document) has been updated",
+      "approval_box_updated": "Approval box has been updated"
+
     },
     "create_new_company": "Create new company",
     "company_name": "Name",
@@ -145,7 +149,7 @@
           "back_button": "I'm done",
           "title": "Edit Customer",
           "search_placeholder": "Search by name, VAT number, address...",
-          "no_buyer_selected": "No customer selected",
+          "no_buyer_selected": "No customer found",
           "no_buyer_selected_sub": "Please select a customer or enter details manually",
           "translate_document": "Translate %s to customer's language (%s)",
           "search_buyers": "Search Customers",
@@ -339,8 +343,8 @@
         "delete_confirm": "Are you sure you want to delete this document?",
         "subject_label": "Invoice Purpose",
         "subject_placeholder": "Purpose of the document.",
-        "notes_on_invoice_label": "Comments (on document)",
-        "notes_on_invoice_placeholder": "This comment will be visible to the customer.",
+        "notes_on_document_label": "Comments (on document)",
+        "notes_on_document_placeholder": "This comment will be visible to the customer.",
         "notes_on_internal_label": "Comments (internal information)",
         "notes_on_internal_placeholder": "This comment will not be visible to the customer.",
         "reference_label": "Reference",
@@ -367,7 +371,8 @@
       "cc_invalid": "The CC's email address is invalid",
       "cc_invalid_sub": "Enter valid email addresses, separated by commas if there are multiple.",
       "bcc_invalid": "The hidden copy's email address is invalid",
-      "bcc_invalid_sub": "Enter valid email addresses, separated by commas if there are multiple."
+      "bcc_invalid_sub": "Enter valid email addresses, separated by commas if there are multiple.",
+      "approval_label": "Signature for Approval"
     }
   },
   "users": {
@@ -581,6 +586,7 @@
         "sellers": "Sellers (Your companies)",
         "invoices": "Invoices",
         "credit_notes": "Credit Notes",
+        "quotes": "Quotes",
         "files": "Files / Attachments",
         "vat": "VAT Rates",
         "emails": "Emails"
@@ -631,9 +637,9 @@
         "yes_show_target_invoice": "Yes, display target invoice number",
         "no_show_target_invoice": "No, do not display target invoice number",
         "show_delivery_date_button": "Update display delivery date",
-        "default_notes_on_invoice": "Default Comments (on document)",
-        "default_notes_on_invoice_help": "Choose the default comments for your invoices. You can change this setting for each invoice.",
-        "update_default_notes_on_invoice_button": "Update Default Comments",
+        "default_notes_on_document": "Default Comments (on document)",
+        "default_notes_on_document_help": "Choose the default comments for your invoices. You can change this setting for each invoice.",
+        "update_default_notes_on_document_button": "Update Default Comments",
         "show_due_date": "Display Due Date",
         "show_contact_person": "Display contact person",
         "show_seller_email": "Display seller's email",
@@ -658,7 +664,11 @@
         "reset_yearly": "Reset yearly",
         "reset_yearly_help": "When enabled, document numbers will start over from 1 each new year. For example: 2024-001, 2024-002, then 2025-001, 2025-002, etc.",
         "sequence_combined_help": "Set the current sequence number and choose whether to reset it to 0 at the beginning of each year.",
-        "set_sequence_to_preview": "Current sequence required"
+        "set_sequence_to_preview": "Current sequence required",
+        "show_approval_box": "Show Approval Box",
+        "approval_label": "Approval Label",
+        "approval_box": "Approval box",
+        "save_approval_box": "Save Approval Box"
       },
       "credit_notes": {
         "show_due_date": "Display Due Date",
@@ -680,7 +690,11 @@
         "show_seller_phone": "Display seller's phone",
         "show_iban": "Display seller's bank account (IBAN)",
         "warning_title": "Settings Specific to",
-        "warning_text": "The settings below apply to the currently selected seller. If needed, creating multiple sellers allows for different sets of parameters. Management of different sellers is done through the settings."
+        "warning_text": "The settings below apply to the currently selected seller. If needed, creating multiple sellers allows for different sets of parameters. Management of different sellers is done through the settings.",
+        "approval_box": "Approval Box",
+        "show_approval_box": "Show Approval Box",
+        "approval_label": "Approval Label",
+        "update_approval_box_button": "Update Approval Box Settings"
       },
       "files": {
         "create_file_button": "Create a new File",
@@ -745,6 +759,38 @@
         "language": "Language",
         "update_email_templates": "Update Email Templates",
         "link_email_template_help": "Display/Hide available template variables {x}"
+      },
+      "quotes": {
+        "warning_title": "Settings Specific to",
+        "warning_text": "The settings below apply to the currently selected seller. If needed, creating multiple sellers allows for different sets of parameters. Management of different sellers is done through the settings.",
+        "numbering_settings": "Quote Numbering Settings",
+        "quote_prefix": "Quote Number Prefix",
+        "quote_prefix_help": "This prefix will be added before the quote number. Use YY or YYYY in the prefix to include the current year (e.g., Q-YYYY- becomes Q-2024-)",
+        "current_sequence": "Current Sequence Number",
+        "sequence_combined_help": "Set the current sequence number and choose whether to reset it to 0 at the beginning of each year.",
+        "sequence_increment": "Sequence Increment",
+        "sequence_increment_help": "The number to add to create the next document number. For example, if set to 1, numbers will be 1, 2, 3... If set to 5, numbers will be 5, 10, 15...",
+        "reset_yearly": "Reset yearly",
+        "reset_yearly_help": "When enabled, document numbers will start over from 1 each new year. For example: 2024-001, 2024-002, then 2025-001, 2025-002, etc.",
+        "next_number_preview": "Next Number Preview",
+        "set_sequence_to_preview": "Current sequence required",
+        "update_numbering_settings": "Update Numbering Settings",
+        "approval_box": "Approval box",
+        "update_approval_box_button": "Update Approval Box",
+        "show_approval_box": "Show Approval Box",
+        "approval_label": "Approval Label",
+        "show_hide_fields": "Display/Hide fields",
+        "show_hide_help": "Check fields to display them on your quotes. Uncheck to hide them. This can be changed for each quote.",
+        "show_delivery_date": "Display delivery date",
+        "show_contact_person": "Display contact person",
+        "show_seller_email": "Display seller's email",
+        "show_seller_website": "Display seller's website",
+        "show_seller_phone": "Display seller's phone",
+        "show_iban": "Display seller's bank account (IBAN)",
+        
+        "default_notes_on_quote": "Default Comments (on document)",
+        "default_notes_on_quote_help": "Choose the default comments for your quotes. You can change this setting for each quote.",
+        "update_default_notes_on_quote_button": "Update Default Comments"
       }
     },
     "current_invoice_sequence_updated": "The invoice sequence has been updated"
@@ -782,7 +828,8 @@
     "seller_email": "Email",
     "seller_phone": "Phone",
     "bank_account": "Bank Account",
-    "reference": "Reference"
+    "reference": "Reference",
+    "powered_by": "Powered by"
   },
   "do_not_translate": {
     "timezones": {
@@ -1382,6 +1429,12 @@
       "W-SU": "W-SU (+03:00)",
       "WET": "WET (+00:00)",
       "Zulu": "Zulu (+00:00)"
+    },
+    "credit_notes": {
+      "approval_box": "Approval Box",
+      "show_approval_box": "Show Approval Box",
+      "approval_label": "Approval Label",
+      "update_approval_box_button": "Update Approval Box Settings"
     }
   }
 }

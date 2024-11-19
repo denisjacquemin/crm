@@ -443,8 +443,10 @@ async function createCreditNoteFromAlreadyExistingDocumentAjax(req, res) {
         show_invoice_due_date: false,
         invoice_delivery_date: undefined,
         show_invoice_delivery_date: false,
+        show_approval: req.session.current_company.settings.credit_note.show_approval,
+        approval_label: req.session.current_company.settings.credit_note.approval_label,
         files: [],
-        notes_on_invoice: undefined,
+        notes_on_document: req.session.current_company.settings.credit_note.default_notes,
       },
     };
 
@@ -520,6 +522,8 @@ async function createCommonDocument(req, document_type) {
         show_seller_website: req.session.current_company.settings.credit_note.show_seller_website,
         show_seller_phone: req.session.current_company.settings.credit_note.show_seller_phone,
         show_iban: req.session.current_company.settings.credit_note.show_iban,
+        show_approval: req.session.current_company.settings.credit_note.show_approval,
+        approval_label: req.session.current_company.settings.credit_note.approval_label,
       };
     } else if (document_type === 'quote') {
       showHideSettings = {
@@ -529,6 +533,8 @@ async function createCommonDocument(req, document_type) {
         show_seller_website: req.session.current_company.settings.quote.show_seller_website,
         show_seller_phone: req.session.current_company.settings.quote.show_seller_phone,
         show_iban: req.session.current_company.settings.quote.show_iban,
+        show_approval: req.session.current_company.settings.quote.show_approval,
+        approval_label: req.session.current_company.settings.quote.approval_label,
       };
     } else if (document_type === 'invoice') {
       showHideSettings = {
@@ -539,6 +545,8 @@ async function createCommonDocument(req, document_type) {
         show_seller_website: req.session.current_company.settings.invoice.show_seller_website,
         show_seller_phone: req.session.current_company.settings.invoice.show_seller_phone,
         show_iban: req.session.current_company.settings.invoice.show_iban,
+        show_approval: req.session.current_company.settings.invoice.show_approval,
+        approval_label: req.session.current_company.settings.invoice.approval_label,
       };
     }
 
@@ -720,7 +728,7 @@ async function preview(req, res) {
   });
 }
 
-async function toPDFWithPuppeteer(req, res) {
+async function toPDFWithPuppeteer(req, res, next) {
   try {
     const pdfBuffer = await generatePDFBuffer(req.params.slug, req.cookies);
 
@@ -737,11 +745,20 @@ async function toPDFWithPuppeteer(req, res) {
   }
 }
 
+let browserInstance = null;
+
+async function getBrowser() {
+  if (!browserInstance) {
+    browserInstance = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+  }
+  return browserInstance;
+}
+
 async function generatePDFBuffer(slug, cookies) {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   try {
@@ -771,8 +788,6 @@ async function generatePDFBuffer(slug, cookies) {
   } catch (err) {
     console.error(err);
     throw err;
-  } finally {
-    await browser.close();
   }
 }
 

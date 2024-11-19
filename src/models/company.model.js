@@ -89,9 +89,12 @@ const companySchema = new mongoose.Schema(
         show_seller_email: { type: Boolean, required: false, default: true },
         show_seller_website: { type: Boolean, required: false, default: true },
         show_seller_phone: { type: Boolean, required: false, default: true },
+        show_approval: { type: Boolean, required: false, default: false},
+        approval_label: { type: String, required: false},
         show_iban: { type: Boolean, required: false, default: true },
         default_notes: { type: String, required: false, default: '' },
         default_due_date_terms_type: { type: String, required: false, default: '+30' },
+
       },
 
       // Credit Note specific settings
@@ -106,6 +109,8 @@ const companySchema = new mongoose.Schema(
         show_seller_email: { type: Boolean, required: false, default: true },
         show_seller_website: { type: Boolean, required: false, default: true },
         show_seller_phone: { type: Boolean, required: false, default: true },
+        show_approval: { type: Boolean, required: false, default: false},
+        approval_label: { type: String, required: false},
         show_iban: { type: Boolean, required: false, default: true },
         default_notes: { type: String, required: false, default: '' },
       },
@@ -121,6 +126,8 @@ const companySchema = new mongoose.Schema(
         show_seller_email: { type: Boolean, required: false, default: true },
         show_seller_website: { type: Boolean, required: false, default: true },
         show_seller_phone: { type: Boolean, required: false, default: true },
+        show_approval: { type: Boolean, required: false, default: true},
+        approval_label: { type: String, required: false},
         show_iban: { type: Boolean, required: false, default: true },
         default_notes: { type: String, required: false, default: '' },
       },

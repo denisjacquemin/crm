@@ -83,6 +83,7 @@ const documentSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     config: {
       document_type: { type: String, required: true, default: 'invoice' },
+      document_title: { type: String, required: false, default: '' },
       template_name: {
         type: String,
         required: true,
@@ -198,7 +199,8 @@ const documentSchema = new mongoose.Schema(
       subject: { type: String, required: false, default: '' },
       reference: { type: String, required: false, default: '' },
       notes_internal: { type: String, required: false, default: '' },
-      notes_on_invoice: { type: String, required: false, default: '' },
+      notes_on_document: { type: String, required: false, default: '' },
+      approval_label: { type: String, required: false, default: '' },
       footer: { type: String, required: false, default: '' },
       items: {
         type: [itemSchema],
@@ -211,9 +213,7 @@ const documentSchema = new mongoose.Schema(
         },
       },
       files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
-      default: [],
       documentFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
-      default: [],
       show_invoice_due_date: { type: Boolean, required: false, default: false },
       show_delivery_date: { type: Boolean, required: false, default: false },
       show_contact_person: { type: Boolean, required: false, default: false },
@@ -221,6 +221,7 @@ const documentSchema = new mongoose.Schema(
       show_seller_email: { type: Boolean, required: false, default: false },
       show_seller_website: { type: Boolean, required: false, default: false },
       show_seller_phone: { type: Boolean, required: false, default: false },
+      show_approval: { type: Boolean, required: false, default: true },
       show_iban: { type: Boolean, required: false, default: false },
     },
   },

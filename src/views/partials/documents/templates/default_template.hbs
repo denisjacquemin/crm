@@ -1,31 +1,56 @@
 <div x-data="{
         // numberOfPages is the number of batch of 15 items starting at position 6 in selectedDocument.config.items
-            numberOfPages: Math.ceil((selectedDocument.config.items.length - 5) / 15) + 1,
+            itemsPerPageFirst: 15,
+            itemsPerPageRest: 20,
+            test: selectedDocument.config.items.length - this.itemsPerPageFirst,
+            get numberOfPages() {
+                const totalItems = selectedDocument.config.items.length;
+                
+                // If we have fewer items than first page capacity, just return 1
+                if (totalItems <= this.itemsPerPageFirst) {
+                    return 1;
+                }
+                
+                const remainingItems = totalItems - this.itemsPerPageFirst;
+                return Math.ceil(remainingItems / this.itemsPerPageRest) + 1;
+            },
             orEmpty(value) {
                 return value || '';
             },
-            session: {{ stringify session }}
-        }"
-    id="printme"
-    class="flex-1 flex">
+            session: {{ stringify session }},
+            get pagesNumber() {
+                const totalItems = selectedDocument.config.items.length;
+                const remainingItems = totalItems - this.itemsPerPageFirst;
+                const result = Math.ceil(remainingItems / this.itemsPerPageRest) + 1;
+                
+                console.log('numberOfPages calculation:', {
+                    totalItems,
+                    itemsPerPageFirst: this.itemsPerPageFirst,
+                remainingItems,
+                    result
+                });
+
+                return result;
+            }
+            
+        }" id="printme" class="flex-1 flex">
     <style>
-        {{!-- #template3 #pageone {
-            border: 1px solid black;
-        } --}}
         body {
             margin: 0;
             padding: 0;
         }
+
         @page {
             size: A4;
             margin: 0;
         }
 
-        #template3 {            
-            font-family: sans-serif;
+        #template3 {
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
             color: #000;
         }
+
         #template3 .page {
             width: 21cm;
             height: 29.7cm;
@@ -34,25 +59,20 @@
             box-sizing: border-box;
             border: none;
         }
-        #template3 .page {
-            background: white;
-            {{!-- box-shadow: 0 .5mm 2mm rgba(0,0,0,.3); --}}
-            {{!-- border: 1px solid #d3d3d3; --}}
-        }
-        {{!-- #template3 .page:last-child {
-        background: red;
-        } --}}
-        {{!-- #template3 .page:not(:last-child) {
-        page-break-after: always;
-        background: yellow;
-        } --}}
 
         #template3 .page {
             position: relative;
         }
+
         #template3 .top-left {
             position: absolute;
             top: 10mm;
+            left: 10mm;
+        }
+
+        #template3 .bottom-left {
+            position: absolute;
+            bottom: 10mm;
             left: 10mm;
         }
 
@@ -68,10 +88,11 @@
 
         #template3 header h1 {
             position: absolute;
-            top: 30px; 
-             /* Set the left margin to 10mm */
-            right: 10mm; /* Set the right margin to 10mm */
-            width: calc(100% - 20mm);     
+            top: 30px;
+            /* Set the left margin to 10mm */
+            right: 10mm;
+            /* Set the right margin to 10mm */
+            width: calc(100% - 20mm);
             font: bold 150% sans-serif;
             letter-spacing: 0.3em;
             text-align: right;
@@ -81,7 +102,8 @@
 
         #template3 header h1::after {
             content: '';
-            margin-left: -0.3em; /* Adjust this value to match the letter-spacing */
+            margin-left: -0.3em;
+            /* Adjust this value to match the letter-spacing */
         }
 
         #template3 header #document_number_dates {
@@ -108,9 +130,6 @@
             word-wrap: break-word;
             line-height: initial;
             text-align: left;
-            {{!-- font-size: 85%; --}}
-            {{!-- font-style: normal;
-            line-height: 1.25; --}}
         }
 
         #template3 #ref-purpose {
@@ -129,18 +148,13 @@
             font-style: normal;
             text-align: left;
             line-height: 1.25;
-            top: 5.5cm; {{!--  dimension standard 5.5cm --}}
-            left: 11cm; {{!-- dimension standard 11cm --}}
-            height: 3.0cm; {{!-- dimension standard 3.3cm --}}
-            width: 8.0cm;  {{!-- dimension standard 8.5cm --}}
+            top: 5.5cm;
+            left: 11cm;
+            height: 3.0cm;
+            width: 8.0cm;
             padding-top: 3px;
             padding-left: 3px;
             word-wrap: break-word;
-                {
-                    {
-                    border: dashed 1px #d0cfcf;             
-                }
-            }
         }
 
         #template3 header #buyer_address::before,
@@ -174,7 +188,7 @@
             margin-top: 50px;
             font-size: 85%;
         }
-        
+
         #template3 main {
             position: relative;
         }
@@ -184,7 +198,8 @@
             position: absolute;
             left: 10mm;
             right: 10mm;
-            width: calc(100% - 20mm); /* 100% width with 10mm left and right margins */
+            width: calc(100% - 20mm);
+            /* 100% width with 10mm left and right margins */
         }
 
         #template3 main #products.page1 {
@@ -203,33 +218,41 @@
         }
 
         /* Table row */
-        #template3 main #products .tr, #template3 main #products .thead {
+        #template3 main #products .tr,
+        #template3 main #products .thead {
             display: table-row;
-            border-bottom: 1px solid #ccc; /* Optional: Add a border between rows */
+            border-bottom: 1px solid #ccc;
+            /* Optional: Add a border between rows */
         }
 
-         #template3 main #products .thead .th {
+        #template3 main #products .thead .th {
             display: table-cell;
-            padding: 8px 16px; /* Adjust padding as needed */
-            border: 1px solid #ccc; /* Add cell borders */
+            padding: 8px 16px;
+            /* Adjust padding as needed */
+            border: 1px solid #ccc;
+            /* Add cell borders */
             font-weight: 700;
-         }
+        }
 
         /* Table cell */
         #template3 main #products .td {
             font-size: 80%;
             display: table-cell;
-            padding: 2px 4px; /* Adjust padding as needed */
-            border: 1px solid #ccc; /* Add cell borders */
+            padding: 2px 4px;
+            /* Adjust padding as needed */
+            border: 1px solid #ccc;
+            /* Add cell borders */
         }
 
         /* Header row (optional) */
         #template3 main #products .tr:first-child {
-            background-color: #f0f0f0; /* Add background color to header row */
-            font-weight: bold; /* Make header text bold */
+            background-color: #f0f0f0;
+            /* Add background color to header row */
+            font-weight: bold;
+            /* Make header text bold */
         }
 
-        #template3 main #products .amounts{
+        #template3 main #products .amounts {
             display: table;
             width: 100%;
             border-collapse: collapse;
@@ -243,22 +266,38 @@
             right: 0;
             color: #fff;
             text-align: center;
-            padding: 20px 0;
+            padding: 20px 10mm;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        #template3 footer #approval {
+            background: #eee;
+            height: 100px;
+            width: 350px;
+            text-align: left;
+            padding: 3mm;
+            margin-bottom: 5mm;
+        }
+
+        #template3 footer #approval span {
+            font-weight: 500;
+            font-size: 80%;
+            color: #444;
         }
 
         #template3 footer .notes {
             font-size: 90%;
             color: #000;
             text-align: left;
-            margin: 0 10mm 5mm 10mm;
         }
+
         #template3 footer .row-container {
             display: flex;
             width: 100%;
         }
+
         #template3 footer .left,
         #template3 footer .right {
             flex: 1;
@@ -268,7 +307,8 @@
 
         /* Add styling to individual columns (no changes) */
         #template3 footer .left {
-            background-color: #555;
+            text-align: left;
+            color: #000;
         }
 
         #template3 footer .middle {
@@ -277,35 +317,35 @@
 
         #template3 footer .right {
             background-color: #777;
-        } --}}
-     </style>
+        }
+    </style>
     <div id="template3" class="flex-1 zoomable-div" style="">
-{{!-- PAGE 1 - BEGIN --}}
-      <div id="pageone"
-        {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
-        class="page text-black sheet transform-origin-top-left xl:mx-auto">
-        
-        <template x-if="selectedDocument.config.ribbon.text">
-            <div 
-            :class="`top-${selectedDocument.config.ribbon.position}-ribbon`"
-            class="ribbon" x-text="selectedDocument.config.ribbon.text"></div>
-        </template>
-        <template x-if="selectedDocument.config.stamp.text">
-            <div :class="`stamp stamp-style${selectedDocument.config.stamp.type}`" style="max-width: 80%;">
-                <span x-text="selectedDocument.config.stamp.text"></span>
-            </div>
-        </template>
+        {{!-- PAGE 1 - BEGIN --}}
+        <div id="pageone" {{!-- style="transform: scale(0.3866498740554156); transform-origin: 0 0;" --}}
+            class="page text-black sheet transform-origin-top-left xl:mx-auto">
 
-        <span class="top-left">
-            <template x-if="selectedDocument.config?.seller?.logo?.slug">
-                <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
-            </template> 
-        </span>
-      <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang }} <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ i18n 'default_template.page' doc_lang }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
+            <template x-if="selectedDocument.config.ribbon.text">
+                <div :class="`top-${selectedDocument.config.ribbon.position}-ribbon`" class="ribbon"
+                    x-text="selectedDocument.config.ribbon.text"></div>
+            </template>
+            <template x-if="selectedDocument.config.stamp.text">
+                <div :class="`stamp stamp-style${selectedDocument.config.stamp.type}`" style="max-width: 80%;">
+                    <span x-text="selectedDocument.config.stamp.text"></span>
+                </div>
+            </template>
 
+            <span class="top-left">
+                <template x-if="selectedDocument.config?.seller?.logo?.slug">
+                    <img :src="`/file/serve/${selectedDocument.config.seller.logo.slug}`">
+                </template>
+            </span>
+            <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang }} <span
+                    x-text="orEmpty(selectedDocument.config.invoice_number)"></span> - {{ i18n 'default_template.page'
+                doc_lang }} 1/<span x-text="orEmpty(numberOfPages)"></span></span>
+            <span class="bottom-left">{{i18n 'default_template.powered_by' doc_lang}} {{env 'FQDN'}}</span>
 
-        <header> 
-            <h1 x-text="selectedDocument.config.document_title || (
+            <header>
+                <h1 x-text="selectedDocument.config.document_title || (
         selectedDocument.config.document_type === 'invoice' 
             ? '{{i18n  'default_template.invoice' doc_lang}}'
                     : selectedDocument.config.document_type === 'credit_note'
@@ -317,212 +357,282 @@
                     : selectedDocument.config.document_type === 'order'
                     ? '{{i18n  'default_template.order' doc_lang}}'
                     : '{{i18n  'default_template.delivery_note' doc_lang}}'
-            )"></h1>            
-            <div id="document_number_dates">
-                <template x-if="selectedDocument.config.document_type === 'invoice'">
-                    <div>
-                        <span class="spacing">{{ i18n 'default_template.invoice_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
-                        <span class="spacing">{{ i18n 'default_template.invoice_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
-                        <span class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
-                        <span x-show="selectedDocument.config.show_delivery_date" class="spacing">{{ i18n 'default_template.delivery_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></span></span>
-                    </div>
-                </template>
-                <template x-if="selectedDocument.config.document_type === 'credit_note'">
-                    <div>
-                        <span class="spacing">{{ i18n 'default_template.credit_note_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
-                        <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ i18n 'default_template.target_invoice_number' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
-                        <span class="spacing">{{ i18n 'default_template.credit_note_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
-                        <span x-show="selectedDocument.config.show_invoice_due_date" class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
-                    </div>
-                </template>
-            </div>  
-
-            <div id="seller_address">
-                <span style="font-size: 150%; font-weight: 700;" x-text="orEmpty(selectedDocument.config.seller.name)"></span><br/>
-                <span style="" x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br>
-                <span x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br/>
-                <span x-text="countries[selectedDocument.config.seller.country].name"></span><br/><br/>
-                <span>{{i18n 'default_template.vat_number' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br>
-                
-                <template x-if="company_form_settings[selectedDocument.config.seller.country]?.registration_number?.display">
-                    <span><span x-text="company_form_settings[selectedDocument.config.seller.country].registration_number.label"></span>: <span x-text="orEmpty(selectedDocument.config.seller.registration_number)"></span><br></span>
-                </template>
-                
-                <template x-if="selectedDocument.config.show_iban && selectedDocument.config.seller.bank_accounts && selectedDocument.config.seller.bank_accounts.some(acc => acc.iban || acc.bic)">
-                    <template x-for="(account, index) in selectedDocument.config.seller.bank_accounts.filter(acc => acc.iban || acc.bic)" :key="index">
-                        <div><span x-text="account.iban"></span> <span x-text="account.bic"></span><br></div>
+            )"></h1>
+                <div id="document_number_dates">
+                    <template x-if="selectedDocument.config.document_type === 'invoice'">
+                        <div>
+                            <span class="spacing">{{ i18n 'default_template.invoice_number' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                            <span class="spacing">{{ i18n 'default_template.invoice_date' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                            <span class="spacing">{{ i18n 'default_template.due_date' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
+                            <span x-show="selectedDocument.config.show_delivery_date" class="spacing">{{ i18n
+                                'default_template.delivery_date' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_delivery_date)"></span></span>
+                        </div>
                     </template>
-                </template>
-
-                <template x-if="selectedDocument.config.show_contact_person">
-                    <span>{{i18n 'default_template.contact_person' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.contact_lastname) + ' ' + orEmpty(selectedDocument.config.seller.contact_firstname)"></span><br></span>
-                </template>
-                
-                <template x-if="selectedDocument.config.show_seller_phone">
-                    <span>{{i18n 'default_template.seller_phone' doc_lang}}: <span x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br/></span>
-                </template>
-                
-                <template x-if="selectedDocument.config.show_seller_email">
-                    <div><span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br/></div>
-                </template>
-
-                <template x-if="selectedDocument.config.show_seller_website">
-                    <div><span x-text="orEmpty(selectedDocument.config.seller.website)"></span><br/></div>
-                </template>
-                
-            </div>
-            <div id="ref-purpose">
-                <table style="border-spacing: 0;">
-                    <tr x-show="selectedDocument.config.reference">
-                        <td>{{ i18n 'default_template.reference' doc_lang }}:</td>
-                        <td style="padding-left: 10px; font-weight: 700;"
-                            x-text="orEmpty(selectedDocument.config.reference)"></td>
-                    </tr>
-                    <tr x-show="selectedDocument.config.subject">
-                        <td>{{ i18n 'default_template.purpose' doc_lang }}:</td>
-                        <td style="padding-left: 10px;font-weight: 700;"
-                            x-text="orEmpty(selectedDocument.config.subject)"></td>
-                    </tr>
-                </table>
-            </div>
-            
-            <div id="buyer_address">
-                <span style="" x-text="selectedDocument.config.buyer.name"></span><br/>
-                <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br/>
-                <span style="" x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
-                <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br/>
-                <br/><br/>
-                <span style=""><span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br/>
-                <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br/>
-                <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
-            </div>   
-        </header> 
-        <main>
-            <div id="products" class="page1">
-                <div class="table">
-                    <div class="thead">
-                        <div class="th" style="text-align:left;width:300px">{{i18n 'default_template.description' doc_lang}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.quantity_short' doc_lang}}</div>
-                        <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short' doc_lang}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat' doc_lang}}</div>
-                        <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}</div>
-                    </div>
-                    <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, 5)" :key="rowIndex">
-                        <div class="tr">
-                            <div class="td" style="text-align:left;width:300px">
-                                <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
-                                <span x-text="orEmpty(item.description)"></span>
-                            </div>
-                            <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
-                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`"></div>
-                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat.value)}%`"></div>
-                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`"></div>
+                    <template x-if="selectedDocument.config.document_type === 'credit_note'">
+                        <div>
+                            <span class="spacing">{{ i18n 'default_template.credit_note_number' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.credit_note_number)"></span></span>
+                            <span x-show="selectedDocument.config.show_target_invoice" class="spacing">{{ i18n
+                                'default_template.target_invoice_number' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_number)"></span></span>
+                            <span class="spacing">{{ i18n 'default_template.credit_note_date' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_date)"></span></span>
+                            <span x-show="selectedDocument.config.show_invoice_due_date" class="spacing">{{ i18n
+                                'default_template.due_date' doc_lang }}: <span
+                                    x-text="orEmpty(selectedDocument.config.invoice_due_date?.value)"></span></span>
                         </div>
                     </template>
                 </div>
-                <template x-if="numberOfPages == 1">
-                    <table class="amounts">
-                        <tr>
-                            <td width="50%"></td>
-                            <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
+
+                <div id="seller_address">
+                    <span style="font-size: 150%; font-weight: 700;"
+                        x-text="orEmpty(selectedDocument.config.seller.name)"></span><br />
+                    <span style=""
+                        x-text="`${orEmpty(selectedDocument.config.seller.address1)} ${orEmpty(selectedDocument.config.seller.address2)}`"></span><br>
+                    <span
+                        x-text="`${orEmpty(selectedDocument.config.seller.zip)} ${orEmpty(selectedDocument.config.seller.city)}`"></span><br />
+                    <span x-text="countries[selectedDocument.config.seller.country].name"></span><br /><br />
+                    <span>{{i18n 'default_template.vat_number' doc_lang}}: <span
+                            x-text="orEmpty(selectedDocument.config.seller.vat_number)"></span></span><br>
+
+                    <template
+                        x-if="company_form_settings[selectedDocument.config.seller.country]?.registration_number?.display">
+                        <span><span
+                                x-text="company_form_settings[selectedDocument.config.seller.country].registration_number.label"></span>:
+                            <span
+                                x-text="orEmpty(selectedDocument.config.seller.registration_number)"></span><br></span>
+                    </template>
+
+                    <template
+                        x-if="selectedDocument.config.show_iban && selectedDocument.config.seller.bank_accounts && selectedDocument.config.seller.bank_accounts.some(acc => acc.iban || acc.bic)">
+                        <template
+                            x-for="(account, index) in selectedDocument.config.seller.bank_accounts.filter(acc => acc.iban || acc.bic)"
+                            :key="index">
+                            <div><span x-text="account.iban"></span> <span x-text="account.bic"></span><br></div>
+                        </template>
+                    </template>
+
+                    <template x-if="selectedDocument.config.show_contact_person">
+                        <span>{{i18n 'default_template.contact_person' doc_lang}}: <span
+                                x-text="orEmpty(selectedDocument.config.seller.contact_lastname) + ' ' + orEmpty(selectedDocument.config.seller.contact_firstname)"></span><br></span>
+                    </template>
+
+                    <template x-if="selectedDocument.config.show_seller_phone">
+                        <span>{{i18n 'default_template.seller_phone' doc_lang}}: <span
+                                x-text="orEmpty(selectedDocument.config.seller.phone)"></span><br /></span>
+                    </template>
+
+                    <template x-if="selectedDocument.config.show_seller_email">
+                        <div><span x-text="orEmpty(selectedDocument.config.seller.email)"></span><br /></div>
+                    </template>
+
+                    <template x-if="selectedDocument.config.show_seller_website">
+                        <div><span x-text="orEmpty(selectedDocument.config.seller.website)"></span><br /></div>
+                    </template>
+
+                </div>
+                <div id="ref-purpose">
+                    <table style="border-spacing: 0;">
+                        <tr x-show="selectedDocument.config.reference">
+                            <td>{{ i18n 'default_template.reference' doc_lang }}:</td>
+                            <td style="padding-left: 10px; font-weight: 700;"
+                                x-text="orEmpty(selectedDocument.config.reference)"></td>
                         </tr>
-                        <tr>
-                            <td></td>
-                            <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
+                        <tr x-show="selectedDocument.config.subject">
+                            <td>{{ i18n 'default_template.purpose' doc_lang }}:</td>
+                            <td style="padding-left: 10px;font-weight: 700;"
+                                x-text="orEmpty(selectedDocument.config.subject)"></td>
                         </tr>
                     </table>
+                </div>
+
+                <div id="buyer_address">
+                    <span style="" x-text="selectedDocument.config.buyer.name"></span><br />
+                    <span style=""
+                        x-text="`${orEmpty(selectedDocument.config.buyer.address1)} ${orEmpty(selectedDocument.config.buyer.address2)}`"></span><br />
+                    <span style=""
+                        x-text="`${orEmpty(selectedDocument.config.buyer.zip)} ${orEmpty(selectedDocument.config.buyer.city)}`"></span>
+                    <span style="" x-text="orEmpty(selectedDocument.config.buyer.country)"></span><br />
+                    <br /><br />
+                    <span style=""><span x-text="orEmpty(selectedDocument.config.buyer.vat_number)"></span></span><br />
+                    <span style="" x-text="orEmpty(selectedDocument.config.buyer.phone)"></span><br />
+                    <span style="" x-text="orEmpty(selectedDocument.config.buyer.email)"></span>
+                </div>
+            </header>
+            <main>
+                <div id="products" class="page1">
+                    <div class="table">
+                        <div class="thead">
+                            <div class="th" style="text-align:left;width:300px">{{i18n 'default_template.description'
+                                doc_lang}}</div>
+                            <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.quantity_short'
+                                doc_lang}}</div>
+                            <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short'
+                                doc_lang}}</div>
+                            <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat' doc_lang}}
+                            </div>
+                            <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}</div>
+                        </div>
+                        <template x-for="(item, rowIndex) in selectedDocument.config.items.slice(0, itemsPerPageFirst)"
+                            :key="rowIndex">
+                            <div class="tr">
+                                <div class="td" style="text-align:left;width:300px">
+                                    <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
+                                    <span x-text="orEmpty(item.description)"></span>
+                                </div>
+                                <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
+                                <div class="td" style="text-align:right"
+                                    x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`">
+                                </div>
+                                <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat.value)}%`"></div>
+                                <div class="td" style="text-align:right"
+                                    x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <template x-if="numberOfPages == 1">
+                        <table class="amounts">
+                            <tr>
+                                <td width="50%"></td>
+                                <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}</td>
+                                <td style="text-align: right;"
+                                    x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
+                                <td style="text-align: right;"
+                                    x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}</td>
+                                <td style="text-align: right;"
+                                    x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`">
+                                </td>
+                            </tr>
+                        </table>
+                    </template>
+                </div>
+
+            </main>
+
+
+            <footer>
+                <div id="approval" x-show="selectedDocument.config.show_approval">
+                    <span
+                        x-text="selectedDocument.config.approval_label || '{{ i18n 'documents.controller.approval_label' doc_lang }}'"></span>
+                </div>
+
+                <template x-if=" selectedDocument.config.notes_on_document">
+                    <div class="notes" x-text="selectedDocument.config.notes_on_document"></div>
                 </template>
-            </div>
-            
-        </main>
-         
-
-        <footer>
-            <template x-if="selectedDocument.config.notes_on_invoice">
-                <div class="notes" x-text="selectedDocument.config.notes_on_invoice"></div>
-            </template>
-             <div class="row-container">
-                <div class="left" >Eventuellement un logo</div>
-                <div class="right">Numero de compte etc</div>
-            </div>
-        </footer>
-    </div> 
-{{!-- PAGE 1 - END --}}
+                <div class="row-container">
+                    <div class="left"></div>
+                    <div class="right"></div>
+                </div>
+            </footer>
+        </div>
+        {{!-- PAGE 1 - END --}}
 
 
-{{!-- PAGE 2+ - BEGIN --}}
-    {{!-- creating chunks of 15 items each from `selectedDocument.config.items` (ignoring the first 5 items), and then iterating over these chunks --}}
-    <template x-for="(itemsChunk, chunkIndex) in selectedDocument.config.items.slice(5).reduce((acc, _, i) => (i % 15 ? acc : [...acc, selectedDocument.config.items.slice(i + 5, i + 20)]), [])" :key="chunkIndex">
-      <div style="width: 21cm;
+        {{!-- PAGE 2+ - BEGIN --}}
+        {{!-- creating chunks of 15 items each from `selectedDocument.config.items` (ignoring the first 5 items), and
+        then iterating over these chunks --}}
+        <template x-for="(itemsChunk, chunkIndex) in selectedDocument.config.items.slice(itemsPerPageFirst).reduce((acc, _, i) => 
+                (i % itemsPerPageRest ? acc : [...acc, selectedDocument.config.items.slice(
+                    i + itemsPerPageFirst, 
+                    i + itemsPerPageFirst + itemsPerPageRest
+                )]), 
+            [])" :key="chunkIndex">
+            <div style="width: 21cm;
             {{!-- position: relative; --}}
             height: 29.7cm;
-            box-sizing: border-box;"
-        class="page sheet text-black transform-origin-top-left xl:mx-auto">
-        <span class="top-left">top left - currentPage:</span>
-        <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang}} - <span x-text="selectedDocument.config.invoice_number"></span> - page <span x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
-        <main>
-            <div id="products" class="page2plus">
+            box-sizing: border-box;" class="page sheet text-black transform-origin-top-left xl:mx-auto">
+                <span class="top-left">top left - currentPage:</span>
+                <span class="bottom-right">{{ i18n 'default_template.invoice_number_footer' doc_lang}} - <span
+                        x-text="selectedDocument.config.invoice_number"></span> - page <span
+                        x-text="chunkIndex + 2"></span>/<span x-text="numberOfPages"></span></span>
+                <main>
+                    <div id="products" class="page2plus">
 
-                
-                <div class="table">
-                    <div class="thead">
-                        <div class="th" style="text-align:left;width:300px">{{i18n 'default_template.description' doc_lang}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.quantity_short' doc_lang}}</div>
-                        <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short' doc_lang}}</div>
-                        <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat' doc_lang}}</div>
-                        <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}</div>
-                    </div>
-                    <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
-                        <div class="tr">
-                            <div class="td" style="text-align:left;width:300px">
-                                <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
-                                <span x-text="orEmpty(item.description)"></span>
+
+                        <div class="table">
+                            <div class="thead">
+                                <div class="th" style="text-align:left;width:300px">{{i18n
+                                    'default_template.description' doc_lang}}</div>
+                                <div class="th" style="text-align:right;width:30px">{{i18n
+                                    'default_template.quantity_short' doc_lang}}</div>
+                                <div class="th" style="text-align:right">{{i18n 'default_template.unit_price_short'
+                                    doc_lang}}</div>
+                                <div class="th" style="text-align:right;width:30px">{{i18n 'default_template.vat'
+                                    doc_lang}}</div>
+                                <div class="th" style="text-align:right">{{i18n 'default_template.total' doc_lang}}
+                                </div>
                             </div>
-                            <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
-                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`"></div>
-                            <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat)}%`"></div>
-                            <div class="td" style="text-align:right" x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`"></div>
+                            <template x-for="(item, itemIndex) in itemsChunk" :key="itemIndex">
+                                <div class="tr">
+                                    <div class="td" style="text-align:left;width:300px">
+                                        <span style="font-weight: 600;" x-text="orEmpty(item.name)"></span><br>
+                                        <span x-text="orEmpty(item.description)"></span>
+                                    </div>
+                                    <div class="td" style="text-align:right" x-text="orEmpty(item.quantity)"></div>
+                                    <div class="td" style="text-align:right"
+                                        x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.unit_price)}`">
+                                    </div>
+                                    <div class="td" style="text-align:right" x-text="`${orEmpty(item.vat)}%`"></div>
+                                    <div class="td" style="text-align:right"
+                                        x-text="`${selectedDocument.config.currency.symbol} ${orEmpty(item.amountvatincl)}`">
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-                    </template>
-                </div>
 
 
-                <template x-if="numberOfPages == chunkIndex + 2">
-                    <table class="amounts">
-                        <tr>
-                            <td width="50%"></td>
-                            <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}</td>
-                            <td style="text-align: right;" x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`"></td>
-                        </tr>
-                    </table>
-                </template>
+                        <template x-if="numberOfPages == chunkIndex + 2">
+                            <table class="amounts">
+                                <tr>
+                                    <td width="50%"></td>
+                                    <td style="text-align: right;">{{i18n 'default_template.total_vat_excl' doc_lang}}
+                                    </td>
+                                    <td style="text-align: right;"
+                                        x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.subtotal}`">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align: right;">{{i18n 'default_template.vat_total' doc_lang}}</td>
+                                    <td style="text-align: right;"
+                                        x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.totalvat}`">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align: right;">{{i18n 'default_template.total_vat_incl' doc_lang}}
+                                    </td>
+                                    <td style="text-align: right;"
+                                        x-text="`${selectedDocument.config.currency.symbol} ${selectedDocument.config.amounts.total}`">
+                                    </td>
+                                </tr>
+                            </table>
+                        </template>
+                    </div>
+                </main>
+
+                <footer>
+                    <div x-text="selectedDocument.config.notes_on_document" class="left"></div>
+                    <div class="right">Numero de compte etc</div>
+                </footer>
             </div>
-        </main>
-        
-        <footer>
-            <div x-text="selectedDocument.config.notes_on_invoice" class="left">Eventuellement un logo</div>
-            <div class="right">Numero de compte etc</div>
-        </footer>
-      </div> 
-    </template>
-{{!-- PAGE 2+ - END --}}
+        </template>
+        {{!-- PAGE 2+ - END --}}
 
     </div>
 </div>
